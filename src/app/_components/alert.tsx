@@ -9,9 +9,9 @@ type Props = {
 const Alert = ({ preview }: Props) => {
   return (
     <div
-      className={cn("border-b dark:bg-slate-800", {
-        "bg-neutral-800 border-neutral-800 text-white": preview,
-        "bg-neutral-50 border-neutral-200": !preview,
+      className={cn("border-b dark:bg-black", {
+        "bg-black border-neutral-800 text-white": preview,
+        "bg-black border-neutral-200": !preview,
       })}
     >
       <Container>
@@ -29,14 +29,7 @@ const Alert = ({ preview }: Props) => {
             </>
           ) : (
             <>
-              The source code for this blog is{" "}
-              <a
-                href={`https://github.com/vercel/next.js/tree/canary/examples/${EXAMPLE_PATH}`}
-                className="underline hover:text-blue-600 duration-200 transition-colors"
-              >
-                available on GitHub
-              </a>
-              .
+              SW.
             </>
           )}
         </div>
