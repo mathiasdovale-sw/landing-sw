@@ -12,7 +12,7 @@ export default function ContactSection() {
               className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-wide mb-6"
               style={{ fontFamily: "Bebas Neue, sans-serif" }}
             >
-              LET'S TALK
+            Contactanos
             </h2>
             <p className="text-gray-600 text-lg md:text-xl leading-relaxed mb-8 max-w-lg">
               ¿Listo para llevar tu negocio al siguiente nivel? Hablemos sobre cómo podemos ayudarte a crear, optimizar
@@ -27,7 +27,7 @@ export default function ContactSection() {
                 </div>
                 <div>
                   <p className="font-medium">Email</p>
-                  <p className="text-gray-600">hello@sellifyworks.com</p>
+                  <p className="text-gray-600">sellifyworks@gmail.com</p>
                 </div>
               </div>
 
@@ -37,7 +37,7 @@ export default function ContactSection() {
                 </div>
                 <div>
                   <p className="font-medium">Teléfono</p>
-                  <p className="text-gray-600">+34 123 456 789</p>
+                  <p className="text-gray-600">+34 621 640 364</p>
                 </div>
               </div>
 

@@ -9,7 +9,7 @@ const HeaderHome = () => {
       <main className="flex flex-col lg:flex-row items-center justify-between px-6 md:px-12 py-12 lg:py-24 min-h-[calc(100vh-120px)]">
         {/* Left Side - Main Text */}
         <div className="flex-1 mb-12 lg:mb-0">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-tight tracking-tight">
+          <h1 className="text-6xl md:text-7xl lg:text-6xl font-black leading-tight tracking-tight">
             MENOS COMPLICACIONES.
             <br />
             MÁS CONVERSIONES.
@@ -26,7 +26,7 @@ const HeaderHome = () => {
             className="rounded-lg shadow-lg"
             priority
           />
-          <div className="text-sm md:text-base font-medium tracking-widest">AGENCIA SHOPIFY EN BARCELONA</div>
+          <div className="text-sm md:text-base font-medium tracking-widest">AGENCY PARTNER</div>
         </div>
       </main>
     </div>
