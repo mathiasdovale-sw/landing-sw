@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { generateConfirmationToken, storePendingConfirmation } from '@/lib/auth-utils'
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,6 +24,7 @@ export async function POST(request: NextRequest) {
     // Configuración de Klaviyo
     const KLAVIYO_API_KEY = process.env.KLAVIYO_PRIVATE_API_KEY
     const KLAVIYO_LIST_ID = process.env.KLAVIYO_LIST_ID
+    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
     if (!KLAVIYO_API_KEY || !KLAVIYO_LIST_ID) {
       console.error('Missing Klaviyo configuration')
@@ -32,7 +34,27 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Crear o actualizar perfil en Klaviyo
+    // Verificar si el email ya está suscrito a la lista
+    const listProfilesResponse = await fetch(`https://a.klaviyo.com/api/lists/${KLAVIYO_LIST_ID}/profiles/?filter=equals(email,"${email}")`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
+        'Content-Type': 'application/json',
+        'revision': '2024-02-15'
+      }
+    })
+
+    if (listProfilesResponse.ok) {
+      const listProfilesData = await listProfilesResponse.json()
+      if (listProfilesData.data && listProfilesData.data.length > 0) {
+        return NextResponse.json({
+          success: true,
+          message: 'Ya estás suscrito a nuestra newsletter'
+        })
+      }
+    }
+
+    // Crear o actualizar perfil en Klaviyo (sin suscribir a la lista aún)
     const profileResponse = await fetch('https://a.klaviyo.com/api/profiles/', {
       method: 'POST',
       headers: {
@@ -50,9 +72,10 @@ export async function POST(request: NextRequest) {
       })
     })
 
+    let profileId: string
+    
     if (!profileResponse.ok) {
       const errorData = await profileResponse.text()
-      console.error('Klaviyo profile error:', errorData)
       
       // Manejar perfil duplicado (usuario ya existe)
       if (profileResponse.status === 409) {
@@ -63,71 +86,41 @@ export async function POST(request: NextRequest) {
           )
           
           if (duplicateError && duplicateError.meta?.duplicate_profile_id) {
-            // Usar el ID del perfil existente para suscribirlo a la lista
-            const existingProfileId = duplicateError.meta.duplicate_profile_id
-            console.log('Using existing profile ID:', existingProfileId)
-            
-            // Intentar suscribir el perfil existente a la lista
-            const listSubscriptionResponse = await fetch(`https://a.klaviyo.com/api/lists/${KLAVIYO_LIST_ID}/relationships/profiles/`, {
-              method: 'POST',
-              headers: {
-                'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
-                'Content-Type': 'application/json',
-                'revision': '2024-02-15'
-              },
-              body: JSON.stringify({
-                data: [
-                  {
-                    type: 'profile',
-                    id: existingProfileId
-                  }
-                ]
-              })
-            })
-
-            if (listSubscriptionResponse.ok) {
-              return NextResponse.json({
-                success: true,
-                message: 'Successfully subscribed to newsletter',
-                note: 'Profile already existed, added to list'
-              })
-            } else {
-              // Si falla la suscripción a la lista, probablemente ya esté suscrito
-              const listErrorData = await listSubscriptionResponse.text()
-              console.log('List subscription response:', listErrorData)
-              
-              return NextResponse.json({
-                success: true,
-                message: 'Ya estás suscrito a nuestra newsletter',
-                note: 'Profile and subscription already exist'
-              })
-            }
+            profileId = duplicateError.meta.duplicate_profile_id
           } else {
             return NextResponse.json(
-              { error: 'Este email ya está registrado en nuestro sistema' },
-              { status: 409 }
+              { error: 'Error al procesar el perfil' },
+              { status: 500 }
             )
           }
         } catch (parseError) {
           console.error('Error parsing Klaviyo error response:', parseError)
           return NextResponse.json(
-            { error: 'Este email ya está suscrito a nuestra newsletter' },
-            { status: 409 }
+            { error: 'Error al procesar el perfil' },
+            { status: 500 }
           )
         }
+      } else {
+        console.error('Klaviyo profile error:', errorData)
+        return NextResponse.json(
+          { error: 'Failed to create profile' },
+          { status: 500 }
+        )
       }
-      
-      return NextResponse.json(
-        { error: 'Failed to create profile' },
-        { status: 500 }
-      )
+    } else {
+      const profileData = await profileResponse.json()
+      profileId = profileData.data.id
     }
 
-    const profileData = await profileResponse.json()
-    const profileId = profileData.data.id
+    // Generar token de confirmación
+    const confirmationToken = generateConfirmationToken()
+    storePendingConfirmation(confirmationToken, email)
 
-    // Suscribir el perfil a la lista
-    const listSubscriptionResponse = await fetch(`https://a.klaviyo.com/api/lists/${KLAVIYO_LIST_ID}/relationships/profiles/`, {
+    // Crear URL de confirmación
+    const confirmationUrl = `${BASE_URL}/api/newsletter/confirm?token=${confirmationToken}`
+
+    // Enviar email de confirmación usando Klaviyo
+    const emailResponse = await fetch('https://a.klaviyo.com/api/events/', {
       method: 'POST',
       headers: {
         'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
@@ -135,27 +128,46 @@ export async function POST(request: NextRequest) {
         'revision': '2024-02-15'
       },
       body: JSON.stringify({
-        data: [
-          {
-            type: 'profile',
-            id: profileId
+        data: {
+          type: 'event',
+          attributes: {
+            properties: {
+              confirmation_url: confirmationUrl,
+              email: email
+            },
+            metric: {
+              data: {
+                type: 'metric',
+                attributes: {
+                  name: 'Newsletter Confirmation Required'
+                }
+              }
+            },
+            profile: {
+              data: {
+                type: 'profile',
+                attributes: {
+                  email: email
+                }
+              }
+            }
           }
-        ]
+        }
       })
     })
 
-    if (!listSubscriptionResponse.ok) {
-      const errorData = await listSubscriptionResponse.text()
-      console.error('Klaviyo list subscription error:', errorData)
+    if (!emailResponse.ok) {
+      const emailErrorData = await emailResponse.text()
+      console.error('Klaviyo email error:', emailErrorData)
       return NextResponse.json(
-        { error: 'Failed to subscribe to list' },
+        { error: 'Error al enviar email de confirmación' },
         { status: 500 }
       )
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Successfully subscribed to newsletter'
+      message: 'Te hemos enviado un email de confirmación. Por favor, revisa tu bandeja de entrada y haz clic en el enlace para completar tu suscripción.'
     })
 
   } catch (error) {

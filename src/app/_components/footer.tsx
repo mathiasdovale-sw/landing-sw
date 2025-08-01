@@ -34,19 +34,13 @@ export default function Footer() {
         setIsSubscribed(true)
         setEmail("")
         
-        // Establecer mensaje apropiado
-        if (data.note === 'Profile already existed, added to list') {
-          setSubscriptionMessage('¡Agregado a la lista!')
-        } else if (data.note === 'Profile and subscription already exist') {
-          setSubscriptionMessage('¡Ya suscrito!')
-        } else {
-          setSubscriptionMessage('¡Suscrito!')
-        }
+        // Para double opt-in, siempre mostramos el mensaje de confirmación
+        setSubscriptionMessage('¡Revisa tu email para confirmar!')
         
         setTimeout(() => {
           setIsSubscribed(false)
           setSubscriptionMessage('')
-        }, 4000)
+        }, 6000) // Más tiempo para el mensaje de confirmación
       } else {
         // Manejar diferentes tipos de errores
         if (response.status === 409) {

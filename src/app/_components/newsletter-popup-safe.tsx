@@ -116,19 +116,13 @@ function NewsletterPopupContent() {
         setIsSuccess(true)
         setEmail("")
         
-        // Establecer mensaje apropiado
-        if (data.note === 'Profile already existed, added to list') {
-          setSuccessMessage('¡Te hemos agregado a nuestra lista!')
-        } else if (data.note === 'Profile and subscription already exist') {
-          setSuccessMessage('¡Ya estás suscrito!')
-        } else {
-          setSuccessMessage('¡Bienvenido a bordo!')
-        }
+        // Para double opt-in, siempre mostramos el mensaje de confirmación
+        setSuccessMessage('¡Revisa tu email para confirmar tu suscripción!')
         
         // Cerrar popup después de mostrar éxito
         setTimeout(() => {
           handleClose()
-        }, 3000)
+        }, 4000) // Más tiempo para leer el mensaje
       } else {
         // Manejar diferentes tipos de errores
         if (response.status === 409) {

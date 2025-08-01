@@ -1,0 +1,6 @@
+# Ignore all files in this directory except this .gitignore
+*
+!.gitignore
+
+# This directory contains runtime data files that shouldn't be committed
+# For production, consider using a proper database instead
