@@ -59,6 +59,36 @@ export default function RootLayout({
                 }, 150);
               }
             })();
+
+            // Limpiar atributos de extensiones del navegador antes de la hidratación
+            (function() {
+              function cleanBrowserExtensionAttributes() {
+                const attributesToRemove = [
+                  'bis_register',
+                  '__processed_e751b9df-856b-4290-af0d-f3b4c2c0deff__',
+                  'data-darkreader-mode',
+                  'data-darkreader-scheme',
+                  'cz-shortcut-listen'
+                ];
+                
+                attributesToRemove.forEach(function(attr) {
+                  const elements = document.querySelectorAll('[' + attr + ']');
+                  elements.forEach(function(el) {
+                    el.removeAttribute(attr);
+                  });
+                });
+              }
+              
+              // Limpiar al cargar
+              if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', cleanBrowserExtensionAttributes);
+              } else {
+                cleanBrowserExtensionAttributes();
+              }
+              
+              // Limpiar periódicamente (para extensiones que se añaden después)
+              setInterval(cleanBrowserExtensionAttributes, 1000);
+            })();
           `
         }} />
         
@@ -123,6 +153,7 @@ export default function RootLayout({
       </head>
       <body
         className={cn(inter.className, "bg-black")}
+        suppressHydrationWarning
       >
         <Navbar />
         <div className="min-h-screen">{children}</div>
