@@ -1,7 +1,223 @@
 "use client"
 import { Mail, Phone, MapPin, ArrowRight } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
+
+// Declarar grecaptcha globalmente
+declare global {
+  interface Window {
+    grecaptcha: any;
+    onRecaptchaLoad: () => void;
+  }
+}
 
 export default function ContactSection() {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: 'success' | 'error' | null
+    message: string
+  }>({ type: null, message: '' })
+  const recaptchaRef = useRef<HTMLDivElement>(null)
+  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false)
+  const [recaptchaWidgetId, setRecaptchaWidgetId] = useState<number | null>(null)
+
+  // Cargar reCAPTCHA cuando el componente se monta
+  useEffect(() => {
+    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+    if (!siteKey) return
+
+    // Función que se ejecuta cuando reCAPTCHA se carga
+    window.onRecaptchaLoad = () => {
+      try {
+        if (recaptchaRef.current && window.grecaptcha) {
+          const widgetId = window.grecaptcha.render(recaptchaRef.current, {
+            sitekey: siteKey,
+            theme: 'light',
+            size: 'normal'
+          })
+          setRecaptchaWidgetId(widgetId)
+          setRecaptchaLoaded(true)
+        }
+      } catch (error) {
+        // Silencioso - si falla, simplemente no tenemos reCAPTCHA
+        setRecaptchaLoaded(false)
+      }
+    }
+
+    // Cargar el script de reCAPTCHA si no existe
+    if (!document.querySelector('script[src*="recaptcha"]')) {
+      const script = document.createElement('script')
+      script.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit'
+      script.async = true
+      script.defer = true
+      document.head.appendChild(script)
+    } else if (window.grecaptcha) {
+      // Si ya está cargado, ejecutar directamente
+      window.onRecaptchaLoad()
+    }
+
+    return () => {
+      // Cleanup
+      if (window.onRecaptchaLoad) {
+        window.onRecaptchaLoad = undefined as any
+      }
+    }
+  }, [])
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setSubmitStatus({ type: null, message: '' })
+
+    const recaptchaEnabled = !!process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+
+    // Función helper para resetear reCAPTCHA - ultra robusta
+    const resetRecaptcha = () => {
+      try {
+        // Verificar que tenemos todo lo necesario
+        if (typeof window === 'undefined') return
+        if (!window.grecaptcha) return
+        if (typeof window.grecaptcha.reset !== 'function') return
+        if (recaptchaWidgetId === null || recaptchaWidgetId === undefined) return
+        
+        // Intentar el reset
+        window.grecaptcha.reset(recaptchaWidgetId)
+      } catch (error) {
+        // Completamente silencioso - cualquier error es ignorado
+      }
+    }
+
+    // Obtener token de reCAPTCHA - ultra robusto
+    const getRecaptchaToken = () => {
+      try {
+        // Verificaciones previas
+        if (!recaptchaEnabled) return null
+        if (typeof window === 'undefined') return null
+        if (!window.grecaptcha) return null
+        if (typeof window.grecaptcha.getResponse !== 'function') return null
+        if (recaptchaWidgetId === null || recaptchaWidgetId === undefined) return null
+        
+        // Intentar obtener la respuesta
+        const response = window.grecaptcha.getResponse(recaptchaWidgetId)
+        return response || null
+      } catch (error) {
+        // Cualquier error devuelve null
+        return null
+      }
+    }
+
+    const recaptchaToken = getRecaptchaToken()
+    
+    // Solo validar reCAPTCHA si está completamente funcional (modo muy permisivo)
+    if (recaptchaEnabled && recaptchaLoaded && recaptchaWidgetId !== null && !recaptchaToken) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Por favor, completa la verificación reCAPTCHA.'
+      })
+      setIsSubmitting(false)
+      return
+    }
+
+    const formData = new FormData(e.currentTarget)
+    const data = {
+      name: formData.get('name') as string,
+      email: formData.get('email') as string,
+      company: formData.get('company') as string,
+      service: formData.get('service') as string,
+      message: formData.get('message') as string,
+      recaptchaToken: recaptchaToken || 'dev-mode',
+    }
+
+    // Solo logear en desarrollo
+    if (process.env.NODE_ENV === 'development') {
+      console.log('📤 Datos a enviar:', {
+        ...data,
+        recaptchaToken: data.recaptchaToken === 'dev-mode' ? 'dev-mode' : '***TOKEN***'
+      })
+    }
+
+    try {
+      
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+
+      console.log('Response status:', response.status)
+      
+      // Solo mostrar detalles completos en desarrollo
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Response headers:', Object.fromEntries(response.headers.entries()))
+      }
+      
+      let result
+      try {
+        const responseText = await response.text()
+        
+        // Solo logear respuesta completa en desarrollo
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Raw response:', responseText)
+        }
+        
+        if (responseText) {
+          result = JSON.parse(responseText)
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Parsed response body:', result)
+          }
+        } else {
+          throw new Error('Respuesta vacía del servidor')
+        }
+      } catch (jsonError) {
+        console.error('Error parsing JSON:', jsonError)
+        setSubmitStatus({
+          type: 'error',
+          message: 'Error al procesar la respuesta del servidor.'
+        })
+        resetRecaptcha()
+        return
+      }
+
+      if (response.ok && result.success) {
+        setSubmitStatus({
+          type: 'success',
+          message: '¡Mensaje enviado correctamente! Te contactaremos pronto.'
+        })
+        // Limpiar el formulario y reCAPTCHA de forma segura
+        try {
+          e.currentTarget.reset()
+        } catch (error) {
+          // Silencioso - el reset del formulario a veces puede fallar
+        }
+        resetRecaptcha()
+      } else {
+        console.error('Error response:', result)
+        setSubmitStatus({
+          type: 'error',
+          message: result.error || 'Error al enviar el mensaje. Inténtalo de nuevo.'
+        })
+        resetRecaptcha()
+      }
+    } catch (error) {
+      console.error('Error en handleSubmit:', error)
+      
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+      console.error('Error details:', {
+        name: error instanceof Error ? error.name : 'UnknownError',
+        message: errorMessage,
+        stack: error instanceof Error ? error.stack : undefined
+      })
+      
+      setSubmitStatus({
+        type: 'error',
+        message: `Error de conexión: ${errorMessage}. Por favor, inténtalo de nuevo.`
+      })
+      resetRecaptcha()
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
   return (
     <section className="bg-white text-black py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16">
@@ -59,7 +275,18 @@ export default function ContactSection() {
               CUÉNTANOS TU PROYECTO
             </h3>
 
-            <form className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Mensaje de estado */}
+              {submitStatus.type && (
+                <div className={`p-4 rounded-lg ${
+                  submitStatus.type === 'success' 
+                    ? 'bg-green-50 text-green-800 border border-green-200' 
+                    : 'bg-red-50 text-red-800 border border-red-200'
+                }`}>
+                  {submitStatus.message}
+                </div>
+              )}
+
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -132,12 +359,41 @@ export default function ContactSection() {
                 ></textarea>
               </div>
 
+              {/* reCAPTCHA */}
+              {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
+                <div className="flex justify-center">
+                  <div ref={recaptchaRef} id="recaptcha-container"></div>
+                  {!recaptchaLoaded && (
+                    <div className="text-gray-500 text-sm">Cargando reCAPTCHA...</div>
+                  )}
+                </div>
+              )}
+
+              {!process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <p className="text-yellow-800 text-sm">
+                    <strong>Modo desarrollo:</strong> reCAPTCHA no configurado. 
+                    Ver <code>CONTACT_SETUP.md</code> para configurar la protección anti-bot.
+                  </p>
+                  <p className="text-yellow-600 text-xs mt-1">
+                    NEXT_PUBLIC_RECAPTCHA_SITE_KEY = {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || 'undefined'}
+                  </p>
+                </div>
+              )}
+
               <button
                 type="submit"
-                className="w-full bg-black text-white px-8 py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center group"
+                disabled={isSubmitting}
+                className={`w-full px-8 py-4 rounded-lg font-medium transition-colors flex items-center justify-center group ${
+                  isSubmitting 
+                    ? 'bg-gray-400 text-white cursor-not-allowed' 
+                    : 'bg-black text-white hover:bg-gray-800'
+                }`}
               >
-                Enviar mensaje
-                <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                {isSubmitting ? 'Enviando...' : 'Enviar mensaje'}
+                {!isSubmitting && (
+                  <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                )}
               </button>
             </form>
           </div>
