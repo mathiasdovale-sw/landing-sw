@@ -1,0 +1,43 @@
+{
+  "name": "SellifyWorks Blog Tests",
+  "testFiles": [
+    "cypress/e2e/01-homepage.cy.ts",
+    "cypress/e2e/02-newsletter.cy.ts", 
+    "cypress/e2e/03-blog.cy.ts",
+    "cypress/e2e/04-api.cy.ts",
+    "cypress/e2e/05-performance.cy.ts",
+    "cypress/e2e/06-newsletter-popup-specific.cy.ts"
+  ],
+  "environments": {
+    "development": {
+      "baseUrl": "http://localhost:3000",
+      "description": "Local development server"
+    },
+    "staging": {
+      "baseUrl": "https://your-staging-url.vercel.app",
+      "description": "Staging environment on Vercel"
+    },
+    "production": {
+      "baseUrl": "https://sellifyworks.com",
+      "description": "Production website"
+    }
+  },
+  "testSuites": {
+    "smoke": [
+      "cypress/e2e/01-homepage.cy.ts",
+      "cypress/e2e/04-api.cy.ts"
+    ],
+    "newsletter": [
+      "cypress/e2e/02-newsletter.cy.ts",
+      "cypress/e2e/06-newsletter-popup-specific.cy.ts"
+    ],
+    "full": [
+      "cypress/e2e/01-homepage.cy.ts",
+      "cypress/e2e/02-newsletter.cy.ts",
+      "cypress/e2e/03-blog.cy.ts",
+      "cypress/e2e/04-api.cy.ts",
+      "cypress/e2e/05-performance.cy.ts",
+      "cypress/e2e/06-newsletter-popup-specific.cy.ts"
+    ]
+  }
+}

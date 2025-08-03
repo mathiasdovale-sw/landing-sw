@@ -7,20 +7,14 @@ export async function GET(request: NextRequest) {
     const token = searchParams.get('token')
 
     if (!token) {
-      return NextResponse.json(
-        { error: 'Token de confirmación requerido' },
-        { status: 400 }
-      )
+      return NextResponse.redirect(new URL('/newsletter-confirmed?status=error&message=Token faltante', request.url))
     }
 
     // Verificar y consumir el token
     const email = consumePendingConfirmation(token)
     
     if (!email) {
-      return NextResponse.json(
-        { error: 'Token de confirmación inválido o expirado' },
-        { status: 400 }
-      )
+      return NextResponse.redirect(new URL('/newsletter-confirmed?status=error&message=Token inválido o expirado', request.url))
     }
 
     // Configuración de Klaviyo
@@ -29,118 +23,152 @@ export async function GET(request: NextRequest) {
 
     if (!KLAVIYO_API_KEY || !KLAVIYO_LIST_ID) {
       console.error('Missing Klaviyo configuration')
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      )
+      return NextResponse.redirect(new URL('/newsletter-confirmed?status=error&message=Error de configuración', request.url))
     }
 
-    // Buscar el perfil por email
-    const profileSearchResponse = await fetch(`https://a.klaviyo.com/api/profiles/?filter=equals(email,"${email}")`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
-        'Content-Type': 'application/json',
-        'revision': '2024-02-15'
-      }
-    })
+    try {
+      console.log(`✅ Confirming subscription for: ${email}`)
 
-    if (!profileSearchResponse.ok) {
-      console.error('Error searching for profile')
-      return NextResponse.json(
-        { error: 'Error al buscar el perfil' },
-        { status: 500 }
-      )
-    }
-
-    const profileSearchData = await profileSearchResponse.json()
-    
-    if (!profileSearchData.data || profileSearchData.data.length === 0) {
-      return NextResponse.json(
-        { error: 'Perfil no encontrado' },
-        { status: 404 }
-      )
-    }
-
-    const profileId = profileSearchData.data[0].id
-
-    // Suscribir el perfil a la lista
-    const listSubscriptionResponse = await fetch(`https://a.klaviyo.com/api/lists/${KLAVIYO_LIST_ID}/relationships/profiles/`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
-        'Content-Type': 'application/json',
-        'revision': '2024-02-15'
-      },
-      body: JSON.stringify({
-        data: [
-          {
+      // 1. Crear o actualizar perfil en Klaviyo
+      const profileResponse = await fetch('https://a.klaviyo.com/api/profiles/', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
+          'Content-Type': 'application/json',
+          'revision': '2024-02-15'
+        },
+        body: JSON.stringify({
+          data: {
             type: 'profile',
-            id: profileId
-          }
-        ]
-      })
-    })
-
-    if (!listSubscriptionResponse.ok) {
-      const errorData = await listSubscriptionResponse.text()
-      console.error('Klaviyo list subscription error:', errorData)
-      
-      // Si ya está suscrito, considerarlo como éxito
-      if (listSubscriptionResponse.status === 409) {
-        return NextResponse.redirect(new URL('/newsletter-confirmed?status=already-subscribed', request.url))
-      }
-      
-      return NextResponse.json(
-        { error: 'Error al completar la suscripción' },
-        { status: 500 }
-      )
-    }
-
-    // Registrar el evento de confirmación exitosa
-    await fetch('https://a.klaviyo.com/api/events/', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
-        'Content-Type': 'application/json',
-        'revision': '2024-02-15'
-      },
-      body: JSON.stringify({
-        data: {
-          type: 'event',
-          attributes: {
-            properties: {
-              email: email
-            },
-            metric: {
-              data: {
-                type: 'metric',
-                attributes: {
-                  name: 'Newsletter Subscription Confirmed'
-                }
+            attributes: {
+              email: email,
+              properties: {
+                subscription_confirmed: true,
+                confirmation_date: new Date().toISOString(),
+                source: 'website_double_optin_brevo'
               }
-            },
-            profile: {
-              data: {
-                type: 'profile',
-                attributes: {
-                  email: email
+            }
+          }
+        })
+      })
+
+      let profileId: string
+
+      if (!profileResponse.ok) {
+        const errorData = await profileResponse.text()
+        
+        // Manejar perfil duplicado (usuario ya existe)
+        if (profileResponse.status === 409) {
+          try {
+            const errorJson = JSON.parse(errorData)
+            const duplicateError = errorJson.errors?.find((error: any) => 
+              error.code === 'duplicate_profile'
+            )
+            
+            if (duplicateError && duplicateError.meta?.duplicate_profile_id) {
+              profileId = duplicateError.meta.duplicate_profile_id
+              console.log(`📝 Using existing profile: ${profileId}`)
+            } else {
+              throw new Error('Could not get duplicate profile ID')
+            }
+          } catch (parseError) {
+            throw new Error('Error parsing Klaviyo duplicate profile response')
+          }
+        } else {
+          throw new Error(`Klaviyo profile error: ${errorData}`)
+        }
+      } else {
+        const profileData = await profileResponse.json()
+        profileId = profileData.data.id
+        console.log(`✨ Created new profile: ${profileId}`)
+      }
+
+      // 2. Agregar perfil a la lista
+      const subscribeResponse = await fetch(`https://a.klaviyo.com/api/lists/${KLAVIYO_LIST_ID}/relationships/profiles/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
+          'Content-Type': 'application/json',
+          'revision': '2024-02-15'
+        },
+        body: JSON.stringify({
+          data: [
+            {
+              type: 'profile',
+              id: profileId
+            }
+          ]
+        })
+      })
+
+      if (!subscribeResponse.ok) {
+        const subscribeError = await subscribeResponse.text()
+        console.error('Klaviyo subscription error:', subscribeError)
+        
+        // Si el perfil ya está en la lista, no es un error crítico
+        if (subscribeResponse.status === 409) {
+          console.log('⚠️ Profile already in list, continuing...')
+        } else {
+          throw new Error(`Failed to add to list: ${subscribeError}`)
+        }
+      } else {
+        console.log('📋 Successfully added to Klaviyo list')
+      }
+
+      // 3. Registrar evento de confirmación en Klaviyo para analytics
+      const confirmationEventResponse = await fetch('https://a.klaviyo.com/api/events/', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
+          'Content-Type': 'application/json',
+          'revision': '2024-02-15'
+        },
+        body: JSON.stringify({
+          data: {
+            type: 'event',
+            attributes: {
+              properties: {
+                email: email,
+                confirmation_date: new Date().toISOString(),
+                source: 'website_double_optin',
+                method: 'brevo_email'
+              },
+              metric: {
+                data: {
+                  type: 'metric',
+                  attributes: {
+                    name: 'Newsletter Subscription Confirmed'
+                  }
+                }
+              },
+              profile: {
+                data: {
+                  type: 'profile',
+                  attributes: {
+                    email: email
+                  }
                 }
               }
             }
           }
-        }
+        })
       })
-    })
 
-    // Redirigir a una página de confirmación exitosa
-    return NextResponse.redirect(new URL('/newsletter-confirmed?status=success', request.url))
+      if (confirmationEventResponse.ok) {
+        console.log('📊 Confirmation event recorded in Klaviyo')
+      } else {
+        console.log('⚠️ Could not record confirmation event (non-critical)')
+      }
+      
+      return NextResponse.redirect(new URL('/newsletter-confirmed?status=success', request.url))
+
+    } catch (klaviyoError) {
+      console.error('Klaviyo operation failed:', klaviyoError)
+      return NextResponse.redirect(new URL('/newsletter-confirmed?status=error&message=Error al procesar suscripción', request.url))
+    }
 
   } catch (error) {
-    console.error('Newsletter confirmation error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    console.error('Confirmation error:', error)
+    return NextResponse.redirect(new URL('/newsletter-confirmed?status=error&message=Error interno', request.url))
   }
 }

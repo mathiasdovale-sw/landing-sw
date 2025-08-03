@@ -34,13 +34,17 @@ export default function Footer() {
         setIsSubscribed(true)
         setEmail("")
         
-        // Para double opt-in, siempre mostramos el mensaje de confirmación
-        setSubscriptionMessage('¡Revisa tu email para confirmar!')
+        // Verificar el mensaje específico del backend
+        if (data.message === 'Ya estás suscrito a nuestra newsletter') {
+          setSubscriptionMessage('¡Ya estás suscrito!')
+        } else {
+          setSubscriptionMessage('¡Revisa tu email para confirmar!')
+        }
         
         setTimeout(() => {
           setIsSubscribed(false)
           setSubscriptionMessage('')
-        }, 6000) // Más tiempo para el mensaje de confirmación
+        }, 6000)
       } else {
         // Manejar diferentes tipos de errores
         if (response.status === 409) {
@@ -107,6 +111,15 @@ export default function Footer() {
                   )}
                 </button>
               </form>
+              
+              {/* Success message */}
+              {isSubscribed && subscriptionMessage && (
+                <div className="overflow-hidden transition-all duration-500 ease-out max-h-20 opacity-100 mt-4">
+                  <span className="text-green-400 text-sm md:text-base leading-relaxed group-hover/item:text-green-300 transition-colors">
+                    {subscriptionMessage}
+                  </span>
+                </div>
+              )}
               
               {/* Error message */}
               {error && (
