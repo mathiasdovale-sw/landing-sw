@@ -184,7 +184,7 @@ export default function ServicesSection() {
           NUESTROS SERVICIOS
         </h2>
         <p className="text-gray-400 text-base sm:text-lg md:text-xl lg:text-2xl max-w-4xl mx-auto leading-relaxed px-3">
-          Soluciones completas para hacer crecer tu negocio en Shopify con resultados garantizados
+          Soluciones completas para hacer crecer tu negocio en Shopify con estrategias validadas
         </p>
       </div>
 

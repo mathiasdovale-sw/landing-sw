@@ -19,16 +19,33 @@ export default function ContactSection() {
   const recaptchaRef = useRef<HTMLDivElement>(null)
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false)
   const [recaptchaWidgetId, setRecaptchaWidgetId] = useState<number | null>(null)
+  const [showLoadingMessage, setShowLoadingMessage] = useState(false)
 
   // Cargar reCAPTCHA cuando el componente se monta
   useEffect(() => {
     const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
     if (!siteKey) return
 
+    // Mostrar mensaje de carga después de un pequeño delay
+    const loadingTimer = setTimeout(() => {
+      if (!recaptchaLoaded) {
+        setShowLoadingMessage(true)
+      }
+    }, 500)
+
     // Función que se ejecuta cuando reCAPTCHA se carga
     window.onRecaptchaLoad = () => {
       try {
         if (recaptchaRef.current && window.grecaptcha) {
+          // Limpiar cualquier widget existente antes de crear uno nuevo
+          if (recaptchaWidgetId !== null) {
+            try {
+              window.grecaptcha.reset(recaptchaWidgetId)
+            } catch (e) {
+              // Silencioso
+            }
+          }
+          
           const widgetId = window.grecaptcha.render(recaptchaRef.current, {
             sitekey: siteKey,
             theme: 'light',
@@ -36,11 +53,20 @@ export default function ContactSection() {
           })
           setRecaptchaWidgetId(widgetId)
           setRecaptchaLoaded(true)
+          setShowLoadingMessage(false) // Ocultar mensaje de carga
         }
       } catch (error) {
         // Silencioso - si falla, simplemente no tenemos reCAPTCHA
         setRecaptchaLoaded(false)
+        setShowLoadingMessage(false)
       }
+    }
+
+    // Verificar si reCAPTCHA ya está disponible
+    if (window.grecaptcha && window.grecaptcha.render) {
+      clearTimeout(loadingTimer)
+      window.onRecaptchaLoad()
+      return
     }
 
     // Cargar el script de reCAPTCHA si no existe
@@ -49,19 +75,37 @@ export default function ContactSection() {
       script.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit'
       script.async = true
       script.defer = true
+      script.onload = () => {
+        // Pequeño delay para asegurar que grecaptcha esté disponible
+        setTimeout(() => {
+          if (window.grecaptcha && window.onRecaptchaLoad) {
+            clearTimeout(loadingTimer)
+            window.onRecaptchaLoad()
+          }
+        }, 100)
+      }
       document.head.appendChild(script)
     } else if (window.grecaptcha) {
       // Si ya está cargado, ejecutar directamente
+      clearTimeout(loadingTimer)
       window.onRecaptchaLoad()
     }
 
     return () => {
       // Cleanup
-      if (window.onRecaptchaLoad) {
-        window.onRecaptchaLoad = undefined as any
+      clearTimeout(loadingTimer)
+      if (recaptchaWidgetId !== null && window.grecaptcha) {
+        try {
+          window.grecaptcha.reset(recaptchaWidgetId)
+        } catch (e) {
+          // Silencioso
+        }
       }
+      setRecaptchaLoaded(false)
+      setRecaptchaWidgetId(null)
+      setShowLoadingMessage(false)
     }
-  }, [])
+  }, []) // Solo ejecutar una vez al montar
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -276,17 +320,6 @@ export default function ContactSection() {
             </h3>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Mensaje de estado */}
-              {submitStatus.type && (
-                <div className={`p-4 rounded-lg ${
-                  submitStatus.type === 'success' 
-                    ? 'bg-green-50 text-green-800 border border-green-200' 
-                    : 'bg-red-50 text-red-800 border border-red-200'
-                }`}>
-                  {submitStatus.message}
-                </div>
-              )}
-
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -341,7 +374,7 @@ export default function ContactSection() {
                   <option value="">Selecciona un servicio</option>
                   <option value="crear">Crear - Nueva tienda Shopify</option>
                   <option value="optimizar">Optimizar - Mejorar tienda existente</option>
-                  <option value="crecer">Crecer - Marketing y escalamiento</option>
+                  <option value="crecer">Crecer - Growth Partner</option>
                 </select>
               </div>
 
@@ -363,7 +396,7 @@ export default function ContactSection() {
               {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
                 <div className="flex justify-center">
                   <div ref={recaptchaRef} id="recaptcha-container"></div>
-                  {!recaptchaLoaded && (
+                  {showLoadingMessage && !recaptchaLoaded && (
                     <div className="text-gray-500 text-sm">Cargando reCAPTCHA...</div>
                   )}
                 </div>
@@ -395,6 +428,17 @@ export default function ContactSection() {
                   <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
                 )}
               </button>
+
+              {/* Mensaje de estado */}
+              {submitStatus.type && (
+                <div className={`p-4 rounded-lg ${
+                  submitStatus.type === 'success' 
+                    ? 'bg-green-50 text-green-800 border border-green-200' 
+                    : 'bg-red-50 text-red-800 border border-red-200'
+                }`}>
+                  {submitStatus.message}
+                </div>
+              )}
             </form>
           </div>
         </div>
