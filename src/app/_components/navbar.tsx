@@ -30,7 +30,7 @@ const Navbar = () => {
   ]
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-6 md:px-12 relative" style={{ backgroundColor: '#010314' }}>
+    <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-6 md:px-12 relative" style={{ backgroundColor: '#141417ff' }}>
       {/* Logo */}
       <Link 
         href="/" 

@@ -4,7 +4,7 @@ import Image from "next/image"
 
 const HeaderHome = () => {
   return (
-    <div className="min-h-screen text-white" style={{ backgroundColor: '#010314' }}>
+    <div className="min-h-screen text-white" style={{ backgroundColor: '#141417ff' }}>
       {/* Main Content */}
       <main className="flex flex-col lg:flex-row items-center justify-between px-6 md:px-12 py-12 lg:py-24 min-h-[calc(100vh-120px)]">
         {/* Left Side - Main Text */}

@@ -153,7 +153,7 @@ export default function RootLayout({
       </head>
       <body
         className={cn(inter.className)}
-        style={{ backgroundColor: '#010314' }}
+        style={{ backgroundColor: '#141417ff' }}
         suppressHydrationWarning
       >
         <Navbar />

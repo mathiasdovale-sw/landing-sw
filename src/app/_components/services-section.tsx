@@ -19,7 +19,7 @@ function ServiceItem({ number, title, description, details, isExpanded, onToggle
       className={`border-b border-gray-800 last:border-b-0 group transition-all duration-500 ${
         isExpanded ? "bg-white" : ""
       }`}
-      style={{ backgroundColor: isExpanded ? 'white' : '#010314' }}
+      style={{ backgroundColor: isExpanded ? 'white' : '#141417ff' }}
     >
       <button
         onClick={onToggle}
@@ -175,7 +175,7 @@ export default function ServicesSection() {
   }
 
   return (
-    <section className="text-white" style={{ backgroundColor: '#010314' }}>
+    <section className="text-white" style={{ backgroundColor: '#141417ff' }}>
       <div className="text-center py-10 sm:py-14 md:py-18 lg:py-24 px-3 sm:px-4 md:px-6 lg:px-8 xl:px-16">
         <h2
           className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-wide mb-4 sm:mb-5 md:mb-6"
