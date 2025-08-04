@@ -71,7 +71,7 @@ export default function Footer() {
   }
 
   return (
-    <footer className="bg-black text-white">
+    <footer className="text-white" style={{ backgroundColor: '#010314' }}>
       {/* Newsletter Section */}
       <div className="border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 py-16 md:py-20">

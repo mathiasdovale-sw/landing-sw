@@ -219,7 +219,7 @@ export default function ContactSection() {
     }
   }
   return (
-    <section className="bg-white text-black py-16 md:py-24">
+    <section className="bg-white text-gray-700 py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left Side - Content */}
@@ -238,7 +238,7 @@ export default function ContactSection() {
             {/* Contact Info */}
             <div className="space-y-6">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mr-4">
+                <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center mr-4">
                   <Mail size={20} className="text-white" />
                 </div>
                 <div>
@@ -248,7 +248,7 @@ export default function ContactSection() {
               </div>
 
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mr-4">
+                <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center mr-4">
                   <Phone size={20} className="text-white" />
                 </div>
                 <div>
@@ -258,7 +258,7 @@ export default function ContactSection() {
               </div>
 
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mr-4">
+                <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center mr-4">
                   <MapPin size={20} className="text-white" />
                 </div>
                 <div>
@@ -387,7 +387,7 @@ export default function ContactSection() {
                 className={`w-full px-8 py-4 rounded-lg font-medium transition-colors flex items-center justify-center group ${
                   isSubmitting 
                     ? 'bg-gray-400 text-white cursor-not-allowed' 
-                    : 'bg-black text-white hover:bg-gray-800'
+                    : 'bg-gray-600 text-white hover:bg-gray-700'
                 }`}
               >
                 {isSubmitting ? 'Enviando...' : 'Enviar mensaje'}

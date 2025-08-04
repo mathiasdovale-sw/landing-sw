@@ -152,7 +152,8 @@ export default function RootLayout({
         <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="06b8e839-4665-4847-bc71-210c298a1027" data-blockingmode="auto" type="text/javascript"></script>
       </head>
       <body
-        className={cn(inter.className, "bg-black")}
+        className={cn(inter.className)}
+        style={{ backgroundColor: '#010314' }}
         suppressHydrationWarning
       >
         <Navbar />
