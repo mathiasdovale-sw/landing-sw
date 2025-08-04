@@ -1,9 +1,23 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  // Bloquear scroll cuando el menú está abierto
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    // Cleanup al desmontar el componente
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isMenuOpen])
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
   const closeMenu = () => setIsMenuOpen(false)
@@ -16,7 +30,7 @@ const Navbar = () => {
   ]
 
   return (
-    <header className="flex items-center justify-between px-6 py-6 md:px-12 relative">
+    <header className="sticky top-0 z-50 bg-black flex items-center justify-between px-6 py-6 md:px-12 relative">
       {/* Logo */}
       <Link 
         href="/" 
