@@ -49,11 +49,11 @@ export async function POST(request: NextRequest) {
     const companyEmailData = {
       sender: {
         name: "SellifyWorks Contact Form",
-        email: "mathias.dovale@sellifyworks.com" // Debe ser un dominio verificado en Brevo
+        email: "contact@sellifyworks.com" // Debe ser un dominio verificado en Brevo
       },
       to: [
         {
-          email: "mathias.dovale@sellifyworks.com",
+          email: "contact@sellifyworks.com",
           name: "SellifyWorks"
         }
       ],
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     const clientEmailData = {
       sender: {
         name: "SellifyWorks",
-        email: "mathias.dovale@sellifyworks.com"
+        email: "contact@sellifyworks.com"
       },
       to: [
         {
