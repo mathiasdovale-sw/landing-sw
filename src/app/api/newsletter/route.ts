@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         sender: {
           name: "SellifyWorks",
-          email: "sellifyworks@gmail.com" // Cambia por tu email verificado en Brevo
+          email: "mathias.dovale@sellifyworks.com" // Cambia por tu email verificado en Brevo
         },
         to: [
           {
