@@ -2,6 +2,12 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 
+interface NavItem {
+  href: string;
+  label: string;
+  onClick?: () => void;
+}
+
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -19,13 +25,57 @@ const Navbar = () => {
     }
   }, [isMenuOpen])
 
+  // Manejar scroll al cargar la página con hash #services
+  useEffect(() => {
+    const handleHashScroll = () => {
+      if (window.location.hash === '#services') {
+        const servicesSection = document.getElementById('services-section')
+        if (servicesSection) {
+          setTimeout(() => {
+            servicesSection.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'start'
+            })
+          }, 100) // Pequeño delay para asegurar que la página esté cargada
+        }
+      }
+    }
+
+    // Ejecutar al cargar la página
+    handleHashScroll()
+
+    // Ejecutar cuando cambie el hash
+    window.addEventListener('hashchange', handleHashScroll)
+
+    return () => {
+      window.removeEventListener('hashchange', handleHashScroll)
+    }
+  }, [])
+
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
   const closeMenu = () => setIsMenuOpen(false)
 
+  const scrollToServices = () => {
+    const servicesSection = document.getElementById('services-section')
+    
+    if (servicesSection) {
+      // Si estamos en la página principal, hacer scroll directo
+      servicesSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      })
+      closeMenu()
+    } else {
+      // Si no estamos en la página principal, navegar primero y luego hacer scroll
+      closeMenu()
+      window.location.href = '/#services'
+    }
+  }
+
   const navItems = [
-    { href: "/services", label: "SERVICES" },
+    { href: "#services", label: "SERVICES", onClick: scrollToServices },
     { href: "/about", label: "ABOUT" },
-    { href: "/posts", label: "BLOG" },
+    // { href: "/posts", label: "BLOG" },
     { href: "/contact", label: "CONTACT" },
   ]
 
@@ -43,13 +93,23 @@ const Navbar = () => {
       {/* Desktop Navigation */}
       <nav className="hidden md:flex items-center space-x-8">
         {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="text-sm text-white font-medium tracking-wide hover:text-gray-300 transition-colors"
-          >
-            {item.label}
-          </Link>
+          item.onClick ? (
+            <button
+              key={item.href}
+              onClick={item.onClick}
+              className="text-sm text-white font-medium tracking-wide hover:text-gray-300 transition-colors"
+            >
+              {item.label}
+            </button>
+          ) : (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="text-sm text-white font-medium tracking-wide hover:text-gray-300 transition-colors"
+            >
+              {item.label}
+            </Link>
+          )
         ))}
       </nav>
 
@@ -79,14 +139,24 @@ const Navbar = () => {
       >
         <nav className="flex flex-col text-white items-center justify-center h-full space-y-8">
           {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-2xl font-medium tracking-wide hover:text-gray-300 transition-colors"
-              onClick={closeMenu}
-            >
-              {item.label}
-            </Link>
+            item.onClick ? (
+              <button
+                key={item.href}
+                onClick={item.onClick}
+                className="text-2xl font-medium tracking-wide hover:text-gray-300 transition-colors"
+              >
+                {item.label}
+              </button>
+            ) : (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="text-2xl font-medium tracking-wide hover:text-gray-300 transition-colors"
+                onClick={closeMenu}
+              >
+                {item.label}
+              </Link>
+            )
           ))}
         </nav>
       </div>

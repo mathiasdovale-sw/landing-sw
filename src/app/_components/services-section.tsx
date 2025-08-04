@@ -175,7 +175,7 @@ export default function ServicesSection() {
   }
 
   return (
-    <section className="text-white" style={{ backgroundColor: '#141417ff' }}>
+    <section id="services-section" className="text-white" style={{ backgroundColor: '#141417ff' }}>
       <div className="text-center py-10 sm:py-14 md:py-18 lg:py-24 px-3 sm:px-4 md:px-6 lg:px-8 xl:px-16">
         <h2
           className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-wide mb-4 sm:mb-5 md:mb-6"
