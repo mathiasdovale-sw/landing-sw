@@ -1,4 +1,6 @@
 import type { Metadata } from "next"
+import Image from "next/image"
+import { Award, CheckCircle, Eye } from "lucide-react"
 
 export const metadata: Metadata = {
   title: "Sobre Nosotros - SellifyWorks",
@@ -24,8 +26,7 @@ export default function AboutPage() {
               SOBRE NOSOTROS
             </h1>
             <p className="text-gray-300 text-lg md:text-xl lg:text-2xl max-w-4xl mx-auto leading-relaxed">
-              {/* Aquí puedes agregar tu texto introductorio */}
-              Somos SellifyWorks, especialistas en crear experiencias de comercio electrónico excepcionales en Shopify.
+              Creamos experiencias de comercio electrónico excepcionales en Shopify.
             </p>
           </div>
         </div>
@@ -44,12 +45,7 @@ export default function AboutPage() {
               </h2>
               <div className="space-y-6 text-gray-300 text-lg leading-relaxed">
                 <p>
-                  {/* Aquí puedes agregar el texto sobre vuestra historia */}
-                  [Texto sobre la historia de la empresa - para completar]
-                </p>
-                <p>
-                  {/* Más contenido sobre la historia */}
-                  [Más detalles sobre el origen y evolución - para completar]
+                Este proyecto comenzó con una visión clara: mejorar la experiencia de compra en ecommerce mediante soluciones técnicas de alta calidad, enfocadas en Shopify. A partir de esa idea, SellifyWorks fue creciendo como una consultora técnica orientada a resultados reales, con un modelo de trabajo ágil, escalable y centrado en el cliente.
                 </p>
               </div>
             </div>
@@ -84,12 +80,9 @@ export default function AboutPage() {
               </h2>
               <div className="space-y-6 text-gray-300 text-lg leading-relaxed">
                 <p>
-                  {/* Aquí puedes agregar el texto sobre vuestra misión */}
-                  [Texto sobre la misión de la empresa - para completar]
-                </p>
-                <p>
-                  {/* Más contenido sobre la misión */}
-                  [Más detalles sobre objetivos y valores - para completar]
+                 Impulsamos negocios en ecommerce a través de soluciones técnicas personalizadas en Shopify. Nos enfocamos en automatizar procesos, optimizar el rendimiento de las tiendas y aplicar metodologías ágiles que aseguren entregas rápidas y de alta calidad.
+
+Nuestro objetivo es que cada cliente pueda escalar sin preocuparse por la complejidad técnica, confiando en una consultora que pone la experiencia de usuario y la eficiencia operativa en el centro de cada decisión.
                 </p>
               </div>
             </div>
@@ -117,42 +110,39 @@ export default function AboutPage() {
             {/* Valor 1 */}
             <div className="bg-gray-800 rounded-2xl p-8 text-center">
               <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                {/* Aquí puedes agregar un icono */}
-                <div className="w-8 h-8 bg-white rounded"></div>
+                <Award size={32} className="text-white" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-4" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-                [VALOR 1]
+              <h3 className="text-xl font-bold text-white mb-4">
+                CALIDAD
               </h3>
               <p className="text-gray-300 leading-relaxed">
-                [Descripción del primer valor - para completar]
+                Aplicamos prácticas de desarrollo como Extreme Programming porque creemos que una buena solución no solo debe funcionar, sino hacerlo bien, rápido y de forma sostenible.
               </p>
             </div>
 
             {/* Valor 2 */}
             <div className="bg-gray-800 rounded-2xl p-8 text-center">
               <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                {/* Aquí puedes agregar un icono */}
-                <div className="w-8 h-8 bg-white rounded"></div>
+                <CheckCircle size={32} className="text-white" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-4" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-                [VALOR 2]
+              <h3 className="text-xl font-bold text-white mb-4">
+                VALIDACIÓN
               </h3>
               <p className="text-gray-300 leading-relaxed">
-                [Descripción del segundo valor - para completar]
+                Creemos en la importancia de validar ideas y soluciones a través de pruebas constantes y feedback real. Esto nos permite ajustar y mejorar nuestros enfoques, asegurando que siempre estamos en el camino correcto.
               </p>
             </div>
 
             {/* Valor 3 */}
             <div className="bg-gray-800 rounded-2xl p-8 text-center">
               <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                {/* Aquí puedes agregar un icono */}
-                <div className="w-8 h-8 bg-white rounded"></div>
+                <Eye size={32} className="text-white" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-4" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-                [VALOR 3]
+              <h3 className="text-xl font-bold text-white mb-4">
+                TRANSPARENCIA
               </h3>
               <p className="text-gray-300 leading-relaxed">
-                [Descripción del tercer valor - para completar]
+                Creemos en relaciones honestas, en procesos iterativos que permitan evolucionar constantemente, y en el compromiso innegociable de entregar valor en cada entrega.
               </p>
             </div>
           </div>
@@ -175,41 +165,26 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Miembro del equipo 1 */}
-            <div className="bg-gray-800 rounded-2xl p-8 text-center">
-              <div className="w-24 h-24 bg-gray-600 rounded-full mx-auto mb-6"></div>
-              <h3 className="text-xl font-bold text-white mb-2" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-                [NOMBRE]
-              </h3>
-              <p className="text-orange-500 font-medium mb-4">[CARGO]</p>
-              <p className="text-gray-300 text-sm leading-relaxed">
-                [Breve descripción del miembro del equipo - para completar]
-              </p>
-            </div>
-
-            {/* Miembro del equipo 2 */}
-            <div className="bg-gray-800 rounded-2xl p-8 text-center">
-              <div className="w-24 h-24 bg-gray-600 rounded-full mx-auto mb-6"></div>
-              <h3 className="text-xl font-bold text-white mb-2" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-                [NOMBRE]
-              </h3>
-              <p className="text-orange-500 font-medium mb-4">[CARGO]</p>
-              <p className="text-gray-300 text-sm leading-relaxed">
-                [Breve descripción del miembro del equipo - para completar]
-              </p>
-            </div>
-
-            {/* Miembro del equipo 3 */}
-            <div className="bg-gray-800 rounded-2xl p-8 text-center">
-              <div className="w-24 h-24 bg-gray-600 rounded-full mx-auto mb-6"></div>
-              <h3 className="text-xl font-bold text-white mb-2" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-                [NOMBRE]
-              </h3>
-              <p className="text-orange-500 font-medium mb-4">[CARGO]</p>
-              <p className="text-gray-300 text-sm leading-relaxed">
-                [Breve descripción del miembro del equipo - para completar]
-              </p>
+          <div className="flex justify-center">
+            <div className="max-w-sm">
+              {/* Miembro del equipo 1 */}
+              <div className="bg-gray-800 rounded-2xl p-8 text-center">
+                <div className="w-24 h-24 mx-auto mb-6 relative overflow-hidden rounded-full">
+                  <Image
+                    src="/assets/img/mathias.jpeg"
+                    alt="Mathias Do Vale"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">
+                  Mathias Do Vale
+                </h3>
+                <p className="text-orange-500 font-medium mb-4">FOUNDER</p>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Ingeniero en informática con mas de 10 años de experiencia en desarrollo de software.
+                </p>
+              </div>
             </div>
           </div>
         </div>
