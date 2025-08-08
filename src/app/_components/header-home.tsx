@@ -4,29 +4,29 @@ import Image from "next/image"
 
 const HeaderHome = () => {
   return (
-    <div className="min-h-screen text-white" style={{ backgroundColor: '#141417ff' }}>
+    <div className="min-h-[70vh] sm:min-h-[20vh] lg:min-h-screen text-white" style={{ backgroundColor: '#141417ff' }}>
       {/* Main Content */}
-      <main className="flex flex-col lg:flex-row items-center justify-between px-6 md:px-12 py-12 lg:py-24 min-h-[calc(100vh-120px)]">
-        {/* Left Side - Main Text */}
-        <div className="flex-1 mb-12 lg:mb-0">
-          <h1 className="text-6xl md:text-7xl lg:text-6xl font-black leading-tight tracking-tight">
-            MENOS COMPLICACIONES.
+      <main className="flex flex-col items-center justify-center px-4 sm:px-6 md:px-12 lg:px-16 py-6 sm:py-8 lg:py-12 min-h-[calc(70vh-70px)] sm:min-h-[calc(90vh-100px)] lg:min-h-[calc(100vh-120px)] text-center">
+        {/* Main Text - Centered */}
+        <div className="mb-6 sm:mb-8 lg:mb-12 max-w-6xl">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-black leading-tight tracking-tight break-words">
+            MENOS COMPLICACIONES
             <br />
-            MÁS CONVERSIONES.
+            <span className="text-gray-400">MÁS CONVERSIONES.</span>
           </h1>
         </div>
 
-        {/* Right Side - Shopify Section */}
-        <div className="flex-1 flex flex-col items-center lg:items-end text-center lg:text-right">
+        {/* Shopify Section - Below text with background */}
+        <div className="flex flex-col items-center text-center rounded-2xl px-6 sm:px-8 lg:px-12 py-6 sm:py-8 lg:py-10">
           <Image
             src="/assets/img/shopifyLogo.png"
             alt="Agencia Shopify Barcelona - Desarrollo de tiendas online"
-            width={250}
-            height={200}
-            className="rounded-lg shadow-lg"
+            width={200}
+            height={160}
+            className="w-48 h-auto sm:w-56 md:w-64 lg:w-72 xl:w-80 rounded-lg shadow-lg mb-3 sm:mb-4"
             priority
           />
-          <div className="text-sm md:text-base font-medium tracking-widest">AGENCY PARTNER</div>
+          <div className="text-sm sm:text-base md:text-lg lg:text-xl font-medium tracking-widest">AGENCY PARTNER</div>
         </div>
       </main>
     </div>

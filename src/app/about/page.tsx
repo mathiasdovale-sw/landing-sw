@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen" style={{ backgroundColor: '#010314' }}>
+    <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
       {/* Hero Section */}
       <section className="py-16 md:py-24 lg:py-32 px-4 md:px-8 lg:px-16">
         <div className="max-w-6xl mx-auto">
@@ -49,11 +49,16 @@ export default function AboutPage() {
                 </p>
               </div>
             </div>
-            <div className="bg-gray-800 rounded-2xl p-8 md:p-12">
-              {/* Aquí puedes agregar una imagen o contenido visual */}
-              <div className="aspect-video bg-gray-700 rounded-lg flex items-center justify-center">
-                <p className="text-gray-400">Imagen/Contenido visual aquí</p>
-              </div>
+            <div className="flex flex-col items-center text-center">
+              <Image
+                src="/assets/img/shopifyLogo.png"
+                alt="Agencia Shopify Barcelona - Desarrollo de tiendas online"
+                width={200}
+                height={160}
+                className="w-48 h-auto sm:w-56 md:w-64 lg:w-72 xl:w-80 rounded-lg shadow-lg mb-3 sm:mb-4"
+                priority
+              />
+              <div className="text-sm sm:text-base md:text-lg lg:text-xl font-medium tracking-widest text-white">AGENCY PARTNER</div>
             </div>
           </div>
         </div>
@@ -64,11 +69,14 @@ export default function AboutPage() {
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <div className="order-2 lg:order-1">
-              <div className="bg-gray-800 rounded-2xl p-8 md:p-12">
-                {/* Aquí puedes agregar una imagen o contenido visual */}
-                <div className="aspect-video bg-gray-700 rounded-lg flex items-center justify-center">
-                  <p className="text-gray-400">Imagen/Contenido visual aquí</p>
-                </div>
+              <div className="flex items-center justify-center">
+                <Image
+                  src="/assets/img/Goal-rafiki.svg"
+                  alt="Nuestra Misión - SellifyWorks"
+                  width={400}
+                  height={400}
+                  className="w-full h-auto max-w-md"
+                />
               </div>
             </div>
             <div className="order-1 lg:order-2">

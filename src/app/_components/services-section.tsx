@@ -19,7 +19,7 @@ function ServiceItem({ number, title, description, details, isExpanded, onToggle
       className={`border-b border-gray-800 last:border-b-0 group transition-all duration-500 ${
         isExpanded ? "bg-white" : ""
       }`}
-      style={{ backgroundColor: isExpanded ? 'white' : '#141417ff' }}
+      style={{ backgroundColor: isExpanded ? 'white' : '#1a1a1a' }}
     >
       <button
         onClick={onToggle}
@@ -137,9 +137,9 @@ export default function ServicesSection() {
       ],
     },
     {
-      id: "optimizar",
+      id: "estrategia",
       number: "02",
-      title: "Optimizar",
+      title: "Estrategia",
       description: "Mejoramos el rendimiento y conversión de tu tienda existente para maximizar resultados",
       accentColor: "#02ADC5",
       icon: Search,
@@ -153,9 +153,9 @@ export default function ServicesSection() {
       ],
     },
     {
-      id: "crecer",
+      id: "escalar",
       number: "03",
-      title: "Crecer",
+      title: "Escalar",
       description: "Escalamos tu negocio con estrategias de marketing digital y automatización avanzada",
       accentColor: "#70764D",
       icon: Sprout,
@@ -175,7 +175,7 @@ export default function ServicesSection() {
   }
 
   return (
-    <section id="services-section" className="text-white" style={{ backgroundColor: '#141417ff' }}>
+    <section id="services-section" className="text-white" style={{ backgroundColor: '#1a1a1a' }}>
       <div className="text-center py-10 sm:py-14 md:py-18 lg:py-24 px-3 sm:px-4 md:px-6 lg:px-8 xl:px-16">
         <h2
           className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-wide mb-4 sm:mb-5 md:mb-6"
