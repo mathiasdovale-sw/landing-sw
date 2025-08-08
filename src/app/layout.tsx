@@ -12,10 +12,61 @@ import "./globals.css";
 const inter = Poppins({ weight: "400", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: `SellifyWorks | Shopify Agency`,
-  description: `Shopify agency in Barcelona. We help you sell more on Shopify.`,
+  title: "SellifyWorks | Agencia Shopify",
+  description: "Agencia especializada en Shopify. Creamos, optimizamos y hacemos crecer tiendas online que convierten. Partner de Shopify.",
+  keywords: ["Shopify", "Ecommerce", "Tienda Online", "Agencia", "SellifyWorks", "Partner Shopify"],
+  authors: [{ name: "SellifyWorks" }],
+  creator: "SellifyWorks",
+  publisher: "SellifyWorks",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
+  alternates: {
+    canonical: "/",
+    languages: {
+      'es': '/es',
+      'en': '/en',
+    },
+  },
   openGraph: {
-    images: [HOME_OG_IMAGE_URL],
+    type: "website",
+    locale: "es_ES",
+    url: "/",
+    title: "SellifyWorks | Agencia Shopify",
+    description: "Agencia especializada en Shopify. Creamos, optimizamos y hacemos crecer tiendas online que convierten. Partner de Shopify.",
+    siteName: "SellifyWorks",
+    images: [
+      {
+        url: "/api/og",
+        width: 1200,
+        height: 630,
+        alt: "SellifyWorks - Agencia Shopify",
+        type: "image/png",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@SellifyWorks",
+    creator: "@SellifyWorks",
+    title: "SellifyWorks | Agencia Shopify",
+    description: "Agencia especializada en Shopify. Creamos, optimizamos y hacemos crecer tiendas online que convierten.",
+    images: {
+      url: "/api/og",
+      alt: "SellifyWorks - Agencia Shopify",
+    },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'google-site-verification-code', // Agregar cuando tengas el código
   },
 };
 
@@ -27,6 +78,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Meta tags específicos para WhatsApp y redes sociales */}
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:type" content="image/png" />
+        <meta name="theme-color" content="#f97316" />
+        <meta name="msapplication-TileColor" content="#f97316" />
+        
         {/* Precargar la fuente Bebas Neue con alta prioridad */}
         <link 
           rel="preload" 
