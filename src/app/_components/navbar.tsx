@@ -84,7 +84,7 @@ const Navbar = () => {
       {/* Logo */}
       <Link 
         href="/" 
-        className="text-2xl md:text-3xl font-bold text-white tracking-wide hover:text-gray-300 transition-colors"
+        className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-wide hover:text-gray-300 transition-colors"
         style={{ fontFamily: "Bebas Neue, sans-serif" }}
       >
         SELLIFYWORKS.
@@ -93,11 +93,19 @@ const Navbar = () => {
       {/* Desktop Navigation */}
       <nav className="hidden md:flex items-center space-x-8">
         {navItems.map((item) => (
-          item.onClick ? (
+          item.label === "CONTACT" ? (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-7 py-3.5 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            >
+              {item.label}
+            </Link>
+          ) : item.onClick ? (
             <button
               key={item.href}
               onClick={item.onClick}
-              className="text-sm text-white font-medium tracking-wide hover:text-gray-300 transition-colors"
+              className="text-lg text-white font-medium tracking-wide hover:text-gray-300 transition-colors"
             >
               {item.label}
             </button>
@@ -105,7 +113,7 @@ const Navbar = () => {
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm text-white font-medium tracking-wide hover:text-gray-300 transition-colors"
+              className="text-lg text-white font-medium tracking-wide hover:text-gray-300 transition-colors"
             >
               {item.label}
             </Link>
@@ -139,11 +147,20 @@ const Navbar = () => {
       >
         <nav className="flex flex-col text-white items-center justify-center h-full space-y-8">
           {navItems.map((item) => (
-            item.onClick ? (
+            item.label === "CONTACT" ? (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-10 py-5 rounded-full text-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                onClick={closeMenu}
+              >
+                {item.label}
+              </Link>
+            ) : item.onClick ? (
               <button
                 key={item.href}
                 onClick={item.onClick}
-                className="text-2xl font-medium tracking-wide hover:text-gray-300 transition-colors"
+                className="text-3xl font-medium tracking-wide hover:text-gray-300 transition-colors"
               >
                 {item.label}
               </button>
@@ -151,7 +168,7 @@ const Navbar = () => {
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-2xl font-medium tracking-wide hover:text-gray-300 transition-colors"
+                className="text-3xl font-medium tracking-wide hover:text-gray-300 transition-colors"
                 onClick={closeMenu}
               >
                 {item.label}
