@@ -123,6 +123,14 @@ const translations = {
     'newsletter.confirmed.error.message': 'Hubo un problema al confirmar tu suscripción. El enlace puede haber expirado o ser inválido.',
     'newsletter.confirmed.back': 'Volver al Inicio',
     'newsletter.confirmed.loading': 'Cargando...',
+    
+    // 404 Page
+    '404.title': 'PÁGINA NO ENCONTRADA',
+    '404.description': 'Parece que la página que buscas se fue de vacaciones a una playa remota. Mientras tanto, ¿qué tal si exploramos juntos lo que sí tenemos?',
+    '404.suggestion': 'O tal vez nuestro desarrollador se tomó demasiados cafés y movió algo por error... 🤔',
+    '404.buttons.home': 'Volver al Inicio',
+    '404.buttons.back': 'Página Anterior',
+    '404.buttons.contact': 'Contáctanos',
   },
   en: {
     // Navbar
@@ -237,6 +245,14 @@ const translations = {
     'newsletter.confirmed.error.message': 'There was a problem confirming your subscription. The link may have expired or be invalid.',
     'newsletter.confirmed.back': 'Back to Home',
     'newsletter.confirmed.loading': 'Loading...',
+    
+    // 404 Page
+    '404.title': 'PAGE NOT FOUND',
+    '404.description': 'It looks like the page you\'re looking for went on vacation to a remote beach. In the meantime, how about we explore together what we do have?',
+    '404.suggestion': 'Or maybe our developer had too many coffees and moved something by mistake... 🤔',
+    '404.buttons.home': 'Back to Home',
+    '404.buttons.back': 'Previous Page',
+    '404.buttons.contact': 'Contact Us',
   }
 }
 
