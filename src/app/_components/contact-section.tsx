@@ -263,7 +263,7 @@ export default function ContactSection() {
     }
   }
   return (
-    <section className="bg-white text-gray-700 py-16 md:py-24">
+    <section id="contacto" className="bg-white text-gray-700 py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left Side - Content */}

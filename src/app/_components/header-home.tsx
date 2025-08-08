@@ -3,6 +3,16 @@ import Navbar from "./navbar"
 import Image from "next/image"
 
 const HeaderHome = () => {
+  const scrollToContact = () => {
+    const contactSection = document.getElementById('contacto');
+    if (contactSection) {
+      contactSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
     <div className="min-h-[70vh] sm:min-h-[20vh] lg:min-h-screen text-white" style={{ backgroundColor: '#141417ff' }}>
       {/* Main Content */}
@@ -14,6 +24,16 @@ const HeaderHome = () => {
             <br />
             <span className="text-gray-400">MÁS CONVERSIONES.</span>
           </h1>
+        </div>
+
+        {/* Call to Action Button */}
+        <div className="mb-8 sm:mb-10 lg:mb-12">
+          <button 
+            onClick={scrollToContact}
+            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 sm:py-5 sm:px-10 lg:py-6 lg:px-12 rounded-full text-lg sm:text-xl lg:text-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+          >
+            Habla con un experto
+          </button>
         </div>
 
         {/* Shopify Section - Below text with background */}

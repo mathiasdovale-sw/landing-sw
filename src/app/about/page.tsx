@@ -51,14 +51,13 @@ export default function AboutPage() {
             </div>
             <div className="flex flex-col items-center text-center">
               <Image
-                src="/assets/img/shopifyLogo.png"
+                src="/assets/img/rafiki1.svg"
                 alt="Agencia Shopify Barcelona - Desarrollo de tiendas online"
                 width={200}
                 height={160}
-                className="w-48 h-auto sm:w-56 md:w-64 lg:w-72 xl:w-80 rounded-lg shadow-lg mb-3 sm:mb-4"
+                className="w-full h-auto max-w-md"
                 priority
               />
-              <div className="text-sm sm:text-base md:text-lg lg:text-xl font-medium tracking-widest text-white">AGENCY PARTNER</div>
             </div>
           </div>
         </div>
