@@ -1,8 +1,11 @@
 "use client"
 import Navbar from "./navbar"
 import Image from "next/image"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 const HeaderHome = () => {
+  const { t } = useLanguage()
+  
   const scrollToContact = () => {
     const contactSection = document.getElementById('contacto');
     if (contactSection) {
@@ -20,9 +23,9 @@ const HeaderHome = () => {
         {/* Main Text - Centered */}
         <div className="mb-4 sm:mb-6 lg:mb-8 max-w-6xl">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-black leading-tight xl:leading-tight 2xl:leading-tight tracking-tight break-words">
-            MENOS COMPLICACIONES
+            {t('header.title.line1')}
             <br />
-            <span className="text-orange-300">MÁS CONVERSIONES.</span>
+            <span className="text-orange-300">{t('header.title.line2')}</span>
           </h1>
           
           {/* Shopify Integration - More cohesive placement */}
@@ -37,12 +40,12 @@ const HeaderHome = () => {
                 priority
               />
               <div className="text-sm sm:text-base lg:text-lg font-medium text-gray-300 tracking-wide">
-                AGENCY PARTNER
+                {t('header.shopify.partner')}
               </div>
             </div>
             <div className="hidden sm:block w-px h-8 bg-gray-600"></div>
             <p className="text-base sm:text-lg lg:text-xl text-gray-300 font-light text-center sm:text-left max-w-md">
-              Transformamos negocios digitales
+              {t('header.shopify.description')}
             </p>
           </div>
         </div>
@@ -53,7 +56,7 @@ const HeaderHome = () => {
             onClick={scrollToContact}
             className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 sm:py-5 sm:px-10 lg:py-6 lg:px-12 rounded-full text-lg sm:text-xl lg:text-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
           >
-            Habla con un experto
+            {t('header.cta')}
           </button>
         </div>
 

@@ -1,18 +1,21 @@
+"use client"
 import type { Metadata } from "next"
 import Image from "next/image"
 import { Award, CheckCircle, Eye } from "lucide-react"
+import { useLanguage } from "@/contexts/LanguageContext"
 
-export const metadata: Metadata = {
-  title: "Sobre Nosotros - SellifyWorks",
-  description: "Conoce más sobre SellifyWorks y nuestro equipo de expertos en Shopify. Descubre nuestra misión, visión y experiencia en el desarrollo de tiendas online exitosas.",
-  openGraph: {
-    title: "Sobre Nosotros - SellifyWorks",
-    description: "Conoce más sobre SellifyWorks y nuestro equipo de expertos en Shopify.",
-    type: "website",
-  },
-}
+// export const metadata: Metadata = {
+//   title: "Sobre Nosotros - SellifyWorks",
+//   description: "Conoce más sobre SellifyWorks y nuestro equipo de expertos en Shopify. Descubre nuestra misión, visión y experiencia en el desarrollo de tiendas online exitosas.",
+//   openGraph: {
+//     title: "Sobre Nosotros - SellifyWorks",
+//     description: "Conoce más sobre SellifyWorks y nuestro equipo de expertos en Shopify.",
+//     type: "website",
+//   },
+// }
 
 export default function AboutPage() {
+  const { t } = useLanguage()
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
       {/* Hero Section */}
@@ -23,10 +26,10 @@ export default function AboutPage() {
               className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-wide mb-6"
               style={{ fontFamily: "Bebas Neue, sans-serif" }}
             >
-              SOBRE NOSOTROS
+              {t('about.hero.title')}
             </h1>
             <p className="text-gray-300 text-lg md:text-xl lg:text-2xl max-w-4xl mx-auto leading-relaxed">
-              Creamos experiencias de comercio electrónico excepcionales en Shopify.
+              {t('about.hero.subtitle')}
             </p>
           </div>
         </div>
@@ -41,11 +44,11 @@ export default function AboutPage() {
                 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-wide mb-6"
                 style={{ fontFamily: "Bebas Neue, sans-serif" }}
               >
-                NUESTRA HISTORIA
+                {t('about.history.title')}
               </h2>
               <div className="space-y-6 text-gray-300 text-lg leading-relaxed">
                 <p>
-                Este proyecto comenzó con una visión clara: mejorar la experiencia de compra en ecommerce mediante soluciones técnicas de alta calidad, enfocadas en Shopify. A partir de esa idea, SellifyWorks fue creciendo como una consultora técnica orientada a resultados reales, con un modelo de trabajo ágil, escalable y centrado en el cliente.
+                {t('about.history.content')}
                 </p>
               </div>
             </div>
@@ -83,13 +86,11 @@ export default function AboutPage() {
                 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-wide mb-6"
                 style={{ fontFamily: "Bebas Neue, sans-serif" }}
               >
-                NUESTRA MISIÓN
+                {t('about.mission.title')}
               </h2>
               <div className="space-y-6 text-gray-300 text-lg leading-relaxed">
                 <p>
-                 Impulsamos negocios en ecommerce a través de soluciones técnicas personalizadas en Shopify. Nos enfocamos en automatizar procesos, optimizar el rendimiento de las tiendas y aplicar metodologías ágiles que aseguren entregas rápidas y de alta calidad.
-
-Nuestro objetivo es que cada cliente pueda escalar sin preocuparse por la complejidad técnica, confiando en una consultora que pone la experiencia de usuario y la eficiencia operativa en el centro de cada decisión.
+                 {t('about.mission.content')}
                 </p>
               </div>
             </div>
@@ -105,11 +106,11 @@ Nuestro objetivo es que cada cliente pueda escalar sin preocuparse por la comple
               className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-wide mb-6"
               style={{ fontFamily: "Bebas Neue, sans-serif" }}
             >
-              NUESTROS VALORES
+              {t('about.values.title')}
             </h2>
             <p className="text-gray-300 text-lg md:text-xl max-w-3xl mx-auto">
               {/* Texto introductorio sobre valores */}
-              Los principios que guían nuestro trabajo y definen quiénes somos.
+              {t('about.values.subtitle')}
             </p>
           </div>
 
@@ -120,10 +121,10 @@ Nuestro objetivo es que cada cliente pueda escalar sin preocuparse por la comple
                 <Award size={32} className="text-white" />
               </div>
               <h3 className="text-xl font-bold text-white mb-4">
-                CALIDAD
+                {t('about.values.quality.title')}
               </h3>
               <p className="text-gray-300 leading-relaxed">
-                Aplicamos prácticas de desarrollo como Extreme Programming porque creemos que una buena solución no solo debe funcionar, sino hacerlo bien, rápido y de forma sostenible.
+                {t('about.values.quality.content')}
               </p>
             </div>
 
@@ -133,10 +134,10 @@ Nuestro objetivo es que cada cliente pueda escalar sin preocuparse por la comple
                 <CheckCircle size={32} className="text-white" />
               </div>
               <h3 className="text-xl font-bold text-white mb-4">
-                VALIDACIÓN
+                {t('about.values.validation.title')}
               </h3>
               <p className="text-gray-300 leading-relaxed">
-                Creemos en la importancia de validar ideas y soluciones a través de pruebas constantes y feedback real. Esto nos permite ajustar y mejorar nuestros enfoques, asegurando que siempre estamos en el camino correcto.
+                {t('about.values.validation.content')}
               </p>
             </div>
 
@@ -146,10 +147,10 @@ Nuestro objetivo es que cada cliente pueda escalar sin preocuparse por la comple
                 <Eye size={32} className="text-white" />
               </div>
               <h3 className="text-xl font-bold text-white mb-4">
-                TRANSPARENCIA
+                {t('about.values.transparency.title')}
               </h3>
               <p className="text-gray-300 leading-relaxed">
-                Creemos en relaciones honestas, en procesos iterativos que permitan evolucionar constantemente, y en el compromiso innegociable de entregar valor en cada entrega.
+                {t('about.values.transparency.content')}
               </p>
             </div>
           </div>
@@ -164,11 +165,11 @@ Nuestro objetivo es que cada cliente pueda escalar sin preocuparse por la comple
               className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-wide mb-6"
               style={{ fontFamily: "Bebas Neue, sans-serif" }}
             >
-              NUESTRO EQUIPO
+              {t('about.team.title')}
             </h2>
             <p className="text-gray-300 text-lg md:text-xl max-w-3xl mx-auto">
               {/* Texto introductorio sobre el equipo */}
-              Conoce a las personas que hacen posible el éxito de tu proyecto.
+              {t('about.team.subtitle')}
             </p>
           </div>
 
@@ -187,9 +188,9 @@ Nuestro objetivo es que cada cliente pueda escalar sin preocuparse por la comple
                 <h3 className="text-xl font-bold text-white mb-2">
                   Mathias Do Vale
                 </h3>
-                <p className="text-orange-500 font-medium mb-4">FOUNDER</p>
+                <p className="text-orange-500 font-medium mb-4">{t('about.team.mathias.role')}</p>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  Ingeniero en informática con mas de 10 años de experiencia en desarrollo de software.
+                  {t('about.team.mathias.description')}
                 </p>
               </div>
             </div>
@@ -204,16 +205,16 @@ Nuestro objetivo es que cada cliente pueda escalar sin preocuparse por la comple
             className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-wide mb-6"
             style={{ fontFamily: "Bebas Neue, sans-serif" }}
           >
-            ¿LISTO PARA TRABAJAR JUNTOS?
+            {t('about.cta.title')}
           </h2>
           <p className="text-gray-300 text-lg md:text-xl mb-8 leading-relaxed">
-            Descubre cómo podemos ayudarte a llevar tu negocio al siguiente nivel.
+            {t('about.cta.subtitle')}
           </p>
           <a
             href="/contact"
             className="inline-flex items-center px-8 py-4 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors"
           >
-            Contactar con nosotros
+            {t('about.cta.button')}
           </a>
         </div>
       </section>

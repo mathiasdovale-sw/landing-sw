@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react"
 import { Plus, Minus, Construction, Search, Sprout } from "lucide-react"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 interface ServiceItemProps {
   number: string;
@@ -117,55 +118,56 @@ function ServiceItem({ number, title, description, details, isExpanded, onToggle
 }
 
 export default function ServicesSection() {
+  const { t } = useLanguage()
   const [expandedService, setExpandedService] = useState<string | null>(null)
 
   const services = [
     {
       id: "crear",
       number: "01",
-      title: "Crear",
-      description: "Desarrollamos tu tienda Shopify desde cero con diseño personalizado y funcionalidades avanzadas",
+      title: t('services.create.title'),
+      description: t('services.create.description'),
       accentColor: "#FF6C03",
       icon: Construction,
       details: [
-        "Diseño web personalizado y responsive",
-        "Configuración completa de Shopify",
-        "Integración de pasarelas de pago",
-        "Optimización para dispositivos móviles",
-        "Configuración de productos y categorías",
-        "Implementación de funcionalidades avanzadas",
+        t('services.create.detail1'),
+        t('services.create.detail2'),
+        t('services.create.detail3'),
+        t('services.create.detail4'),
+        t('services.create.detail5'),
+        t('services.create.detail6'),
       ],
     },
     {
       id: "estrategia",
       number: "02",
-      title: "Estrategia",
-      description: "Mejoramos el rendimiento y conversión de tu tienda existente para maximizar resultados",
+      title: t('services.strategy.title'),
+      description: t('services.strategy.description'),
       accentColor: "#02ADC5",
       icon: Search,
       details: [
-        "Auditoría completa de la tienda",
-        "Optimización de velocidad de carga",
-        "Mejora de la experiencia de usuario (UX)",
-        "Optimización para motores de búsqueda (SEO)",
-        "Análisis y mejora del funnel de conversión",
-        "Implementación de herramientas de analytics",
+        t('services.strategy.detail1'),
+        t('services.strategy.detail2'),
+        t('services.strategy.detail3'),
+        t('services.strategy.detail4'),
+        t('services.strategy.detail5'),
+        t('services.strategy.detail6'),
       ],
     },
     {
       id: "escalar",
       number: "03",
-      title: "Escalar",
-      description: "Escalamos tu negocio con estrategias de marketing digital y automatización avanzada",
+      title: t('services.scale.title'),
+      description: t('services.scale.description'),
       accentColor: "#70764D",
       icon: Sprout,
       details: [
-        "Estrategias de marketing digital",
-        "Campañas de publicidad en redes sociales",
-        "Email marketing y automatización",
-        "Optimización de conversiones (CRO)",
-        "Análisis de métricas y KPIs",
-        "Consultoría estratégica continua",
+        t('services.scale.detail1'),
+        t('services.scale.detail2'),
+        t('services.scale.detail3'),
+        t('services.scale.detail4'),
+        t('services.scale.detail5'),
+        t('services.scale.detail6'),
       ],
     },
   ]
@@ -181,10 +183,10 @@ export default function ServicesSection() {
           className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-wide mb-4 sm:mb-5 md:mb-6"
           style={{ fontFamily: "Bebas Neue, sans-serif" }}
         >
-          NUESTROS SERVICIOS
+          {t('services.title')}
         </h2>
         <p className="text-gray-400 text-base sm:text-lg md:text-xl lg:text-2xl max-w-4xl mx-auto leading-relaxed px-3">
-          Soluciones completas para hacer crecer tu negocio en Shopify con estrategias validadas
+          {t('services.subtitle')}
         </p>
       </div>
 

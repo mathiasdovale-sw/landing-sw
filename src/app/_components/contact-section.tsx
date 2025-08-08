@@ -1,6 +1,7 @@
 "use client"
 import { Mail, Phone, MapPin, ArrowRight } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 // Declarar grecaptcha globalmente
 declare global {
@@ -11,6 +12,7 @@ declare global {
 }
 
 export default function ContactSection() {
+  const { t } = useLanguage()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<{
     type: 'success' | 'error' | null
@@ -272,11 +274,10 @@ export default function ContactSection() {
               className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-wide mb-6"
               style={{ fontFamily: "Bebas Neue, sans-serif" }}
             >
-            Contactanos
+            {t('contact.title')}
             </h2>
             <p className="text-gray-600 text-lg md:text-xl leading-relaxed mb-8 max-w-lg">
-              ¿Listo para llevar tu negocio al siguiente nivel? Hablemos sobre cómo podemos ayudarte a crear, optimizar
-              y hacer crecer tu tienda Shopify.
+              {t('contact.description')}
             </p>
 
             {/* Contact Info */}
@@ -286,7 +287,7 @@ export default function ContactSection() {
                   <Mail size={20} className="text-white" />
                 </div>
                 <div>
-                  <p className="font-medium">Email</p>
+                  <p className="font-medium">{t('contact.info.email')}</p>
                   <p className="text-gray-600">contact@sellifyworks.com</p>
                 </div>
               </div>
@@ -296,7 +297,7 @@ export default function ContactSection() {
                   <Phone size={20} className="text-white" />
                 </div>
                 <div>
-                  <p className="font-medium">Teléfono</p>
+                  <p className="font-medium">{t('contact.info.phone')}</p>
                   <p className="text-gray-600">+34 621 640 364</p>
                 </div>
               </div>
@@ -306,7 +307,7 @@ export default function ContactSection() {
                   <MapPin size={20} className="text-white" />
                 </div>
                 <div>
-                  <p className="font-medium">Ubicación</p>
+                  <p className="font-medium">{t('contact.info.location')}</p>
                   <p className="text-gray-600">Barcelona, España</p>
                 </div>
               </div>
@@ -316,14 +317,14 @@ export default function ContactSection() {
           {/* Right Side - Contact Form */}
           <div className="bg-gray-50 p-8 md:p-10 rounded-2xl">
             <h3 className="text-2xl md:text-3xl font-bold mb-6" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-              CUÉNTANOS TU PROYECTO
+              {t('contact.form.title')}
             </h3>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                    Nombre *
+                    {t('contact.form.name.label')}
                   </label>
                   <input
                     type="text"
@@ -331,12 +332,12 @@ export default function ContactSection() {
                     name="name"
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-colors"
-                    placeholder="Tu nombre"
+                    placeholder={t('contact.form.name')}
                   />
                 </div>
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email *
+                    {t('contact.form.email.label')}
                   </label>
                   <input
                     type="email"
@@ -344,43 +345,45 @@ export default function ContactSection() {
                     name="email"
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-colors"
-                    placeholder="tu@email.com"
+                    placeholder={t('contact.form.email')}
                   />
                 </div>
               </div>
 
               <div>
                 <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
-                  Empresa
+                  {t('contact.form.company.label')}
                 </label>
                 <input
                   type="text"
                   id="company"
                   name="company"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-colors"
-                  placeholder="Nombre de tu empresa"
+                  placeholder={t('contact.form.company')}
                 />
               </div>
 
               <div>
                 <label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-2">
-                  Servicio de interés
+                  {t('contact.form.service.label')}
                 </label>
                 <select
                   id="service"
                   name="service"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-colors"
                 >
-                  <option value="">Selecciona un servicio</option>
-                  <option value="crear">Crear - Nueva tienda Shopify</option>
-                  <option value="optimizar">Optimizar - Mejorar tienda existente</option>
-                  <option value="crecer">Crecer - Growth Partner</option>
+                  <option value="">{t('contact.form.service.placeholder')}</option>
+                  <option value="development">{t('contact.form.service.development')}</option>
+                  <option value="optimization">{t('contact.form.service.optimization')}</option>
+                  <option value="migration">{t('contact.form.service.migration')}</option>
+                  <option value="maintenance">{t('contact.form.service.maintenance')}</option>
+                  <option value="consulting">{t('contact.form.service.consulting')}</option>
                 </select>
               </div>
 
               <div>
                 <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                  Mensaje *
+                  {t('contact.form.message.label')}
                 </label>
                 <textarea
                   id="message"
@@ -388,7 +391,7 @@ export default function ContactSection() {
                   rows={4}
                   required
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-colors resize-none"
-                  placeholder="Cuéntanos sobre tu proyecto..."
+                  placeholder={t('contact.form.message')}
                 ></textarea>
               </div>
 
@@ -423,7 +426,7 @@ export default function ContactSection() {
                     : 'bg-gray-600 text-white hover:bg-gray-700'
                 }`}
               >
-                {isSubmitting ? 'Enviando...' : 'Enviar mensaje'}
+                {isSubmitting ? t('contact.form.sending') : t('contact.form.submit')}
                 {!isSubmitting && (
                   <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
                 )}

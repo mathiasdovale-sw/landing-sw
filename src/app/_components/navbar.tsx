@@ -1,6 +1,8 @@
 "use client"
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import LanguageSelector from "./language-selector"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 interface NavItem {
   href: string;
@@ -10,6 +12,7 @@ interface NavItem {
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { t } = useLanguage()
 
   // Bloquear scroll cuando el menú está abierto
   useEffect(() => {
@@ -73,10 +76,10 @@ const Navbar = () => {
   }
 
   const navItems = [
-    { href: "#services", label: "SERVICES", onClick: scrollToServices },
-    { href: "/about", label: "ABOUT" },
+    { href: "#services", label: t('nav.services'), onClick: scrollToServices },
+    { href: "/about", label: t('nav.about') },
     // { href: "/posts", label: "BLOG" },
-    { href: "/contact", label: "CONTACT" },
+    { href: "/contact", label: t('nav.contact') },
   ]
 
   return (
@@ -119,12 +122,17 @@ const Navbar = () => {
             </Link>
           )
         ))}
+        
+        {/* Language Selector */}
+        <LanguageSelector />
       </nav>
 
-      {/* Mobile Menu Button */}
-      <button 
-        className="md:hidden z-50 relative text-white hover:text-gray-300 transition-colors" 
-        onClick={toggleMenu} 
+      {/* Mobile Menu Button and Language Selector */}
+      <div className="md:hidden flex items-center space-x-4">
+        <LanguageSelector />
+        <button 
+          className="z-50 relative text-white hover:text-gray-300 transition-colors" 
+          onClick={toggleMenu} 
         aria-label="Toggle menu"
         aria-expanded={isMenuOpen}
       >
@@ -138,6 +146,7 @@ const Navbar = () => {
           </svg>
         )}
       </button>
+      </div>
 
       {/* Mobile Navigation */}
       <div

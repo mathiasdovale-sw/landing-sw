@@ -2,10 +2,12 @@
 import { useState } from "react"
 import type React from "react"
 import Image from "next/image"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 import { ArrowRight } from "lucide-react"
 
 export default function Footer() {
+  const { t } = useLanguage()
   const [email, setEmail] = useState("")
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -36,9 +38,9 @@ export default function Footer() {
         
         // Verificar el mensaje específico del backend
         if (data.message === 'Ya estás suscrito a nuestra newsletter') {
-          setSubscriptionMessage('¡Ya estás suscrito!')
+          setSubscriptionMessage(t('footer.newsletter.already'))
         } else {
-          setSubscriptionMessage('¡Revisa tu email para confirmar!')
+          setSubscriptionMessage(t('footer.newsletter.success'))
         }
         
         setTimeout(() => {
@@ -50,7 +52,7 @@ export default function Footer() {
         if (response.status === 409) {
           // Usuario ya existe - mostrar mensaje específico
           setIsSubscribed(true)
-          setSubscriptionMessage('¡Ya suscrito!')
+          setSubscriptionMessage(t('footer.newsletter.already'))
           setEmail("")
           
           setTimeout(() => {
@@ -58,12 +60,12 @@ export default function Footer() {
             setSubscriptionMessage('')
           }, 4000)
         } else {
-          setError(data.error || 'Error al suscribirse')
+          setError(data.error || t('footer.newsletter.error'))
           setTimeout(() => setError(""), 4000)
         }
       }
     } catch (error) {
-      setError('Error de conexión. Inténtalo de nuevo.')
+      setError(t('footer.newsletter.connection_error'))
       setTimeout(() => setError(""), 4000)
     } finally {
       setIsSubmitting(false)
@@ -81,11 +83,10 @@ export default function Footer() {
                 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-wide mb-4"
                 style={{ fontFamily: "Bebas Neue, sans-serif" }}
               >
-                MANTENTE AL DÍA
+                {t('footer.newsletter.title')}
               </h3>
               <p className="text-gray-400 text-lg leading-relaxed">
-                Recibe las últimas tendencias de e-commerce, tips de Shopify y noticias de nuestra agencia directamente
-                en tu inbox.
+                {t('footer.newsletter.description')}
               </p>
             </div>
 
@@ -95,7 +96,7 @@ export default function Footer() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="tu@email.com"
+                  placeholder={t('footer.newsletter.placeholder')}
                   required
                   disabled={isSubmitting}
                   className="flex-1 px-6 py-4 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white focus:border-transparent transition-colors disabled:opacity-50"
@@ -105,7 +106,7 @@ export default function Footer() {
                   disabled={isSubscribed || isSubmitting}
                   className="bg-white text-black px-8 py-4 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center group disabled:opacity-50"
                 >
-                  {isSubmitting ? "Enviando..." : isSubscribed ? (subscriptionMessage || "¡Suscrito!") : "Suscribirse"}
+                  {isSubmitting ? t('footer.newsletter.sending') : isSubscribed ? (subscriptionMessage || t('footer.newsletter.subscribed')) : t('footer.newsletter.button')}
                   {!isSubscribed && !isSubmitting && (
                     <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
                   )}
@@ -141,11 +142,10 @@ export default function Footer() {
               className="text-2xl md:text-3xl font-bold tracking-wide mb-4"
               style={{ fontFamily: "Bebas Neue, sans-serif" }}
             >
-              SELLIFYWORKS.
+              {t('footer.company')}
             </div>
             <p className="text-gray-400 leading-relaxed mb-6 max-w-md">
-              Agencia ecommerce especializada en Shopify. Creamos, optimizamos y hacemos crecer tiendas
-              online que convierten.
+              {t('footer.description')}
             </p>
           </div>
           

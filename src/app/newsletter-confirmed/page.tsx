@@ -3,8 +3,10 @@
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 import Link from 'next/link'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 function NewsletterConfirmedContent() {
+  const { t } = useLanguage()
   const searchParams = useSearchParams()
   const status = searchParams.get('status')
 
@@ -12,20 +14,20 @@ function NewsletterConfirmedContent() {
     switch (status) {
       case 'success':
         return {
-          title: '¡Suscripción Confirmada!',
-          message: 'Gracias por confirmar tu suscripción a nuestra newsletter. Ahora recibirás nuestros tips exclusivos sobre Shopify y comercio electrónico.',
+          title: t('newsletter.confirmed.success.title'),
+          message: t('newsletter.confirmed.success.message'),
           type: 'success'
         }
       case 'already-subscribed':
         return {
-          title: '¡Ya estás suscrito!',
-          message: 'Tu email ya está suscrito a nuestra newsletter. No es necesario confirmar nuevamente.',
+          title: t('newsletter.confirmed.already.title'),
+          message: t('newsletter.confirmed.already.message'),
           type: 'info'
         }
       default:
         return {
-          title: 'Error de Confirmación',
-          message: 'Hubo un problema al confirmar tu suscripción. El enlace puede haber expirado o ser inválido.',
+          title: t('newsletter.confirmed.error.title'),
+          message: t('newsletter.confirmed.error.message'),
           type: 'error'
         }
     }
@@ -70,7 +72,7 @@ function NewsletterConfirmedContent() {
           href="/"
           className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
         >
-          Volver al Inicio
+          {t('newsletter.confirmed.back')}
         </Link>
       </div>
     </div>
@@ -78,12 +80,14 @@ function NewsletterConfirmedContent() {
 }
 
 export default function NewsletterConfirmed() {
+  const { t } = useLanguage()
+  
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando...</p>
+          <p className="mt-4 text-gray-600">{t('newsletter.confirmed.loading')}</p>
         </div>
       </div>
     }>
