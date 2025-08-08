@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
                   
                   <div style="text-align: center; font-size: 12px; color: #999;">
                       <p style="margin: 5px 0;">¿No te suscribiste? Puedes ignorar este email de forma segura.</p>
-                      <p style="margin: 5px 0;">© ${new Date().getFullYear()} SellifyWorks. Todos los derechos reservados.</p>
+                      <p style="margin: 5px 0;">${new Date().getFullYear()} SellifyWorks. Todos los derechos reservados.</p>
                       <p style="margin: 5px 0;">Barcelona, España</p>
                   </div>
               </div>

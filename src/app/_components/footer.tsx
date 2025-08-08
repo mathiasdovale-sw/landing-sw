@@ -160,6 +160,30 @@ export default function Footer() {
             />
           </div>
         </div>
+        
+        {/* Legal Links */}
+        <div className="mt-12 pt-8 border-t border-gray-800">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="text-gray-400 text-sm">
+              2025 {t('footer.company')} {t('footer.rights')}
+            </div>
+            
+            <div className="flex flex-wrap gap-6 text-sm">
+              <a 
+                href="/privacy-policy" 
+                className="text-gray-400 hover:text-white transition-colors hover:underline"
+              >
+                {t('footer.privacy')}
+              </a>
+              <a 
+                href="/cookie-policy" 
+                className="text-gray-400 hover:text-white transition-colors hover:underline"
+              >
+                {t('footer.cookies')}
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   )
