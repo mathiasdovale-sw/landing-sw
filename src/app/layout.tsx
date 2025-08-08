@@ -3,6 +3,7 @@ import { HOME_OG_IMAGE_URL } from "@/lib/constants";
 import Navbar from "@/app/_components/navbar";
 import NewsletterPopup from "@/app/_components/newsletter-popup-safe";
 import NewsletterTestButton from "@/app/_components/newsletter-test-button";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import cn from "classnames";
@@ -152,14 +153,17 @@ export default function RootLayout({
         <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="06b8e839-4665-4847-bc71-210c298a1027" data-blockingmode="auto" type="text/javascript"></script>
       </head>
       <body
-        className={cn(inter.className, "bg-black")}
+        className={cn(inter.className)}
+        style={{ backgroundColor: '#141417ff' }}
         suppressHydrationWarning
       >
-        <Navbar />
-        <div className="min-h-screen">{children}</div>
-        <Footer />
-        <NewsletterPopup />
-        {/* <NewsletterTestButton /> */}
+        <LanguageProvider>
+          <Navbar />
+          <div className="min-h-screen">{children}</div>
+          <Footer />
+          <NewsletterPopup />
+          {/* <NewsletterTestButton /> */}
+        </LanguageProvider>
       </body>
     </html>
   );

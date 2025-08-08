@@ -1,0 +1,14 @@
+{
+  "validEmails": [
+    "test@example.com",
+    "usuario@gmail.com",
+    "testeo@sellifyworks.com"
+  ],
+  "invalidEmails": [
+    "email-invalido",
+    "@domain.com",
+    "test@",
+    "test"
+  ],
+  "existingEmail": "existing@example.com"
+}

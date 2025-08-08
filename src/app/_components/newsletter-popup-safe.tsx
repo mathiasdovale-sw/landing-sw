@@ -102,33 +102,48 @@ function NewsletterPopupContent() {
     setError("")
 
     try {
+      // Validar email antes de enviar
+      if (!email || email.trim() === '') {
+        setError('Por favor ingresa un email válido')
+        setIsSubmitting(false)
+        return
+      }
+
+      const emailData = { email: email.trim() }
+      console.log('Sending email data:', emailData) // Debug log
+
       const response = await fetch('/api/newsletter', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify(emailData),
       })
 
-      const data = await response.json()
+      let data
+      try {
+        data = await response.json()
+      } catch (parseError) {
+        console.error('Response parsing error:', parseError)
+        setError('Error en la respuesta del servidor')
+        return
+      }
 
       if (response.ok) {
         setIsSuccess(true)
         setEmail("")
         
-        // Establecer mensaje apropiado
-        if (data.note === 'Profile already existed, added to list') {
-          setSuccessMessage('¡Te hemos agregado a nuestra lista!')
-        } else if (data.note === 'Profile and subscription already exist') {
-          setSuccessMessage('¡Ya estás suscrito!')
+        // Verificar el mensaje específico del backend
+        if (data.message === 'Ya estás suscrito a nuestra newsletter') {
+          setSuccessMessage('¡Ya estás suscrito a nuestra newsletter!')
         } else {
-          setSuccessMessage('¡Bienvenido a bordo!')
+          setSuccessMessage('¡Revisa tu email para confirmar tu suscripción!')
         }
         
         // Cerrar popup después de mostrar éxito
         setTimeout(() => {
           handleClose()
-        }, 3000)
+        }, 4000)
       } else {
         // Manejar diferentes tipos de errores
         if (response.status === 409) {
@@ -145,6 +160,7 @@ function NewsletterPopupContent() {
         }
       }
     } catch (error) {
+      console.error('Newsletter submission error:', error)
       setError('Error de conexión. Inténtalo de nuevo.')
     } finally {
       setIsSubmitting(false)
@@ -160,6 +176,7 @@ function NewsletterPopupContent() {
         {/* Botón cerrar */}
         <button
           onClick={handleClose}
+          data-testid="close-button"
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
         >
           <X size={24} />
@@ -225,7 +242,7 @@ function NewsletterPopupContent() {
             </>
           ) : (
             /* Estado de éxito */
-            <div className="text-center">
+            <div className="text-center" data-testid="success-state">
               <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
@@ -234,17 +251,20 @@ function NewsletterPopupContent() {
               <h2 
                 className="text-2xl font-bold text-black mb-2"
                 style={{ fontFamily: "Bebas Neue, sans-serif" }}
+                data-testid="success-title"
               >
                 {successMessage || '¡BIENVENIDO A BORDO!'}
               </h2>
-              <p className="text-gray-600">
-                {successMessage === '¡Ya estás suscrito a nuestra newsletter!' 
-                  ? 'No te preocupes, ya recibes nuestros consejos exclusivos.'
-                  : successMessage === '¡Ya estás suscrito!'
-                  ? 'Gracias por ser parte de nuestra comunidad.'
-                  : 'Te has suscrito exitosamente. Revisa tu email para confirmar.'
-                }
-              </p>
+              <div className="overflow-hidden transition-all duration-500 ease-out max-h-20 opacity-100">
+                <span className="text-gray-700 text-sm md:text-base leading-relaxed group-hover/item:text-black transition-colors" data-testid="success-message">
+                  {successMessage === '¡Ya estás suscrito a nuestra newsletter!' 
+                    ? 'No te preocupes, ya recibes nuestros consejos exclusivos.'
+                    : successMessage === '¡Ya estás suscrito!'
+                    ? 'Gracias por ser parte de nuestra comunidad.'
+                    : 'Te has suscrito exitosamente. Revisa tu email para confirmar.'
+                  }
+                </span>
+              </div>
             </div>
           )}
         </div>

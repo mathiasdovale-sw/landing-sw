@@ -1,26 +1,93 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import LanguageSelector from "./language-selector"
+import { useLanguage } from "@/contexts/LanguageContext"
+
+interface NavItem {
+  href: string;
+  label: string;
+  onClick?: () => void;
+}
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { t } = useLanguage()
+
+  // Bloquear scroll cuando el menú está abierto
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    // Cleanup al desmontar el componente
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isMenuOpen])
+
+  // Manejar scroll al cargar la página con hash #services
+  useEffect(() => {
+    const handleHashScroll = () => {
+      if (window.location.hash === '#services') {
+        const servicesSection = document.getElementById('services-section')
+        if (servicesSection) {
+          setTimeout(() => {
+            servicesSection.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'start'
+            })
+          }, 100) // Pequeño delay para asegurar que la página esté cargada
+        }
+      }
+    }
+
+    // Ejecutar al cargar la página
+    handleHashScroll()
+
+    // Ejecutar cuando cambie el hash
+    window.addEventListener('hashchange', handleHashScroll)
+
+    return () => {
+      window.removeEventListener('hashchange', handleHashScroll)
+    }
+  }, [])
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
   const closeMenu = () => setIsMenuOpen(false)
 
+  const scrollToServices = () => {
+    const servicesSection = document.getElementById('services-section')
+    
+    if (servicesSection) {
+      // Si estamos en la página principal, hacer scroll directo
+      servicesSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      })
+      closeMenu()
+    } else {
+      // Si no estamos en la página principal, navegar primero y luego hacer scroll
+      closeMenu()
+      window.location.href = '/#services'
+    }
+  }
+
   const navItems = [
-    { href: "/services", label: "SERVICES" },
-    { href: "/about", label: "ABOUT" },
-    { href: "/blog", label: "BLOG" },
-    { href: "/contact", label: "CONTACT" },
+    { href: "#services", label: t('nav.services'), onClick: scrollToServices },
+    { href: "/about", label: t('nav.about') },
+    // { href: "/posts", label: "BLOG" },
+    { href: "/contact", label: t('nav.contact') },
   ]
 
   return (
-    <header className="flex items-center justify-between px-6 py-6 md:px-12 relative">
+    <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-6 md:px-12 relative" style={{ backgroundColor: '#0e0e0fff' }}>
       {/* Logo */}
       <Link 
         href="/" 
-        className="text-2xl md:text-3xl font-bold text-white tracking-wide hover:text-gray-300 transition-colors"
+        className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-wide hover:text-gray-300 transition-colors"
         style={{ fontFamily: "Bebas Neue, sans-serif" }}
       >
         SELLIFYWORKS.
@@ -29,20 +96,43 @@ const Navbar = () => {
       {/* Desktop Navigation */}
       <nav className="hidden md:flex items-center space-x-8">
         {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="text-sm text-white font-medium tracking-wide hover:text-gray-300 transition-colors"
-          >
-            {item.label}
-          </Link>
+          item.label === "CONTACT" ? (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-7 py-3.5 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            >
+              {item.label}
+            </Link>
+          ) : item.onClick ? (
+            <button
+              key={item.href}
+              onClick={item.onClick}
+              className="text-xl text-gray-100 font-semibold tracking-wide hover:text-white hover:scale-105 transition-all duration-200"
+            >
+              {item.label}
+            </button>
+          ) : (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="text-xl text-gray-100 font-semibold tracking-wide hover:text-white hover:scale-105 transition-all duration-200"
+            >
+              {item.label}
+            </Link>
+          )
         ))}
+        
+        {/* Language Selector */}
+        <LanguageSelector />
       </nav>
 
-      {/* Mobile Menu Button */}
-      <button 
-        className="md:hidden z-50 relative text-white hover:text-gray-300 transition-colors" 
-        onClick={toggleMenu} 
+      {/* Mobile Menu Button and Language Selector */}
+      <div className="md:hidden flex items-center space-x-4">
+        <LanguageSelector />
+        <button 
+          className="z-50 relative text-white hover:text-gray-300 transition-colors" 
+          onClick={toggleMenu} 
         aria-label="Toggle menu"
         aria-expanded={isMenuOpen}
       >
@@ -56,6 +146,7 @@ const Navbar = () => {
           </svg>
         )}
       </button>
+      </div>
 
       {/* Mobile Navigation */}
       <div
@@ -65,14 +156,33 @@ const Navbar = () => {
       >
         <nav className="flex flex-col text-white items-center justify-center h-full space-y-8">
           {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-2xl font-medium tracking-wide hover:text-gray-300 transition-colors"
-              onClick={closeMenu}
-            >
-              {item.label}
-            </Link>
+            item.label === "CONTACT" ? (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-10 py-5 rounded-full text-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                onClick={closeMenu}
+              >
+                {item.label}
+              </Link>
+            ) : item.onClick ? (
+              <button
+                key={item.href}
+                onClick={item.onClick}
+                className="text-4xl font-semibold tracking-wide text-gray-100 hover:text-white hover:scale-105 transition-all duration-200"
+              >
+                {item.label}
+              </button>
+            ) : (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="text-4xl font-semibold tracking-wide text-gray-100 hover:text-white hover:scale-105 transition-all duration-200"
+                onClick={closeMenu}
+              >
+                {item.label}
+              </Link>
+            )
           ))}
         </nav>
       </div>

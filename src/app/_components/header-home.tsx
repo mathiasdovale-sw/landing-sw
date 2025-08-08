@@ -1,33 +1,67 @@
 "use client"
 import Navbar from "./navbar"
 import Image from "next/image"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 const HeaderHome = () => {
+  const { t } = useLanguage()
+  
+  const scrollToContact = () => {
+    const contactSection = document.getElementById('contacto');
+    if (contactSection) {
+      contactSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-[70vh] sm:min-h-[20vh] lg:min-h-screen text-white" style={{ backgroundColor: '#141417ff' }}>
       {/* Main Content */}
-      <main className="flex flex-col lg:flex-row items-center justify-between px-6 md:px-12 py-12 lg:py-24 min-h-[calc(100vh-120px)]">
-        {/* Left Side - Main Text */}
-        <div className="flex-1 mb-12 lg:mb-0">
-          <h1 className="text-6xl md:text-7xl lg:text-6xl font-black leading-tight tracking-tight">
-            MENOS COMPLICACIONES.
+      <main className="flex flex-col items-center justify-center px-4 sm:px-6 md:px-12 lg:px-16 py-6 sm:py-8 lg:py-12 min-h-[calc(70vh-70px)] sm:min-h-[calc(90vh-100px)] lg:min-h-[calc(100vh-120px)] text-center">
+        {/* Main Text - Centered */}
+        <div className="mb-4 sm:mb-6 lg:mb-8 max-w-6xl">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-black leading-tight xl:leading-tight 2xl:leading-tight tracking-tight break-words">
+            {t('header.title.line1')}
             <br />
-            MÁS CONVERSIONES.
+            <span className="text-orange-300">{t('header.title.line2')}</span>
           </h1>
+          
+          {/* Shopify Integration - More cohesive placement */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mt-6 sm:mt-8 lg:mt-10">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/assets/img/shopifyLogo.png"
+                alt="Shopify Partner Agency"
+                width={50}
+                height={40}
+                className="w-12 h-auto sm:w-14 lg:w-16"
+                priority
+              />
+              <div className="text-sm sm:text-base lg:text-lg font-medium text-gray-300 tracking-wide">
+                {t('header.shopify.partner')}
+              </div>
+            </div>
+            <div className="hidden sm:block w-px h-8 bg-gray-600"></div>
+            <p className="text-base sm:text-lg lg:text-xl text-gray-300 font-light text-center sm:text-left max-w-md">
+              {t('header.shopify.description')}
+            </p>
+          </div>
         </div>
 
-        {/* Right Side - Shopify Section */}
-        <div className="flex-1 flex flex-col items-center lg:items-end text-center lg:text-right">
-          <Image
-            src="/assets/img/shopifyLogo.png"
-            alt="Agencia Shopify Barcelona - Desarrollo de tiendas online"
-            width={250}
-            height={200}
-            className="rounded-lg shadow-lg"
-            priority
-          />
-          <div className="text-sm md:text-base font-medium tracking-widest">AGENCY PARTNER</div>
+        {/* Call to Action Button */}
+        <div className="mb-4 sm:mb-6 lg:mb-8">
+          <button 
+            onClick={scrollToContact}
+            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 sm:py-5 sm:px-10 lg:py-6 lg:px-12 rounded-full text-lg sm:text-xl lg:text-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+          >
+            {t('header.cta')}
+          </button>
         </div>
+
+        {/* Spacer for better layout */}
+        <div className="h-4 sm:h-6 lg:h-8"></div>
       </main>
     </div>
   )

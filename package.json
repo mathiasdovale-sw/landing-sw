@@ -3,7 +3,11 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "cypress run",
+    "test:open": "cypress open",
+    "test:dev": "concurrently \"npm run dev\" \"cypress open\"",
+    "test:ci": "start-server-and-test dev http://localhost:3000 \"cypress run\""
   },
   "dependencies": {
     "classnames": "^2.5.1",
@@ -21,7 +25,10 @@
     "@types/react": "npm:types-react@19.0.0-rc.1",
     "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
     "autoprefixer": "^10.4.19",
+    "concurrently": "^9.2.0",
+    "cypress": "^14.5.3",
     "postcss": "^8.4.38",
+    "start-server-and-test": "^2.0.12",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.5.2"
   }

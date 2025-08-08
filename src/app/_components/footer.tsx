@@ -2,10 +2,12 @@
 import { useState } from "react"
 import type React from "react"
 import Image from "next/image"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 import { ArrowRight } from "lucide-react"
 
 export default function Footer() {
+  const { t } = useLanguage()
   const [email, setEmail] = useState("")
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -34,25 +36,23 @@ export default function Footer() {
         setIsSubscribed(true)
         setEmail("")
         
-        // Establecer mensaje apropiado
-        if (data.note === 'Profile already existed, added to list') {
-          setSubscriptionMessage('¡Agregado a la lista!')
-        } else if (data.note === 'Profile and subscription already exist') {
-          setSubscriptionMessage('¡Ya suscrito!')
+        // Verificar el mensaje específico del backend
+        if (data.message === 'Ya estás suscrito a nuestra newsletter') {
+          setSubscriptionMessage(t('footer.newsletter.already'))
         } else {
-          setSubscriptionMessage('¡Suscrito!')
+          setSubscriptionMessage(t('footer.newsletter.success'))
         }
         
         setTimeout(() => {
           setIsSubscribed(false)
           setSubscriptionMessage('')
-        }, 4000)
+        }, 6000)
       } else {
         // Manejar diferentes tipos de errores
         if (response.status === 409) {
           // Usuario ya existe - mostrar mensaje específico
           setIsSubscribed(true)
-          setSubscriptionMessage('¡Ya suscrito!')
+          setSubscriptionMessage(t('footer.newsletter.already'))
           setEmail("")
           
           setTimeout(() => {
@@ -60,12 +60,12 @@ export default function Footer() {
             setSubscriptionMessage('')
           }, 4000)
         } else {
-          setError(data.error || 'Error al suscribirse')
+          setError(data.error || t('footer.newsletter.error'))
           setTimeout(() => setError(""), 4000)
         }
       }
     } catch (error) {
-      setError('Error de conexión. Inténtalo de nuevo.')
+      setError(t('footer.newsletter.connection_error'))
       setTimeout(() => setError(""), 4000)
     } finally {
       setIsSubmitting(false)
@@ -73,7 +73,7 @@ export default function Footer() {
   }
 
   return (
-    <footer className="bg-black text-white">
+    <footer className="text-white" style={{ backgroundColor: '#141417ff' }}>
       {/* Newsletter Section */}
       <div className="border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 py-16 md:py-20">
@@ -83,11 +83,10 @@ export default function Footer() {
                 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-wide mb-4"
                 style={{ fontFamily: "Bebas Neue, sans-serif" }}
               >
-                MANTENTE AL DÍA
+                {t('footer.newsletter.title')}
               </h3>
               <p className="text-gray-400 text-lg leading-relaxed">
-                Recibe las últimas tendencias de e-commerce, tips de Shopify y noticias de nuestra agencia directamente
-                en tu inbox.
+                {t('footer.newsletter.description')}
               </p>
             </div>
 
@@ -97,7 +96,7 @@ export default function Footer() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="tu@email.com"
+                  placeholder={t('footer.newsletter.placeholder')}
                   required
                   disabled={isSubmitting}
                   className="flex-1 px-6 py-4 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white focus:border-transparent transition-colors disabled:opacity-50"
@@ -107,12 +106,21 @@ export default function Footer() {
                   disabled={isSubscribed || isSubmitting}
                   className="bg-white text-black px-8 py-4 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center group disabled:opacity-50"
                 >
-                  {isSubmitting ? "Enviando..." : isSubscribed ? (subscriptionMessage || "¡Suscrito!") : "Suscribirse"}
+                  {isSubmitting ? t('footer.newsletter.sending') : isSubscribed ? (subscriptionMessage || t('footer.newsletter.subscribed')) : t('footer.newsletter.button')}
                   {!isSubscribed && !isSubmitting && (
                     <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
                   )}
                 </button>
               </form>
+              
+              {/* Success message */}
+              {isSubscribed && subscriptionMessage && (
+                <div className="overflow-hidden transition-all duration-500 ease-out max-h-20 opacity-100 mt-4">
+                  <span className="text-green-400 text-sm md:text-base leading-relaxed group-hover/item:text-green-300 transition-colors">
+                    {subscriptionMessage}
+                  </span>
+                </div>
+              )}
               
               {/* Error message */}
               {error && (
@@ -134,11 +142,10 @@ export default function Footer() {
               className="text-2xl md:text-3xl font-bold tracking-wide mb-4"
               style={{ fontFamily: "Bebas Neue, sans-serif" }}
             >
-              SELLIFYWORKS.
+              {t('footer.company')}
             </div>
             <p className="text-gray-400 leading-relaxed mb-6 max-w-md">
-              Agencia ecommerce especializada en Shopify. Creamos, optimizamos y hacemos crecer tiendas
-              online que convierten.
+              {t('footer.description')}
             </p>
           </div>
           
@@ -151,6 +158,30 @@ export default function Footer() {
               height={120}
               className="object-contain"
             />
+          </div>
+        </div>
+        
+        {/* Legal Links */}
+        <div className="mt-12 pt-8 border-t border-gray-800">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="text-gray-400 text-sm">
+              2025 {t('footer.company')} {t('footer.rights')}
+            </div>
+            
+            <div className="flex flex-wrap gap-6 text-sm">
+              <a 
+                href="/privacy-policy" 
+                className="text-gray-400 hover:text-white transition-colors hover:underline"
+              >
+                {t('footer.privacy')}
+              </a>
+              <a 
+                href="/cookie-policy" 
+                className="text-gray-400 hover:text-white transition-colors hover:underline"
+              >
+                {t('footer.cookies')}
+              </a>
+            </div>
           </div>
         </div>
       </div>
