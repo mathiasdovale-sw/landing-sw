@@ -55,7 +55,7 @@ export default function AboutPage() {
             <div className="flex flex-col items-center text-center">
               <Image
                 src="/assets/img/rafiki1.svg"
-                alt="Agencia Shopify Barcelona - Desarrollo de tiendas online"
+                alt="Agencia Shopify - Desarrollo de tiendas online"
                 width={200}
                 height={160}
                 className="w-full h-auto max-w-md"
