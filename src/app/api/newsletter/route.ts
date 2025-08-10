@@ -74,7 +74,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Generar token de confirmación
-    const confirmationToken = generateConfirmationToken()
+    const confirmationToken = generateConfirmationToken(email)
+    
+    // La función storePendingConfirmation ya no es necesaria con JWT
+    // pero la mantenemos para compatibilidad
     storePendingConfirmation(confirmationToken, email)
 
     // Crear URL de confirmación
