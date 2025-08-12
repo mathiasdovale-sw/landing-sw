@@ -207,10 +207,8 @@ export default function RootLayout({
         <meta name="theme-color" content="#000" />
 
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
-
-        <!-- Start cookieyes banner --> 
+        
         <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/66ddcee4ff6ed9e3a4552770/script.js"></script> 
-        <!-- End cookieyes banner -->
       </head>
       <body
         className={cn(inter.className)}
