@@ -208,7 +208,9 @@ export default function RootLayout({
 
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
 
-        <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="06b8e839-4665-4847-bc71-210c298a1027" data-blockingmode="auto" type="text/javascript"></script>
+        <!-- Start cookieyes banner --> 
+        <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/66ddcee4ff6ed9e3a4552770/script.js"></script> 
+        <!-- End cookieyes banner -->
       </head>
       <body
         className={cn(inter.className)}
