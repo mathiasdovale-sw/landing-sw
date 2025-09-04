@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'google-site-verification-code', // Agregar cuando tengas el código
+    google: process.env.GOOGLE_SITE_VERIFICATION, // Agregar en variables de entorno
   },
 };
 
