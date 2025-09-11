@@ -1,12 +1,13 @@
 {
   "redirects": [
     {
-      "source": "http://sellifyworks.com/:path*",
-      "destination": "https://www.sellifyworks.com/:path*",
-      "permanent": true
-    },
-    {
-      "source": "https://sellifyworks.com/:path*",
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "sellifyworks.com"
+        }
+      ],
       "destination": "https://www.sellifyworks.com/:path*",
       "permanent": true
     }
