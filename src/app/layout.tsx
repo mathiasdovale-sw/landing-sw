@@ -20,16 +20,16 @@ export const metadata: Metadata = {
   publisher: "SellifyWorks",
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
   alternates: {
-    canonical: "/",
+    canonical: "https://www.sellifyworks.com/",
     languages: {
-      'es': '/es',
-      'en': '/en',
+      'es': 'https://www.sellifyworks.com/es',
+      'en': 'https://www.sellifyworks.com/en',
     },
   },
   openGraph: {
     type: "website",
     locale: "es_ES",
-    url: "/",
+    url: "https://www.sellifyworks.com/",
     title: "SellifyWorks | Agencia Shopify",
     description: "Agencia especializada en Shopify. Creamos, optimizamos y hacemos crecer tiendas online que convierten. Partner de Shopify.",
     siteName: "SellifyWorks",

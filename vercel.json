@@ -1,0 +1,14 @@
+{
+  "redirects": [
+    {
+      "source": "http://sellifyworks.com/:path*",
+      "destination": "https://www.sellifyworks.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "https://sellifyworks.com/:path*",
+      "destination": "https://www.sellifyworks.com/:path*",
+      "permanent": true
+    }
+  ]
+}

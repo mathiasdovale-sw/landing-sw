@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://sellifyworks.com/sitemap.xml
+Sitemap: https://www.sellifyworks.com/sitemap.xml
 
 # Bloquear archivos innecesarios
 Disallow: /api/
