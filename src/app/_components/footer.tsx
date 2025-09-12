@@ -3,11 +3,13 @@ import { useState } from "react"
 import type React from "react"
 import Image from "next/image"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
 
 import { ArrowRight } from "lucide-react"
 
 export default function Footer() {
   const { t } = useLanguage()
+  const { links } = useLocalizedLinks()
   const [email, setEmail] = useState("")
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -170,13 +172,13 @@ export default function Footer() {
             
             <div className="flex flex-wrap gap-6 text-sm">
               <a 
-                href="/privacy-policy" 
+                href={links.privacyPolicy} 
                 className="text-gray-400 hover:text-white transition-colors hover:underline"
               >
                 {t('footer.privacy')}
               </a>
               <a 
-                href="/cookie-policy" 
+                href={links.cookiePolicy} 
                 className="text-gray-400 hover:text-white transition-colors hover:underline"
               >
                 {t('footer.cookies')}

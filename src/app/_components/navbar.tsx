@@ -1,8 +1,10 @@
 "use client"
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import LanguageSelector from "./language-selector"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
 
 interface NavItem {
   href: string;
@@ -13,6 +15,8 @@ interface NavItem {
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { t } = useLanguage()
+  const { links } = useLocalizedLinks()
+  const router = useRouter()
 
   // Bloquear scroll cuando el menú está abierto
   useEffect(() => {
@@ -71,15 +75,15 @@ const Navbar = () => {
     } else {
       // Si no estamos en la página principal, navegar primero y luego hacer scroll
       closeMenu()
-      window.location.href = '/#services'
+      router.push(`${links.home}#services`)
     }
   }
 
   const navItems = [
     { href: "#services", label: t('nav.services'), onClick: scrollToServices },
-    { href: "/about", label: t('nav.about') },
-    // { href: "/posts", label: "BLOG" },
-    { href: "/contact", label: t('nav.contact') },
+    { href: links.about, label: t('nav.about') },
+    // { href: links.blog, label: "BLOG" },
+    { href: links.contact, label: t('nav.contact') },
   ]
 
   return (

@@ -1,21 +1,33 @@
-"use client"
-import type { Metadata } from "next"
-import Image from "next/image"
-import { Award, CheckCircle, Eye } from "lucide-react"
-import { useLanguage } from "@/contexts/LanguageContext"
+import type { Metadata } from 'next'
+import Image from 'next/image'
+import Link from 'next/link'
+import { Award, CheckCircle, Eye } from 'lucide-react'
+import { getDictionary } from '@/lib/dictionaries'
 
-// export const metadata: Metadata = {
-//   title: "Sobre Nosotros - SellifyWorks",
-//   description: "Conoce más sobre SellifyWorks y nuestro equipo de expertos en Shopify. Descubre nuestra misión, visión y experiencia en el desarrollo de tiendas online exitosas.",
-//   openGraph: {
-//     title: "Sobre Nosotros - SellifyWorks",
-//     description: "Conoce más sobre SellifyWorks y nuestro equipo de expertos en Shopify.",
-//     type: "website",
-//   },
-// }
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = await getDictionary('es')
+  
+  return {
+    title: dict.about.metadata.title,
+    description: dict.about.metadata.description,
+    openGraph: {
+      title: dict.about.metadata.title,
+      description: dict.about.metadata.description,
+      type: "website",
+    },
+    alternates: {
+      canonical: '/es/sobre-nosotros',
+      languages: {
+        es: '/es/sobre-nosotros',
+        en: '/en/about',
+      },
+    },
+  }
+}
 
-export default function AboutPage() {
-  const { t } = useLanguage()
+export default async function AboutPage() {
+  const dict = await getDictionary('es')
+  
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
       {/* Hero Section */}
@@ -26,10 +38,10 @@ export default function AboutPage() {
               className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-wide mb-6"
               style={{ fontFamily: "Bebas Neue, sans-serif" }}
             >
-              {t('about.hero.title')}
+              {dict.about.hero.title}
             </h1>
             <p className="text-gray-300 text-lg md:text-xl lg:text-2xl max-w-4xl mx-auto leading-relaxed">
-              {t('about.hero.subtitle')}
+              {dict.about.hero.subtitle}
             </p>
           </div>
         </div>
@@ -44,18 +56,18 @@ export default function AboutPage() {
                 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-wide mb-6"
                 style={{ fontFamily: "Bebas Neue, sans-serif" }}
               >
-                {t('about.history.title')}
+                {dict.about.history.title}
               </h2>
               <div className="space-y-6 text-gray-300 text-lg leading-relaxed">
                 <p>
-                {t('about.history.content')}
+                  {dict.about.history.content}
                 </p>
               </div>
             </div>
             <div className="flex flex-col items-center text-center">
               <Image
                 src="/assets/img/rafiki1.svg"
-                alt="Agencia Shopify Barcelona - Desarrollo de tiendas online"
+                alt="Agencia Shopify Barcelona - Desarrollo de Tiendas Online"
                 width={200}
                 height={160}
                 className="w-full h-auto max-w-md"
@@ -86,11 +98,11 @@ export default function AboutPage() {
                 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-wide mb-6"
                 style={{ fontFamily: "Bebas Neue, sans-serif" }}
               >
-                {t('about.mission.title')}
+                {dict.about.mission.title}
               </h2>
               <div className="space-y-6 text-gray-300 text-lg leading-relaxed">
                 <p>
-                 {t('about.mission.content')}
+                  {dict.about.mission.content}
                 </p>
               </div>
             </div>
@@ -98,7 +110,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Valores Section */}
+      {/* Nuestros Valores Section */}
       <section className="py-16 md:py-24 px-4 md:px-8 lg:px-16">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
@@ -106,58 +118,63 @@ export default function AboutPage() {
               className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-wide mb-6"
               style={{ fontFamily: "Bebas Neue, sans-serif" }}
             >
-              {t('about.values.title')}
+              {dict.about.values.title}
             </h2>
             <p className="text-gray-300 text-lg md:text-xl max-w-3xl mx-auto">
-              {/* Texto introductorio sobre valores */}
-              {t('about.values.subtitle')}
+              {dict.about.values.subtitle}
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Valor 1 */}
-            <div className="bg-gray-800 rounded-2xl p-8 text-center">
-              <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Award size={32} className="text-white" />
+          <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+            {/* Calidad */}
+            <div className="text-center">
+              <div className="flex justify-center mb-6">
+                <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center">
+                  <Award className="w-8 h-8 text-white" />
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-white mb-4">
-                {t('about.values.quality.title')}
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-4">
+                {dict.about.values.quality.title}
               </h3>
               <p className="text-gray-300 leading-relaxed">
-                {t('about.values.quality.content')}
+                {dict.about.values.quality.content}
               </p>
             </div>
 
-            {/* Valor 2 */}
-            <div className="bg-gray-800 rounded-2xl p-8 text-center">
-              <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CheckCircle size={32} className="text-white" />
+            {/* Validación */}
+            <div className="text-center">
+              <div className="flex justify-center mb-6">
+                <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-8 h-8 text-white" />
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-white mb-4">
-                {t('about.values.validation.title')}
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-4">
+                {dict.about.values.validation.title}
               </h3>
               <p className="text-gray-300 leading-relaxed">
-                {t('about.values.validation.content')}
+                {dict.about.values.validation.content}
               </p>
             </div>
 
-            {/* Valor 3 */}
-            <div className="bg-gray-800 rounded-2xl p-8 text-center">
-              <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Eye size={32} className="text-white" />
+            {/* Transparencia */}
+            <div className="text-center">
+              <div className="flex justify-center mb-6">
+                <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center">
+                  <Eye className="w-8 h-8 text-white" />
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-white mb-4">
-                {t('about.values.transparency.title')}
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-4">
+                {dict.about.values.transparency.title}
               </h3>
               <p className="text-gray-300 leading-relaxed">
-                {t('about.values.transparency.content')}
+                {dict.about.values.transparency.content}
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Equipo Section */}
+      {/* Nuestro Equipo Section */}
       <section className="py-16 md:py-24 px-4 md:px-8 lg:px-16">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
@@ -165,34 +182,33 @@ export default function AboutPage() {
               className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-wide mb-6"
               style={{ fontFamily: "Bebas Neue, sans-serif" }}
             >
-              {t('about.team.title')}
+              {dict.about.team.title}
             </h2>
             <p className="text-gray-300 text-lg md:text-xl max-w-3xl mx-auto">
-              {/* Texto introductorio sobre el equipo */}
-              {t('about.team.subtitle')}
+              {dict.about.team.subtitle}
             </p>
           </div>
 
           <div className="flex justify-center">
-            <div className="max-w-sm">
-              {/* Miembro del equipo 1 */}
-              <div className="bg-gray-800 rounded-2xl p-8 text-center">
-                <div className="w-24 h-24 mx-auto mb-6 relative overflow-hidden rounded-full">
-                  <Image
-                    src="/assets/img/mathias.jpeg"
-                    alt="Mathias Do Vale"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2">
-                  Mathias Do Vale
-                </h3>
-                <p className="text-orange-500 font-medium mb-4">{t('about.team.mathias.role')}</p>
-                <p className="text-gray-300 text-sm leading-relaxed">
-                  {t('about.team.mathias.description')}
-                </p>
+            <div className="text-center max-w-sm">
+              <div className="mb-6">
+                <Image
+                  src="/assets/img/mathias.jpeg"
+                  alt="Mathias Do Vale - Founder SellifyWorks"
+                  width={200}
+                  height={200}
+                  className="w-48 h-48 rounded-full mx-auto object-cover"
+                />
               </div>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
+                Mathias Do Vale
+              </h3>
+              <p className="text-orange-500 font-medium mb-4">
+                {dict.about.team.mathias.role}
+              </p>
+              <p className="text-gray-300 leading-relaxed">
+                {dict.about.team.mathias.description}
+              </p>
             </div>
           </div>
         </div>
@@ -205,17 +221,17 @@ export default function AboutPage() {
             className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-wide mb-6"
             style={{ fontFamily: "Bebas Neue, sans-serif" }}
           >
-            {t('about.cta.title')}
+            {dict.about.cta.title}
           </h2>
           <p className="text-gray-300 text-lg md:text-xl mb-8 leading-relaxed">
-            {t('about.cta.subtitle')}
+            {dict.about.cta.subtitle}
           </p>
-          <a
-            href="/contact"
+          <Link
+            href="/es/contacto"
             className="inline-flex items-center px-8 py-4 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors"
           >
-            {t('about.cta.button')}
-          </a>
+            {dict.about.cta.button}
+          </Link>
         </div>
       </section>
     </main>
