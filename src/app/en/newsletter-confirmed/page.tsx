@@ -80,7 +80,7 @@ function NewsletterConfirmedContent() {
           </p>
           
           <Link
-            href="/"
+            href="/en"
             className="inline-flex items-center px-8 py-4 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors"
           >
             Back to Home

@@ -1,20 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { consumePendingConfirmation } from '@/lib/auth-utils'
 
-export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url)
-    const token = searchParams.get('token')
+// Helper function to generate redirect URLs based on language
+function getRedirectUrl(lang: string, status: string, message: string) {
+  const langPrefix = lang === 'en' ? '/en' : '/es'
+  const pageName = lang === 'en' ? 'newsletter-confirmed' : 'suscripcion-confirmada'
+  return `${langPrefix}/${pageName}?status=${status}&message=${encodeURIComponent(message)}`
+}
 
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
+  const token = searchParams.get('token')
+  const lang = searchParams.get('lang') || 'es' // Default to Spanish
+
+  // Define error messages in both languages
+  const errorMessages = {
+    missingToken: {
+      es: 'Token faltante',
+      en: 'Missing token'
+    },
+    invalidToken: {
+      es: 'Token inválido o expirado',
+      en: 'Invalid or expired token'
+    },
+    configError: {
+      es: 'Error de configuración',
+      en: 'Configuration error'
+    },
+    processingError: {
+      es: 'Error al procesar suscripción',
+      en: 'Error processing subscription'
+    },
+    internalError: {
+      es: 'Error interno',
+      en: 'Internal error'
+    }
+  }
+
+  try {
     if (!token) {
-      return NextResponse.redirect(new URL('/newsletter-confirmed?status=error&message=Token faltante', request.url))
+      return NextResponse.redirect(new URL(getRedirectUrl(lang, 'error', errorMessages.missingToken[lang as 'es' | 'en']), request.url))
     }
 
     // Verificar y consumir el token
     const email = consumePendingConfirmation(token)
     
     if (!email) {
-      return NextResponse.redirect(new URL('/newsletter-confirmed?status=error&message=Token inválido o expirado', request.url))
+      return NextResponse.redirect(new URL(getRedirectUrl(lang, 'error', errorMessages.invalidToken[lang as 'es' | 'en']), request.url))
     }
 
     // Configuración de Klaviyo
@@ -23,7 +55,7 @@ export async function GET(request: NextRequest) {
 
     if (!KLAVIYO_API_KEY || !KLAVIYO_LIST_ID) {
       console.error('Missing Klaviyo configuration')
-      return NextResponse.redirect(new URL('/newsletter-confirmed?status=error&message=Error de configuración', request.url))
+      return NextResponse.redirect(new URL(getRedirectUrl(lang, 'error', errorMessages.configError[lang as 'es' | 'en']), request.url))
     }
 
     try {
@@ -160,15 +192,21 @@ export async function GET(request: NextRequest) {
         console.log('⚠️ Could not record confirmation event (non-critical)')
       }
       
-      return NextResponse.redirect(new URL('/newsletter-confirmed?status=success', request.url))
+      // Success messages based on language
+      const successMessages = {
+        es: 'Suscripción confirmada exitosamente',
+        en: 'Subscription confirmed successfully'
+      }
+      
+      return NextResponse.redirect(new URL(getRedirectUrl(lang, 'success', successMessages[lang as 'es' | 'en']), request.url))
 
     } catch (klaviyoError) {
       console.error('Klaviyo operation failed:', klaviyoError)
-      return NextResponse.redirect(new URL('/newsletter-confirmed?status=error&message=Error al procesar suscripción', request.url))
+      return NextResponse.redirect(new URL(getRedirectUrl(lang, 'error', errorMessages.processingError[lang as 'es' | 'en']), request.url))
     }
 
   } catch (error) {
     console.error('Confirmation error:', error)
-    return NextResponse.redirect(new URL('/newsletter-confirmed?status=error&message=Error interno', request.url))
+    return NextResponse.redirect(new URL(getRedirectUrl(lang, 'error', errorMessages.internalError[lang as 'es' | 'en']), request.url))
   }
 }
