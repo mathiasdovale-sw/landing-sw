@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react"
 import { X, Mail } from "lucide-react"
 import dynamic from "next/dynamic"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 // Hook personalizado para manejar localStorage de forma segura
 function useLocalStorage(key: string, initialValue: string | null = null) {
@@ -39,6 +40,7 @@ function useLocalStorage(key: string, initialValue: string | null = null) {
 }
 
 function NewsletterPopupContent() {
+  const { t, language } = useLanguage()
   const [isVisible, setIsVisible] = useState(false)
   const [email, setEmail] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -80,7 +82,7 @@ function NewsletterPopupContent() {
       const timer = setTimeout(() => {
         console.log('Showing newsletter popup') // Debug log
         setIsVisible(true)
-      }, 3000) // 3 segundos para testing
+      }, 8000) // 8 segundos para dar tiempo al usuario
 
       return () => {
         console.log('Clearing newsletter popup timer') // Debug log
@@ -104,7 +106,10 @@ function NewsletterPopupContent() {
     try {
       // Validar email antes de enviar
       if (!email || email.trim() === '') {
-        setError('Por favor ingresa un email válido')
+        const errorMessage = language === 'en' 
+          ? 'Please enter a valid email'
+          : 'Por favor ingresa un email válido'
+        setError(errorMessage)
         setIsSubmitting(false)
         return
       }
@@ -125,7 +130,10 @@ function NewsletterPopupContent() {
         data = await response.json()
       } catch (parseError) {
         console.error('Response parsing error:', parseError)
-        setError('Error en la respuesta del servidor')
+        const errorMessage = language === 'en'
+          ? 'Server response error'
+          : 'Error en la respuesta del servidor'
+        setError(errorMessage)
         return
       }
 
@@ -133,11 +141,20 @@ function NewsletterPopupContent() {
         setIsSuccess(true)
         setEmail("")
         
-        // Verificar el mensaje específico del backend
-        if (data.message === 'Ya estás suscrito a nuestra newsletter') {
-          setSuccessMessage('¡Ya estás suscrito a nuestra newsletter!')
+        // Verificar el mensaje específico del backend basado en idioma
+        const alreadySubscribedES = 'Ya estás suscrito a nuestra newsletter'
+        const alreadySubscribedEN = 'You are already subscribed to our newsletter'
+        
+        if (data.message === alreadySubscribedES || data.message === alreadySubscribedEN) {
+          const successMsg = language === 'en' 
+            ? 'You are already subscribed to our newsletter!'
+            : '¡Ya estás suscrito a nuestra newsletter!'
+          setSuccessMessage(successMsg)
         } else {
-          setSuccessMessage('¡Revisa tu email para confirmar tu suscripción!')
+          const successMsg = language === 'en'
+            ? 'Check your email to confirm your subscription!'
+            : '¡Revisa tu email para confirmar tu suscripción!'
+          setSuccessMessage(successMsg)
         }
         
         // Cerrar popup después de mostrar éxito
@@ -149,19 +166,28 @@ function NewsletterPopupContent() {
         if (response.status === 409) {
           // Usuario ya existe - mostrar mensaje específico
           setIsSuccess(true)
-          setSuccessMessage('¡Ya estás suscrito a nuestra newsletter!')
+          const successMsg = language === 'en'
+            ? 'You are already subscribed to our newsletter!'
+            : '¡Ya estás suscrito a nuestra newsletter!'
+          setSuccessMessage(successMsg)
           setEmail("")
           
           setTimeout(() => {
             handleClose()
           }, 3000)
         } else {
-          setError(data.error || 'Error al suscribirse')
+          const errorMsg = language === 'en'
+            ? data.error || 'Subscription error'
+            : data.error || 'Error al suscribirse'
+          setError(errorMsg)
         }
       }
     } catch (error) {
       console.error('Newsletter submission error:', error)
-      setError('Error de conexión. Inténtalo de nuevo.')
+      const errorMessage = language === 'en'
+        ? 'Connection error. Please try again.'
+        : 'Error de conexión. Inténtalo de nuevo.'
+      setError(errorMessage)
     } finally {
       setIsSubmitting(false)
     }
@@ -197,13 +223,18 @@ function NewsletterPopupContent() {
                 className="text-2xl md:text-3xl font-bold text-center text-black mb-3"
                 style={{ fontFamily: "Bebas Neue, sans-serif" }}
               >
-                ¡NO TE PIERDAS NUESTROS CONSEJOS!
+                {language === 'en' 
+                  ? "DON'T MISS OUR TIPS!"
+                  : "¡NO TE PIERDAS NUESTROS CONSEJOS!"
+                }
               </h2>
 
               {/* Descripción */}
               <p className="text-gray-600 text-center mb-6 leading-relaxed">
-                Suscríbete a nuestra newsletter y recibe tips exclusivos sobre Shopify, 
-                estrategias de conversión y las últimas tendencias del e-commerce.
+                {language === 'en'
+                  ? 'Subscribe to our newsletter and receive exclusive tips about Shopify, conversion strategies, and the latest e-commerce trends.'
+                  : 'Suscríbete a nuestra newsletter y recibe tips exclusivos sobre Shopify, estrategias de conversión y las últimas tendencias del e-commerce.'
+                }
               </p>
 
               {/* Formulario */}
@@ -224,7 +255,10 @@ function NewsletterPopupContent() {
                   disabled={isSubmitting}
                   className="w-full bg-gradient-to-r from-black to-cyan-500 text-white font-semibold py-3 px-6 rounded-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? "Suscribiendo..." : "Suscribirme Gratis"}
+                  {isSubmitting 
+                    ? (language === 'en' ? "Subscribing..." : "Suscribiendo...")
+                    : (language === 'en' ? "Subscribe Free" : "Suscribirme Gratis")
+                  }
                 </button>
               </form>
 
@@ -237,7 +271,10 @@ function NewsletterPopupContent() {
 
               {/* Nota */}
               <p className="text-xs text-gray-500 text-center mt-4">
-                No spam. Puedes darte de baja en cualquier momento.
+                {language === 'en'
+                  ? 'No spam. You can unsubscribe at any time.'
+                  : 'No spam. Puedes darte de baja en cualquier momento.'
+                }
               </p>
             </>
           ) : (
@@ -253,15 +290,15 @@ function NewsletterPopupContent() {
                 style={{ fontFamily: "Bebas Neue, sans-serif" }}
                 data-testid="success-title"
               >
-                {successMessage || '¡BIENVENIDO A BORDO!'}
+                {successMessage || (language === 'en' ? 'WELCOME ABOARD!' : '¡BIENVENIDO A BORDO!')}
               </h2>
               <div className="overflow-hidden transition-all duration-500 ease-out max-h-20 opacity-100">
                 <span className="text-gray-700 text-sm md:text-base leading-relaxed group-hover/item:text-black transition-colors" data-testid="success-message">
-                  {successMessage === '¡Ya estás suscrito a nuestra newsletter!' 
-                    ? 'No te preocupes, ya recibes nuestros consejos exclusivos.'
-                    : successMessage === '¡Ya estás suscrito!'
-                    ? 'Gracias por ser parte de nuestra comunidad.'
-                    : 'Te has suscrito exitosamente. Revisa tu email para confirmar.'
+                  {successMessage === (language === 'en' ? 'You are already subscribed to our newsletter!' : '¡Ya estás suscrito a nuestra newsletter!')
+                    ? (language === 'en' ? "Don't worry, you already receive our exclusive tips." : 'No te preocupes, ya recibes nuestros consejos exclusivos.')
+                    : successMessage === (language === 'en' ? 'You are already subscribed!' : '¡Ya estás suscrito!')
+                    ? (language === 'en' ? 'Thank you for being part of our community.' : 'Gracias por ser parte de nuestra comunidad.')
+                    : (language === 'en' ? 'You have successfully subscribed. Check your email to confirm.' : 'Te has suscrito exitosamente. Revisa tu email para confirmar.')
                   }
                 </span>
               </div>
