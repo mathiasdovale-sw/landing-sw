@@ -12,9 +12,11 @@ interface ServiceItemProps {
   onToggle: () => void;
   accentColor: string;
   icon: React.ComponentType<{ size?: number; className?: string }>;
+  t: (key: string) => string;
+  scrollToContact: () => void;
 }
 
-function ServiceItem({ number, title, description, details, isExpanded, onToggle, accentColor, icon: Icon }: ServiceItemProps) {
+function ServiceItem({ number, title, description, details, isExpanded, onToggle, accentColor, icon: Icon, t, scrollToContact }: ServiceItemProps) {
   return (
     <div
       className={`border-b border-gray-800 last:border-b-0 group transition-all duration-500 ${
@@ -106,8 +108,11 @@ function ServiceItem({ number, title, description, details, isExpanded, onToggle
               ))}
             </div>
             <div className="mt-4 sm:mt-6 md:mt-8 pt-3 sm:pt-4 md:pt-6 border-t border-gray-300">
-              <button className="bg-black text-white px-4 sm:px-6 md:px-8 py-2 md:py-3 rounded-full font-medium hover:bg-gray-800 transition-colors text-xs sm:text-sm md:text-base">
-                Más información
+              <button 
+                onClick={scrollToContact}
+                className="bg-black text-white px-4 sm:px-6 md:px-8 py-2 md:py-3 rounded-full font-medium hover:bg-gray-800 transition-colors text-xs sm:text-sm md:text-base"
+              >
+                {t('services.more_info')}
               </button>
             </div>
           </div>
@@ -120,6 +125,16 @@ function ServiceItem({ number, title, description, details, isExpanded, onToggle
 export default function ServicesSection() {
   const { t } = useLanguage()
   const [expandedService, setExpandedService] = useState<string | null>(null)
+
+  const scrollToContact = () => {
+    const contactSection = document.getElementById('contacto');
+    if (contactSection) {
+      contactSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
 
   const services = [
     {
@@ -202,6 +217,8 @@ export default function ServicesSection() {
             onToggle={() => handleToggle(service.id)}
             accentColor={service.accentColor}
             icon={service.icon}
+            t={t}
+            scrollToContact={scrollToContact}
           />
         ))}
       </div>

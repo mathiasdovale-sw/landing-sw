@@ -1,0 +1,49 @@
+{
+  "about": {
+    "metadata": {
+      "title": "Sobre Nosotros - SellifyWorks",
+      "description": "Conoce más sobre SellifyWorks y nuestro equipo de expertos en Shopify. Descubre nuestra misión, visión y experiencia en el desarrollo de tiendas online exitosas."
+    },
+    "hero": {
+      "title": "SOBRE NOSOTROS",
+      "subtitle": "Creamos experiencias de comercio electrónico excepcionales en Shopify."
+    },
+    "history": {
+      "title": "NUESTRA HISTORIA",
+      "content": "Este proyecto comenzó con una visión clara: mejorar la experiencia de compra en ecommerce mediante soluciones técnicas de alta calidad, enfocadas en Shopify. A partir de esa idea, SellifyWorks fue creciendo como una consultora técnica orientada a resultados reales, con un modelo de trabajo ágil, escalable y centrado en el cliente."
+    },
+    "mission": {
+      "title": "NUESTRA MISIÓN",
+      "content": "Impulsamos negocios en ecommerce a través de soluciones técnicas personalizadas en Shopify. Nos enfocamos en automatizar procesos, optimizar el rendimiento de las tiendas y aplicar metodologías ágiles que aseguren entregas rápidas y de alta calidad.\n\nNuestro objetivo es que cada cliente pueda escalar sin preocuparse por la complejidad técnica, confiando en una consultora que pone la experiencia de usuario y la eficiencia operativa en el centro de cada decisión."
+    },
+    "values": {
+      "title": "NUESTROS VALORES",
+      "subtitle": "Los principios que guían nuestro trabajo y definen quiénes somos.",
+      "quality": {
+        "title": "CALIDAD",
+        "content": "Aplicamos prácticas de desarrollo como Extreme Programming porque creemos que una buena solución no solo debe funcionar, sino hacerlo bien, rápido y de forma sostenible."
+      },
+      "validation": {
+        "title": "VALIDACIÓN",
+        "content": "Creemos en la importancia de validar ideas y soluciones a través de pruebas constantes y feedback real. Esto nos permite ajustar y mejorar nuestros enfoques, asegurando que siempre estamos en el camino correcto."
+      },
+      "transparency": {
+        "title": "TRANSPARENCIA",
+        "content": "Creemos en relaciones honestas, en procesos iterativos que permitan evolucionar constantemente, y en el compromiso innegociable de entregar valor en cada entrega."
+      }
+    },
+    "team": {
+      "title": "NUESTRO EQUIPO",
+      "subtitle": "Conoce a las personas que hacen posible el éxito de tu proyecto.",
+      "mathias": {
+        "role": "FOUNDER",
+        "description": "Ingeniero en informática con mas de 10 años de experiencia en desarrollo de software."
+      }
+    },
+    "cta": {
+      "title": "¿LISTO PARA TRABAJAR JUNTOS?",
+      "subtitle": "Descubre cómo podemos ayudarte a llevar tu negocio al siguiente nivel.",
+      "button": "Contactar con nosotros"
+    }
+  }
+}

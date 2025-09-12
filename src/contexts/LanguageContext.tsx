@@ -1,5 +1,6 @@
 "use client"
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 
 type Language = 'es' | 'en'
 
@@ -93,6 +94,7 @@ const translations = {
     'services.scale.detail4': 'Implementación de programas de fidelización',
     'services.scale.detail5': 'Análisis de datos y reporting personalizado',
     'services.scale.detail6': 'Estrategias de retención de clientes',
+    'services.more_info': 'Más información',
     
     // About Page
     'about.hero.title': 'SOBRE NOSOTROS',
@@ -259,6 +261,7 @@ const translations = {
     'services.scale.detail4': 'Loyalty program implementation',
     'services.scale.detail5': 'Data analysis and custom reporting',
     'services.scale.detail6': 'Customer retention strategies',
+    'services.more_info': 'More information',
     
     // About Page
     'about.hero.title': 'ABOUT US',
@@ -347,15 +350,20 @@ const translations = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
   const [language, setLanguage] = useState<Language>('es')
 
-  // Cargar idioma del localStorage al inicializar
+  // Detectar idioma desde la URL
   useEffect(() => {
-    const savedLanguage = localStorage.getItem('language') as Language
-    if (savedLanguage && (savedLanguage === 'es' || savedLanguage === 'en')) {
-      setLanguage(savedLanguage)
+    if (pathname.startsWith('/en')) {
+      setLanguage('en')
+    } else if (pathname.startsWith('/es')) {
+      setLanguage('es')
+    } else {
+      // Para rutas sin prefijo de idioma, usar español por defecto
+      setLanguage('es')
     }
-  }, [])
+  }, [pathname])
 
   // Guardar idioma en localStorage cuando cambie
   useEffect(() => {
