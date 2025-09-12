@@ -45,5 +45,10 @@
       "subtitle": "Descubre cómo podemos ayudarte a llevar tu negocio al siguiente nivel.",
       "button": "Contactar con nosotros"
     }
+  },
+  "contact": {
+    "form": {
+      "success": "¡Mensaje enviado correctamente! Te contactaremos pronto."
+    }
   }
 }

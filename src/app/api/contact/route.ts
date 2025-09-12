@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import DOMPurify from 'isomorphic-dompurify'
+import { 
+  detectLanguageFromReferer, 
+  getContactCompanyEmailTemplate, 
+  getContactClientEmailTemplate
+} from '@/lib/email-templates'
 
 // Validation schema
 const contactFormSchema = z.object({
@@ -27,6 +32,10 @@ const contactFormSchema = z.object({
 type ContactFormData = z.infer<typeof contactFormSchema>
 
 export async function POST(request: NextRequest) {
+  // Detect language from referer header early
+  const referer = request.headers.get('referer')
+  const language = detectLanguageFromReferer(referer)
+  
   try {
     // Parse and validate request body
     let body: unknown
@@ -65,6 +74,8 @@ export async function POST(request: NextRequest) {
       message: DOMPurify.sanitize(validatedData.message, { ALLOWED_TAGS: [] })
     }
 
+    console.log(`🌍 Using language: ${language} from referer: ${referer}`)
+
     // Verificar reCAPTCHA (solo si está configurado y no es modo desarrollo)
     const isDevMode = sanitizedData.recaptchaToken === 'dev-mode'
     const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY
@@ -89,7 +100,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Configurar el email para la empresa (SellifyWorks)
+    // Configurar el email para la empresa (SellifyWorks) usando template
+    const companyEmailTemplate = getContactCompanyEmailTemplate(sanitizedData, language)
     const companyEmailData = {
       sender: {
         name: "SellifyWorks Contact Form",
@@ -101,26 +113,17 @@ export async function POST(request: NextRequest) {
           name: "SellifyWorks"
         }
       ],
-      subject: `Nuevo contacto desde la web: ${sanitizedData.name}`,
-      htmlContent: `
-        <h2>Nuevo mensaje de contacto</h2>
-        <p><strong>Nombre:</strong> ${sanitizedData.name}</p>
-        <p><strong>Email:</strong> ${sanitizedData.email}</p>
-        ${sanitizedData.company ? `<p><strong>Empresa:</strong> ${sanitizedData.company}</p>` : ''}
-        ${sanitizedData.service ? `<p><strong>Servicio de interés:</strong> ${sanitizedData.service}</p>` : ''}
-        <p><strong>Mensaje:</strong></p>
-        <p>${sanitizedData.message.replace(/\n/g, '<br>')}</p>
-        
-        <hr>
-        <p><small>Este mensaje fue enviado desde el formulario de contacto de SellifyWorks</small></p>
-      `,
+      subject: companyEmailTemplate.subject,
+      htmlContent: companyEmailTemplate.htmlContent,
+      textContent: companyEmailTemplate.textContent,
       replyTo: {
         email: sanitizedData.email,
         name: sanitizedData.name
       }
     }
 
-    // Configurar el email de confirmación para el cliente
+    // Configurar el email de confirmación para el cliente usando template
+    const clientEmailTemplate = getContactClientEmailTemplate(sanitizedData, language)
     const clientEmailData = {
       sender: {
         name: "SellifyWorks",
@@ -132,47 +135,9 @@ export async function POST(request: NextRequest) {
           name: sanitizedData.name
         }
       ],
-      subject: "Hemos recibido tu mensaje - SellifyWorks",
-      htmlContent: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
-          <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <h2 style="color: #010314; margin-bottom: 20px;">¡Gracias por contactarnos!</h2>
-            
-            <p style="color: #333; line-height: 1.6;">Hola ${sanitizedData.name},</p>
-            
-            <p style="color: #333; line-height: 1.6;">
-              Hemos recibido tu mensaje y queremos agradecerte por ponerte en contacto con nosotros. 
-              Nuestro equipo revisará tu solicitud y te contactaremos muy pronto.
-            </p>
-            
-            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-              <h3 style="color: #010314; margin-top: 0;">Resumen de tu mensaje:</h3>
-              <p style="margin: 5px 0;"><strong>Nombre:</strong> ${sanitizedData.name}</p>
-              ${sanitizedData.company ? `<p style="margin: 5px 0;"><strong>Empresa:</strong> ${sanitizedData.company}</p>` : ''}
-              ${sanitizedData.service ? `<p style="margin: 5px 0;"><strong>Servicio de interés:</strong> ${sanitizedData.service}</p>` : ''}
-            </div>
-            
-            <p style="color: #333; line-height: 1.6;">
-              En SellifyWorks nos especializamos en ayudar a empresas como la tuya a maximizar su presencia 
-              en Shopify y aumentar sus ventas online. Estamos emocionados de poder ayudarte.
-            </p>
-            
-            <p style="color: #333; line-height: 1.6;">
-              Si tienes alguna pregunta urgente, no dudes en responder a este email.
-            </p>
-            
-            <p style="color: #333; line-height: 1.6; margin-top: 30px;">
-              Saludos cordiales,<br>
-              <strong>El equipo de SellifyWorks</strong>
-            </p>
-            
-            <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-            <p style="color: #666; font-size: 12px; text-align: center;">
-              Este es un mensaje automático de confirmación. Por favor, no respondas a este email si no es necesario.
-            </p>
-          </div>
-        </div>
-      `
+      subject: clientEmailTemplate.subject,
+      htmlContent: clientEmailTemplate.htmlContent,
+      textContent: clientEmailTemplate.textContent
     }
 
     // Enviar email a la empresa
@@ -241,10 +206,17 @@ export async function POST(request: NextRequest) {
       console.log('Client confirmation email sent successfully:', clientResponseData)
     }
 
+    // Success messages based on language
+    const successMessages = {
+      es: 'Mensaje enviado correctamente',
+      en: 'Message sent successfully'
+    }
+
     return NextResponse.json(
       { 
-        message: 'Mensaje enviado correctamente',
+        message: successMessages[language],
         success: true,
+        language: language,
         companyEmail: companyResponseData,
         clientEmailSent: clientResponse.ok
       },
@@ -265,9 +237,15 @@ export async function POST(request: NextRequest) {
       console.error('Contact API error:', error instanceof Error ? error.message : 'Unknown error')
     }
     
+    // Error messages based on language  
+    const errorMessages = {
+      es: 'Error interno del servidor. Por favor, inténtalo de nuevo más tarde.',
+      en: 'Internal server error. Please try again later.'
+    }
+    
     return NextResponse.json(
       { 
-        error: 'Error interno del servidor. Por favor, inténtalo de nuevo más tarde.',
+        error: errorMessages[language] || errorMessages.es,
         // Only include error details in development
         ...(process.env.NODE_ENV === 'development' && {
           details: error instanceof Error ? error.message : 'Error desconocido'

@@ -45,5 +45,10 @@
       "subtitle": "Discover how we can help you take your business to the next level.",
       "button": "Contact us"
     }
+  },
+  "contact": {
+    "form": {
+      "success": "Message sent successfully! We will contact you soon."
+    }
   }
 }
