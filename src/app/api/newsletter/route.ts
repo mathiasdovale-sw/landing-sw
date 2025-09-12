@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import DOMPurify from 'isomorphic-dompurify'
 import { generateConfirmationToken, storePendingConfirmation } from '@/lib/auth-utils'
+
+// Validation schema
+const newsletterSchema = z.object({
+  email: z.string()
+    .email('Invalid email format')
+    .max(254, 'Email too long') // RFC 5321 limit
+    .transform(email => email.toLowerCase().trim())
+})
 
 export async function POST(request: NextRequest) {
   try {
-    // Agregar mejor manejo de JSON parsing
-    let body
+    // Parse and validate request body
+    let body: unknown
     try {
       body = await request.json()
     } catch (parseError) {
@@ -15,23 +25,25 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { email } = body
-
-    if (!email) {
+    // Validate using Zod schema
+    const validationResult = newsletterSchema.safeParse(body)
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Email is required' },
+        { 
+          error: 'Validation failed',
+          details: validationResult.error.issues.map(e => ({
+            field: e.path.join('.'),
+            message: e.message
+          }))
+        },
         { status: 400 }
       )
     }
 
-    // Validar formato de email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      )
-    }
+    const { email } = validationResult.data
+
+    // Sanitize email (additional safety)
+    const sanitizedEmail = DOMPurify.sanitize(email, { ALLOWED_TAGS: [] })
 
     // Configuración
     const KLAVIYO_API_KEY = process.env.KLAVIYO_PRIVATE_API_KEY
@@ -48,8 +60,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Verificar si el email ya está suscrito a la lista
-    console.log(`🔍 Checking if ${email} is already subscribed...`)
-    const listProfilesResponse = await fetch(`https://a.klaviyo.com/api/lists/${KLAVIYO_LIST_ID}/profiles/?filter=equals(email,"${email}")`, {
+    console.log(`🔍 Checking if ${sanitizedEmail} is already subscribed...`)
+    const listProfilesResponse = await fetch(`https://a.klaviyo.com/api/lists/${KLAVIYO_LIST_ID}/profiles/?filter=equals(email,"${sanitizedEmail}")`, {
       method: 'GET',
       headers: {
         'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
@@ -61,30 +73,30 @@ export async function POST(request: NextRequest) {
     if (listProfilesResponse.ok) {
       const listProfilesData = await listProfilesResponse.json()
       if (listProfilesData.data && listProfilesData.data.length > 0) {
-        console.log(`⚠️ Email ${email} is already subscribed to the list`)
+        console.log(`⚠️ Email ${sanitizedEmail} is already subscribed to the list`)
         return NextResponse.json({
           success: true,
           message: 'Ya estás suscrito a nuestra newsletter'
         })
       } else {
-        console.log(`✅ Email ${email} is not subscribed yet, proceeding with confirmation flow`)
+        console.log(`✅ Email ${sanitizedEmail} is not subscribed yet, proceeding with confirmation flow`)
       }
     } else {
-      console.log(`⚠️ Could not check subscription status for ${email}, proceeding with confirmation flow`)
+      console.log(`⚠️ Could not check subscription status for ${sanitizedEmail}, proceeding with confirmation flow`)
     }
 
     // Generar token de confirmación
-    const confirmationToken = generateConfirmationToken(email)
+    const confirmationToken = generateConfirmationToken(sanitizedEmail)
     
     // La función storePendingConfirmation ya no es necesaria con JWT
     // pero la mantenemos para compatibilidad
-    storePendingConfirmation(confirmationToken, email)
+    storePendingConfirmation(confirmationToken, sanitizedEmail)
 
     // Crear URL de confirmación
     const confirmationUrl = `${BASE_URL}/api/newsletter/confirm?token=${confirmationToken}`
 
     // Enviar email de confirmación usando Brevo
-    console.log(`📧 Sending confirmation email via Brevo to: ${email}`)
+    console.log(`📧 Sending confirmation email via Brevo to: ${sanitizedEmail}`)
     
     const brevoResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
@@ -99,8 +111,8 @@ export async function POST(request: NextRequest) {
         },
         to: [
           {
-            email: email,
-            name: email.split('@')[0] // Usar la parte antes del @ como nombre
+            email: sanitizedEmail,
+            name: sanitizedEmail.split('@')[0] // Usar la parte antes del @ como nombre
           }
         ],
         subject: "Confirma tu suscripción a SellifyWorks",
@@ -193,9 +205,21 @@ SellifyWorks - Barcelona, España
     })
 
   } catch (error) {
-    console.error('Newsletter subscription error:', error)
+    // Log error appropriately based on environment
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Newsletter subscription error:', error)
+    } else {
+      console.error('Newsletter subscription error:', error instanceof Error ? error.message : 'Unknown error')
+    }
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Error interno del servidor. Por favor, inténtalo de nuevo más tarde.',
+        // Only include error details in development
+        ...(process.env.NODE_ENV === 'development' && {
+          details: error instanceof Error ? error.message : 'Error desconocido'
+        })
+      },
       { status: 500 }
     )
   }
