@@ -18,6 +18,23 @@ interface ServiceItemProps {
 }
 
 function ServiceItem({ number, title, description, details, isExpanded, onToggle, accentColor, icon: Icon, t, scrollToContact }: ServiceItemProps) {
+  const { language } = useLanguage()
+  
+  // Helper function to get URL key for each detail
+  const getDetailUrlKey = (serviceType: string, detailIndex: number) => {
+    const serviceMap = {
+      'Crear': 'create',
+      'Create': 'create', 
+      'Estrategia': 'strategy',
+      'Strategy': 'strategy',
+      'Escalar': 'scale',
+      'Scale': 'scale'
+    }
+    
+    const serviceKey = serviceMap[title as keyof typeof serviceMap] || 'create'
+    return `services.${serviceKey}.detail${detailIndex + 1}.url`
+  }
+  
   return (
     <div
       className={`border-b border-gray-800 last:border-b-0 group transition-all duration-500 ${
@@ -96,25 +113,24 @@ function ServiceItem({ number, title, description, details, isExpanded, onToggle
         <div className="px-2 sm:px-3 md:px-4 lg:px-8 xl:px-16 pb-6 sm:pb-8 md:pb-12">
           <div className="ml-6 sm:ml-8 md:ml-12 lg:ml-16 xl:ml-32">
             <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 md:gap-6">
-              {details.map((detail, index) => (
-                <div key={index} className="flex items-start group/item">
-                  <div 
-                    className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mr-2 sm:mr-3 md:mr-4 mt-1.5 sm:mt-2 flex-shrink-0 group-hover/item:opacity-80 transition-colors"
-                    style={{ backgroundColor: accentColor }}
-                  ></div>
-                  {index === 0 ? (
+              {details.map((detail, index) => {
+                const urlKey = getDetailUrlKey(title, index)
+                const detailKey = `services.${title === 'Crear' || title === 'Create' ? 'create' : title === 'Estrategia' || title === 'Strategy' ? 'strategy' : 'scale'}.detail${index + 1}`
+                
+                return (
+                  <div key={index} className="flex items-start group/item">
+                    <div 
+                      className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mr-2 sm:mr-3 md:mr-4 mt-1.5 sm:mt-2 flex-shrink-0 group-hover/item:opacity-80 transition-colors"
+                      style={{ backgroundColor: accentColor }}
+                    ></div>
                     <TranslatedLink 
-                      textKey="services.create.detail1"
-                      urlKey="services.create.detail1.url"
-                      className="text-gray-700 hover:text-blue-600 text-xs sm:text-sm md:text-base leading-tight sm:leading-relaxed transition-colors no-underline hover:underline"
+                      textKey={detailKey}
+                      urlKey={urlKey}
+                      className="text-gray-700 hover:text-blue-600 text-xs sm:text-sm md:text-base leading-tight sm:leading-relaxed transition-colors no-underline hover:underline cursor-pointer"
                     />
-                  ) : (
-                    <span className="text-gray-700 text-xs sm:text-sm md:text-base leading-tight sm:leading-relaxed group-hover/item:text-black transition-colors">
-                      {detail}
-                    </span>
-                  )}
-                </div>
-              ))}
+                  </div>
+                )
+              })}
             </div>
             <div className="mt-4 sm:mt-6 md:mt-8 pt-3 sm:pt-4 md:pt-6 border-t border-gray-300">
               <button 
