@@ -20,7 +20,7 @@ const translations = {
     // Header
     'header.title.line1': 'MENOS COMPLICACIONES',
     'header.title.line2': 'MÁS CONVERSIONES.',
-    'header.shopify.partner': 'AGENCY PARTNER',
+    'header.shopify.partner': 'Agencia Shopify en España',
     'header.shopify.description': 'Transformamos negocios digitales',
     'header.cta': 'Habla con un experto',
     
@@ -70,10 +70,11 @@ const translations = {
     
     // Services Section
     'services.title': 'NUESTROS SERVICIOS',
-    'services.subtitle': 'Soluciones completas para hacer crecer tu negocio en Shopify con estrategias validadas',
+    'services.subtitle': 'En nuestra agencia Shopify ayudamos a marcas y negocios de todos los tamaños a lanzar y hacer crecer su ecommerce.',
     'services.create.title': 'Crear',
     'services.create.description': 'Desarrollamos tu tienda Shopify desde cero con diseño personalizado y funcionalidades avanzadas',
     'services.create.detail1': 'Diseño web personalizado y responsive',
+    'services.create.detail1.url': '/diseno-shopify',
     'services.create.detail2': 'Configuración completa de Shopify',
     'services.create.detail3': 'Integración de pasarelas de pago',
     'services.create.detail4': 'Optimización para dispositivos móviles',
@@ -242,6 +243,7 @@ const translations = {
     'services.create.title': 'Create',
     'services.create.description': 'We develop your Shopify store from scratch with custom design and advanced features',
     'services.create.detail1': 'Custom and responsive web design',
+    'services.create.detail1.url': '/shopify-design',
     'services.create.detail2': 'Complete Shopify configuration',
     'services.create.detail3': 'Payment gateway integration',
     'services.create.detail4': 'Mobile device optimization',

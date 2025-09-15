@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { Plus, Minus, Construction, Search, Sprout } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import TranslatedLink from "@/app/_components/translated-link"
 
 interface ServiceItemProps {
   number: string;
@@ -101,9 +102,17 @@ function ServiceItem({ number, title, description, details, isExpanded, onToggle
                     className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mr-2 sm:mr-3 md:mr-4 mt-1.5 sm:mt-2 flex-shrink-0 group-hover/item:opacity-80 transition-colors"
                     style={{ backgroundColor: accentColor }}
                   ></div>
-                  <span className="text-gray-700 text-xs sm:text-sm md:text-base leading-tight sm:leading-relaxed group-hover/item:text-black transition-colors">
-                    {detail}
-                  </span>
+                  {index === 0 ? (
+                    <TranslatedLink 
+                      textKey="services.create.detail1"
+                      urlKey="services.create.detail1.url"
+                      className="text-gray-700 hover:text-blue-600 text-xs sm:text-sm md:text-base leading-tight sm:leading-relaxed transition-colors no-underline hover:underline"
+                    />
+                  ) : (
+                    <span className="text-gray-700 text-xs sm:text-sm md:text-base leading-tight sm:leading-relaxed group-hover/item:text-black transition-colors">
+                      {detail}
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
