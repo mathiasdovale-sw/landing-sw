@@ -3,7 +3,10 @@ import { HOME_OG_IMAGE_URL } from "@/lib/constants";
 import Navbar from "@/app/_components/navbar";
 import NewsletterPopup from "@/app/_components/newsletter-popup-safe";
 import NewsletterTestButton from "@/app/_components/newsletter-test-button";
+import FAQAccordion from "@/app/_components/faq-accordion";
+import Divider from "@/app/_components/divider";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { supportFAQs } from "@/lib/faqs";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import cn from "classnames";
@@ -264,7 +267,9 @@ export default function RootLayout({
         <LanguageProvider>
           <Navbar />
           <div className="min-h-screen">{children}</div>
-          <Footer />
+          <Divider />
+          <FAQAccordion faqs={supportFAQs}/>
+          <Footer />    
           <NewsletterPopup />
           {/* <NewsletterTestButton /> */}
         </LanguageProvider>
