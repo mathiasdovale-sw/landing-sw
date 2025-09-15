@@ -1,9 +1,11 @@
 import Container from "@/app/_components/container";
-import { Intro } from "@/app/_components/intro";
 import HeaderHome from "../_components/header-home";
 import ServicesSection from "../_components/services-section";
 import ContactSection from "../_components/contact-section";
 import type { Metadata } from 'next'
+import { HomeFAQsEn } from "@/lib/faqs";
+import FAQAccordion from "../_components/faq-accordion";
+import Divider from "../_components/divider";
 
 export const metadata: Metadata = {
   title: "SellifyWorks - Shopify Agency Barcelona | Online Store Development",
@@ -33,6 +35,8 @@ export default function HomePage() {
 
       <ServicesSection />
       <ContactSection />
+      <Divider />
+      <FAQAccordion faqs={HomeFAQsEn}/>
     </main>
   );
 }

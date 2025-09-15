@@ -3,7 +3,7 @@ import HeaderHome from "../_components/header-home";
 import ServicesSection from "../_components/services-section";
 import ContactSection from "../_components/contact-section";
 import type { Metadata } from 'next'
-import { supportFAQs } from "@/lib/faqs";
+import { HomeFAQsEs } from "@/lib/faqs";
 import FAQAccordion from "../_components/faq-accordion";
 import Divider from "../_components/divider";
 
@@ -36,7 +36,7 @@ export default function HomePage() {
       <ServicesSection />
       <ContactSection />
       <Divider />
-      <FAQAccordion faqs={supportFAQs}/>
+      <FAQAccordion faqs={HomeFAQsEs}/>
     </main>
   );
 }
