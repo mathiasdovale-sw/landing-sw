@@ -164,3 +164,1073 @@ export const supportFAQs: FAQ[] = [
     answer: 'Para emergencias críticas que afecten el funcionamiento de la tienda, ofrecemos soporte de emergencia 24/7. Para consultas regulares, nuestro horario es de lunes a viernes.'
   }
 ];
+
+// FAQ específicos para Diseño Shopify
+export const disenoShopifyFAQsEs: FAQ[] = [
+  {
+    id: 'diseno-1',
+    question: '¿Qué incluye el servicio de diseño web personalizado para Shopify?',
+    answer: 'Incluye diseño UI/UX único, optimización mobile-first, integración con Shopify, velocidad de carga optimizada, y diseño responsive que se adapta a todos los dispositivos.'
+  },
+  {
+    id: 'diseno-2',
+    question: '¿Cuánto tiempo tarda el diseño de una tienda Shopify?',
+    answer: 'Dependiendo de la complejidad, entre 2-6 semanas. Incluye wireframes, diseños en Figma, desarrollo del tema personalizado y optimización final.'
+  },
+  {
+    id: 'diseno-3',
+    question: '¿El diseño está optimizado para conversiones?',
+    answer: 'Sí, aplicamos principios de CRO (Conversion Rate Optimization) en cada elemento: llamadas a la acción, flujo de compra, trust signals y psicología del color.'
+  },
+  {
+    id: 'diseno-4',
+    question: '¿Puedo usar mi branding existente en el diseño Shopify?',
+    answer: 'Por supuesto. Adaptamos tu identidad de marca actual (colores, tipografías, logos) al nuevo diseño, manteniendo la coherencia visual de tu empresa.'
+  },
+  {
+    id: 'diseno-5',
+    question: '¿El diseño será compatible con aplicaciones de Shopify?',
+    answer: 'Sí, diseñamos pensando en la compatibilidad con las principales apps del ecosistema Shopify para reviews, email marketing, inventario y más.'
+  },
+  {
+    id: 'diseno-6',
+    question: '¿Incluyen revisiones en el proceso de diseño?',
+    answer: 'Incluimos hasta 3 rondas de revisiones durante el proceso para asegurar que el diseño final cumpla exactamente con tus expectativas.'
+  },
+  {
+    id: 'diseno-7',
+    question: '¿El diseño será único o usan plantillas predefinidas?',
+    answer: 'Creamos diseños 100% personalizados desde cero. No usamos plantillas; cada proyecto es único y diseñado específicamente para tu marca y audiencia.'
+  },
+  {
+    id: 'diseno-8',
+    question: '¿Qué pasa si necesito cambios después del lanzamiento?',
+    answer: 'Ofrecemos 30 días de soporte post-lanzamiento incluido para ajustes menores. Para cambios mayores, ofrecemos planes de mantenimiento flexibles.'
+  },
+  {
+    id: 'diseno-9',
+    question: '¿Pueden migrar mi diseño actual a Shopify?',
+    answer: 'Sí, recreamos tu diseño existente en Shopify mejorándolo con las mejores prácticas de la plataforma y optimizaciones para e-commerce.'
+  },
+  {
+    id: 'diseno-10',
+    question: '¿El diseño incluye optimización SEO?',
+    answer: 'Absolutamente. Implementamos estructura semántica, metadatos, velocidad optimizada, schema markup y todas las mejores prácticas SEO desde el diseño.'
+  }
+];
+
+export const disenoShopifyFAQsEn: FAQ[] = [
+  {
+    id: 'design-1',
+    question: 'What does the custom Shopify web design service include?',
+    answer: 'It includes unique UI/UX design, mobile-first optimization, Shopify integration, optimized loading speed, and responsive design that adapts to all devices.'
+  },
+  {
+    id: 'design-2',
+    question: 'How long does it take to design a Shopify store?',
+    answer: 'Depending on complexity, between 2-6 weeks. Includes wireframes, Figma designs, custom theme development and final optimization.'
+  },
+  {
+    id: 'design-3',
+    question: 'Is the design optimized for conversions?',
+    answer: 'Yes, we apply CRO (Conversion Rate Optimization) principles to every element: call-to-actions, checkout flow, trust signals and color psychology.'
+  },
+  {
+    id: 'design-4',
+    question: 'Can I use my existing branding in the Shopify design?',
+    answer: 'Of course. We adapt your current brand identity (colors, fonts, logos) to the new design, maintaining your company\'s visual consistency.'
+  },
+  {
+    id: 'design-5',
+    question: 'Will the design be compatible with Shopify apps?',
+    answer: 'Yes, we design with compatibility in mind for major Shopify ecosystem apps for reviews, email marketing, inventory and more.'
+  },
+  {
+    id: 'design-6',
+    question: 'Do you include revisions in the design process?',
+    answer: 'We include up to 3 revision rounds during the process to ensure the final design meets your exact expectations.'
+  },
+  {
+    id: 'design-7',
+    question: 'Is the design unique or do you use predefined templates?',
+    answer: 'We create 100% custom designs from scratch. We don\'t use templates; each project is unique and designed specifically for your brand and audience.'
+  },
+  {
+    id: 'design-8',
+    question: 'What if I need changes after launch?',
+    answer: 'We offer 30 days of included post-launch support for minor adjustments. For major changes, we offer flexible maintenance plans.'
+  },
+  {
+    id: 'design-9',
+    question: 'Can you migrate my current design to Shopify?',
+    answer: 'Yes, we recreate your existing design on Shopify while improving it with platform best practices and e-commerce optimizations.'
+  },
+  {
+    id: 'design-10',
+    question: 'Does the design include SEO optimization?',
+    answer: 'Absolutely. We implement semantic structure, metadata, optimized speed, schema markup and all SEO best practices from the design phase.'
+  }
+];
+
+// FAQ específicos para Shopify Plus
+export const shopifyPlusFAQsEs: FAQ[] = [
+  {
+    id: 'plus-1',
+    question: '¿Qué es Shopify Plus y cuándo lo necesito?',
+    answer: 'Shopify Plus es la versión enterprise de Shopify para empresas con alto volumen de ventas (+$1M USD/año). Ofrece automatizaciones avanzadas, multitienda y soporte prioritario.'
+  },
+  {
+    id: 'plus-2',
+    question: '¿Cuáles son las principales ventajas de Shopify Plus?',
+    answer: 'Scripts personalizados, checkout extensible, Flow para automatizaciones, Launchpad para lanzamientos, múltiples tiendas, APIs ilimitadas y soporte 24/7 dedicado.'
+  },
+  {
+    id: 'plus-3',
+    question: '¿Pueden migrar mi tienda actual a Shopify Plus?',
+    answer: 'Sí, especializamos en migraciones complejas a Shopify Plus desde cualquier plataforma, preservando datos, SEO y personalizaciones avanzadas.'
+  },
+  {
+    id: 'plus-4',
+    question: '¿Qué tipo de integraciones pueden hacer en Shopify Plus?',
+    answer: 'Integramos ERPs enterprise como SAP, Oracle, sistemas de inventario WMS, CRMs como Salesforce, y plataformas de marketing automation complejas.'
+  },
+  {
+    id: 'plus-5',
+    question: '¿Shopify Plus maneja B2B y wholesale?',
+    answer: 'Sí, Shopify Plus tiene funcionalidades nativas para B2B, precios por volumen, catálogos privados, y gestión de mayoristas con roles y permisos granulares.'
+  },
+  {
+    id: 'plus-6',
+    question: '¿Cuánto cuesta implementar Shopify Plus?',
+    answer: 'Shopify Plus cuesta $2,000+ USD/mes. La implementación varía según complejidad, integraciones y personalizaciones. Ofrecemos presupuestos detallados.'
+  },
+  {
+    id: 'plus-7',
+    question: '¿Pueden manejar múltiples marcas en una instalación Plus?',
+    answer: 'Sí, Shopify Plus permite hasta 10 tiendas adicionales. Podemos configurar arquitecturas multi-marca con inventario centralizado y gestión unificada.'
+  },
+  {
+    id: 'plus-8',
+    question: '¿Qué nivel de personalización permite Shopify Plus?',
+    answer: 'Shopify Plus permite personalización profunda: checkout customizado, scripts Ruby, apps privadas, APIs GraphQL avanzadas y modificaciones del admin.'
+  },
+  {
+    id: 'plus-9',
+    question: '¿Ofrecen soporte post-implementación para Shopify Plus?',
+    answer: 'Sí, ofrecemos planes de soporte enterprise con SLA garantizado, optimizaciones continuas, monitoreo 24/7 y consultoría estratégica mensual.'
+  },
+  {
+    id: 'plus-10',
+    question: '¿Shopify Plus es adecuado para empresas internacionales?',
+    answer: 'Perfectamente. Manejamos multi-currency, multi-idioma, cumplimiento fiscal internacional, y localizaciones específicas por mercado con Plus.'
+  }
+];
+
+export const shopifyPlusFAQsEn: FAQ[] = [
+  {
+    id: 'plus-en-1',
+    question: 'What is Shopify Plus and when do I need it?',
+    answer: 'Shopify Plus is the enterprise version of Shopify for businesses with high sales volume (+$1M USD/year). It offers advanced automations, multi-store and priority support.'
+  },
+  {
+    id: 'plus-en-2',
+    question: 'What are the main advantages of Shopify Plus?',
+    answer: 'Custom scripts, extensible checkout, Flow for automations, Launchpad for launches, multiple stores, unlimited APIs and dedicated 24/7 support.'
+  },
+  {
+    id: 'plus-en-3',
+    question: 'Can you migrate my current store to Shopify Plus?',
+    answer: 'Yes, we specialize in complex migrations to Shopify Plus from any platform, preserving data, SEO and advanced customizations.'
+  },
+  {
+    id: 'plus-en-4',
+    question: 'What type of integrations can you do on Shopify Plus?',
+    answer: 'We integrate enterprise ERPs like SAP, Oracle, WMS inventory systems, CRMs like Salesforce, and complex marketing automation platforms.'
+  },
+  {
+    id: 'plus-en-5',
+    question: 'Does Shopify Plus handle B2B and wholesale?',
+    answer: 'Yes, Shopify Plus has native B2B functionality, volume pricing, private catalogs, and wholesaler management with granular roles and permissions.'
+  },
+  {
+    id: 'plus-en-6',
+    question: 'How much does implementing Shopify Plus cost?',
+    answer: 'Shopify Plus costs $2,000+ USD/month. Implementation varies by complexity, integrations and customizations. We provide detailed quotes.'
+  },
+  {
+    id: 'plus-en-7',
+    question: 'Can you handle multiple brands in one Plus installation?',
+    answer: 'Yes, Shopify Plus allows up to 10 additional stores. We can configure multi-brand architectures with centralized inventory and unified management.'
+  },
+  {
+    id: 'plus-en-8',
+    question: 'What level of customization does Shopify Plus allow?',
+    answer: 'Shopify Plus allows deep customization: custom checkout, Ruby scripts, private apps, advanced GraphQL APIs and admin modifications.'
+  },
+  {
+    id: 'plus-en-9',
+    question: 'Do you offer post-implementation support for Shopify Plus?',
+    answer: 'Yes, we offer enterprise support plans with guaranteed SLA, continuous optimizations, 24/7 monitoring and monthly strategic consulting.'
+  },
+  {
+    id: 'plus-en-10',
+    question: 'Is Shopify Plus suitable for international companies?',
+    answer: 'Perfectly. We handle multi-currency, multi-language, international tax compliance, and market-specific localizations with Plus.'
+  }
+];
+
+// FAQ específicos para Migración Shopify
+export const migracionShopifyFAQsEs: FAQ[] = [
+  {
+    id: 'migracion-1',
+    question: '¿Desde qué plataformas pueden migrar a Shopify?',
+    answer: 'Migramos desde WooCommerce, Magento, PrestaShop, BigCommerce, Squarespace, Wix, y cualquier plataforma e-commerce o CMS personalizado.'
+  },
+  {
+    id: 'migracion-2',
+    question: '¿Se conservan los datos durante la migración a Shopify?',
+    answer: 'Sí, migramos productos, clientes, pedidos históricos, categorías, reviews, y toda la data importante. También preservamos URLs para mantener el SEO.'
+  },
+  {
+    id: 'migracion-3',
+    question: '¿Cuánto tiempo tarda una migración a Shopify?',
+    answer: 'Según el volumen de datos: tiendas pequeñas 1-2 semanas, medianas 2-4 semanas, y grandes con integraciones complejas hasta 8 semanas.'
+  },
+  {
+    id: 'migracion-4',
+    question: '¿Pierdo posicionamiento SEO durante la migración?',
+    answer: 'No, implementamos redirects 301, mantenemos URLs existentes cuando es posible, y optimizamos la nueva estructura para mejorar el SEO.'
+  },
+  {
+    id: 'migracion-5',
+    question: '¿Pueden migrar diseños personalizados a Shopify?',
+    answer: 'Sí, recreamos tu diseño actual en Shopify o aprovechamos la migración para mejorarlo con un diseño optimizado para conversiones.'
+  },
+  {
+    id: 'migracion-6',
+    question: '¿Se migran las integraciones con otras herramientas?',
+    answer: 'Sí, reconfiguramos integraciones con CRM, email marketing, contabilidad, inventario y otras herramientas en el ecosistema Shopify.'
+  },
+  {
+    id: 'migracion-7',
+    question: '¿Qué pasa si encuentran problemas durante la migración?',
+    answer: 'Realizamos pruebas exhaustivas pre-migración. Si surgen issues, los resolvemos sin costo adicional durante el período de garantía.'
+  },
+  {
+    id: 'migracion-8',
+    question: '¿Hacen backup completo antes de la migración?',
+    answer: 'Absolutamente. Realizamos backup completo de la plataforma origen y configuramos staging en Shopify para pruebas antes del go-live.'
+  },
+  {
+    id: 'migracion-9',
+    question: '¿Capacitan al equipo después de la migración?',
+    answer: 'Sí, incluimos capacitación personalizada del admin de Shopify, documentación detallada y soporte post-migración durante 30 días.'
+  },
+  {
+    id: 'migracion-10',
+    question: '¿Cuánto cuesta una migración a Shopify?',
+    answer: 'Depende del volumen de datos y complejidad. Ofrecemos auditoría gratuita y presupuesto personalizado sin compromiso.'
+  }
+];
+
+export const migracionShopifyFAQsEn: FAQ[] = [
+  {
+    id: 'migration-1',
+    question: 'From which platforms can you migrate to Shopify?',
+    answer: 'We migrate from WooCommerce, Magento, PrestaShop, BigCommerce, Squarespace, Wix, and any e-commerce platform or custom CMS.'
+  },
+  {
+    id: 'migration-2',
+    question: 'Is data preserved during Shopify migration?',
+    answer: 'Yes, we migrate products, customers, order history, categories, reviews, and all important data. We also preserve URLs to maintain SEO.'
+  },
+  {
+    id: 'migration-3',
+    question: 'How long does a Shopify migration take?',
+    answer: 'Depends on data volume: small stores 1-2 weeks, medium 2-4 weeks, and large stores with complex integrations up to 8 weeks.'
+  },
+  {
+    id: 'migration-4',
+    question: 'Do I lose SEO ranking during migration?',
+    answer: 'No, we implement 301 redirects, maintain existing URLs when possible, and optimize the new structure to improve SEO.'
+  },
+  {
+    id: 'migration-5',
+    question: 'Can you migrate custom designs to Shopify?',
+    answer: 'Yes, we recreate your current design on Shopify or take advantage of migration to improve it with a conversion-optimized design.'
+  },
+  {
+    id: 'migration-6',
+    question: 'Are integrations with other tools migrated?',
+    answer: 'Yes, we reconfigure integrations with CRM, email marketing, accounting, inventory and other tools in the Shopify ecosystem.'
+  },
+  {
+    id: 'migration-7',
+    question: 'What happens if problems are found during migration?',
+    answer: 'We perform thorough pre-migration testing. If issues arise, we resolve them at no additional cost during the warranty period.'
+  },
+  {
+    id: 'migration-8',
+    question: 'Do you make complete backup before migration?',
+    answer: 'Absolutely. We perform complete backup of the source platform and set up staging on Shopify for testing before go-live.'
+  },
+  {
+    id: 'migration-9',
+    question: 'Do you train the team after migration?',
+    answer: 'Yes, we include personalized Shopify admin training, detailed documentation and 30-day post-migration support.'
+  },
+  {
+    id: 'migration-10',
+    question: 'How much does a Shopify migration cost?',
+    answer: 'Depends on data volume and complexity. We offer free audit and personalized quote without commitment.'
+  }
+];
+
+// FAQ específicos para Consultoría Shopify
+export const consultoriaShopifyFAQsEs: FAQ[] = [
+  {
+    id: 'consultoria-1',
+    question: '¿Qué incluye el servicio de consultoría Shopify?',
+    answer: 'Auditoría completa de tu tienda, análisis de performance, optimización de conversiones, estrategia de apps, y plan de crecimiento personalizado.'
+  },
+  {
+    id: 'consultoria-2',
+    question: '¿Cómo pueden ayudar a mejorar las ventas de mi tienda?',
+    answer: 'Analizamos el funnel de conversión, optimizamos checkout, mejoramos UX, implementamos estrategias de CRO y identificamos oportunidades de growth.'
+  },
+  {
+    id: 'consultoria-3',
+    question: '¿Realizan auditorías SEO para Shopify?',
+    answer: 'Sí, auditamos estructura técnica, contenido, velocidad, mobile-friendliness, y creamos plan de acción SEO específico para e-commerce.'
+  },
+  {
+    id: 'consultoria-4',
+    question: '¿Pueden optimizar la velocidad de mi tienda Shopify?',
+    answer: 'Absolutamente. Optimizamos imágenes, código, apps innecesarias, lazy loading, CDN, y todas las métricas Core Web Vitals.'
+  },
+  {
+    id: 'consultoria-5',
+    question: '¿Qué tipos de integraciones recomiendan?',
+    answer: 'Evaluamos tus necesidades específicas y recomendamos las mejores apps para email marketing, reviews, inventario, contabilidad y automatización.'
+  },
+  {
+    id: 'consultoria-6',
+    question: '¿Ayudan con estrategias de marketing digital?',
+    answer: 'Sí, desarrollamos estrategias de email marketing, abandoned cart, upselling, cross-selling, y integración con Google Ads y Facebook Ads.'
+  },
+  {
+    id: 'consultoria-7',
+    question: '¿Cuánto dura un proceso de consultoría?',
+    answer: 'La auditoría inicial toma 1-2 semanas. La implementación de recomendaciones puede durar 4-12 semanas según complejidad.'
+  },
+  {
+    id: 'consultoria-8',
+    question: '¿Ofrecen consultoría recurrente para Shopify?',
+    answer: 'Sí, ofrecemos planes de consultoría mensual para optimización continua, monitoreo de performance y crecimiento sostenido.'
+  },
+  {
+    id: 'consultoria-9',
+    question: '¿Pueden ayudar con cumplimiento legal (GDPR, cookies)?',
+    answer: 'Sí, implementamos políticas de privacidad, manejo de cookies, GDPR compliance, y configuraciones legales según tu mercado.'
+  },
+  {
+    id: 'consultoria-10',
+    question: '¿Qué ROI puedo esperar de la consultoría Shopify?',
+    answer: 'Nuestros clientes típicamente ven mejoras del 20-50% en conversiones y 15-30% en velocidad de carga en los primeros 3 meses.'
+  }
+];
+
+export const consultoriaShopifyFAQsEn: FAQ[] = [
+  {
+    id: 'consulting-1',
+    question: 'What does the Shopify consulting service include?',
+    answer: 'Complete store audit, performance analysis, conversion optimization, app strategy, and personalized growth plan.'
+  },
+  {
+    id: 'consulting-2',
+    question: 'How can you help improve my store sales?',
+    answer: 'We analyze the conversion funnel, optimize checkout, improve UX, implement CRO strategies and identify growth opportunities.'
+  },
+  {
+    id: 'consulting-3',
+    question: 'Do you perform SEO audits for Shopify?',
+    answer: 'Yes, we audit technical structure, content, speed, mobile-friendliness, and create specific SEO action plan for e-commerce.'
+  },
+  {
+    id: 'consulting-4',
+    question: 'Can you optimize my Shopify store speed?',
+    answer: 'Absolutely. We optimize images, code, unnecessary apps, lazy loading, CDN, and all Core Web Vitals metrics.'
+  },
+  {
+    id: 'consulting-5',
+    question: 'What types of integrations do you recommend?',
+    answer: 'We evaluate your specific needs and recommend the best apps for email marketing, reviews, inventory, accounting and automation.'
+  },
+  {
+    id: 'consulting-6',
+    question: 'Do you help with digital marketing strategies?',
+    answer: 'Yes, we develop email marketing strategies, abandoned cart, upselling, cross-selling, and integration with Google Ads and Facebook Ads.'
+  },
+  {
+    id: 'consulting-7',
+    question: 'How long does a consulting process take?',
+    answer: 'Initial audit takes 1-2 weeks. Implementation of recommendations can last 4-12 weeks depending on complexity.'
+  },
+  {
+    id: 'consulting-8',
+    question: 'Do you offer recurring Shopify consulting?',
+    answer: 'Yes, we offer monthly consulting plans for continuous optimization, performance monitoring and sustained growth.'
+  },
+  {
+    id: 'consulting-9',
+    question: 'Can you help with legal compliance (GDPR, cookies)?',
+    answer: 'Yes, we implement privacy policies, cookie handling, GDPR compliance, and legal configurations according to your market.'
+  },
+  {
+    id: 'consulting-10',
+    question: 'What ROI can I expect from Shopify consulting?',
+    answer: 'Our clients typically see 20-50% improvements in conversions and 15-30% in loading speed in the first 3 months.'
+  }
+];
+
+// FAQ específicos para CRO Shopify
+export const croShopifyFAQsEs: FAQ[] = [
+  {
+    id: 'cro-1',
+    question: '¿Qué es CRO y cómo puede mejorar mi tienda Shopify?',
+    answer: 'CRO (Conversion Rate Optimization) optimiza cada elemento de tu tienda para convertir más visitantes en clientes: checkout, producto, home, categorías.'
+  },
+  {
+    id: 'cro-2',
+    question: '¿Cómo miden las mejoras en conversión?',
+    answer: 'Usamos Google Analytics 4, heatmaps, grabaciones de sesiones, y A/B testing para medir lift en conversiones, AOV y revenue por visitante.'
+  },
+  {
+    id: 'cro-3',
+    question: '¿Qué elementos optimizan en el proceso de checkout?',
+    answer: 'Simplificamos pasos, agregamos trust signals, optimizamos campos de formulario, opciones de pago, y reducimos el abandono de carrito.'
+  },
+  {
+    id: 'cro-4',
+    question: '¿Pueden optimizar las páginas de producto para más ventas?',
+    answer: 'Sí, optimizamos imágenes, descripciones, reviews, precios, urgencia, cross-selling, y todos los elementos que impactan la decisión de compra.'
+  },
+  {
+    id: 'cro-5',
+    question: '¿Qué herramientas usan para el análisis CRO?',
+    answer: 'Hotjar, Google Analytics, Google Optimize, Klaviyo, y herramientas específicas de Shopify para análisis de comportamiento y testing.'
+  },
+  {
+    id: 'cro-6',
+    question: '¿Cuánto tiempo se ven resultados en CRO?',
+    answer: 'Los primeros resultados se ven en 2-4 semanas. Para optimizaciones completas con A/B testing significativo, 2-3 meses.'
+  },
+  {
+    id: 'cro-7',
+    question: '¿Hacen A/B testing en Shopify?',
+    answer: 'Sí, diseñamos y ejecutamos tests A/B en páginas, checkout, emails, pop-ups, y cualquier elemento que pueda impactar conversiones.'
+  },
+  {
+    id: 'cro-8',
+    question: '¿Optimizan para mobile commerce?',
+    answer: 'Absolutamente. Mobile representa 70%+ del tráfico e-commerce. Optimizamos UX mobile, velocidad, y elementos táctiles específicamente.'
+  },
+  {
+    id: 'cro-9',
+    question: '¿Pueden mejorar el Average Order Value (AOV)?',
+    answer: 'Sí, implementamos estrategias de upselling, cross-selling, bundles, free shipping thresholds, y recomendaciones personalizadas.'
+  },
+  {
+    id: 'cro-10',
+    question: '¿Qué mejora promedio ven en las conversiones?',
+    answer: 'Nuestros clientes típicamente ven aumentos del 25-60% en conversion rate y 15-40% en AOV después de optimizaciones CRO completas.'
+  }
+];
+
+export const croShopifyFAQsEn: FAQ[] = [
+  {
+    id: 'cro-en-1',
+    question: 'What is CRO and how can it improve my Shopify store?',
+    answer: 'CRO (Conversion Rate Optimization) optimizes every element of your store to convert more visitors into customers: checkout, product, home, categories.'
+  },
+  {
+    id: 'cro-en-2',
+    question: 'How do you measure conversion improvements?',
+    answer: 'We use Google Analytics 4, heatmaps, session recordings, and A/B testing to measure lift in conversions, AOV and revenue per visitor.'
+  },
+  {
+    id: 'cro-en-3',
+    question: 'What elements do you optimize in the checkout process?',
+    answer: 'We simplify steps, add trust signals, optimize form fields, payment options, and reduce cart abandonment.'
+  },
+  {
+    id: 'cro-en-4',
+    question: 'Can you optimize product pages for more sales?',
+    answer: 'Yes, we optimize images, descriptions, reviews, pricing, urgency, cross-selling, and all elements that impact purchase decisions.'
+  },
+  {
+    id: 'cro-en-5',
+    question: 'What tools do you use for CRO analysis?',
+    answer: 'Hotjar, Google Analytics, Google Optimize, Klaviyo, and Shopify-specific tools for behavior analysis and testing.'
+  },
+  {
+    id: 'cro-en-6',
+    question: 'How long before seeing CRO results?',
+    answer: 'First results are seen in 2-4 weeks. For complete optimizations with significant A/B testing, 2-3 months.'
+  },
+  {
+    id: 'cro-en-7',
+    question: 'Do you do A/B testing on Shopify?',
+    answer: 'Yes, we design and execute A/B tests on pages, checkout, emails, pop-ups, and any element that can impact conversions.'
+  },
+  {
+    id: 'cro-en-8',
+    question: 'Do you optimize for mobile commerce?',
+    answer: 'Absolutely. Mobile represents 70%+ of e-commerce traffic. We optimize mobile UX, speed, and touch elements specifically.'
+  },
+  {
+    id: 'cro-en-9',
+    question: 'Can you improve Average Order Value (AOV)?',
+    answer: 'Yes, we implement upselling, cross-selling, bundles, free shipping thresholds, and personalized recommendation strategies.'
+  },
+  {
+    id: 'cro-en-10',
+    question: 'What average improvement do you see in conversions?',
+    answer: 'Our clients typically see 25-60% increases in conversion rate and 15-40% in AOV after complete CRO optimizations.'
+  }
+];
+
+// FAQ específicos para A/B Testing Shopify
+export const abTestingShopifyFAQsEs: FAQ[] = [
+  {
+    id: 'ab-1',
+    question: '¿Qué es A/B testing y por qué es importante para mi tienda Shopify?',
+    answer: 'A/B testing compara dos versiones de una página para ver cuál convierte mejor. Es crucial para tomar decisiones basadas en data, no suposiciones.'
+  },
+  {
+    id: 'ab-2',
+    question: '¿Qué elementos pueden testear en una tienda Shopify?',
+    answer: 'Testeamos headlines, CTAs, imágenes de producto, precios, checkout flow, pop-ups, emails, landing pages, y cualquier elemento que impacte conversiones.'
+  },
+  {
+    id: 'ab-3',
+    question: '¿Cuánto tráfico necesito para hacer A/B testing efectivo?',
+    answer: 'Mínimo 1,000 visitantes/mes por variante para resultados estadísticamente significativos. Para tests rápidos, recomendamos 5,000+ visitantes/mes.'
+  },
+  {
+    id: 'ab-4',
+    question: '¿Qué herramientas usan para A/B testing en Shopify?',
+    answer: 'Google Optimize, VWO, Optimizely, Convert, y herramientas nativas de Shopify Plus para testing más avanzado y personalización.'
+  },
+  {
+    id: 'ab-5',
+    question: '¿Cuánto tiempo debe durar un A/B test?',
+    answer: 'Mínimo 2 semanas para capturar comportamientos semanales. Para resultados confiables, recomendamos 4-6 semanas o hasta alcanzar significancia estadística.'
+  },
+  {
+    id: 'ab-6',
+    question: '¿Pueden testear cambios en el checkout de Shopify?',
+    answer: 'Sí, en Shopify Plus podemos testear elementos del checkout. En planes regulares, testeamos pre-checkout: carrito, producto, y flujo hasta payment.'
+  },
+  {
+    id: 'ab-7',
+    question: '¿Cómo aseguran que los resultados sean estadísticamente válidos?',
+    answer: 'Calculamos sample size necesario, establecemos confidence intervals (95%+), monitoreamos external validity, y consideramos factores estacionales.'
+  },
+  {
+    id: 'ab-8',
+    question: '¿Qué tipo de mejoras han logrado con A/B testing?',
+    answer: 'Hemos logrado aumentos del 15-80% en conversiones, 10-35% en AOV, y reducciones del 20-50% en bounce rate según el elemento testeado.'
+  },
+  {
+    id: 'ab-9',
+    question: '¿Hacen testing multivariate o solo A/B simple?',
+    answer: 'Ofrecemos ambos: A/B simple para tests rápidos y multivariate testing para analizar interacciones entre múltiples elementos simultáneamente.'
+  },
+  {
+    id: 'ab-10',
+    question: '¿Incluyen análisis post-test y recomendaciones?',
+    answer: 'Sí, proporcionamos análisis detallado de resultados, insights del comportamiento del usuario, y roadmap de próximos tests a implementar.'
+  }
+];
+
+export const abTestingShopifyFAQsEn: FAQ[] = [
+  {
+    id: 'ab-en-1',
+    question: 'What is A/B testing and why is it important for my Shopify store?',
+    answer: 'A/B testing compares two versions of a page to see which converts better. It\'s crucial for making data-driven decisions, not assumptions.'
+  },
+  {
+    id: 'ab-en-2',
+    question: 'What elements can you test in a Shopify store?',
+    answer: 'We test headlines, CTAs, product images, pricing, checkout flow, pop-ups, emails, landing pages, and any element that impacts conversions.'
+  },
+  {
+    id: 'ab-en-3',
+    question: 'How much traffic do I need for effective A/B testing?',
+    answer: 'Minimum 1,000 visitors/month per variant for statistically significant results. For faster tests, we recommend 5,000+ visitors/month.'
+  },
+  {
+    id: 'ab-en-4',
+    question: 'What tools do you use for A/B testing on Shopify?',
+    answer: 'Google Optimize, VWO, Optimizely, Convert, and native Shopify Plus tools for more advanced testing and personalization.'
+  },
+  {
+    id: 'ab-en-5',
+    question: 'How long should an A/B test run?',
+    answer: 'Minimum 2 weeks to capture weekly behaviors. For reliable results, we recommend 4-6 weeks or until reaching statistical significance.'
+  },
+  {
+    id: 'ab-en-6',
+    question: 'Can you test changes in Shopify checkout?',
+    answer: 'Yes, on Shopify Plus we can test checkout elements. On regular plans, we test pre-checkout: cart, product, and flow until payment.'
+  },
+  {
+    id: 'ab-en-7',
+    question: 'How do you ensure results are statistically valid?',
+    answer: 'We calculate necessary sample size, establish confidence intervals (95%+), monitor external validity, and consider seasonal factors.'
+  },
+  {
+    id: 'ab-en-8',
+    question: 'What type of improvements have you achieved with A/B testing?',
+    answer: 'We\'ve achieved 15-80% increases in conversions, 10-35% in AOV, and 20-50% reductions in bounce rate depending on the element tested.'
+  },
+  {
+    id: 'ab-en-9',
+    question: 'Do you do multivariate testing or just simple A/B?',
+    answer: 'We offer both: simple A/B for quick tests and multivariate testing to analyze interactions between multiple elements simultaneously.'
+  },
+  {
+    id: 'ab-en-10',
+    question: 'Do you include post-test analysis and recommendations?',
+    answer: 'Yes, we provide detailed results analysis, user behavior insights, and roadmap of next tests to implement.'
+  }
+];
+
+// FAQ específicos para SEO Shopify
+export const seoShopifyFAQsEs: FAQ[] = [
+  {
+    id: 'seo-1',
+    question: '¿Por qué es importante el SEO específico para Shopify?',
+    answer: 'Shopify tiene particularidades técnicas únicas: URLs automáticas, sitemap, estructura de productos, que requieren optimización específica para rankear bien.'
+  },
+  {
+    id: 'seo-2',
+    question: '¿Qué incluye la optimización SEO para tiendas Shopify?',
+    answer: 'SEO técnico, investigación de keywords, optimización on-page, schema markup, Core Web Vitals, contenido optimizado, y link building para e-commerce.'
+  },
+  {
+    id: 'seo-3',
+    question: '¿Pueden solucionar problemas de contenido duplicado en Shopify?',
+    answer: 'Sí, configuramos canonical tags, optimizamos faceted navigation, URLs de variantes, y resolvemos issues comunes de duplicate content en e-commerce.'
+  },
+  {
+    id: 'seo-4',
+    question: '¿Cómo optimizan las páginas de producto para SEO?',
+    answer: 'Optimizamos títulos, descripciones, imágenes con alt text, schema de producto, reviews, preguntas frecuentes, y contenido único de producto.'
+  },
+  {
+    id: 'seo-5',
+    question: '¿Mejoran la velocidad de carga para SEO?',
+    answer: 'Absolutamente. Optimizamos imágenes, código, apps, lazy loading, CDN, y todas las métricas Core Web Vitals que Google considera para ranking.'
+  },
+  {
+    id: 'seo-6',
+    question: '¿Hacen keyword research específico para e-commerce?',
+    answer: 'Sí, investigamos keywords comerciales, long-tail, preguntas del buyer journey, términos de producto, y keywords de marca para cada categoría.'
+  },
+  {
+    id: 'seo-7',
+    question: '¿Pueden ayudar con SEO local para tiendas físicas?',
+    answer: 'Sí, optimizamos Google My Business, local schema, landing pages por ubicación, y estrategias SEO para retail omnicanal.'
+  },
+  {
+    id: 'seo-8',
+    question: '¿Qué resultados puedo esperar del SEO en Shopify?',
+    answer: 'Típicamente vemos mejoras en 3-6 meses: +40-150% en tráfico orgánico, mejor ranking para keywords objetivo, y aumento en ventas del canal orgánico.'
+  },
+  {
+    id: 'seo-9',
+    question: '¿Hacen auditorías SEO completas de tiendas Shopify?',
+    answer: 'Sí, auditamos SEO técnico, contenido, UX, velocidad, mobile-friendliness, y competencia para crear estrategia SEO personalizada.'
+  },
+  {
+    id: 'seo-10',
+    question: '¿Ofrecen SEO continuo o solo optimización inicial?',
+    answer: 'Ofrecemos ambos: optimización inicial completa y planes de SEO continuo con contenido, link building, y monitoreo mensual.'
+  }
+];
+
+export const seoShopifyFAQsEn: FAQ[] = [
+  {
+    id: 'seo-en-1',
+    question: 'Why is Shopify-specific SEO important?',
+    answer: 'Shopify has unique technical particularities: automatic URLs, sitemap, product structure, that require specific optimization to rank well.'
+  },
+  {
+    id: 'seo-en-2',
+    question: 'What does SEO optimization for Shopify stores include?',
+    answer: 'Technical SEO, keyword research, on-page optimization, schema markup, Core Web Vitals, optimized content, and e-commerce link building.'
+  },
+  {
+    id: 'seo-en-3',
+    question: 'Can you solve duplicate content issues in Shopify?',
+    answer: 'Yes, we configure canonical tags, optimize faceted navigation, variant URLs, and resolve common e-commerce duplicate content issues.'
+  },
+  {
+    id: 'seo-en-4',
+    question: 'How do you optimize product pages for SEO?',
+    answer: 'We optimize titles, descriptions, images with alt text, product schema, reviews, FAQs, and unique product content.'
+  },
+  {
+    id: 'seo-en-5',
+    question: 'Do you improve loading speed for SEO?',
+    answer: 'Absolutely. We optimize images, code, apps, lazy loading, CDN, and all Core Web Vitals metrics that Google considers for ranking.'
+  },
+  {
+    id: 'seo-en-6',
+    question: 'Do you do e-commerce specific keyword research?',
+    answer: 'Yes, we research commercial keywords, long-tail, buyer journey questions, product terms, and brand keywords for each category.'
+  },
+  {
+    id: 'seo-en-7',
+    question: 'Can you help with local SEO for physical stores?',
+    answer: 'Yes, we optimize Google My Business, local schema, location landing pages, and SEO strategies for omnichannel retail.'
+  },
+  {
+    id: 'seo-en-8',
+    question: 'What results can I expect from Shopify SEO?',
+    answer: 'We typically see improvements in 3-6 months: +40-150% in organic traffic, better ranking for target keywords, and increased organic channel sales.'
+  },
+  {
+    id: 'seo-en-9',
+    question: 'Do you do complete SEO audits of Shopify stores?',
+    answer: 'Yes, we audit technical SEO, content, UX, speed, mobile-friendliness, and competition to create personalized SEO strategy.'
+  },
+  {
+    id: 'seo-en-10',
+    question: 'Do you offer ongoing SEO or just initial optimization?',
+    answer: 'We offer both: complete initial optimization and ongoing SEO plans with content, link building, and monthly monitoring.'
+  }
+];
+
+// FAQ específicos para Crear Tienda Shopify
+export const crearTiendaShopifyFAQsEs: FAQ[] = [
+  {
+    id: 'crear-1',
+    question: '¿Qué incluye el servicio de crear tienda Shopify desde cero?',
+    answer: 'Incluye setup completo, diseño personalizado, configuración de productos, pagos, envíos, SEO básico, y capacitación para que puedas administrarla.'
+  },
+  {
+    id: 'crear-2',
+    question: '¿Cuánto tiempo tarda crear una tienda Shopify completa?',
+    answer: 'Tiendas básicas: 2-3 semanas. Tiendas con diseño personalizado y muchos productos: 4-8 semanas. Depende de complejidad y contenido.'
+  },
+  {
+    id: 'crear-3',
+    question: '¿Incluyen la configuración de métodos de pago?',
+    answer: 'Sí, configuramos Shopify Payments, PayPal, Stripe, y otros procesadores según tu ubicación y necesidades específicas.'
+  },
+  {
+    id: 'crear-4',
+    question: '¿Pueden migrar productos desde otra plataforma?',
+    answer: 'Sí, migramos productos, categorías, inventario, y metadata desde cualquier plataforma: WooCommerce, Magento, Excel, etc.'
+  },
+  {
+    id: 'crear-5',
+    question: '¿La tienda viene optimizada para móviles?',
+    answer: 'Absolutamente. Todas nuestras tiendas son mobile-first, responsive, y optimizadas para la experiencia de compra móvil.'
+  },
+  {
+    id: 'crear-6',
+    question: '¿Configuran los envíos y zonas de entrega?',
+    answer: 'Sí, configuramos zonas de envío, tarifas, integraciones con transportistas, y opciones de pickup/delivery según tu modelo de negocio.'
+  },
+  {
+    id: 'crear-7',
+    question: '¿Incluyen capacitación para administrar la tienda?',
+    answer: 'Sí, incluimos capacitación personalizada del admin Shopify, gestión de productos, pedidos, y documentación detallada.'
+  },
+  {
+    id: 'crear-8',
+    question: '¿Pueden integrar herramientas de marketing desde el inicio?',
+    answer: 'Sí, integramos email marketing, analytics, pixel de Facebook/Google, reviews, y herramientas esenciales para tu estrategia digital.'
+  },
+  {
+    id: 'crear-9',
+    question: '¿Qué pasa si necesito funcionalidades específicas?',
+    answer: 'Evaluamos tus necesidades y desarrollamos funcionalidades custom o integramos apps especializadas para tu industria específica.'
+  },
+  {
+    id: 'crear-10',
+    question: '¿Ofrecen soporte después del lanzamiento?',
+    answer: 'Sí, incluimos 30 días de soporte post-lanzamiento y ofrecemos planes de mantenimiento continuo según tus necesidades.'
+  }
+];
+
+export const crearTiendaShopifyFAQsEn: FAQ[] = [
+  {
+    id: 'create-1',
+    question: 'What does the create Shopify store from scratch service include?',
+    answer: 'Includes complete setup, custom design, product configuration, payments, shipping, basic SEO, and training so you can manage it.'
+  },
+  {
+    id: 'create-2',
+    question: 'How long does it take to create a complete Shopify store?',
+    answer: 'Basic stores: 2-3 weeks. Stores with custom design and many products: 4-8 weeks. Depends on complexity and content.'
+  },
+  {
+    id: 'create-3',
+    question: 'Do you include payment method configuration?',
+    answer: 'Yes, we configure Shopify Payments, PayPal, Stripe, and other processors according to your location and specific needs.'
+  },
+  {
+    id: 'create-4',
+    question: 'Can you migrate products from another platform?',
+    answer: 'Yes, we migrate products, categories, inventory, and metadata from any platform: WooCommerce, Magento, Excel, etc.'
+  },
+  {
+    id: 'create-5',
+    question: 'Is the store optimized for mobile?',
+    answer: 'Absolutely. All our stores are mobile-first, responsive, and optimized for the mobile shopping experience.'
+  },
+  {
+    id: 'create-6',
+    question: 'Do you configure shipping and delivery zones?',
+    answer: 'Yes, we configure shipping zones, rates, carrier integrations, and pickup/delivery options according to your business model.'
+  },
+  {
+    id: 'create-7',
+    question: 'Do you include training to manage the store?',
+    answer: 'Yes, we include personalized Shopify admin training, product management, orders, and detailed documentation.'
+  },
+  {
+    id: 'create-8',
+    question: 'Can you integrate marketing tools from the start?',
+    answer: 'Yes, we integrate email marketing, analytics, Facebook/Google pixel, reviews, and essential tools for your digital strategy.'
+  },
+  {
+    id: 'create-9',
+    question: 'What if I need specific functionalities?',
+    answer: 'We evaluate your needs and develop custom functionalities or integrate specialized apps for your specific industry.'
+  },
+  {
+    id: 'create-10',
+    question: 'Do you offer support after launch?',
+    answer: 'Yes, we include 30 days of post-launch support and offer ongoing maintenance plans according to your needs.'
+  }
+];
+
+// FAQ específicos para Personalización Tema Shopify
+export const personalizacionTemaFAQsEs: FAQ[] = [
+  {
+    id: 'tema-1',
+    question: '¿Qué tipo de personalizaciones pueden hacer en temas Shopify?',
+    answer: 'Personalizamos diseño, layout, funcionalidades, colores, tipografías, secciones custom, y cualquier elemento visual o funcional del tema.'
+  },
+  {
+    id: 'tema-2',
+    question: '¿Trabajan con cualquier tema de Shopify o solo algunos?',
+    answer: 'Trabajamos con cualquier tema: gratuitos, premium, custom themes. También creamos temas desde cero según tus necesidades específicas.'
+  },
+  {
+    id: 'tema-3',
+    question: '¿Las personalizaciones son compatibles con actualizaciones?',
+    answer: 'Documentamos todos los cambios y usamos child themes cuando es posible. Ofrecemos mantenimiento para preservar personalizaciones tras updates.'
+  },
+  {
+    id: 'tema-4',
+    question: '¿Pueden agregar secciones completamente nuevas?',
+    answer: 'Sí, desarrollamos secciones custom: testimonios, galerías, comparadores, calculadoras, mapas, y cualquier funcionalidad específica que necesites.'
+  },
+  {
+    id: 'tema-5',
+    question: '¿Optimizan el rendimiento durante la personalización?',
+    answer: 'Absolutamente. Optimizamos código, imágenes, carga lazy, minificación, y aseguramos que las personalizaciones no afecten la velocidad.'
+  },
+  {
+    id: 'tema-6',
+    question: '¿Pueden personalizar el checkout en temas Shopify?',
+    answer: 'En Shopify Plus sí. En planes regulares, personalizamos todo el pre-checkout: carrito, producto pages, y elementos hasta el payment step.'
+  },
+  {
+    id: 'tema-7',
+    question: '¿Incluyen diseño responsive en las personalizaciones?',
+    answer: 'Sí, todas las personalizaciones son mobile-first y responsive. Testeamos en todos los dispositivos y tamaños de pantalla.'
+  },
+  {
+    id: 'tema-8',
+    question: '¿Pueden integrar funcionalidades de apps en el tema?',
+    answer: 'Sí, integramos funcionalidades de reviews, wishlists, currency switchers, y otras apps directamente en el diseño del tema.'
+  },
+  {
+    id: 'tema-9',
+    question: '¿Cuánto tiempo toma personalizar un tema Shopify?',
+    answer: 'Personalizaciones básicas: 1-2 semanas. Personalizaciones extensas con secciones custom: 3-6 semanas según complejidad.'
+  },
+  {
+    id: 'tema-10',
+    question: '¿Proporcionan documentación de las personalizaciones?',
+    answer: 'Sí, documentamos todos los cambios, código custom, y proporcionamos guía para futuras modificaciones o mantenimiento.'
+  }
+];
+
+export const personalizacionTemaFAQsEn: FAQ[] = [
+  {
+    id: 'theme-1',
+    question: 'What type of customizations can you do on Shopify themes?',
+    answer: 'We customize design, layout, functionalities, colors, fonts, custom sections, and any visual or functional element of the theme.'
+  },
+  {
+    id: 'theme-2',
+    question: 'Do you work with any Shopify theme or just some?',
+    answer: 'We work with any theme: free, premium, custom themes. We also create themes from scratch according to your specific needs.'
+  },
+  {
+    id: 'theme-3',
+    question: 'Are customizations compatible with updates?',
+    answer: 'We document all changes and use child themes when possible. We offer maintenance to preserve customizations after updates.'
+  },
+  {
+    id: 'theme-4',
+    question: 'Can you add completely new sections?',
+    answer: 'Yes, we develop custom sections: testimonials, galleries, comparators, calculators, maps, and any specific functionality you need.'
+  },
+  {
+    id: 'theme-5',
+    question: 'Do you optimize performance during customization?',
+    answer: 'Absolutely. We optimize code, images, lazy loading, minification, and ensure customizations don\'t affect speed.'
+  },
+  {
+    id: 'theme-6',
+    question: 'Can you customize checkout in Shopify themes?',
+    answer: 'On Shopify Plus yes. On regular plans, we customize all pre-checkout: cart, product pages, and elements until the payment step.'
+  },
+  {
+    id: 'theme-7',
+    question: 'Do you include responsive design in customizations?',
+    answer: 'Yes, all customizations are mobile-first and responsive. We test on all devices and screen sizes.'
+  },
+  {
+    id: 'theme-8',
+    question: 'Can you integrate app functionalities into the theme?',
+    answer: 'Yes, we integrate reviews, wishlists, currency switchers, and other app functionalities directly into the theme design.'
+  },
+  {
+    id: 'theme-9',
+    question: 'How long does it take to customize a Shopify theme?',
+    answer: 'Basic customizations: 1-2 weeks. Extensive customizations with custom sections: 3-6 weeks depending on complexity.'
+  },
+  {
+    id: 'theme-10',
+    question: 'Do you provide documentation of customizations?',
+    answer: 'Yes, we document all changes, custom code, and provide guidance for future modifications or maintenance.'
+  }
+];
+
+// FAQ específicos para Growth Partner Shopify
+export const growthPartnerFAQsEs: FAQ[] = [
+  {
+    id: 'growth-1',
+    question: '¿Qué significa ser Growth Partner de Shopify?',
+    answer: 'Como Growth Partner desarrollamos estrategias integrales de crecimiento: CRO, email marketing, paid ads, SEO, y optimización continua para escalar tu negocio.'
+  },
+  {
+    id: 'growth-2',
+    question: '¿Qué servicios incluye el programa Growth Partner?',
+    answer: 'Auditoría completa, estrategia de crecimiento, optimización de conversiones, automatización de marketing, análisis de datos, y consultoría continua.'
+  },
+  {
+    id: 'growth-3',
+    question: '¿Cómo miden el crecimiento y éxito del programa?',
+    answer: 'Monitoreamos KPIs clave: revenue growth, LTV, CAC, conversion rate, AOV, retention rate, y ROI de cada canal de marketing.'
+  },
+  {
+    id: 'growth-4',
+    question: '¿Trabajan con empresas de cualquier tamaño?',
+    answer: 'Nos enfocamos en empresas que facturan $50K+ USD/año y tienen potencial de crecimiento. Diseñamos estrategias escalables para cada etapa.'
+  },
+  {
+    id: 'growth-5',
+    question: '¿Incluyen gestión de campañas publicitarias?',
+    answer: 'Sí, gestionamos Google Ads, Facebook Ads, Instagram, TikTok, y otros canales paid. Optimizamos para ROAS y crecimiento sostenible.'
+  },
+  {
+    id: 'growth-6',
+    question: '¿Pueden ayudar con estrategias de retención de clientes?',
+    answer: 'Absolutamente. Desarrollamos programas de loyalty, email sequences, remarketing, subscripciones, y estrategias de customer lifetime value.'
+  },
+  {
+    id: 'growth-7',
+    question: '¿Qué tipo de automatizaciones implementan?',
+    answer: 'Automatizamos abandoned cart, welcome series, post-purchase, win-back campaigns, segmentación avanzada, y workflows de nurturing.'
+  },
+  {
+    id: 'growth-8',
+    question: '¿Ofrecen análisis competitivo y benchmarking?',
+    answer: 'Sí, analizamos competidores, tendencias del mercado, oportunidades de nicho, y benchmarks de industria para identificar ventajas competitivas.'
+  },
+  {
+    id: 'growth-9',
+    question: '¿Cuál es el compromiso de tiempo mínimo?',
+    answer: 'Recomendamos mínimo 6 meses para ver resultados significativos. El crecimiento sostenible requiere tiempo, testing, y optimización continua.'
+  },
+  {
+    id: 'growth-10',
+    question: '¿Qué resultados típicos ven sus clientes Growth Partner?',
+    answer: 'Nuestros clientes ven típicamente 40-200% de crecimiento en revenue, mejoras del 25-60% en conversion rate, y reducción del 20-40% en CAC.'
+  }
+];
+
+export const growthPartnerFAQsEn: FAQ[] = [
+  {
+    id: 'growth-en-1',
+    question: 'What does it mean to be a Shopify Growth Partner?',
+    answer: 'As Growth Partner we develop comprehensive growth strategies: CRO, email marketing, paid ads, SEO, and continuous optimization to scale your business.'
+  },
+  {
+    id: 'growth-en-2',
+    question: 'What services does the Growth Partner program include?',
+    answer: 'Complete audit, growth strategy, conversion optimization, marketing automation, data analysis, and ongoing consulting.'
+  },
+  {
+    id: 'growth-en-3',
+    question: 'How do you measure growth and program success?',
+    answer: 'We monitor key KPIs: revenue growth, LTV, CAC, conversion rate, AOV, retention rate, and ROI of each marketing channel.'
+  },
+  {
+    id: 'growth-en-4',
+    question: 'Do you work with companies of any size?',
+    answer: 'We focus on companies billing $50K+ USD/year with growth potential. We design scalable strategies for each stage.'
+  },
+  {
+    id: 'growth-en-5',
+    question: 'Do you include advertising campaign management?',
+    answer: 'Yes, we manage Google Ads, Facebook Ads, Instagram, TikTok, and other paid channels. We optimize for ROAS and sustainable growth.'
+  },
+  {
+    id: 'growth-en-6',
+    question: 'Can you help with customer retention strategies?',
+    answer: 'Absolutely. We develop loyalty programs, email sequences, remarketing, subscriptions, and customer lifetime value strategies.'
+  },
+  {
+    id: 'growth-en-7',
+    question: 'What type of automations do you implement?',
+    answer: 'We automate abandoned cart, welcome series, post-purchase, win-back campaigns, advanced segmentation, and nurturing workflows.'
+  },
+  {
+    id: 'growth-en-8',
+    question: 'Do you offer competitive analysis and benchmarking?',
+    answer: 'Yes, we analyze competitors, market trends, niche opportunities, and industry benchmarks to identify competitive advantages.'
+  },
+  {
+    id: 'growth-en-9',
+    question: 'What is the minimum time commitment?',
+    answer: 'We recommend minimum 6 months to see significant results. Sustainable growth requires time, testing, and continuous optimization.'
+  },
+  {
+    id: 'growth-en-10',
+    question: 'What typical results do your Growth Partner clients see?',
+    answer: 'Our clients typically see 40-200% revenue growth, 25-60% improvements in conversion rate, and 20-40% reduction in CAC.'
+  }
+];

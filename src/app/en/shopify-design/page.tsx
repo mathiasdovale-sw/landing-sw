@@ -1,4 +1,6 @@
 import { Metadata } from 'next';
+import FAQAccordion from '@/app/_components/faq-accordion';
+import { disenoShopifyFAQsEn } from '@/lib/faqs';
 
 export const metadata: Metadata = {
   title: 'Custom Shopify Design | SellifyWorks',
@@ -12,7 +14,7 @@ export default function ShopifyDesign() {
         <h1 className="text-4xl font-bold text-gray-900 mb-8">
           Custom and Responsive Web Design
         </h1>
-        <div className="prose prose-lg">
+        <div className="prose prose-lg mb-16">
           <p>
             At SellifyWorks we specialize in creating unique and custom web designs 
             for Shopify stores that not only look amazing, but also convert.
@@ -25,6 +27,11 @@ export default function ShopifyDesign() {
             <li>Optimized loading speed</li>
             <li>Shopify integration</li>
           </ul>
+        </div>
+        
+        {/* FAQ Section */}
+        <div className="mt-16">
+          <FAQAccordion faqs={disenoShopifyFAQsEn} />
         </div>
       </div>
     </main>
