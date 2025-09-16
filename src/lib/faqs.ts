@@ -29,7 +29,7 @@ export const HomeFAQsEs: FAQ[] = [
   {
     id: 'home-6',
     question: '¿Cuánto cuesta crear una tienda Shopify con agencia?',
-    answer: 'Shopify tiene planes desde 39 USD/mes (Shopify Basic). El coste de desarrollo y configuración con agencia es adicional y depende de la complejidad del proyecto. Ofrecemos presupuestos personalizados adaptados a tu negocio.'
+    answer: 'Shopify tiene planes desde aproximadamente $39 USD/mes (precios sujetos a cambios). El coste de desarrollo y configuración con agencia es adicional y depende de la complejidad del proyecto. Ofrecemos presupuestos personalizados adaptados a tu negocio.'
   },
     {
     id: 'home-7',
@@ -77,7 +77,7 @@ export const HomeFAQsEn: FAQ[] = [
     {
     id: 'home-4',
     question: 'Can I hire just a specific service (e.g. SEO or design) or do I need a complete package?',
-    answer: 'You can hire individual services like SEO, design or CRO, or an integrated plan according to your ecommerce needs.'
+    answer: 'You can hire individual services like SEO, design or CRO, or an integrated plan according to your ecommerce needs. *Specific functionalities may vary according to Shopify updates.'
   },
   {
     id: 'home-5',
@@ -87,7 +87,7 @@ export const HomeFAQsEn: FAQ[] = [
   {
     id: 'home-6',
     question: 'How much does it cost to create a Shopify store with an agency?',
-    answer: 'Shopify has plans starting from $39 USD/month (Shopify Basic). Development and setup costs with an agency are additional and depend on project complexity. We offer personalized quotes tailored to your business.'
+    answer: 'Shopify has plans starting from approximately $39 USD/month (prices subject to change). Development and setup costs with an agency are additional and depend on project complexity. We offer personalized quotes tailored to your business.'
   },
     {
     id: 'home-7',
@@ -123,7 +123,7 @@ export const servicesFAQs: FAQ[] = [
   {
     id: 'services-1',
     question: '¿Qué servicios de Shopify ofrecen?',
-    answer: 'Ofrecemos desarrollo completo de tiendas Shopify, migración desde otras plataformas, optimización de conversiones, integración de aplicaciones, diseño UX/UI personalizado, y soporte técnico continuo.'
+    answer: 'Ofrecemos desarrollo completo de tiendas Shopify, migración desde otras plataformas, optimización de conversiones, integración de aplicaciones, diseño UX/UI personalizado, y soporte técnico continuo. *Funcionalidades específicas pueden variar según actualizaciones de Shopify.'
   },
   {
     id: 'services-2',
@@ -312,12 +312,12 @@ export const shopifyPlusFAQsEs: FAQ[] = [
   {
     id: 'plus-6',
     question: '¿Cuánto cuesta implementar Shopify Plus?',
-    answer: 'Shopify Plus cuesta $2,000+ USD/mes. La implementación varía según complejidad, integraciones y personalizaciones. Ofrecemos presupuestos detallados.'
+    answer: 'Shopify Plus cuesta desde $2,300+ USD/mes (precios sujetos a cambios según Shopify). La implementación varía según complejidad, integraciones y personalizaciones. Ofrecemos presupuestos detallados.'
   },
   {
     id: 'plus-7',
     question: '¿Pueden manejar múltiples marcas en una instalación Plus?',
-    answer: 'Sí, Shopify Plus permite hasta 10 tiendas adicionales. Podemos configurar arquitecturas multi-marca con inventario centralizado y gestión unificada.'
+    answer: 'Sí, Shopify Plus permite múltiples tiendas adicionales (consultar límites actuales con Shopify). Podemos configurar arquitecturas multi-marca con inventario centralizado y gestión unificada.'
   },
   {
     id: 'plus-8',
@@ -365,12 +365,12 @@ export const shopifyPlusFAQsEn: FAQ[] = [
   {
     id: 'plus-en-6',
     question: 'How much does implementing Shopify Plus cost?',
-    answer: 'Shopify Plus costs $2,000+ USD/month. Implementation varies by complexity, integrations and customizations. We provide detailed quotes.'
+    answer: 'Shopify Plus costs from $2,300+ USD/month (prices subject to change according to Shopify). Implementation varies by complexity, integrations and customizations. We provide detailed quotes.'
   },
   {
     id: 'plus-en-7',
     question: 'Can you handle multiple brands in one Plus installation?',
-    answer: 'Yes, Shopify Plus allows up to 10 additional stores. We can configure multi-brand architectures with centralized inventory and unified management.'
+    answer: 'Yes, Shopify Plus allows multiple additional stores (check current limits with Shopify). We can configure multi-brand architectures with centralized inventory and unified management.'
   },
   {
     id: 'plus-en-8',
@@ -934,7 +934,7 @@ export const crearTiendaShopifyFAQsEs: FAQ[] = [
   {
     id: 'crear-2',
     question: '¿Cuánto tiempo tarda crear una tienda Shopify completa?',
-    answer: 'Los tiempos típicos son: tiendas básicas 2-3 semanas, tiendas con diseño personalizado 4-8 semanas. Los plazos pueden variar según la complejidad del proyecto, disponibilidad de contenido, y revisiones requeridas.'
+    answer: 'Los tiempos típicos son: tiendas básicas 2-4 semanas, tiendas con diseño personalizado 4-8 semanas. Los plazos pueden variar según la complejidad del proyecto, disponibilidad de contenido, revisiones requeridas, y factores externos.'
   },
   {
     id: 'crear-3',
@@ -969,7 +969,7 @@ export const crearTiendaShopifyFAQsEs: FAQ[] = [
   {
     id: 'crear-9',
     question: '¿Qué pasa si necesito funcionalidades específicas?',
-    answer: 'Evaluamos tus necesidades y desarrollamos funcionalidades custom o integramos apps especializadas para tu industria específica.'
+    answer: 'Evaluamos tus necesidades y desarrollamos funcionalidades custom o integramos apps especializadas para tu industria específica (sujeto a compatibilidad y políticas de apps de terceros).'
   },
   {
     id: 'crear-10',
@@ -992,7 +992,7 @@ export const crearTiendaShopifyFAQsEn: FAQ[] = [
   {
     id: 'create-2',
     question: 'How long does it take to create a complete Shopify store?',
-    answer: 'Typical timeframes are: basic stores 2-3 weeks, stores with custom design 4-8 weeks. Timelines may vary depending on project complexity, content availability, and required revisions.'
+    answer: 'Typical timeframes are: basic stores 2-4 weeks, stores with custom design 4-8 weeks. Timelines may vary depending on project complexity, content availability, required revisions, and external factors.'
   },
   {
     id: 'create-3',
@@ -1027,7 +1027,7 @@ export const crearTiendaShopifyFAQsEn: FAQ[] = [
   {
     id: 'create-9',
     question: 'What if I need specific functionalities?',
-    answer: 'We evaluate your needs and develop custom functionalities or integrate specialized apps for your specific industry.'
+    answer: 'We evaluate your needs and develop custom functionalities or integrate specialized apps for your specific industry (subject to third-party app compatibility and policies).'
   },
   {
     id: 'create-10',
@@ -1071,7 +1071,7 @@ export const personalizacionTemaFAQsEs: FAQ[] = [
   {
     id: 'tema-6',
     question: '¿Pueden personalizar el checkout en temas Shopify?',
-    answer: 'En Shopify Plus sí. En planes regulares, personalizamos todo el pre-checkout: carrito, producto pages, y elementos hasta el payment step.'
+    answer: 'En Shopify Plus podemos personalizar elementos avanzados del checkout. En planes regulares, las opciones de personalización del checkout son limitadas, pero optimizamos todo el pre-checkout: carrito, páginas de producto, y elementos hasta el payment step.'
   },
   {
     id: 'tema-7',
@@ -1081,7 +1081,7 @@ export const personalizacionTemaFAQsEs: FAQ[] = [
   {
     id: 'tema-8',
     question: '¿Pueden integrar funcionalidades de apps en el tema?',
-    answer: 'Sí, integramos funcionalidades de reviews, wishlists, currency switchers, y otras apps directamente en el diseño del tema.'
+    answer: 'Sí, integramos funcionalidades de reviews, wishlists, currency switchers, y otras apps directamente en el diseño del tema (sujeto a compatibilidad de APIs).'
   },
   {
     id: 'tema-9',
@@ -1124,7 +1124,7 @@ export const personalizacionTemaFAQsEn: FAQ[] = [
   {
     id: 'theme-6',
     question: 'Can you customize checkout in Shopify themes?',
-    answer: 'On Shopify Plus yes. On regular plans, we customize all pre-checkout: cart, product pages, and elements until the payment step.'
+    answer: 'On Shopify Plus, full checkout customization is available. On regular plans, we customize all pre-checkout elements: cart, product pages, and components until the payment step (checkout page customization requires Shopify Plus).'
   },
   {
     id: 'theme-7',
@@ -1134,7 +1134,7 @@ export const personalizacionTemaFAQsEn: FAQ[] = [
   {
     id: 'theme-8',
     question: 'Can you integrate app functionalities into the theme?',
-    answer: 'Yes, we integrate reviews, wishlists, currency switchers, and other app functionalities directly into the theme design.'
+    answer: 'Yes, we integrate reviews, wishlists, currency switchers, and other app functionalities directly into the theme design (subject to API compatibility).'
   },
   {
     id: 'theme-9',
