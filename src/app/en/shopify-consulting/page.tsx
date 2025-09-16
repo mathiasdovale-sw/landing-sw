@@ -15,7 +15,7 @@ export default function ShopifyConsulting() {
       <section className="min-h-[85vh] text-white flex items-center justify-center py-20 lg:py-32" style={{ backgroundColor: '#141417ff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight text-white mb-6" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight text-white mb-6" style={{ fontFamily: "sans-serif" }}>
               SHOPIFY
               <br />
               <span className="text-orange-300">CONSULTING</span>
@@ -62,7 +62,7 @@ export default function ShopifyConsulting() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>COMPLETE STORE AUDIT</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>COMPLETE STORE AUDIT</h3>
               <p className="text-gray-300 leading-relaxed">
                 In-depth analysis of all aspects of your Shopify store
               </p>
@@ -74,7 +74,7 @@ export default function ShopifyConsulting() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>CONVERSION ANALYSIS</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>CONVERSION ANALYSIS</h3>
               <p className="text-gray-300 leading-relaxed">
                 Detailed analysis of your conversion funnel and user experience
               </p>
@@ -86,7 +86,7 @@ export default function ShopifyConsulting() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>TECHNICAL SEO</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>TECHNICAL SEO</h3>
               <p className="text-gray-300 leading-relaxed">
                 Optimization recommendations to improve your Google ranking
               </p>
@@ -98,7 +98,7 @@ export default function ShopifyConsulting() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>GROWTH STRATEGIES</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>GROWTH STRATEGIES</h3>
               <p className="text-gray-300 leading-relaxed">
                 Recommendations to scale your business and increase revenue
               </p>
@@ -110,7 +110,7 @@ export default function ShopifyConsulting() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>ACTION PLAN</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>ACTION PLAN</h3>
               <p className="text-gray-300 leading-relaxed">
                 Detailed plan with prioritized steps to optimize your store
               </p>
@@ -122,7 +122,7 @@ export default function ShopifyConsulting() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>ONGOING SUPPORT</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>ONGOING SUPPORT</h3>
               <p className="text-gray-300 leading-relaxed">
                 Continued support to implement recommendations effectively
               </p>
@@ -146,25 +146,25 @@ export default function ShopifyConsulting() {
           <div className="grid md:grid-cols-4 gap-8">
             <div className="text-center group">
               <div className="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: "Bebas Neue, sans-serif" }}>1</div>
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>INITIAL ANALYSIS</h3>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "sans-serif" }}>INITIAL ANALYSIS</h3>
               <p className="text-gray-600 leading-relaxed">We analyze your store, goals and current challenges</p>
             </div>
             
             <div className="text-center group">
               <div className="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: "Bebas Neue, sans-serif" }}>2</div>
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>COMPREHENSIVE AUDIT</h3>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "sans-serif" }}>COMPREHENSIVE AUDIT</h3>
               <p className="text-gray-600 leading-relaxed">We perform a detailed audit of all aspects</p>
             </div>
             
             <div className="text-center group">
               <div className="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: "Bebas Neue, sans-serif" }}>3</div>
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>RECOMMENDATIONS</h3>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "sans-serif" }}>RECOMMENDATIONS</h3>
               <p className="text-gray-600 leading-relaxed">We create specific recommendations and action plan</p>
             </div>
             
             <div className="text-center group">
               <div className="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: "Bebas Neue, sans-serif" }}>4</div>
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>SUPPORT & FOLLOW-UP</h3>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "sans-serif" }}>SUPPORT & FOLLOW-UP</h3>
               <p className="text-gray-600 leading-relaxed">We support you in implementation and monitor results</p>
             </div>
           </div>

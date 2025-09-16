@@ -15,7 +15,7 @@ export default function ShopifyStoreSetup() {
       <section className="min-h-[85vh] text-white flex items-center justify-center py-20 lg:py-32" style={{ backgroundColor: '#141417ff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight text-white mb-6" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight text-white mb-6" style={{ fontFamily: "sans-serif" }}>
               SHOPIFY STORE
               <br />
               <span className="text-orange-300">SETUP</span>
@@ -63,7 +63,7 @@ export default function ShopifyStoreSetup() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>COMPLETE SHOPIFY SETUP</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>COMPLETE SHOPIFY SETUP</h3>
               <p className="text-gray-300 leading-relaxed">
                 Full configuration of your account, plan and basic functionalities
               </p>
@@ -75,7 +75,7 @@ export default function ShopifyStoreSetup() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a4 4 0 004-4V5z" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>CUSTOM DESIGN</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>CUSTOM DESIGN</h3>
               <p className="text-gray-300 leading-relaxed">
                 Unique and responsive theme adapted to your brand and products
               </p>
@@ -87,7 +87,7 @@ export default function ShopifyStoreSetup() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>PRODUCTS & CATEGORIES</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>PRODUCTS & CATEGORIES</h3>
               <p className="text-gray-300 leading-relaxed">
                 Complete catalog configuration, categories and variants
               </p>
@@ -99,7 +99,7 @@ export default function ShopifyStoreSetup() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>PAYMENT METHODS</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>PAYMENT METHODS</h3>
               <p className="text-gray-300 leading-relaxed">
                 Configuration of payment gateways and collection methods
               </p>
@@ -111,7 +111,7 @@ export default function ShopifyStoreSetup() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>SHIPPING SETUP</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>SHIPPING SETUP</h3>
               <p className="text-gray-300 leading-relaxed">
                 Setup of shipping zones, rates and delivery options
               </p>
@@ -123,7 +123,7 @@ export default function ShopifyStoreSetup() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>COMPLETE TRAINING</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>COMPLETE TRAINING</h3>
               <p className="text-gray-300 leading-relaxed">
                 We teach you how to manage your store to be autonomous
               </p>
@@ -147,25 +147,25 @@ export default function ShopifyStoreSetup() {
           <div className="grid md:grid-cols-4 gap-8">
             <div className="text-center group">
               <div className="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: "Bebas Neue, sans-serif" }}>1</div>
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>REQUIREMENTS ANALYSIS</h3>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "sans-serif" }}>REQUIREMENTS ANALYSIS</h3>
               <p className="text-gray-600 leading-relaxed">We define your needs, products and objectives</p>
             </div>
             
             <div className="text-center group">
               <div className="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: "Bebas Neue, sans-serif" }}>2</div>
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>DESIGN & SETUP</h3>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "sans-serif" }}>DESIGN & SETUP</h3>
               <p className="text-gray-600 leading-relaxed">We create the design and configure the entire store</p>
             </div>
             
             <div className="text-center group">
               <div className="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: "Bebas Neue, sans-serif" }}>3</div>
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>CONTENT & PRODUCTS</h3>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "sans-serif" }}>CONTENT & PRODUCTS</h3>
               <p className="text-gray-600 leading-relaxed">We add products, content and configure payments</p>
             </div>
             
             <div className="text-center group">
               <div className="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: "Bebas Neue, sans-serif" }}>4</div>
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>LAUNCH & TRAINING</h3>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "sans-serif" }}>LAUNCH & TRAINING</h3>
               <p className="text-gray-600 leading-relaxed">We launch your store and train you to manage it</p>
             </div>
           </div>

@@ -15,7 +15,7 @@ export default function ShopifyPlus() {
       <section className="min-h-[85vh] text-white flex items-center justify-center py-20 lg:py-32" style={{ backgroundColor: '#141417ff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight text-white mb-6" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight text-white mb-6" style={{ fontFamily: "sans-serif" }}>
               SHOPIFY
               <br />
               <span className="text-orange-300">PLUS</span>
@@ -62,7 +62,7 @@ export default function ShopifyPlus() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>ENTERPRISE FEATURES</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>ENTERPRISE FEATURES</h3>
               <p className="text-gray-300 leading-relaxed">
                 Advanced tools designed for high-volume businesses and enterprise needs
               </p>
@@ -74,7 +74,7 @@ export default function ShopifyPlus() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>AUTOMATION WITH FLOW</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>AUTOMATION WITH FLOW</h3>
               <p className="text-gray-300 leading-relaxed">
                 Automate business processes and workflows without coding
               </p>
@@ -86,7 +86,7 @@ export default function ShopifyPlus() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>MULTIPLE MARKETS</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>MULTIPLE MARKETS</h3>
               <p className="text-gray-300 leading-relaxed">
                 Manage multiple stores and international markets from one dashboard
               </p>
@@ -98,7 +98,7 @@ export default function ShopifyPlus() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>UNLIMITED APIs</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>UNLIMITED APIs</h3>
               <p className="text-gray-300 leading-relaxed">
                 Unlimited API calls and customizable checkout for advanced integrations
               </p>
@@ -110,7 +110,7 @@ export default function ShopifyPlus() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>PRIORITY SUPPORT</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>PRIORITY SUPPORT</h3>
               <p className="text-gray-300 leading-relaxed">
                 24/7 priority support and dedicated success manager
               </p>
@@ -122,7 +122,7 @@ export default function ShopifyPlus() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>HIGH PERFORMANCE</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>HIGH PERFORMANCE</h3>
               <p className="text-gray-300 leading-relaxed">
                 Enhanced performance and scalability for high-traffic stores
               </p>
@@ -146,25 +146,25 @@ export default function ShopifyPlus() {
           <div className="grid md:grid-cols-4 gap-8">
             <div className="text-center group">
               <div className="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: "Bebas Neue, sans-serif" }}>1</div>
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>ELIGIBILITY ASSESSMENT</h3>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "sans-serif" }}>ELIGIBILITY ASSESSMENT</h3>
               <p className="text-gray-600 leading-relaxed">We evaluate if your business qualifies for Shopify Plus</p>
             </div>
             
             <div className="text-center group">
               <div className="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: "Bebas Neue, sans-serif" }}>2</div>
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>MIGRATION PLANNING</h3>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "sans-serif" }}>MIGRATION PLANNING</h3>
               <p className="text-gray-600 leading-relaxed">We create a detailed migration plan and timeline</p>
             </div>
             
             <div className="text-center group">
               <div className="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: "Bebas Neue, sans-serif" }}>3</div>
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>SETUP & CUSTOMIZATION</h3>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "sans-serif" }}>SETUP & CUSTOMIZATION</h3>
               <p className="text-gray-600 leading-relaxed">We configure Plus features and customize your store</p>
             </div>
             
             <div className="text-center group">
               <div className="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: "Bebas Neue, sans-serif" }}>4</div>
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>TRAINING & SUPPORT</h3>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "sans-serif" }}>TRAINING & SUPPORT</h3>
               <p className="text-gray-600 leading-relaxed">We train your team and provide ongoing support</p>
             </div>
           </div>
