@@ -32,8 +32,8 @@ export default function DisenoShopify() {
                 Empezar Mi Proyecto
               </a>
               <SmoothScrollButton
-                href="#services" 
-                targetSection="services"
+                href="#servicios" 
+                targetSection="servicios"
                 className="border-2 border-orange-300 text-orange-300 px-8 py-4 sm:py-5 sm:px-10 lg:py-6 lg:px-12 rounded-full font-bold text-lg sm:text-xl hover:bg-orange-300 hover:text-gray-900 transition-all duration-300"
               >
                 Ver Servicios
