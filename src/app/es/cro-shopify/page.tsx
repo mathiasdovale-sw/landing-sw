@@ -174,7 +174,7 @@ export default function CROShopify() {
       {/* CTA Section */}
       <section className="py-20" style={{ backgroundColor: '#141417ff' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 tracking-tight" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 tracking-tight" style={{ fontFamily: "sans-serif" }}>
             ¿LISTO PARA VENDER
             <br />
             <span className="text-orange-300">MÁS CON MENOS TRÁFICO?</span>
