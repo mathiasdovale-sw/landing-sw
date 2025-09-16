@@ -1,10 +1,12 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Plus, Minus, Construction, Search, Sprout } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import TranslatedLink from "@/app/_components/translated-link"
+import { useScrollPosition } from "@/hooks/useScrollPosition"
 
 interface ServiceItemProps {
+  serviceId: string; // Add service ID
   number: string;
   title: string;
   description: string;
@@ -17,7 +19,7 @@ interface ServiceItemProps {
   scrollToContact: () => void;
 }
 
-function ServiceItem({ number, title, description, details, isExpanded, onToggle, accentColor, icon: Icon, t, scrollToContact }: ServiceItemProps) {
+function ServiceItem({ serviceId, number, title, description, details, isExpanded, onToggle, accentColor, icon: Icon, t, scrollToContact }: ServiceItemProps) {
   const { language } = useLanguage()
   
   // Helper function to get URL key for each detail
@@ -126,6 +128,7 @@ function ServiceItem({ number, title, description, details, isExpanded, onToggle
                     <TranslatedLink 
                       textKey={detailKey}
                       urlKey={urlKey}
+                      expandedServiceId={isExpanded ? serviceId : undefined}
                       className="text-gray-700 hover:text-blue-600 text-xs sm:text-sm md:text-base leading-tight sm:leading-relaxed transition-colors no-underline hover:underline cursor-pointer"
                     />
                   </div>
@@ -150,6 +153,31 @@ function ServiceItem({ number, title, description, details, isExpanded, onToggle
 export default function ServicesSection() {
   const { t } = useLanguage()
   const [expandedService, setExpandedService] = useState<string | null>(null)
+  const { restoreScrollPosition, clearSavedState } = useScrollPosition()
+
+  // Restore expanded state and scroll position when component mounts
+  useEffect(() => {
+    const savedState = restoreScrollPosition()
+    if (savedState) {
+      const { scrollPosition, expandedService } = savedState
+      
+      // Restore expanded service first
+      if (expandedService) {
+        setExpandedService(expandedService)
+      }
+      
+      // Then restore scroll position after a short delay
+      setTimeout(() => {
+        window.scrollTo({
+          top: scrollPosition,
+          behavior: 'instant'
+        })
+        
+        // Clean up saved state
+        clearSavedState()
+      }, 100)
+    }
+  }, [restoreScrollPosition, clearSavedState])
 
   const scrollToContact = () => {
     const contactSection = document.getElementById('contacto');
@@ -234,6 +262,7 @@ export default function ServicesSection() {
         {services.map((service) => (
           <ServiceItem
             key={service.id}
+            serviceId={service.id}
             number={service.number}
             title={service.title}
             description={service.description}

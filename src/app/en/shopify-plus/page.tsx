@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
+import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
 import { shopifyPlusFAQsEn } from '@/lib/faqs';
 
 export const metadata: Metadata = {
@@ -30,12 +31,13 @@ export default function ShopifyPlus() {
               >
                 Upgrade to Plus
               </a>
-              <a 
-                href="#services" 
+              <SmoothScrollButton 
+                href="#services"
+                targetSection="services"
                 className="border-2 border-orange-300 text-orange-300 px-8 py-4 sm:py-5 sm:px-10 lg:py-6 lg:px-12 rounded-full font-bold text-lg sm:text-xl hover:bg-orange-300 hover:text-gray-900 transition-all duration-300"
               >
                 See Plus Features
-              </a>
+              </SmoothScrollButton>
             </div>
           </div>
         </div>

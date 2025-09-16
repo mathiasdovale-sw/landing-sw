@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
 import { crearTiendaShopifyFAQsEs } from '@/lib/faqs';
+import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
 
 export const metadata: Metadata = {
   title: 'Crear Tienda Shopify | SellifyWorks',
@@ -30,12 +31,13 @@ export default function CrearTiendaShopify() {
               >
                 Crear Mi Tienda
               </a>
-              <a 
+              <SmoothScrollButton
                 href="#servicios" 
+                targetSection="servicios"
                 className="border-2 border-orange-300 text-orange-300 px-8 py-4 sm:py-5 sm:px-10 lg:py-6 lg:px-12 rounded-full font-bold text-lg sm:text-xl hover:bg-orange-300 hover:text-gray-900 transition-all duration-300"
               >
                 Ver Qué Incluye
-              </a>
+              </SmoothScrollButton>
             </div>
           </div>
         </div>

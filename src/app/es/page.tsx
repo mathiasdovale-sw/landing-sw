@@ -27,16 +27,18 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <main>
-      <Container>
-        <HeaderHome />
-        
-      </Container>
+    <>
+      <main>
+        <Container>
+          <HeaderHome />
+          
+        </Container>
 
-      <ServicesSection />
-      <ContactSection />
-      <Divider />
-      <FAQAccordion faqs={HomeFAQsEs}/>
-    </main>
+        <ServicesSection />
+        <ContactSection />
+        <Divider />
+        <FAQAccordion faqs={HomeFAQsEs}/>
+      </main>
+    </>
   );
 }
