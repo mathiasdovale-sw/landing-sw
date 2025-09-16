@@ -6,6 +6,7 @@ import NewsletterTestButton from "@/app/_components/newsletter-test-button";
 import FAQAccordion from "@/app/_components/faq-accordion";
 import Divider from "@/app/_components/divider";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { ScrollProvider } from "@/contexts/ScrollContext";
 import { supportFAQs } from "@/lib/faqs";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
@@ -265,11 +266,13 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <LanguageProvider>
-          <Navbar />
-          <div className="min-h-screen">{children}</div>
-          <Footer />    
-          <NewsletterPopup />
-          {/* <NewsletterTestButton /> */}
+          <ScrollProvider>
+            <Navbar />
+            <div className="min-h-screen">{children}</div>
+            <Footer />    
+            <NewsletterPopup />
+            {/* <NewsletterTestButton /> */}
+          </ScrollProvider>
         </LanguageProvider>
       </body>
     </html>

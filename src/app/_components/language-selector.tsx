@@ -1,11 +1,12 @@
 "use client"
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useScrollPreservation } from '@/contexts/ScrollContext'
 
 const LanguageSelector = () => {
   const pathname = usePathname()
-  const router = useRouter()
   const [currentLocale, setCurrentLocale] = useState<'es' | 'en'>('es')
+  const { preserveScrollAndNavigate } = useScrollPreservation()
 
   // Detectar el idioma actual basado en la URL
   useEffect(() => {
@@ -85,7 +86,8 @@ const LanguageSelector = () => {
       newPath = newLocale === 'es' ? '/es/' : '/en/'
     }
 
-    router.push(newPath)
+    // Navegar a la nueva ruta preservando el scroll
+    preserveScrollAndNavigate(newPath)
   }
 
   return (
