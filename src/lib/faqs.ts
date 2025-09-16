@@ -9,12 +9,12 @@ export const HomeFAQsEs: FAQ[] = [
   {
     id: 'home-2',
     question: '¿Qué diferencia hay entre Shopify y otras plataformas como WooCommerce o PrestaShop?',
-    answer: 'Shopify es una solución alojada que maneja automáticamente la seguridad, actualizaciones y hosting. Es más estable, seguro y escalable que las plataformas auto-alojadas, con mejor soporte y un ecosistema de apps más robusto.'
+    answer: 'Shopify es una plataforma alojada en la nube que gestiona automáticamente hosting, seguridad y actualizaciones. A diferencia de WooCommerce o PrestaShop (que requieren hosting propio), Shopify incluye infraestructura escalable y un ecosistema de aplicaciones y soporte oficial.'
   },
   {
     id: 'home-3',
     question: '¿Ofrecen migración desde otras plataformas a Shopify?',
-    answer: 'Sí, realizamos migraciones completas desde WooCommerce, PrestaShop, Magento y otras, cuidando el SEO y asegurando que no pierdas tráfico ni ventas.'
+    answer: 'Sí, realizamos migraciones desde WooCommerce, PrestaShop, Magento y otras plataformas, cuidando la estructura SEO y minimizando riesgos de pérdida de tráfico.'
   },
     {
     id: 'home-4',
@@ -24,12 +24,12 @@ export const HomeFAQsEs: FAQ[] = [
   {
     id: 'home-5',
     question: '¿Trabajan con Shopify Plus?',
-    answer: 'Sí. Ayudamos a grandes empresas a escalar con Shopify Plus, ofreciendo soluciones avanzadas para ecommerce con alto volumen de ventas.'
+    answer: 'Sí. Ayudamos a empresas de alto volumen a escalar con Shopify Plus, que ofrece funcionalidades avanzadas como automatización con Shopify Flow, integraciones B2B, y mayor personalización.'
   },
   {
     id: 'home-6',
     question: '¿Cuánto cuesta crear una tienda Shopify con agencia?',
-    answer: 'El coste depende del tamaño y complejidad del proyecto. Ofrecemos presupuestos personalizados adaptados a tu negocio.'
+    answer: 'Shopify tiene planes desde 39 USD/mes (Shopify Basic). El coste de desarrollo y configuración con agencia es adicional y depende de la complejidad del proyecto. Ofrecemos presupuestos personalizados adaptados a tu negocio.'
   },
     {
     id: 'home-7',
@@ -50,6 +50,11 @@ export const HomeFAQsEs: FAQ[] = [
     id: 'home-10',
     question: '¿Cómo puedo empezar a trabajar con ustedes?',
     answer: 'Muy fácil: completa nuestro formulario de contacto, cuéntanos tu proyecto y uno de nuestros expertos te contactará para una primera sesión gratuita.'
+  },
+  {
+    id: 'home-11',
+    question: '¿Shopify permite métodos de pago locales en diferentes países?',
+    answer: 'Sí, Shopify Markets te permite activar métodos de pago locales en cada región, siempre que estén disponibles en el país correspondiente. Cada mercado tiene diferentes opciones de pago según las regulaciones locales.'
   }
 ];
 
@@ -62,12 +67,12 @@ export const HomeFAQsEn: FAQ[] = [
   {
     id: 'home-2',
     question: 'What\'s the difference between Shopify and other platforms like WooCommerce or PrestaShop?',
-    answer: 'Shopify is a hosted solution that handles security, updates, and hosting automatically. It\'s more stable, secure, and scalable than self-hosted platforms, with better support and a more robust app ecosystem.'
+    answer: 'Shopify is a cloud-hosted platform that automatically manages hosting, security, and updates. Unlike WooCommerce or PrestaShop (which require your own hosting), Shopify includes scalable infrastructure and an ecosystem of applications with official support.'
   },
   {
     id: 'home-3',
     question: 'Do you offer migration from other platforms to Shopify?',
-    answer: 'Yes, we perform complete migrations from WooCommerce, PrestaShop, Magento and others, taking care of SEO and ensuring you don\'t lose traffic or sales.'
+    answer: 'Yes, we perform migrations from WooCommerce, PrestaShop, Magento and other platforms, taking care of SEO structure and minimizing risks of traffic loss.'
   },
     {
     id: 'home-4',
@@ -77,12 +82,12 @@ export const HomeFAQsEn: FAQ[] = [
   {
     id: 'home-5',
     question: 'Do you work with Shopify Plus?',
-    answer: 'Yes. We help large companies scale with Shopify Plus, offering advanced solutions for high-volume ecommerce.'
+    answer: 'Yes. We help high-volume companies scale with Shopify Plus, which offers advanced features like automation with Shopify Flow, B2B integrations, and greater customization.'
   },
   {
     id: 'home-6',
     question: 'How much does it cost to create a Shopify store with an agency?',
-    answer: 'The cost depends on the size and complexity of the project. We offer personalized quotes tailored to your business.'
+    answer: 'Shopify has plans starting from $39 USD/month (Shopify Basic). Development and setup costs with an agency are additional and depend on project complexity. We offer personalized quotes tailored to your business.'
   },
     {
     id: 'home-7',
@@ -103,6 +108,11 @@ export const HomeFAQsEn: FAQ[] = [
     id: 'home-10',
     question: 'How can I start working with you?',
     answer: 'Very easy: fill out our contact form, tell us about your project and one of our experts will contact you for a free first session.'
+  },
+  {
+    id: 'home-11',
+    question: 'Does Shopify allow local payment methods in different countries?',
+    answer: 'Yes, Shopify Markets allows you to activate local payment methods in each region, provided they are available in the corresponding country. Each market has different payment options according to local regulations.'
   }
 ];
 
@@ -156,7 +166,7 @@ export const supportFAQs: FAQ[] = [
   {
     id: 'support-2',
     question: '¿Cuál es el tiempo de respuesta del soporte?',
-    answer: 'Para incidencias críticas respondemos en menos de 4 horas. Para consultas generales, nuestro tiempo de respuesta es de 24-48 horas en días laborables.'
+    answer: 'Nuestro objetivo es responder incidencias críticas en menos de 4 horas y consultas generales en 24-48 horas laborables. Los tiempos pueden variar según la complejidad del caso y la carga de trabajo.'
   },
   {
     id: 'support-3',
@@ -399,7 +409,7 @@ export const migracionShopifyFAQsEs: FAQ[] = [
   {
     id: 'migracion-4',
     question: '¿Pierdo posicionamiento SEO durante la migración?',
-    answer: 'No, implementamos redirects 301, mantenemos URLs existentes cuando es posible, y optimizamos la nueva estructura para mejorar el SEO.'
+    answer: 'Implementamos redirects 301, mantenemos URLs existentes cuando es posible, y optimizamos la nueva estructura para preservar el SEO. Aunque trabajamos para minimizar el impacto, algunos cambios temporales en el ranking pueden ocurrir durante el proceso de migración.'
   },
   {
     id: 'migracion-5',
@@ -414,7 +424,7 @@ export const migracionShopifyFAQsEs: FAQ[] = [
   {
     id: 'migracion-7',
     question: '¿Qué pasa si encuentran problemas durante la migración?',
-    answer: 'Realizamos pruebas exhaustivas pre-migración. Si surgen issues, los resolvemos sin costo adicional durante el período de garantía.'
+    answer: 'Realizamos pruebas exhaustivas pre-migración para minimizar riesgos. Si surgen problemas relacionados con nuestro trabajo durante el período de garantía establecido, trabajamos para resolverlos según los términos acordados.'
   },
   {
     id: 'migracion-8',
@@ -452,7 +462,7 @@ export const migracionShopifyFAQsEn: FAQ[] = [
   {
     id: 'migration-4',
     question: 'Do I lose SEO ranking during migration?',
-    answer: 'No, we implement 301 redirects, maintain existing URLs when possible, and optimize the new structure to improve SEO.'
+    answer: 'We implement 301 redirects, maintain existing URLs when possible, and optimize the new structure to preserve SEO. While we work to minimize impact, some temporary ranking changes may occur during the migration process.'
   },
   {
     id: 'migration-5',
@@ -467,7 +477,7 @@ export const migracionShopifyFAQsEn: FAQ[] = [
   {
     id: 'migration-7',
     question: 'What happens if problems are found during migration?',
-    answer: 'We perform thorough pre-migration testing. If issues arise, we resolve them at no additional cost during the warranty period.'
+    answer: 'We perform thorough pre-migration testing to minimize risks. If issues related to our work arise during the established warranty period, we work to resolve them according to agreed terms.'
   },
   {
     id: 'migration-8',
@@ -536,7 +546,7 @@ export const consultoriaShopifyFAQsEs: FAQ[] = [
   {
     id: 'consultoria-10',
     question: '¿Qué ROI puedo esperar de la consultoría Shopify?',
-    answer: 'Nuestros clientes típicamente ven mejoras del 20-50% en conversiones y 15-30% en velocidad de carga en los primeros 3 meses.'
+    answer: 'El ROI varía según el estado inicial de la tienda y el mercado. En proyectos anteriores hemos observado mejoras del 20-50% en conversiones y 15-30% en velocidad de carga, pero los resultados específicos dependen de múltiples factores y no pueden garantizarse.'
   }
 ];
 
@@ -589,7 +599,7 @@ export const consultoriaShopifyFAQsEn: FAQ[] = [
   {
     id: 'consulting-10',
     question: 'What ROI can I expect from Shopify consulting?',
-    answer: 'Our clients typically see 20-50% improvements in conversions and 15-30% in loading speed in the first 3 months.'
+    answer: 'ROI varies depending on the initial state of the store and market. In previous projects we have observed 20-50% improvements in conversions and 15-30% in loading speed, but specific results depend on multiple factors and cannot be guaranteed.'
   }
 ];
 
@@ -623,7 +633,7 @@ export const croShopifyFAQsEs: FAQ[] = [
   {
     id: 'cro-6',
     question: '¿Cuánto tiempo se ven resultados en CRO?',
-    answer: 'Los primeros resultados se ven en 2-4 semanas. Para optimizaciones completas con A/B testing significativo, 2-3 meses.'
+    answer: 'Los primeros indicadores pueden verse en 2-4 semanas, aunque los resultados varían según el sitio web y las optimizaciones implementadas. Para optimizaciones completas con A/B testing significativo, típicamente 2-3 meses.'
   },
   {
     id: 'cro-7',
@@ -643,7 +653,7 @@ export const croShopifyFAQsEs: FAQ[] = [
   {
     id: 'cro-10',
     question: '¿Qué mejora promedio ven en las conversiones?',
-    answer: 'Nuestros clientes típicamente ven aumentos del 25-60% en conversion rate y 15-40% en AOV después de optimizaciones CRO completas.'
+    answer: 'Los resultados varían según cada negocio. En casos anteriores hemos observado aumentos del 25-60% en conversion rate y 15-40% en AOV, pero no podemos garantizar resultados específicos ya que dependen de múltiples factores como industria, audiencia y implementación.'
   }
 ];
 
@@ -676,7 +686,7 @@ export const croShopifyFAQsEn: FAQ[] = [
   {
     id: 'cro-en-6',
     question: 'How long before seeing CRO results?',
-    answer: 'First results are seen in 2-4 weeks. For complete optimizations with significant A/B testing, 2-3 months.'
+    answer: 'Initial indicators may be seen in 2-4 weeks, although results vary depending on the website and optimizations implemented. For complete optimizations with significant A/B testing, typically 2-3 months.'
   },
   {
     id: 'cro-en-7',
@@ -696,7 +706,7 @@ export const croShopifyFAQsEn: FAQ[] = [
   {
     id: 'cro-en-10',
     question: 'What average improvement do you see in conversions?',
-    answer: 'Our clients typically see 25-60% increases in conversion rate and 15-40% in AOV after complete CRO optimizations.'
+    answer: 'Results vary by business. In previous cases we have observed 25-60% increases in conversion rate and 15-40% in AOV, but we cannot guarantee specific results as they depend on multiple factors such as industry, audience, and implementation.'
   }
 ];
 
@@ -740,7 +750,7 @@ export const abTestingShopifyFAQsEs: FAQ[] = [
   {
     id: 'ab-8',
     question: '¿Qué tipo de mejoras han logrado con A/B testing?',
-    answer: 'Hemos logrado aumentos del 15-80% en conversiones, 10-35% en AOV, y reducciones del 20-50% en bounce rate según el elemento testeado.'
+    answer: 'En proyectos anteriores hemos observado mejoras variables: aumentos del 15-80% en conversiones, 10-35% en AOV, y reducciones del 20-50% en bounce rate. Los resultados dependen del elemento testeado, la audiencia, y las condiciones específicas de cada negocio.'
   },
   {
     id: 'ab-9',
@@ -793,7 +803,7 @@ export const abTestingShopifyFAQsEn: FAQ[] = [
   {
     id: 'ab-en-8',
     question: 'What type of improvements have you achieved with A/B testing?',
-    answer: 'We\'ve achieved 15-80% increases in conversions, 10-35% in AOV, and 20-50% reductions in bounce rate depending on the element tested.'
+    answer: 'In previous projects we have observed variable improvements: 15-80% increases in conversions, 10-35% in AOV, and 20-50% reductions in bounce rate. Results depend on the element tested, audience, and specific business conditions.'
   },
   {
     id: 'ab-en-9',
@@ -847,7 +857,7 @@ export const seoShopifyFAQsEs: FAQ[] = [
   {
     id: 'seo-8',
     question: '¿Qué resultados puedo esperar del SEO en Shopify?',
-    answer: 'Típicamente vemos mejoras en 3-6 meses: +40-150% en tráfico orgánico, mejor ranking para keywords objetivo, y aumento en ventas del canal orgánico.'
+    answer: 'Los resultados de SEO varían según la competencia, mercado y situación inicial. En casos anteriores hemos observado mejoras en 3-6 meses como aumentos del 40-150% en tráfico orgánico, pero no podemos garantizar resultados específicos ya que el SEO depende de múltiples factores externos.'
   },
   {
     id: 'seo-9',
@@ -900,7 +910,7 @@ export const seoShopifyFAQsEn: FAQ[] = [
   {
     id: 'seo-en-8',
     question: 'What results can I expect from Shopify SEO?',
-    answer: 'We typically see improvements in 3-6 months: +40-150% in organic traffic, better ranking for target keywords, and increased organic channel sales.'
+    answer: 'SEO results vary depending on competition, market, and initial situation. In previous cases we have observed improvements in 3-6 months such as 40-150% increases in organic traffic, but we cannot guarantee specific results as SEO depends on multiple external factors.'
   },
   {
     id: 'seo-en-9',
@@ -924,12 +934,12 @@ export const crearTiendaShopifyFAQsEs: FAQ[] = [
   {
     id: 'crear-2',
     question: '¿Cuánto tiempo tarda crear una tienda Shopify completa?',
-    answer: 'Tiendas básicas: 2-3 semanas. Tiendas con diseño personalizado y muchos productos: 4-8 semanas. Depende de complejidad y contenido.'
+    answer: 'Los tiempos típicos son: tiendas básicas 2-3 semanas, tiendas con diseño personalizado 4-8 semanas. Los plazos pueden variar según la complejidad del proyecto, disponibilidad de contenido, y revisiones requeridas.'
   },
   {
     id: 'crear-3',
     question: '¿Incluyen la configuración de métodos de pago?',
-    answer: 'Sí, configuramos Shopify Payments, PayPal, Stripe, y otros procesadores según tu ubicación y necesidades específicas.'
+    answer: 'Sí, configuramos Shopify Payments (disponible en países seleccionados), PayPal, Stripe, y otros procesadores de pago según tu ubicación geográfica y necesidades específicas.'
   },
   {
     id: 'crear-4',
@@ -965,6 +975,11 @@ export const crearTiendaShopifyFAQsEs: FAQ[] = [
     id: 'crear-10',
     question: '¿Ofrecen soporte después del lanzamiento?',
     answer: 'Sí, incluimos 30 días de soporte post-lanzamiento y ofrecemos planes de mantenimiento continuo según tus necesidades.'
+  },
+  {
+    id: 'crear-11',
+    question: '¿Shopify maneja aranceles e impuestos internacionales automáticamente?',
+    answer: 'Shopify te permite configurar tarifas y mostrar estimaciones de impuestos y aranceles internacionales (DDP/DDU), pero los costos finales dependen del transportista y la normativa del país de destino.'
   }
 ];
 
@@ -977,12 +992,12 @@ export const crearTiendaShopifyFAQsEn: FAQ[] = [
   {
     id: 'create-2',
     question: 'How long does it take to create a complete Shopify store?',
-    answer: 'Basic stores: 2-3 weeks. Stores with custom design and many products: 4-8 weeks. Depends on complexity and content.'
+    answer: 'Typical timeframes are: basic stores 2-3 weeks, stores with custom design 4-8 weeks. Timelines may vary depending on project complexity, content availability, and required revisions.'
   },
   {
     id: 'create-3',
     question: 'Do you include payment method configuration?',
-    answer: 'Yes, we configure Shopify Payments, PayPal, Stripe, and other processors according to your location and specific needs.'
+    answer: 'Yes, we configure Shopify Payments (available in selected countries), PayPal, Stripe, and other payment processors according to your geographic location and specific needs.'
   },
   {
     id: 'create-4',
@@ -1018,6 +1033,11 @@ export const crearTiendaShopifyFAQsEn: FAQ[] = [
     id: 'create-10',
     question: 'Do you offer support after launch?',
     answer: 'Yes, we include 30 days of post-launch support and offer ongoing maintenance plans according to your needs.'
+  },
+  {
+    id: 'create-11',
+    question: 'Does Shopify handle international duties and taxes automatically?',
+    answer: 'Shopify allows you to configure rates and display estimates for international taxes and duties (DDP/DDU), but final costs depend on the carrier and destination country regulations.'
   }
 ];
 
@@ -1178,7 +1198,7 @@ export const growthPartnerFAQsEs: FAQ[] = [
   {
     id: 'growth-10',
     question: '¿Qué resultados típicos ven sus clientes Growth Partner?',
-    answer: 'Nuestros clientes ven típicamente 40-200% de crecimiento en revenue, mejoras del 25-60% en conversion rate, y reducción del 20-40% en CAC.'
+    answer: 'Los resultados varían significativamente según el negocio, mercado y situación inicial. En casos anteriores hemos observado crecimientos del 40-200% en revenue y mejoras del 25-60% en conversion rate, pero no podemos garantizar resultados específicos ya que dependen de múltiples factores.'
   }
 ];
 
@@ -1231,6 +1251,6 @@ export const growthPartnerFAQsEn: FAQ[] = [
   {
     id: 'growth-en-10',
     question: 'What typical results do your Growth Partner clients see?',
-    answer: 'Our clients typically see 40-200% revenue growth, 25-60% improvements in conversion rate, and 20-40% reduction in CAC.'
+    answer: 'Results vary significantly by business, market, and initial situation. In previous cases we have observed 40-200% revenue growth and 25-60% improvements in conversion rate, but we cannot guarantee specific results as they depend on multiple factors.'
   }
 ];

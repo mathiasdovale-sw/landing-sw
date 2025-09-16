@@ -189,12 +189,6 @@ export default function MigracionShopify() {
             >
               Migrar Ahora
             </a>
-            <a 
-              href="tel:+34900000000" 
-              className="border-2 border-orange-300 text-orange-300 px-8 py-4 sm:py-5 sm:px-10 lg:py-6 lg:px-12 rounded-full font-bold text-lg sm:text-xl hover:bg-orange-300 hover:text-gray-900 transition-all duration-300"
-            >
-              Llamar Ahora
-            </a>
           </div>
         </div>
       </section>
