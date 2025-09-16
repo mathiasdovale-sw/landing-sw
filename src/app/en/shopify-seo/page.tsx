@@ -1,4 +1,6 @@
 import { Metadata } from 'next';
+import FAQAccordion from '@/app/_components/faq-accordion';
+import { seoShopifyFAQsEn } from '@/lib/faqs';
 
 export const metadata: Metadata = {
   title: 'Shopify SEO | SellifyWorks',
@@ -12,7 +14,25 @@ export default function ShopifySEO() {
         <h1 className="text-4xl font-bold text-gray-900 mb-8">
           Shopify SEO
         </h1>
-        <p>Content for Shopify SEO in English</p>
+        <div className="prose prose-lg mb-16">
+          <p>
+            SEO optimization specialized for Shopify stores. We improve your Google ranking 
+            and increase organic traffic.
+          </p>
+          <h2>What does our SEO include?</h2>
+          <ul>
+            <li>Complete technical SEO audit</li>
+            <li>Keyword research</li>
+            <li>On-page optimization</li>
+            <li>Speed and Core Web Vitals</li>
+            <li>Schema markup and structured data</li>
+          </ul>
+        </div>
+        
+        {/* FAQ Section */}
+        <div className="mt-16">
+          <FAQAccordion faqs={seoShopifyFAQsEn} />
+        </div>
       </div>
     </main>
   );
