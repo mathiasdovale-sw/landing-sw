@@ -7,8 +7,9 @@ export default function Index() {
   return (
     <>
       <main>
+        <HeaderHome />
+        
         <Container>
-          <HeaderHome />
           
         </Container>
 
