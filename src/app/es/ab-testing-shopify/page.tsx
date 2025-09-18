@@ -2,11 +2,13 @@ import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
 import { abTestingShopifyFAQsEs } from '@/lib/faqs';
 import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: 'A/B Testing Shopify | SellifyWorks',
-  description: 'Pruebas A/B especializadas para tiendas Shopify. Validamos cambios con datos reales para optimizar conversiones.',
-};
+export const metadata: Metadata = generatePageMetadata(
+  'shopifyAbTesting',
+  'es',
+  'A/B Testing Shopify | SellifyWorks'
+);
 
 export default function ABTestingShopify() {
   return (

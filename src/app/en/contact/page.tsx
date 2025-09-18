@@ -1,27 +1,25 @@
 import ContactSection from "@/app/_components/contact-section";
+import ContactStructuredData from "@/app/_components/contact-structured-data";
+import VisualBreadcrumbs from "@/app/_components/visual-breadcrumbs";
 import type { Metadata } from "next";
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: "Contact | SellifyWorks - Shopify Agency Barcelona",
-  description: "Get in touch with SellifyWorks. Agency specialized in Shopify store development and optimization in Barcelona. Let's talk about your project!",
-  openGraph: {
-    title: "Contact | SellifyWorks - Shopify Agency Barcelona",
-    description: "Get in touch with SellifyWorks. Agency specialized in Shopify store development and optimization in Barcelona. Let's talk about your project!",
-    type: "website",
-    locale: "en_US",
-  },
-  alternates: {
-    canonical: '/en/contact',
-    languages: {
-      es: '/es/contacto',
-      en: '/en/contact',
-    },
-  },
-};
+export const metadata: Metadata = generatePageMetadata(
+  'contact',
+  'en',
+  'Contact | SellifyWorks - Shopify Agency Barcelona'
+);
 
 export default function ContactPage() {
   return (
     <main>
+      <ContactStructuredData />
+      {/* Breadcrumbs */}
+      <div className="background-color:#141417ff py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <VisualBreadcrumbs />
+        </div>
+      </div>
       <ContactSection />
     </main>
   );

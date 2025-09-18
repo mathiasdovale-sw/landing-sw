@@ -1,16 +1,35 @@
 import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
 import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
+import ServiceStructuredData from '@/app/_components/service-structured-data';
+import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 import { seoShopifyFAQsEn } from '@/lib/faqs';
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: 'Shopify SEO | SellifyWorks',
-  description: 'SEO optimization specialized for Shopify stores. We improve your Google ranking and increase organic traffic.',
-};
+export const metadata: Metadata = generatePageMetadata(
+  'shopifySeo',
+  'en',
+  'Shopify SEO | SellifyWorks'
+);
 
 export default function ShopifySEO() {
   return (
     <>
+      <ServiceStructuredData 
+        serviceName="Shopify SEO"
+        serviceType="shopifySeo"
+        description="SEO optimization specialized for Shopify stores. We improve your Google ranking and increase organic traffic with proven strategies."
+        price={{
+          currency: "EUR",
+          priceRange: "600-2500"
+        }}
+      />
+      {/* Breadcrumbs */}
+      <div className="background-color:#141417ff py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <VisualBreadcrumbs />
+        </div>
+      </div>
       {/* Hero Section */}
       <section className="min-h-[85vh] text-white flex items-center justify-center py-20 lg:py-32" style={{ backgroundColor: '#141417ff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

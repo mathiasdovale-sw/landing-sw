@@ -1,16 +1,35 @@
 import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
 import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
+import ServiceStructuredData from '@/app/_components/service-structured-data';
+import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 import { disenoShopifyFAQsEn } from '@/lib/faqs';
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: 'Custom Shopify Design | SellifyWorks',
-  description: 'We create custom and responsive web designs for your Shopify store. User experience optimized to maximize conversions.',
-};
+export const metadata: Metadata = generatePageMetadata(
+  'shopifyDesign',
+  'en',
+  'Custom Shopify Design | SellifyWorks'
+);
 
 export default function ShopifyDesign() {
   return (
     <>
+      <ServiceStructuredData 
+        serviceName="Custom Shopify Design"
+        serviceType="shopifyDesign"
+        description="We create custom and responsive web designs for your Shopify store. User experience optimized to maximize conversions."
+        price={{
+          currency: "EUR",
+          priceRange: "1200-5000"
+        }}
+      />
+      {/* Breadcrumbs */}
+      <div className="background-color:#141417ff py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <VisualBreadcrumbs />
+        </div>
+      </div>
       {/* Hero Section */}
       <section className="min-h-[85vh] text-white flex items-center justify-center py-20 lg:py-32" style={{ backgroundColor: '#141417ff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -1,4 +1,14 @@
 {
+  "seo": {
+    "metaDescriptions": {
+      "home": "Agencia experta en Shopify. Diseño, desarrollo, optimización SEO y CRO para tiendas online. Impulsa tus ventas con SellifyWorks, tu partner de crecimiento en ecommerce.",
+      "about": "Conoce a SellifyWorks, agencia especializada en Shopify con años de experiencia. Nuestro equipo de expertos te ayuda a crear y optimizar tu tienda online para maximizar ventas.",
+      "contact": "Contacta con SellifyWorks para impulsar tu tienda Shopify. Consultoría gratuita, presupuesto sin compromiso. Hablemos de cómo hacer crecer tu ecommerce juntos.",
+      "blog": "Blog de SellifyWorks: consejos, trucos y estrategias para Shopify. Aprende sobre ecommerce, SEO, CRO y marketing digital para hacer crecer tu tienda online.",
+      "privacyPolicy": "Política de privacidad de SellifyWorks. Información sobre cómo recopilamos, usamos y protegemos tus datos personales. Transparencia total en el tratamiento de información.",
+      "cookiePolicy": "Política de cookies de SellifyWorks. Explicación detallada sobre el uso de cookies en nuestro sitio web y cómo puedes gestionarlas según tus preferencias."
+    }
+  },
   "about": {
     "metadata": {
       "title": "Sobre Nosotros - SellifyWorks",

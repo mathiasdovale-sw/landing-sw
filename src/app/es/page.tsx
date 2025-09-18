@@ -6,24 +6,13 @@ import type { Metadata } from 'next'
 import { HomeFAQsEs } from "@/lib/faqs";
 import FAQAccordion from "../_components/faq-accordion";
 import Divider from "../_components/divider";
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: "SellifyWorks - Agencia Shopify España | Desarrollo de Tiendas Online",
-  description: "Agencia especializada en desarrollo y optimización de tiendas Shopify en España. Creamos experiencias de ecommerce que convierten visitantes en ventas.",
-  alternates: {
-    canonical: '/es/',
-    languages: {
-      es: '/es/',
-      en: '/en/',
-    },
-  },
-  openGraph: {
-    title: "SellifyWorks - Agencia Shopify España",
-    description: "Agencia especializada en desarrollo y optimización de tiendas Shopify en España. Creamos experiencias de ecommerce que convierten visitantes en ventas.",
-    type: "website",
-    locale: "es_ES",
-  },
-}
+export const metadata: Metadata = generatePageMetadata(
+  'home',
+  'es',
+  'SellifyWorks - Agencia Shopify España | Desarrollo de Tiendas Online'
+)
 
 export default function HomePage() {
   return (

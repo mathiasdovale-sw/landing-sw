@@ -1,16 +1,27 @@
 import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
+import AutoBreadcrumbStructuredData from '@/app/_components/auto-breadcrumb-structured-data';
+import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 import { seoShopifyFAQsEs } from '@/lib/faqs';
 import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: 'SEO para Shopify | SellifyWorks',
-  description: 'Optimización SEO especializada para tiendas Shopify. Mejoramos tu posicionamiento en Google y aumentamos el tráfico orgánico.',
-};
+export const metadata: Metadata = generatePageMetadata(
+  'shopifySeo',
+  'es',
+  'SEO Shopify | SellifyWorks'
+);
 
 export default function SEOShopify() {
   return (
     <>
+      <AutoBreadcrumbStructuredData />
+      {/* Breadcrumbs */}
+      <div className="background-color:#141417ff py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <VisualBreadcrumbs />
+        </div>
+      </div>
       {/* Hero Section */}
       <section className="min-h-[85vh] text-white flex items-center justify-center py-20 lg:py-32" style={{ backgroundColor: '#141417ff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

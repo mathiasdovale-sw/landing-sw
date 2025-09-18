@@ -1,17 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: "Blog | SellifyWorks - Consejos y Estrategias Shopify",
-  description: "Descubre las últimas tendencias, consejos y estrategias para optimizar tu tienda Shopify con nuestros artículos especializados.",
-  alternates: {
-    canonical: '/es/blog',
-    languages: {
-      es: '/es/blog',
-      en: '/en/blog',
-    },
-  },
-}
+export const metadata: Metadata = generatePageMetadata(
+  'blog',
+  'es',
+  'Blog | SellifyWorks - Consejos y Estrategias Shopify'
+)
 
 export default function BlogPage() {
   return (

@@ -2,11 +2,13 @@ import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
 import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
 import { growthPartnerFAQsEs } from '@/lib/faqs';
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: 'Growth Partner Shopify | SellifyWorks',
-  description: 'Partner de crecimiento especializado en Shopify. Estrategias integrales para escalar tu negocio ecommerce de forma sostenible.',
-};
+export const metadata: Metadata = generatePageMetadata(
+  'shopifyGrowthPartner',
+  'es',
+  'Growth Partner Shopify | SellifyWorks'
+);
 
 export default function GrowthPartnerShopify() {
   return (

@@ -2,11 +2,13 @@ import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
 import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
 import { personalizacionTemaFAQsEs } from '@/lib/faqs';
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: 'Personalización Tema Shopify | SellifyWorks',
-  description: 'Personalizamos temas de Shopify según tus necesidades. Modificaciones avanzadas para crear una experiencia única.',
-};
+export const metadata: Metadata = generatePageMetadata(
+  'shopifyThemeCustomization',
+  'es',
+  'Personalización Tema Shopify | SellifyWorks'
+);
 
 export default function PersonalizacionTemaShopify() {
   return (

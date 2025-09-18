@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 import Link from 'next/link'
+import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 
 function NewsletterConfirmedContent() {
   const searchParams = useSearchParams()
@@ -47,8 +48,15 @@ function NewsletterConfirmedContent() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#1a1a1a' }}>
-      <div className="max-w-2xl mx-auto px-4 text-center">
+    <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
+      {/* Breadcrumbs */}
+      <div className="background-color:#141417ff py-4">
+        <div className="max-w-2xl mx-auto px-4">
+          <VisualBreadcrumbs />
+        </div>
+      </div>
+      <div className="min-h-screen flex items-center justify-center pt-16">
+        <div className="max-w-2xl mx-auto px-4 text-center">
         <div className="bg-gray-800 rounded-2xl p-8 md:p-12">
           <div className={`w-16 h-16 ${getBgColor()} rounded-full flex items-center justify-center mx-auto mb-6`}>
             {type === 'success' && (
@@ -86,6 +94,7 @@ function NewsletterConfirmedContent() {
             Back to Home
           </Link>
         </div>
+      </div>
       </div>
     </main>
   )

@@ -3,26 +3,18 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Award, CheckCircle, Eye } from 'lucide-react'
 import { getDictionary } from '@/lib/dictionaries'
+import { generatePageMetadata } from "@/lib/seo-utils";
+import OrganizationStructuredData from '@/app/_components/organization-structured-data';
+import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 
 export async function generateMetadata(): Promise<Metadata> {
   const dict = await getDictionary('en')
   
-  return {
-    title: dict.about.metadata.title,
-    description: dict.about.metadata.description,
-    openGraph: {
-      title: dict.about.metadata.title,
-      description: dict.about.metadata.description,
-      type: "website",
-    },
-    alternates: {
-      canonical: '/en/about',
-      languages: {
-        es: '/es/sobre-nosotros',
-        en: '/en/about',
-      },
-    },
-  }
+  return generatePageMetadata(
+    'about',
+    'en',
+    dict.about.metadata.title
+  )
 }
 
 export default async function AboutPage() {
@@ -30,6 +22,16 @@ export default async function AboutPage() {
   
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
+      <OrganizationStructuredData 
+        description={dict.about.metadata.description}
+        specialties={["Shopify Development", "SEO", "CRO", "Web Design", "Consulting"]}
+      />
+      {/* Breadcrumbs */}
+      <div className="background-color:#141417ff py-4">
+        <div className="max-w-6xl mx-auto px-4 md:px-8 lg:px-16">
+          <VisualBreadcrumbs />
+        </div>
+      </div>
       {/* Hero Section */}
       <section className="py-16 md:py-24 lg:py-32 px-4 md:px-8 lg:px-16">
         <div className="max-w-6xl mx-auto">
