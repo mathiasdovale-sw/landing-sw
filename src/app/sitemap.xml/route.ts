@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAllPosts } from '@/lib/api'
 import { locales, defaultLocale } from '@/lib/i18n'
-import { seoUrls, generateHreflangs, pagePriorities, changeFrequencies } from '@/lib/seo-utils'
+import { seoUrls, generateHreflangs, pagePriorities, changeFrequencies, getCanonicalBaseUrl } from '@/lib/seo-utils'
 
 interface SitemapUrl {
   loc: string
@@ -12,7 +12,7 @@ interface SitemapUrl {
 }
 
 export async function GET(request: NextRequest) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.sellifyworks.com'
+  const baseUrl = getCanonicalBaseUrl()
   const lastmod = new Date().toISOString()
   
   const urls: SitemapUrl[] = []

@@ -1,11 +1,11 @@
 # robots.txt for SellifyWorks - Shopify Agency
-# Updated: 2024
+# Updated: 2025 - Canonical domain: www.sellifyworks.com
 
 # Allow all crawlers access to public content
 User-agent: *
 Allow: /
 
-# Sitemap location
+# Canonical sitemap location
 Sitemap: https://www.sellifyworks.com/sitemap.xml
 
 # Block sensitive or unnecessary paths

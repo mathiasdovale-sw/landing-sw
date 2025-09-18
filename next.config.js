@@ -13,6 +13,20 @@ const nextConfig = {
   // Redirecciones para URLs canónicas
   async redirects() {
     return [
+      // === CANONICALIZACIÓN WWW ===
+      // Force www subdomain for SEO consistency
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'sellifyworks.com',
+          },
+        ],
+        destination: 'https://www.sellifyworks.com/:path*',
+        permanent: true,
+      },
+
       // === REDIRECCIÓN PÁGINA PRINCIPAL ===
       // Redirección de / a /es/ (español por defecto)
       {

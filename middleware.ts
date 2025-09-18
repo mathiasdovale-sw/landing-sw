@@ -27,6 +27,14 @@ function isRateLimited(ip: string): boolean {
 }
 
 export function middleware(request: NextRequest) {
+  // 1. CANONICALIZACIÓN - Force www subdomain
+  const hostname = request.headers.get('host')
+  if (hostname === 'sellifyworks.com') {
+    const url = request.nextUrl.clone()
+    url.host = 'www.sellifyworks.com'
+    return NextResponse.redirect(url, 301)
+  }
+
   const response = NextResponse.next()
   
   // Get client IP

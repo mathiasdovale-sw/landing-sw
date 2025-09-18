@@ -5,6 +5,14 @@ interface SeoUrl {
   en: string
 }
 
+// Canonical domain configuration - centralized for consistency
+export const CANONICAL_DOMAIN = 'https://www.sellifyworks.com'
+
+// Function to ensure consistent canonical URLs
+export function getCanonicalBaseUrl(): string {
+  return process.env.NEXT_PUBLIC_BASE_URL || CANONICAL_DOMAIN
+}
+
 // SEO-friendly URL mappings for all pages
 export const seoUrls: Record<string, SeoUrl> = {
   home: { es: '/', en: '/' },
@@ -29,24 +37,26 @@ export const seoUrls: Record<string, SeoUrl> = {
 }
 
 // Generate hreflang alternates for a given page
-export function generateHreflangs(pageKey: keyof typeof seoUrls, baseUrl: string = 'https://www.sellifyworks.com') {
+export function generateHreflangs(pageKey: keyof typeof seoUrls, baseUrl?: string) {
+  const canonicalBaseUrl = baseUrl || getCanonicalBaseUrl()
   const urls = seoUrls[pageKey]
   if (!urls) return []
 
   return [
-    { hreflang: 'es', href: `${baseUrl}/es${urls.es}` },
-    { hreflang: 'en', href: `${baseUrl}/en${urls.en}` },
-    { hreflang: 'x-default', href: `${baseUrl}/es${urls.es}` } // Spanish as default
+    { hreflang: 'es', href: `${canonicalBaseUrl}/es${urls.es}` },
+    { hreflang: 'en', href: `${canonicalBaseUrl}/en${urls.en}` },
+    { hreflang: 'x-default', href: `${canonicalBaseUrl}/es${urls.es}` } // Spanish as default
   ]
 }
 
 // Get canonical URL for a page
-export function getCanonicalUrl(pageKey: keyof typeof seoUrls, locale: string, baseUrl: string = 'https://www.sellifyworks.com') {
+export function getCanonicalUrl(pageKey: keyof typeof seoUrls, locale: string, baseUrl?: string) {
+  const canonicalBaseUrl = baseUrl || getCanonicalBaseUrl()
   const urls = seoUrls[pageKey]
-  if (!urls) return `${baseUrl}/es/` // fallback to home
+  if (!urls) return `${canonicalBaseUrl}/es/` // fallback to home
 
   const localeUrl = urls[locale as keyof SeoUrl] || urls.es
-  return `${baseUrl}/${locale}${localeUrl}`
+  return `${canonicalBaseUrl}/${locale}${localeUrl}`
 }
 
 // Get all service pages for sitemap generation
