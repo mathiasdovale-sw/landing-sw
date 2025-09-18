@@ -24,12 +24,7 @@ export default function CrearTiendaShopify() {
           priceRange: "2000-8000"
         }}
       />
-      {/* Breadcrumbs */}
-      <div className="background-color:#141417ff py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <VisualBreadcrumbs />
-        </div>
-      </div>
+      <VisualBreadcrumbs />
       {/* Hero Section */}
       <section className="min-h-[85vh] text-white flex items-center justify-center py-20 lg:py-32" style={{ backgroundColor: '#141417ff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

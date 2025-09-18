@@ -1,16 +1,30 @@
 import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
 import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
+import ServiceStructuredData from '@/app/_components/service-structured-data';
+import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 import { croShopifyFAQsEn } from '@/lib/faqs';
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: 'Shopify CRO | SellifyWorks',
-  description: 'Conversion rate optimization for Shopify stores. We increase your conversion rate and maximize your ecommerce revenue.',
-};
+export const metadata: Metadata = generatePageMetadata(
+  'shopifyCro',
+  'en',
+  'Shopify CRO | SellifyWorks'
+);
 
 export default function ShopifyCRO() {
   return (
     <>
+      <ServiceStructuredData 
+        serviceName="Shopify CRO"
+        serviceType="shopifyCro"
+        description="Conversion rate optimization for Shopify stores. We increase your conversion rate and maximize your ecommerce revenue."
+        price={{
+          currency: "EUR",
+          priceRange: "800-3500"
+        }}
+      />
+      <VisualBreadcrumbs />
       {/* Hero Section */}
       <section className="min-h-[85vh] text-white flex items-center justify-center py-20 lg:py-32" style={{ backgroundColor: '#141417ff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

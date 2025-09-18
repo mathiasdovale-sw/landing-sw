@@ -1,20 +1,17 @@
 import type { Metadata } from 'next'
+import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: "Cookie Policy | SellifyWorks",
-  description: "SellifyWorks cookie policy. Information about the use of cookies on our website.",
-  alternates: {
-    canonical: '/en/cookie-policy',
-    languages: {
-      es: '/es/politica-de-cookies',
-      en: '/en/cookie-policy',
-    },
-  },
-}
+export const metadata: Metadata = generatePageMetadata(
+  'cookiePolicy',
+  'en',
+  'Cookie Policy | SellifyWorks'
+);
 
 export default function CookiePolicyPage() {
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
+      <VisualBreadcrumbs />
       <div className="max-w-4xl mx-auto px-4 md:px-8 lg:px-16 py-16 md:py-24">
         
         {/* Header */}

@@ -11,12 +11,7 @@ export const metadata: Metadata = generatePageMetadata(
 export default function PrivacyPolicyPage() {
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
-      {/* Breadcrumbs */}
-      <div className="background-color:#141417ff py-4">
-        <div className="max-w-4xl mx-auto px-4 md:px-8 lg:px-16">
-          <VisualBreadcrumbs />
-        </div>
-      </div>
+      <VisualBreadcrumbs maxWidth="max-w-4xl" />
       <div className="max-w-4xl mx-auto px-4 md:px-8 lg:px-16 py-16 md:py-24">
         
         {/* Header */}

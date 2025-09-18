@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
 import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
+import ServiceStructuredData from '@/app/_components/service-structured-data';
+import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 import { growthPartnerFAQsEs } from '@/lib/faqs';
 import { generatePageMetadata } from "@/lib/seo-utils";
 
@@ -13,6 +15,16 @@ export const metadata: Metadata = generatePageMetadata(
 export default function GrowthPartnerShopify() {
   return (
     <>
+      <ServiceStructuredData 
+        serviceName="Growth Partner Shopify"
+        serviceType="shopifyGrowthPartner"
+        description="Partner de crecimiento Shopify especializado. Estrategias de marketing, optimización y escalado para maximizar ventas."
+        price={{
+          currency: "EUR",
+          priceRange: "1500-8000"
+        }}
+      />
+      <VisualBreadcrumbs />
       {/* Hero Section */}
       <section className="min-h-[85vh] text-white flex items-center justify-center py-20 lg:py-32" style={{ backgroundColor: '#141417ff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

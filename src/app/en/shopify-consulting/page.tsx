@@ -1,16 +1,30 @@
 import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
 import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
+import ServiceStructuredData from '@/app/_components/service-structured-data';
+import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 import { consultoriaShopifyFAQsEn } from '@/lib/faqs';
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: 'Shopify Consulting | SellifyWorks',
-  description: 'Strategic consulting specialized in Shopify. Analysis, optimization and strategies to maximize your store performance.',
-};
+export const metadata: Metadata = generatePageMetadata(
+  'shopifyConsulting',
+  'en',
+  'Shopify Consulting | SellifyWorks'
+);
 
 export default function ShopifyConsulting() {
   return (
     <>
+      <ServiceStructuredData 
+        serviceName="Shopify Consulting"
+        serviceType="shopifyConsulting"
+        description="Strategic consulting specialized in Shopify. Analysis, optimization and strategies to maximize your store performance."
+        price={{
+          currency: "EUR",
+          priceRange: "500-5000"
+        }}
+      />
+      <VisualBreadcrumbs />
       {/* Hero Section */}
       <section className="min-h-[85vh] text-white flex items-center justify-center py-20 lg:py-32" style={{ backgroundColor: '#141417ff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -24,12 +24,7 @@ export default async function AboutPage() {
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
       <AutoBreadcrumbStructuredData />
-      {/* Breadcrumbs */}
-      <div className="background-color:#141417ff py-4">
-        <div className="max-w-6xl mx-auto px-4 md:px-8 lg:px-16">
-          <VisualBreadcrumbs />
-        </div>
-      </div>
+      <VisualBreadcrumbs maxWidth="max-w-6xl" />
       <OrganizationStructuredData 
         description={dict.about.metadata.description}
         specialties={["Desarrollo Shopify", "SEO", "CRO", "Diseño Web", "Consultoría"]}

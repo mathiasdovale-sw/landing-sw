@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
 import { abTestingShopifyFAQsEs } from '@/lib/faqs';
 import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
+import ServiceStructuredData from '@/app/_components/service-structured-data';
+import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 import { generatePageMetadata } from "@/lib/seo-utils";
 
 export const metadata: Metadata = generatePageMetadata(
@@ -13,6 +15,16 @@ export const metadata: Metadata = generatePageMetadata(
 export default function ABTestingShopify() {
   return (
     <>
+      <ServiceStructuredData 
+        serviceName="A/B Testing Shopify"
+        serviceType="shopifyAbTesting"
+        description="Pruebas A/B especializadas para Shopify. Testeo de conversiones, elementos UX y optimización basada en datos reales."
+        price={{
+          currency: "EUR",
+          priceRange: "600-2500"
+        }}
+      />
+      <VisualBreadcrumbs />
       {/* Hero Section */}
       <section className="min-h-[85vh] text-white flex items-center justify-center py-20 lg:py-32" style={{ backgroundColor: '#141417ff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

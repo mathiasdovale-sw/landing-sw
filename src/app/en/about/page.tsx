@@ -26,12 +26,7 @@ export default async function AboutPage() {
         description={dict.about.metadata.description}
         specialties={["Shopify Development", "SEO", "CRO", "Web Design", "Consulting"]}
       />
-      {/* Breadcrumbs */}
-      <div className="background-color:#141417ff py-4">
-        <div className="max-w-6xl mx-auto px-4 md:px-8 lg:px-16">
-          <VisualBreadcrumbs />
-        </div>
-      </div>
+      <VisualBreadcrumbs maxWidth="max-w-6xl" />
       {/* Hero Section */}
       <section className="py-16 md:py-24 lg:py-32 px-4 md:px-8 lg:px-16">
         <div className="max-w-6xl mx-auto">

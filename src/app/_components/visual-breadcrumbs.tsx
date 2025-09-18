@@ -7,11 +7,15 @@ import useBreadcrumbs from '@/hooks/useBreadcrumbs';
 interface VisualBreadcrumbsProps {
   className?: string;
   showHome?: boolean;
+  backgroundColor?: string;
+  maxWidth?: string;
 }
 
 const VisualBreadcrumbs = ({ 
   className = '', 
-  showHome = true 
+  showHome = true,
+  backgroundColor = 'background-color:#141417ff',
+  maxWidth = 'max-w-7xl'
 }: VisualBreadcrumbsProps) => {
   const { language } = useLanguage();
   const breadcrumbItems = useBreadcrumbs();
@@ -19,10 +23,12 @@ const VisualBreadcrumbs = ({
   if (breadcrumbItems.length === 0) return null;
 
   return (
-    <nav 
-      className={`flex items-center space-x-2 text-sm ${className}`}
-      aria-label="Breadcrumb"
-    >
+    <div className={`${backgroundColor} py-4`}>
+      <div className={`${maxWidth} mx-auto px-4 sm:px-6 lg:px-8`}>
+        <nav 
+          className={`flex items-center space-x-2 text-sm ${className}`}
+          aria-label="Breadcrumb"
+        >
       {showHome && (
         <>
           <Link 
@@ -62,7 +68,9 @@ const VisualBreadcrumbs = ({
           </div>
         );
       })}
-    </nav>
+        </nav>
+      </div>
+    </div>
   );
 };
 
