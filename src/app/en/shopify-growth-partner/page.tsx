@@ -1,16 +1,30 @@
 import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
+import ServiceStructuredData from '@/app/_components/service-structured-data';
+import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
 import { growthPartnerFAQsEn } from '@/lib/faqs';
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: 'Shopify Growth Partner | SellifyWorks',
-  description: 'Growth partner specialized in Shopify. Comprehensive strategies to scale your ecommerce business sustainably.',
-};
+export const metadata: Metadata = generatePageMetadata(
+  'shopifyGrowthPartner',
+  'en',
+  'Shopify Growth Partner | SellifyWorks'
+);
 
 export default function ShopifyGrowthPartner() {
   return (
-    <>
+    <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
+      <ServiceStructuredData 
+        serviceName="Shopify Growth Partner"
+        serviceType="shopifyGrowthPartner"
+        description="Growth partner specialized in Shopify. Comprehensive strategies to scale your ecommerce business sustainably and profitably."
+        price={{
+          currency: "USD",
+          priceRange: "Consultar"
+        }}
+      />
+      <VisualBreadcrumbs />
       {/* Hero Section */}
       <section className="min-h-[85vh] text-white flex items-center justify-center py-20 lg:py-32" style={{ backgroundColor: '#141417ff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -200,6 +214,6 @@ export default function ShopifyGrowthPartner() {
           <FAQAccordion faqs={growthPartnerFAQsEn} />
         </div>
       </section>
-    </>
+    </main>
   );
 }

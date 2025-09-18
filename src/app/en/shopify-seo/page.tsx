@@ -21,7 +21,7 @@ export default function ShopifySEO() {
         description="SEO optimization specialized for Shopify stores. We improve your Google ranking and increase organic traffic with proven strategies."
         price={{
           currency: "EUR",
-          priceRange: "600-2500"
+          priceRange: "Consult"
         }}
       />
       <VisualBreadcrumbs />

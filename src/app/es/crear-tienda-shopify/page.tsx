@@ -21,7 +21,7 @@ export default function CrearTiendaShopify() {
         description="Configuración completa de tiendas Shopify desde cero. Diseño, desarrollo, configuración de pagos y lanzamiento profesional."
         price={{
           currency: "EUR",
-          priceRange: "2000-8000"
+          priceRange: "Consultar"
         }}
       />
       <VisualBreadcrumbs />

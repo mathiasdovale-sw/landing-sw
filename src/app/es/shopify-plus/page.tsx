@@ -21,7 +21,7 @@ export default function ShopifyPlus() {
         description="Soluciones avanzadas Shopify Plus para empresas de alto volumen. Desarrollo, configuración y optimización para tiendas enterprise."
         price={{
           currency: "EUR",
-          priceRange: "5000-25000"
+          priceRange: "Consultar"
         }}
       />
       <VisualBreadcrumbs />

@@ -1,16 +1,30 @@
 import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
+import ServiceStructuredData from '@/app/_components/service-structured-data';
+import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
 import { migracionShopifyFAQsEn } from '@/lib/faqs';
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: 'Shopify Migration | SellifyWorks',
-  description: 'We migrate your existing store to Shopify without losing data. Safe and optimized process to minimize downtime.',
-};
+export const metadata: Metadata = generatePageMetadata(
+  'shopifyMigration',
+  'en',
+  'Shopify Migration | SellifyWorks'
+);
 
 export default function ShopifyMigration() {
   return (
-    <>
+    <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
+      <ServiceStructuredData 
+        serviceName="Shopify Migration"
+        serviceType="shopifyMigration"
+        description="Professional Shopify migration services. We migrate your existing store to Shopify without losing data, preserving SEO and minimizing downtime."
+        price={{
+          currency: "USD",
+          priceRange: "Consultar"
+        }}
+      />
+      <VisualBreadcrumbs />
       {/* Hero Section */}
       <section className="min-h-[85vh] text-white flex items-center justify-center py-20 lg:py-32" style={{ backgroundColor: '#141417ff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -199,6 +213,6 @@ export default function ShopifyMigration() {
           <FAQAccordion faqs={migracionShopifyFAQsEn} />
         </div>
       </section>
-    </>
+    </main>
   );
 }

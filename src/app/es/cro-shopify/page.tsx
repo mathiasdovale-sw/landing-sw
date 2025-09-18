@@ -21,7 +21,7 @@ export default function CROShopify() {
         description="Optimización de conversión especializada para Shopify. Análisis, testing y mejoras para maximizar las ventas de tu tienda online."
         price={{
           currency: "EUR",
-          priceRange: "800-3500"
+          priceRange: "Consultar"
         }}
       />
       <VisualBreadcrumbs />

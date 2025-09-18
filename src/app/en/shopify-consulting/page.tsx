@@ -21,7 +21,7 @@ export default function ShopifyConsulting() {
         description="Strategic consulting specialized in Shopify. Analysis, optimization and strategies to maximize your store performance."
         price={{
           currency: "EUR",
-          priceRange: "500-5000"
+          priceRange: "Consult"
         }}
       />
       <VisualBreadcrumbs />

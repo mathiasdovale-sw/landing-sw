@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
-import AutoBreadcrumbStructuredData from '@/app/_components/auto-breadcrumb-structured-data';
 import ServiceStructuredData from '@/app/_components/service-structured-data';
 import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 import { disenoShopifyFAQsEs } from '@/lib/faqs';
@@ -22,10 +21,9 @@ export default function DisenoShopify() {
         description="Servicios de diseño web personalizado para tiendas Shopify. Diseños únicos y optimizados para conversión."
         price={{
           currency: "EUR",
-          priceRange: "1200-8000"
+          priceRange: "Consultar"
         }}
       />
-      <AutoBreadcrumbStructuredData />
       <VisualBreadcrumbs />
       {/* Hero Section */}
       <section className="min-h-[85vh] text-white flex items-center justify-center py-20 lg:py-32" style={{ backgroundColor: '#141417ff' }}>

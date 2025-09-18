@@ -1,16 +1,30 @@
 import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
+import ServiceStructuredData from '@/app/_components/service-structured-data';
+import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
 import { abTestingShopifyFAQsEn } from '@/lib/faqs';
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: 'Shopify A/B Testing | SellifyWorks',
-  description: 'A/B testing specialized for Shopify stores. We validate changes with real data to optimize conversions.',
-};
+export const metadata: Metadata = generatePageMetadata(
+  'shopifyAbTesting',
+  'en',
+  'Shopify A/B Testing | SellifyWorks'
+);
 
 export default function ShopifyABTesting() {
   return (
-    <>
+    <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
+      <ServiceStructuredData 
+        serviceName="Shopify A/B Testing"
+        serviceType="shopifyAbTesting"
+        description="A/B testing specialized for Shopify stores. We validate changes with real data to optimize conversions and maximize revenue."
+        price={{
+          currency: "USD",
+          priceRange: "Consultar"
+        }}
+      />
+      <VisualBreadcrumbs />
       {/* Hero Section */}
       <section className="min-h-[85vh] text-white flex items-center justify-center py-20 lg:py-32" style={{ backgroundColor: '#141417ff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -199,6 +213,6 @@ export default function ShopifyABTesting() {
           <FAQAccordion faqs={abTestingShopifyFAQsEn} />
         </div>
       </section>
-    </>
+    </main>
   );
 }

@@ -21,7 +21,7 @@ export default function MigracionShopify() {
         description="Migración completa y segura a Shopify desde cualquier plataforma. Transferencia de datos, productos, clientes y configuraciones sin pérdidas."
         price={{
           currency: "EUR",
-          priceRange: "1500-8000"
+          priceRange: "Consultar"
         }}
       />
       <VisualBreadcrumbs />

@@ -21,7 +21,7 @@ export default function ShopifyThemeCustomization() {
         description="Professional Shopify theme customization services. Advanced modifications to create unique and conversion-optimized experiences."
         price={{
           currency: "USD",
-          priceRange: "800-8000"
+          priceRange: "Consult"
         }}
       />
       <VisualBreadcrumbs />

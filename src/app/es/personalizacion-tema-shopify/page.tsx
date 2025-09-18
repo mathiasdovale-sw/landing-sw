@@ -21,7 +21,7 @@ export default function PersonalizacionTemaShopify() {
         description="Personalización avanzada de temas Shopify. Modificaciones custom, optimización y funcionalidades específicas para tu negocio."
         price={{
           currency: "EUR",
-          priceRange: "800-4000"
+          priceRange: "Consultar"
         }}
       />
       <VisualBreadcrumbs />

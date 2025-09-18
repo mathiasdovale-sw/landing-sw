@@ -21,7 +21,7 @@ export default function ABTestingShopify() {
         description="Pruebas A/B especializadas para Shopify. Testeo de conversiones, elementos UX y optimización basada en datos reales."
         price={{
           currency: "EUR",
-          priceRange: "600-2500"
+          priceRange: "Consultar"
         }}
       />
       <VisualBreadcrumbs />

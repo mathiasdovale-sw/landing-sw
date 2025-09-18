@@ -21,7 +21,7 @@ export default function ShopifyCRO() {
         description="Conversion rate optimization for Shopify stores. We increase your conversion rate and maximize your ecommerce revenue."
         price={{
           currency: "EUR",
-          priceRange: "800-3500"
+          priceRange: "Consult"
         }}
       />
       <VisualBreadcrumbs />

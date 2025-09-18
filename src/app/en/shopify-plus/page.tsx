@@ -21,7 +21,7 @@ export default function ShopifyPlus() {
         description="Enterprise solutions with Shopify Plus for high-volume businesses. Certified partner for advanced scalability and custom integrations."
         price={{
           currency: "EUR",
-          priceRange: "5000-25000"
+          priceRange: "Consult"
         }}
       />
       <VisualBreadcrumbs />

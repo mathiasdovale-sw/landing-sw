@@ -21,7 +21,7 @@ export default function ConsultoriaShopify() {
         description="Consultoría estratégica especializada en Shopify. Análisis, optimización y estrategias para maximizar el rendimiento de tu tienda online."
         price={{
           currency: "EUR",
-          priceRange: "500-5000"
+          priceRange: "Consultar"
         }}
       />
       <VisualBreadcrumbs />

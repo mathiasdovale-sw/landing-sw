@@ -21,7 +21,7 @@ export default function GrowthPartnerShopify() {
         description="Partner de crecimiento Shopify especializado. Estrategias de marketing, optimización y escalado para maximizar ventas."
         price={{
           currency: "EUR",
-          priceRange: "1500-8000"
+          priceRange: "Consultar"
         }}
       />
       <VisualBreadcrumbs />

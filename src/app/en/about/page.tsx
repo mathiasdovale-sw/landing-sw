@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Award, CheckCircle, Eye } from 'lucide-react'
 import { getDictionary } from '@/lib/dictionaries'
 import { generatePageMetadata } from "@/lib/seo-utils";
+import AutoBreadcrumbStructuredData from '@/app/_components/auto-breadcrumb-structured-data';
 import OrganizationStructuredData from '@/app/_components/organization-structured-data';
 import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 
@@ -22,6 +23,7 @@ export default async function AboutPage() {
   
   return (
     <main className="min-h-screen">
+      <AutoBreadcrumbStructuredData />
       <OrganizationStructuredData 
         description={dict.about.metadata.description}
         specialties={["Shopify Development", "SEO", "CRO", "Web Design", "Consulting"]}

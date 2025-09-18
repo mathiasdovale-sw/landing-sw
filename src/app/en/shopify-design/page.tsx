@@ -21,7 +21,7 @@ export default function ShopifyDesign() {
         description="We create custom and responsive web designs for your Shopify store. User experience optimized to maximize conversions."
         price={{
           currency: "EUR",
-          priceRange: "1200-5000"
+          priceRange: "Consult"
         }}
       />
       <VisualBreadcrumbs />

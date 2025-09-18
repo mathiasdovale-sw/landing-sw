@@ -21,7 +21,7 @@ export default function ShopifyStoreSetup() {
         description="We create your Shopify store from scratch. Complete setup, custom design and optimization to start selling."
         price={{
           currency: "EUR",
-          priceRange: "2000-8000"
+          priceRange: "Consult"
         }}
       />
       <VisualBreadcrumbs />
