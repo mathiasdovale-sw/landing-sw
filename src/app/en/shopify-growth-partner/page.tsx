@@ -14,7 +14,7 @@ export const metadata: Metadata = generatePageMetadata(
 
 export default function ShopifyGrowthPartner() {
   return (
-    <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
+    <main className="min-h-screen">
       <ServiceStructuredData 
         serviceName="Shopify Growth Partner"
         serviceType="shopifyGrowthPartner"

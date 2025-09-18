@@ -14,7 +14,7 @@ export const metadata: Metadata = generatePageMetadata(
 
 export default function ShopifyMigration() {
   return (
-    <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
+    <main className="min-h-screen">
       <ServiceStructuredData 
         serviceName="Shopify Migration"
         serviceType="shopifyMigration"
