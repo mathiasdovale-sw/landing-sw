@@ -22,7 +22,7 @@ export default async function AboutPage() {
   const dict = await getDictionary('es')
   
   return (
-    <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
+    <main className="min-h-screen">
       <AutoBreadcrumbStructuredData />
       <VisualBreadcrumbs maxWidth="max-w-6xl" />
       <OrganizationStructuredData 

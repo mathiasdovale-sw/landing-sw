@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
 import AutoBreadcrumbStructuredData from '@/app/_components/auto-breadcrumb-structured-data';
+import ServiceStructuredData from '@/app/_components/service-structured-data';
 import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 import { seoShopifyFAQsEs } from '@/lib/faqs';
 import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
@@ -14,7 +15,16 @@ export const metadata: Metadata = generatePageMetadata(
 
 export default function SEOShopify() {
   return (
-    <>
+    <main className="min-h-screen">
+      <ServiceStructuredData 
+        serviceName="SEO Shopify"
+        serviceType="shopifySeo"
+        description="Servicios especializados de SEO para tiendas Shopify. Posicionamiento en Google y optimización para aumentar tráfico orgánico."
+        price={{
+          currency: "EUR",
+          priceRange: "800-5000"
+        }}
+      />
       <AutoBreadcrumbStructuredData />
       <VisualBreadcrumbs />
       {/* Hero Section */}
@@ -205,6 +215,6 @@ export default function SEOShopify() {
           <FAQAccordion faqs={seoShopifyFAQsEs} />
         </div>
       </section>
-    </>
+    </main>
   );
 }

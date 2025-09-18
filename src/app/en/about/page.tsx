@@ -21,7 +21,7 @@ export default async function AboutPage() {
   const dict = await getDictionary('en')
   
   return (
-    <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
+    <main className="min-h-screen">
       <OrganizationStructuredData 
         description={dict.about.metadata.description}
         specialties={["Shopify Development", "SEO", "CRO", "Web Design", "Consulting"]}

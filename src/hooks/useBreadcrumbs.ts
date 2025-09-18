@@ -24,6 +24,15 @@ const pathTranslations = {
     'auditoria-shopify': 'Auditoría Shopify',
     'integraciones-shopify': 'Integraciones Shopify',
     'apps-shopify': 'Apps Shopify',
+    'consultoria-shopify': 'Consultoría Shopify',
+    'cro-shopify': 'CRO Shopify',
+    'crear-tienda-shopify': 'Crear Tienda Shopify',
+    'personalizacion-tema-shopify': 'Personalización Tema Shopify',
+    'growth-partner-shopify': 'Growth Partner Shopify',
+    'ab-testing-shopify': 'A/B Testing Shopify',
+    'politica-de-privacidad': 'Política de Privacidad',
+    'politica-de-cookies': 'Política de Cookies',
+    'suscripcion-confirmada': 'Suscripción Confirmada',
     'blog': 'Blog',
     'posts': 'Artículos'
   },
@@ -31,7 +40,7 @@ const pathTranslations = {
     'about': 'About',
     'contact': 'Contact',
     'services': 'Services',
-    'seo-shopify': 'SEO Shopify',
+    'shopify-seo': 'Shopify SEO',
     'shopify-design': 'Shopify Design',
     'shopify-development': 'Shopify Development',
     'shopify-migration': 'Shopify Migration',
@@ -41,6 +50,13 @@ const pathTranslations = {
     'shopify-audit': 'Shopify Audit',
     'shopify-integrations': 'Shopify Integrations',
     'shopify-apps': 'Shopify Apps',
+    'shopify-consulting': 'Shopify Consulting',
+    'shopify-cro': 'Shopify CRO',
+    'shopify-store-setup': 'Shopify Store Setup',
+    'shopify-theme-customization': 'Shopify Theme Customization',
+    'privacy-policy': 'Privacy Policy',
+    'cookie-policy': 'Cookie Policy',
+    'newsletter-confirmed': 'Newsletter Confirmed',
     'blog': 'Blog',
     'posts': 'Posts'
   }
@@ -64,7 +80,7 @@ export const useBreadcrumbs = (): BreadcrumbItem[] => {
     // Get translated name for this segment
     const translations = pathTranslations[language as keyof typeof pathTranslations];
     const name = translations?.[segment as keyof typeof translations] || 
-                 segment.charAt(0).toUpperCase() + segment.slice(1);
+                 segment.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     
     // Don't include URL for the last item (current page)
     const isCurrentPage = index === segments.length - 1;

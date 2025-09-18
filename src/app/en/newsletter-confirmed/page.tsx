@@ -48,7 +48,7 @@ function NewsletterConfirmedContent() {
   }
 
   return (
-    <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
+    <main className="min-h-screen">
       <VisualBreadcrumbs maxWidth="max-w-2xl" />
       <div className="min-h-screen flex items-center justify-center pt-16">
         <div className="max-w-2xl mx-auto px-4 text-center">

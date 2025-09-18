@@ -11,7 +11,7 @@ export const metadata: Metadata = generatePageMetadata(
 
 export default function BlogPage() {
   return (
-    <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
+    <main className="min-h-screen">
       <VisualBreadcrumbs />
       {/* Hero Section */}
       <section className="py-16 md:py-24 lg:py-32 px-4 md:px-8 lg:px-16">

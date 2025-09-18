@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import FAQAccordion from '@/app/_components/faq-accordion';
 import AutoBreadcrumbStructuredData from '@/app/_components/auto-breadcrumb-structured-data';
+import ServiceStructuredData from '@/app/_components/service-structured-data';
 import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 import { disenoShopifyFAQsEs } from '@/lib/faqs';
 import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
@@ -14,14 +15,18 @@ export const metadata: Metadata = generatePageMetadata(
 
 export default function DisenoShopify() {
   return (
-    <>
+    <main className="min-h-screen">
+      <ServiceStructuredData 
+        serviceName="Diseño Shopify"
+        serviceType="shopifyDesign"
+        description="Servicios de diseño web personalizado para tiendas Shopify. Diseños únicos y optimizados para conversión."
+        price={{
+          currency: "EUR",
+          priceRange: "1200-8000"
+        }}
+      />
       <AutoBreadcrumbStructuredData />
-      {/* Breadcrumbs */}
-      <div className="background-color:#0e0e0fff py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <VisualBreadcrumbs />
-        </div>
-      </div>
+      <VisualBreadcrumbs />
       {/* Hero Section */}
       <section className="min-h-[85vh] text-white flex items-center justify-center py-20 lg:py-32" style={{ backgroundColor: '#141417ff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -210,6 +215,6 @@ export default function DisenoShopify() {
           <FAQAccordion faqs={disenoShopifyFAQsEs} />
         </div>
       </section>
-    </>
+    </main>
   );
 }
