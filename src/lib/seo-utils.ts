@@ -25,7 +25,7 @@ export const metaDescriptions: Record<string, MetaDescription> = {
     en: "Expert Shopify agency. Design, development, SEO and CRO optimization for online stores. Boost your sales with SellifyWorks, your ecommerce growth partner."
   },
   about: {
-    es: "Conoce a SellifyWorks, agencia especializada en Shopify con años de experiencia. Nuestro equipo de expertos te ayuda a crear y optimizar tu tienda online para maximizar ventas.",
+    es: "Conoce a SellifyWorks, agencia especializada en Shopify. Nuestro equipo de expertos te ayuda a optimizar tu tienda online para maximizar ventas.",
     en: "Meet SellifyWorks, a specialized Shopify agency with years of experience. Our expert team helps you create and optimize your online store to maximize sales."
   },
   contact: {
@@ -51,7 +51,7 @@ export const metaDescriptions: Record<string, MetaDescription> = {
   
   // Services meta descriptions
   shopifyConsulting: {
-    es: "Consultoría experta en Shopify. Auditorías completas, estrategias de crecimiento y optimización de tiendas online. Maximiza el potencial de tu ecommerce con SellifyWorks.",
+    es: "Consultoría experta en Shopify. Auditorías completas y estrategias de crecimiento. Maximiza el potencial de tu ecommerce con SellifyWorks.",
     en: "Expert Shopify consulting. Complete audits, growth strategies and online store optimization. Maximize your ecommerce potential with SellifyWorks."
   },
   shopifyDesign: {
