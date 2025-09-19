@@ -43,7 +43,7 @@ export default function DisenoShopify() {
                 href="/es/contacto" 
                 className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 sm:py-5 sm:px-10 lg:py-6 lg:px-12 rounded-full text-lg sm:text-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
               >
-                Empezar Mi Proyecto
+                Solicitar Consulta Gratuita
               </a>
               <SmoothScrollButton
                 href="#servicios" 
