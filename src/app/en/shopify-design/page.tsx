@@ -172,8 +172,8 @@ export default function ShopifyDesign() {
             
             <div className="text-center group">
               <div className="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: "Bebas Neue, sans-serif" }}>3</div>
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "sans-serif" }}>VISUAL DESIGN</h3>
-              <p className="text-gray-600 leading-relaxed">We develop the unique and attractive visual design</p>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "sans-serif" }}>DESIGN & CUSTOMIZATION</h3>
+              <p className="text-gray-600 leading-relaxed">We create the perfect design solution for your brand</p>
             </div>
             
             <div className="text-center group">

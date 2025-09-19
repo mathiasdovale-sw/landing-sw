@@ -172,8 +172,8 @@ export default function DisenoShopify() {
             
             <div className="text-center group">
               <div className="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: "Bebas Neue, sans-serif" }}>3</div>
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "sans-serif" }}>DISEÑO VISUAL</h3>
-              <p className="text-gray-600 leading-relaxed">Desarrollamos el diseño visual único y atractivo</p>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: "sans-serif" }}>DISEÑO & PERSONALIZACIÓN</h3>
+              <p className="text-gray-600 leading-relaxed">Creamos la solución de diseño perfecta para tu marca</p>
             </div>
             
             <div className="text-center group">
