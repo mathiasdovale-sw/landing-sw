@@ -205,50 +205,12 @@ export const servicesPageFAQsEn: FAQ[] = [
   }
 ];
 
-// FAQ específicos para precios
-export const pricingFAQs: FAQ[] = [
-  {
-    id: 'pricing-1',
-    question: '¿Cómo calculan el precio de un proyecto?',
-    answer: 'El precio se calcula basado en la complejidad del diseño, funcionalidades requeridas, integraciones necesarias y tiempo estimado de desarrollo. Ofrecemos presupuestos detallados sin compromiso.'
-  },
-  {
-    id: 'pricing-2',
-    question: '¿Ofrecen planes de pago flexibles?',
-    answer: 'Sí, ofrecemos diferentes modalidades de pago adaptadas a tus necesidades: pago único, pagos por hitos del proyecto, o planes de financiamiento para proyectos grandes.'
-  },
-  {
-    id: 'pricing-3',
-    question: '¿Hay costos adicionales después del desarrollo?',
-    answer: 'Los únicos costos adicionales serían las suscripciones de Shopify, aplicaciones de terceros que elijas usar, y opcionalmente nuestros servicios de mantenimiento y soporte continuo.'
-  }
-];
-
-// FAQ específicos para soporte técnico
-export const supportFAQs: FAQ[] = [
-  {
-    id: 'support-1',
-    question: '¿Qué incluye el soporte técnico?',
-    answer: 'Nuestro soporte incluye resolución de problemas técnicos, actualizaciones de seguridad, optimización de rendimiento, backup de datos, y asesoría para mejoras continuas.'
-  },
-  {
-    id: 'support-2',
-    question: '¿Cuál es el tiempo de respuesta del soporte?',
-    answer: 'Nuestro objetivo es responder incidencias críticas en menos de 4 horas y consultas generales en 24-48 horas laborables. Los tiempos pueden variar según la complejidad del caso y la carga de trabajo.'
-  },
-  {
-    id: 'support-3',
-    question: '¿El soporte está disponible los fines de semana?',
-    answer: 'Para emergencias críticas que afecten el funcionamiento de la tienda, ofrecemos soporte de emergencia 24/7. Para consultas regulares, nuestro horario es de lunes a viernes.'
-  }
-];
-
 // FAQ específicos para Diseño Shopify
 export const disenoShopifyFAQsEs: FAQ[] = [
   {
     id: 'diseno-1',
     question: '¿Qué incluye el servicio de diseño web personalizado para Shopify?',
-    answer: 'Incluye diseño UI/UX único, optimización mobile-first, integración con Shopify, velocidad de carga optimizada, y diseño responsive que se adapta a todos los dispositivos.'
+    answer: 'Incluye diseño UI/UX profesional, optimización mobile-first, integración con Shopify, velocidad de carga optimizada, y diseño responsive.'
   },
   {
     id: 'diseno-2',
@@ -272,26 +234,16 @@ export const disenoShopifyFAQsEs: FAQ[] = [
   },
   {
     id: 'diseno-6',
-    question: '¿Incluyen revisiones en el proceso de diseño?',
-    answer: 'Incluimos hasta 3 rondas de revisiones durante el proceso para asegurar que el diseño final cumpla exactamente con tus expectativas.'
+    question: '¿El diseño será único o usan plantillas predefinidas?',
+    answer: 'Nuestro enfoque se adapta a tu presupuesto: desde plantillas premium personalizadas hasta diseños 100% únicos creados desde cero. Cada proyecto se diseña específicamente para tu marca y audiencia.'
   },
   {
     id: 'diseno-7',
-    question: '¿El diseño será único o usan plantillas predefinidas?',
-    answer: 'Creamos diseños 100% personalizados desde cero. No usamos plantillas; cada proyecto es único y diseñado específicamente para tu marca y audiencia.'
-  },
-  {
-    id: 'diseno-8',
-    question: '¿Qué pasa si necesito cambios después del lanzamiento?',
-    answer: 'Ofrecemos 30 días de soporte post-lanzamiento incluido para ajustes menores. Para cambios mayores, ofrecemos planes de mantenimiento flexibles.'
-  },
-  {
-    id: 'diseno-9',
     question: '¿Pueden migrar mi diseño actual a Shopify?',
     answer: 'Sí, recreamos tu diseño existente en Shopify mejorándolo con las mejores prácticas de la plataforma y optimizaciones para e-commerce.'
   },
   {
-    id: 'diseno-10',
+    id: 'diseno-8',
     question: '¿El diseño incluye optimización SEO?',
     answer: 'Absolutamente. Implementamos estructura semántica, metadatos, velocidad optimizada, schema markup y todas las mejores prácticas SEO desde el diseño.'
   }
@@ -301,7 +253,7 @@ export const disenoShopifyFAQsEn: FAQ[] = [
   {
     id: 'design-1',
     question: 'What does the custom Shopify web design service include?',
-    answer: 'It includes unique UI/UX design, mobile-first optimization, Shopify integration, optimized loading speed, and responsive design that adapts to all devices.'
+    answer: 'It includes professional UI/UX design, mobile-first optimization, Shopify integration, optimized loading speed, and responsive design that adapts to all devices.'
   },
   {
     id: 'design-2',
@@ -325,26 +277,16 @@ export const disenoShopifyFAQsEn: FAQ[] = [
   },
   {
     id: 'design-6',
-    question: 'Do you include revisions in the design process?',
-    answer: 'We include up to 3 revision rounds during the process to ensure the final design meets your exact expectations.'
+    question: 'Is the design unique or do you use predefined templates?',
+    answer: 'Our approach adapts to your budget: from customized premium templates to 100% unique designs created from scratch. Each project is designed specifically for your brand and audience.'
   },
   {
     id: 'design-7',
-    question: 'Is the design unique or do you use predefined templates?',
-    answer: 'We create 100% custom designs from scratch. We don\'t use templates; each project is unique and designed specifically for your brand and audience.'
-  },
-  {
-    id: 'design-8',
-    question: 'What if I need changes after launch?',
-    answer: 'We offer 30 days of included post-launch support for minor adjustments. For major changes, we offer flexible maintenance plans.'
-  },
-  {
-    id: 'design-9',
     question: 'Can you migrate my current design to Shopify?',
     answer: 'Yes, we recreate your existing design on Shopify while improving it with platform best practices and e-commerce optimizations.'
   },
   {
-    id: 'design-10',
+    id: 'design-8',
     question: 'Does the design include SEO optimization?',
     answer: 'Absolutely. We implement semantic structure, metadata, optimized speed, schema markup and all SEO best practices from the design phase.'
   }
@@ -355,7 +297,7 @@ export const shopifyPlusFAQsEs: FAQ[] = [
   {
     id: 'plus-1',
     question: '¿Qué es Shopify Plus y cuándo lo necesito?',
-    answer: 'Shopify Plus es la versión enterprise de Shopify para empresas con alto volumen de ventas (+$1M USD/año). Ofrece automatizaciones avanzadas, multitienda y soporte prioritario.'
+    answer: 'Shopify Plus es la versión enterprise de Shopify para empresas con alto volumen de ventas (+$1M EUR/año). Ofrece automatizaciones avanzadas, multitienda y soporte prioritario.'
   },
   {
     id: 'plus-2',
@@ -365,12 +307,7 @@ export const shopifyPlusFAQsEs: FAQ[] = [
   {
     id: 'plus-3',
     question: '¿Pueden migrar mi tienda actual a Shopify Plus?',
-    answer: 'Sí, especializamos en migraciones complejas a Shopify Plus desde cualquier plataforma, preservando datos, SEO y personalizaciones avanzadas.'
-  },
-  {
-    id: 'plus-4',
-    question: '¿Qué tipo de integraciones pueden hacer en Shopify Plus?',
-    answer: 'Integramos ERPs enterprise como SAP, Oracle, sistemas de inventario WMS, CRMs como Salesforce, y plataformas de marketing automation complejas.'
+    answer: 'Sí, hacemos migraciones complejas a Shopify Plus desde cualquier plataforma, minimizando la pérdida de datos, SEO y personalizaciones.'
   },
   {
     id: 'plus-5',
@@ -383,25 +320,10 @@ export const shopifyPlusFAQsEs: FAQ[] = [
     answer: 'Shopify Plus cuesta desde $2,300+ USD/mes (precios sujetos a cambios según Shopify). La implementación varía según complejidad, integraciones y personalizaciones. Ofrecemos presupuestos detallados.'
   },
   {
-    id: 'plus-7',
-    question: '¿Pueden manejar múltiples marcas en una instalación Plus?',
-    answer: 'Sí, Shopify Plus permite múltiples tiendas adicionales (consultar límites actuales con Shopify). Podemos configurar arquitecturas multi-marca con inventario centralizado y gestión unificada.'
-  },
-  {
     id: 'plus-8',
     question: '¿Qué nivel de personalización permite Shopify Plus?',
-    answer: 'Shopify Plus permite personalización profunda: checkout customizado, scripts Ruby, apps privadas, APIs GraphQL avanzadas y modificaciones del admin.'
+    answer: 'Shopify Plus permite personalización profunda: checkout customizado, APIs GraphQL avanzadas y modificaciones del admin.'
   },
-  {
-    id: 'plus-9',
-    question: '¿Ofrecen soporte post-implementación para Shopify Plus?',
-    answer: 'Sí, ofrecemos planes de soporte enterprise con SLA garantizado, optimizaciones continuas, monitoreo 24/7 y consultoría estratégica mensual.'
-  },
-  {
-    id: 'plus-10',
-    question: '¿Shopify Plus es adecuado para empresas internacionales?',
-    answer: 'Perfectamente. Manejamos multi-currency, multi-idioma, cumplimiento fiscal internacional, y localizaciones específicas por mercado con Plus.'
-  }
 ];
 
 export const shopifyPlusFAQsEn: FAQ[] = [
@@ -418,12 +340,7 @@ export const shopifyPlusFAQsEn: FAQ[] = [
   {
     id: 'plus-en-3',
     question: 'Can you migrate my current store to Shopify Plus?',
-    answer: 'Yes, we specialize in complex migrations to Shopify Plus from any platform, preserving data, SEO and advanced customizations.'
-  },
-  {
-    id: 'plus-en-4',
-    question: 'What type of integrations can you do on Shopify Plus?',
-    answer: 'We integrate enterprise ERPs like SAP, Oracle, WMS inventory systems, CRMs like Salesforce, and complex marketing automation platforms.'
+    answer: 'Yes, we do complex migrations to Shopify Plus from any platform, minimizing data loss, SEO, and customizations.'
   },
   {
     id: 'plus-en-5',
@@ -436,24 +353,9 @@ export const shopifyPlusFAQsEn: FAQ[] = [
     answer: 'Shopify Plus costs from $2,300+ USD/month (prices subject to change according to Shopify). Implementation varies by complexity, integrations and customizations. We provide detailed quotes.'
   },
   {
-    id: 'plus-en-7',
-    question: 'Can you handle multiple brands in one Plus installation?',
-    answer: 'Yes, Shopify Plus allows multiple additional stores (check current limits with Shopify). We can configure multi-brand architectures with centralized inventory and unified management.'
-  },
-  {
     id: 'plus-en-8',
     question: 'What level of customization does Shopify Plus allow?',
-    answer: 'Shopify Plus allows deep customization: custom checkout, Ruby scripts, private apps, advanced GraphQL APIs and admin modifications.'
-  },
-  {
-    id: 'plus-en-9',
-    question: 'Do you offer post-implementation support for Shopify Plus?',
-    answer: 'Yes, we offer enterprise support plans with guaranteed SLA, continuous optimizations, 24/7 monitoring and monthly strategic consulting.'
-  },
-  {
-    id: 'plus-en-10',
-    question: 'Is Shopify Plus suitable for international companies?',
-    answer: 'Perfectly. We handle multi-currency, multi-language, international tax compliance, and market-specific localizations with Plus.'
+    answer: 'Shopify Plus allows deep customization: custom checkout, advanced GraphQL APIs and admin modifications.'
   }
 ];
 
@@ -477,7 +379,7 @@ export const migracionShopifyFAQsEs: FAQ[] = [
   {
     id: 'migracion-4',
     question: '¿Pierdo posicionamiento SEO durante la migración?',
-    answer: 'Implementamos redirects 301, mantenemos URLs existentes cuando es posible, y optimizamos la nueva estructura para preservar el SEO. Aunque trabajamos para minimizar el impacto, algunos cambios temporales en el ranking pueden ocurrir durante el proceso de migración.'
+    answer: 'Implementamos redirects 301, mantenemos URLs existentes cuando es posible, y optimizamos la nueva estructura para preservar el SEO. Trabajamos para minimizar cualquier impacto, siguiendo las mejores prácticas de migración.'
   },
   {
     id: 'migracion-5',
@@ -530,7 +432,7 @@ export const migracionShopifyFAQsEn: FAQ[] = [
   {
     id: 'migration-4',
     question: 'Do I lose SEO ranking during migration?',
-    answer: 'We implement 301 redirects, maintain existing URLs when possible, and optimize the new structure to preserve SEO. While we work to minimize impact, some temporary ranking changes may occur during the migration process.'
+    answer: 'We implement 301 redirects, maintain existing URLs when possible, and optimize the new structure to preserve SEO. We work to minimize any impact, following migration best practices.'
   },
   {
     id: 'migration-5',
