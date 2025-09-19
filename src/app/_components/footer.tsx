@@ -38,8 +38,11 @@ export default function Footer() {
         setIsSubscribed(true)
         setEmail("")
         
-        // Verificar el mensaje específico del backend
-        if (data.message === 'Ya estás suscrito a nuestra newsletter') {
+        // Verificar el mensaje específico del backend basado en idioma
+        const alreadySubscribedES = 'Ya estás suscrito a nuestra newsletter'
+        const alreadySubscribedEN = 'You are already subscribed to our newsletter'
+        
+        if (data.message === alreadySubscribedES || data.message === alreadySubscribedEN) {
           setSubscriptionMessage(t('footer.newsletter.already'))
         } else {
           setSubscriptionMessage(t('footer.newsletter.success'))
