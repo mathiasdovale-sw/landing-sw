@@ -9,7 +9,7 @@ import { generatePageMetadata } from "@/lib/seo-utils";
 export const metadata: Metadata = generatePageMetadata(
   'shopifyDesign',
   'es',
-  'Diseño Shopify Personalizado | SellifyWorks'
+  'Diseño Shopify Profesional | SellifyWorks'
 );
 
 export default function DisenoShopify() {
@@ -32,10 +32,10 @@ export default function DisenoShopify() {
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight text-white mb-6" style={{ fontFamily: "sans-serif" }}>
               DISEÑO SHOPIFY
               <br />
-              <span className="text-orange-300">PERSONALIZADO</span>
+              <span className="text-orange-300">PROFESIONAL</span>
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed font-light">
-              Creamos diseños web únicos y responsive para tu tienda Shopify que no solo se ven increíbles, 
+              Creamos diseños web profesionales y responsive para tu tienda Shopify que no solo se ven increíbles, 
               sino que también <strong className="text-white">convierten más visitantes en clientes</strong>.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -76,9 +76,9 @@ export default function DisenoShopify() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a4 4 0 004-4V5z" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>DISEÑO 100% PERSONALIZADO</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>DISEÑO ADAPTADO A TU PRESUPUESTO</h3>
               <p className="text-gray-300 leading-relaxed">
-                Creamos un diseño único para tu marca, sin plantillas genéricas
+                Desde plantillas premium personalizadas hasta diseños 100% únicos
               </p>
             </div>
 

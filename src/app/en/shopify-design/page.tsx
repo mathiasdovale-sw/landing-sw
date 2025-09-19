@@ -9,7 +9,7 @@ import { generatePageMetadata } from "@/lib/seo-utils";
 export const metadata: Metadata = generatePageMetadata(
   'shopifyDesign',
   'en',
-  'Custom Shopify Design | SellifyWorks'
+  'Professional Shopify Design | SellifyWorks'
 );
 
 export default function ShopifyDesign() {
@@ -30,12 +30,12 @@ export default function ShopifyDesign() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight text-white mb-6" style={{ fontFamily: "sans-serif" }}>
-              CUSTOM SHOPIFY
+              PROFESSIONAL SHOPIFY
               <br />
               <span className="text-orange-300">DESIGN</span>
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed font-light">
-              We create unique and responsive web designs for your Shopify store that not only look amazing, 
+              We create professional and responsive web designs for your Shopify store that not only look amazing, 
               but also <strong className="text-white">convert more visitors into customers</strong>.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -76,9 +76,9 @@ export default function ShopifyDesign() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a4 4 0 004-4V5z" />
                 </svg>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>100% CUSTOM DESIGN</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>DESIGN THAT FITS YOUR BUDGET</h3>
               <p className="text-gray-300 leading-relaxed">
-                We create a unique design for your brand, no generic templates
+                From customized premium templates to 100% unique designs
               </p>
             </div>
 
