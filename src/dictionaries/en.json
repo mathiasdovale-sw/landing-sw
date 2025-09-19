@@ -56,6 +56,68 @@
       "button": "Contact us"
     }
   },
+  "services": {
+    "metadata": {
+      "title": "Shopify Services - SellifyWorks",
+      "description": "Discover all our specialized Shopify services: development, design, SEO, CRO, migration and more. Boost your online store with our experts."
+    },
+    "hero": {
+      "title": "OUR SERVICES",
+      "subtitle": "Complete Shopify solutions to grow your online business."
+    },
+    "list": [
+      {
+        "title": "Shopify Design",
+        "description": "Unique and attractive designs that convert visitors into customers.",
+        "link": "/en/shopify-design"
+      },
+      {
+        "title": "Shopify Consulting",
+        "description": "Strategic advice to optimize your store and increase sales.",
+        "link": "/en/shopify-consulting"
+      },
+      {
+        "title": "Shopify Store Setup",
+        "description": "Complete development of your online store from scratch.",
+        "link": "/en/shopify-store-setup"
+      },
+      {
+        "title": "Shopify SEO",
+        "description": "Search engine optimization for greater online visibility.",
+        "link": "/en/shopify-seo"
+      },
+      {
+        "title": "Shopify CRO",
+        "description": "Conversion rate optimization to maximize your sales.",
+        "link": "/en/shopify-cro"
+      },
+      {
+        "title": "Shopify Migration",
+        "description": "Migrate your store to Shopify without losing data or sales.",
+        "link": "/en/shopify-migration"
+      },
+      {
+        "title": "Theme Customization",
+        "description": "Adapt your Shopify theme to your brand's needs.",
+        "link": "/en/shopify-theme-customization"
+      },
+      {
+        "title": "Shopify AB Testing",
+        "description": "A/B testing to optimize user experience.",
+        "link": "/en/shopify-ab-testing"
+      },
+      {
+        "title": "Shopify Plus",
+        "description": "Enterprise solutions for high-volume businesses.",
+        "link": "/en/shopify-plus"
+      },
+      {
+        "title": "Growth Partner",
+        "description": "Comprehensive growth partner for your online business.",
+        "link": "/en/shopify-growth-partner"
+      }
+    ]
+  },
   "contact": {
     "form": {
       "success": "Message sent successfully! We will contact you soon."

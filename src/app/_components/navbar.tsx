@@ -80,7 +80,7 @@ const Navbar = () => {
   }
 
   const navItems = [
-    { href: "#services", label: t('nav.services'), onClick: scrollToServices },
+    { href: links.services, label: t('nav.services') },
     { href: links.about, label: t('nav.about') },
     // { href: links.blog, label: "BLOG" },
     { href: links.contact, label: t('nav.contact') },
@@ -100,7 +100,7 @@ const Navbar = () => {
       {/* Desktop Navigation */}
       <nav className="hidden md:flex items-center space-x-8">
         {navItems.map((item) => (
-          item.label === "CONTACT" ? (
+          item.label === "CONTACT" || item.label === "CONTACTO" ? (
             <Link
               key={item.href}
               href={item.href}
@@ -108,14 +108,6 @@ const Navbar = () => {
             >
               {item.label}
             </Link>
-          ) : item.onClick ? (
-            <button
-              key={item.href}
-              onClick={item.onClick}
-              className="text-xl text-gray-100 font-semibold tracking-wide hover:text-white hover:scale-105 transition-all duration-200"
-            >
-              {item.label}
-            </button>
           ) : (
             <Link
               key={item.href}
@@ -160,7 +152,7 @@ const Navbar = () => {
       >
         <nav className="flex flex-col text-white items-center justify-center h-full space-y-8">
           {navItems.map((item) => (
-            item.label === "CONTACT" ? (
+            item.label === "CONTACT" || item.label === "CONTACTO" ? (
               <Link
                 key={item.href}
                 href={item.href}
@@ -169,14 +161,6 @@ const Navbar = () => {
               >
                 {item.label}
               </Link>
-            ) : item.onClick ? (
-              <button
-                key={item.href}
-                onClick={item.onClick}
-                className="text-4xl font-semibold tracking-wide text-gray-100 hover:text-white hover:scale-105 transition-all duration-200"
-              >
-                {item.label}
-              </button>
             ) : (
               <Link
                 key={item.href}

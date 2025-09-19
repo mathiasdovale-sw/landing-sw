@@ -48,6 +48,10 @@ export const metaDescriptions: Record<string, MetaDescription> = {
     es: "¡Suscripción confirmada! Gracias por unirte a la comunidad SellifyWorks. Recibirás contenido exclusivo sobre Shopify, ecommerce y estrategias de crecimiento.",
     en: "Subscription confirmed! Thanks for joining the SellifyWorks community. You'll receive exclusive content about Shopify, ecommerce and growth strategies."
   },
+  services: {
+    es: "Descubre todos nuestros servicios especializados en Shopify: desarrollo, diseño, SEO, CRO, migración y más. Impulsa tu tienda online con nuestros expertos.",
+    en: "Discover all our specialized Shopify services: development, design, SEO, CRO, migration and more. Boost your online store with our experts."
+  },
   
   // Services meta descriptions
   shopifyConsulting: {
@@ -97,6 +101,7 @@ export const seoUrls: Record<string, SeoUrl> = {
   home: { es: '/', en: '/' },
   about: { es: '/sobre-nosotros', en: '/about' },
   contact: { es: '/contacto', en: '/contact' },
+  services: { es: '/servicios', en: '/services' },
   blog: { es: '/blog', en: '/blog' },
   privacyPolicy: { es: '/politica-de-privacidad', en: '/privacy-policy' },
   cookiePolicy: { es: '/politica-de-cookies', en: '/cookie-policy' },

@@ -41,6 +41,10 @@ const LanguageSelector = () => {
       '/es/suscripcion-confirmada': { es: '/es/suscripcion-confirmada', en: '/en/newsletter-confirmed' },
       '/en/newsletter-confirmed': { es: '/es/suscripcion-confirmada', en: '/en/newsletter-confirmed' },
       
+      // Página de servicios
+      '/es/servicios': { es: '/es/servicios', en: '/en/services' },
+      '/en/services': { es: '/es/servicios', en: '/en/services' },
+      
       // Páginas de servicios Shopify
       '/diseno-shopify': { es: '/es/diseno-shopify', en: '/en/shopify-design' },
       '/es/diseno-shopify': { es: '/es/diseno-shopify', en: '/en/shopify-design' },

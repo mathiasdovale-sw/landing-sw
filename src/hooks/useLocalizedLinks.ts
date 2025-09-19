@@ -12,6 +12,7 @@ export const useLocalizedLinks = () => {
   const links = {
     home: currentLocale === 'es' ? '/es/' : '/en/',
     about: currentLocale === 'es' ? '/es/sobre-nosotros' : '/en/about',
+    services: currentLocale === 'es' ? '/es/servicios' : '/en/services',
     contact: currentLocale === 'es' ? '/es/contacto' : '/en/contact',
     blog: currentLocale === 'es' ? '/es/blog' : '/en/blog',
     privacyPolicy: currentLocale === 'es' ? '/es/politica-de-privacidad' : '/en/privacy-policy',

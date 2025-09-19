@@ -56,6 +56,68 @@
       "button": "Contactar con nosotros"
     }
   },
+  "services": {
+    "metadata": {
+      "title": "Servicios Shopify - SellifyWorks",
+      "description": "Descubre todos nuestros servicios especializados en Shopify: desarrollo, diseño, SEO, CRO, migración y más. Impulsa tu tienda online con nuestros expertos."
+    },
+    "hero": {
+      "title": "NUESTROS SERVICIOS",
+      "subtitle": "Soluciones completas de Shopify para hacer crecer tu negocio online."
+    },
+    "list": [
+      {
+        "title": "Diseño Shopify",
+        "description": "Diseños únicos y atractivos que convierten visitantes en clientes.",
+        "link": "/es/diseno-shopify"
+      },
+      {
+        "title": "Consultoría Shopify",
+        "description": "Asesoramiento estratégico para optimizar tu tienda y aumentar ventas.",
+        "link": "/es/consultoria-shopify"
+      },
+      {
+        "title": "Crear Tienda Shopify",
+        "description": "Desarrollo completo de tu tienda online desde cero.",
+        "link": "/es/crear-tienda-shopify"
+      },
+      {
+        "title": "SEO para Shopify",
+        "description": "Optimización para motores de búsqueda y mayor visibilidad online.",
+        "link": "/es/seo-shopify"
+      },
+      {
+        "title": "CRO Shopify",
+        "description": "Optimización de conversiones para maximizar tus ventas.",
+        "link": "/es/cro-shopify"
+      },
+      {
+        "title": "Migración a Shopify",
+        "description": "Migra tu tienda a Shopify sin perder datos ni ventas.",
+        "link": "/es/migracion-shopify"
+      },
+      {
+        "title": "Personalización de Tema",
+        "description": "Adapta tu tema de Shopify a las necesidades de tu marca.",
+        "link": "/es/personalizacion-tema-shopify"
+      },
+      {
+        "title": "AB Testing Shopify",
+        "description": "Pruebas A/B para optimizar la experiencia de usuario.",
+        "link": "/es/ab-testing-shopify"
+      },
+      {
+        "title": "Shopify Plus",
+        "description": "Soluciones enterprise para negocios de alto volumen.",
+        "link": "/es/shopify-plus"
+      },
+      {
+        "title": "Growth Partner",
+        "description": "Partner de crecimiento integral para tu negocio online.",
+        "link": "/es/growth-partner-shopify"
+      }
+    ]
+  },
   "contact": {
     "form": {
       "success": "¡Mensaje enviado correctamente! Te contactaremos pronto."
