@@ -137,6 +137,74 @@ export const servicesFAQs: FAQ[] = [
   }
 ];
 
+// FAQ específicos para la página de servicios en español
+export const servicesPageFAQsEs: FAQ[] = [
+  {
+    id: 'services-page-1',
+    question: '¿Puedo contratar solo un servicio específico o necesito un paquete completo?',
+    answer: 'Puedes contratar servicios individuales según tus necesidades específicas. Ofrecemos tanto servicios independientes como paquetes integrales para mayor eficiencia y ahorro.'
+  },
+  {
+    id: 'services-page-2',
+    question: '¿Cómo determinan qué servicios necesita mi negocio?',
+    answer: 'Realizamos una consultoría inicial gratuita donde analizamos tu situación actual, objetivos de negocio, presupuesto y cronograma para recomendarte la combinación óptima de servicios.'
+  },
+  {
+    id: 'services-page-3',
+    question: '¿Cuánto tiempo toma implementar los servicios?',
+    answer: 'Los tiempos varían según el servicio: diseños simples 2-4 semanas, migraciones complejas 4-8 semanas, proyectos Shopify Plus 6-12 semanas. Proporcionamos cronogramas detallados en cada propuesta.'
+  },
+  {
+    id: 'services-page-4',
+    question: '¿Trabajan con empresas de todos los tamaños?',
+    answer: 'Sí, trabajamos desde startups y pequeños emprendimientos hasta empresas enterprise. Adaptamos nuestros servicios y metodología según el tamaño y necesidades específicas de cada cliente.'
+  },
+  {
+    id: 'services-page-5',
+    question: '¿Pueden trabajar con mi equipo interno?',
+    answer: 'Absolutamente. Colaboramos estrechamente con equipos internos de desarrollo, marketing y ventas para una integración fluida.'
+  },
+  {
+    id: 'services-page-6',
+    question: '¿Qué pasa si necesito cambios durante el desarrollo?',
+    answer: 'Entendemos que los requisitos pueden evolucionar. Incluimos un número determinado de revisiones en cada servicio y manejamos cambios adicionales de forma transparente según el scope acordado.'
+  }
+];
+
+// FAQ específicos para la página de servicios en inglés
+export const servicesPageFAQsEn: FAQ[] = [
+  {
+    id: 'services-page-en-1',
+    question: 'Can I hire just a specific service or do I need a complete package?',
+    answer: 'You can hire individual services according to your specific needs. We offer both independent services and comprehensive packages for greater efficiency and savings.'
+  },
+  {
+    id: 'services-page-en-2',
+    question: 'How do you determine what services my business needs?',
+    answer: 'We conduct a free initial consultation where we analyze your current situation, business objectives, budget, and timeline to recommend the optimal combination of services.'
+  },
+  {
+    id: 'services-page-en-3',
+    question: 'How long does it take to implement services?',
+    answer: 'Timeframes vary by service: simple designs 2-4 weeks, complex migrations 4-8 weeks, Shopify Plus projects 6-12 weeks. We provide detailed timelines in each proposal.'
+  },
+  {
+    id: 'services-page-en-4',
+    question: 'Do you work with companies of all sizes?',
+    answer: 'Yes, we work from startups and small businesses to enterprise companies. We adapt our services and methodology according to the size and specific needs of each client.'
+  },
+  {
+    id: 'services-page-en-5',
+    question: 'Can you work with my internal team?',
+    answer: 'Absolutely. We collaborate closely with internal development, marketing, and sales teams for seamless integration.'
+  },
+  {
+    id: 'services-page-en-6',
+    question: 'What if I need changes during development?',
+    answer: 'We understand that requirements can evolve. We include a set number of revisions in each service and handle additional changes transparently according to the agreed scope.'
+  }
+];
+
 // FAQ específicos para precios
 export const pricingFAQs: FAQ[] = [
   {

@@ -5,6 +5,8 @@ import { getDictionary } from '@/lib/dictionaries'
 import { generatePageMetadata } from "@/lib/seo-utils";
 import AutoBreadcrumbStructuredData from '@/app/_components/auto-breadcrumb-structured-data';
 import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
+import FAQAccordion from '@/app/_components/faq-accordion';
+import { servicesPageFAQsEs } from '@/lib/faqs';
 
 export async function generateMetadata(): Promise<Metadata> {
   const dict = await getDictionary('es')
@@ -101,6 +103,13 @@ export default async function ServicesPage() {
               Contactar ahora
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FAQAccordion faqs={servicesPageFAQsEs} />
         </div>
       </section>
     </main>
