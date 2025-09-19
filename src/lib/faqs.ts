@@ -9,7 +9,7 @@ export const HomeFAQsEs: FAQ[] = [
   {
     id: 'home-2',
     question: '¿Qué diferencia hay entre Shopify y otras plataformas como WooCommerce o PrestaShop?',
-    answer: 'Shopify es una plataforma alojada en la nube que gestiona automáticamente hosting, seguridad y actualizaciones. A diferencia de WooCommerce o PrestaShop (que requieren hosting propio), Shopify incluye infraestructura escalable y un ecosistema de aplicaciones y soporte oficial.'
+    answer: 'Shopify es una plataforma alojada en la nube (SaaS) que gestiona automáticamente el hosting, la seguridad y las actualizaciones. Esto significa que no tienes que preocuparte por servidores ni mantenimiento técnico, y tu tienda puede escalar fácilmente según crezca tu negocio. Además, ofrece un ecosistema amplio de aplicaciones y soporte oficial 24/7. En cambio, WooCommerce y PrestaShop son soluciones open-source que requieren contratar un hosting y encargarse de la instalación, actualizaciones y seguridad.'
   },
   {
     id: 'home-3',
@@ -29,7 +29,7 @@ export const HomeFAQsEs: FAQ[] = [
   {
     id: 'home-6',
     question: '¿Cuánto cuesta crear una tienda Shopify con agencia?',
-    answer: 'Shopify tiene planes desde aproximadamente $39 USD/mes (precios sujetos a cambios). El coste de desarrollo y configuración con agencia es adicional y depende de la complejidad del proyecto. Ofrecemos presupuestos personalizados adaptados a tu negocio.'
+    answer: 'Shopify tiene planes desde aproximadamente $22 EUR/mes (precios sujetos a cambios). El coste de desarrollo y configuración con agencia es adicional y depende de la complejidad del proyecto. Ofrecemos presupuestos personalizados adaptados a tu negocio.'
   },
     {
     id: 'home-7',
@@ -67,7 +67,7 @@ export const HomeFAQsEn: FAQ[] = [
   {
     id: 'home-2',
     question: 'What\'s the difference between Shopify and other platforms like WooCommerce or PrestaShop?',
-    answer: 'Shopify is a cloud-hosted platform that automatically manages hosting, security, and updates. Unlike WooCommerce or PrestaShop (which require your own hosting), Shopify includes scalable infrastructure and an ecosystem of applications with official support.'
+    answer: 'Shopify is a cloud-based SaaS platform that automatically manages hosting, security, and updates. This means you don\'t have to worry about servers or technical maintenance, and your store can easily scale as your business grows. It also offers a broad ecosystem of apps and 24/7 official support. WooCommerce and PrestaShop, on the other hand, are open-source solutions that require a hosting contract and the responsibility for installation, updates, and security.'
   },
   {
     id: 'home-3',
@@ -77,7 +77,7 @@ export const HomeFAQsEn: FAQ[] = [
     {
     id: 'home-4',
     question: 'Can I hire just a specific service (e.g. SEO or design) or do I need a complete package?',
-    answer: 'You can hire individual services like SEO, design or CRO, or an integrated plan according to your ecommerce needs. *Specific functionalities may vary according to Shopify updates.'
+    answer: 'You can hire individual services like SEO, design or CRO, or an integrated plan according to your ecommerce needs.'
   },
   {
     id: 'home-5',
@@ -87,7 +87,7 @@ export const HomeFAQsEn: FAQ[] = [
   {
     id: 'home-6',
     question: 'How much does it cost to create a Shopify store with an agency?',
-    answer: 'Shopify has plans starting from approximately $39 USD/month (prices subject to change). Development and setup costs with an agency are additional and depend on project complexity. We offer personalized quotes tailored to your business.'
+    answer: 'Shopify has plans starting from approximately $22 EUR/month (prices subject to change). Development and setup costs with an agency are additional and depend on project complexity. We offer personalized quotes tailored to your business.'
   },
     {
     id: 'home-7',
