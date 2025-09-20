@@ -5,6 +5,7 @@ import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
 import { generatePageMetadata } from "@/lib/seo-utils";
 import ServiceStructuredData from '@/app/_components/service-structured-data';
 import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
+import RelatedServices from '@/app/_components/related-services';
 
 export const metadata: Metadata = generatePageMetadata(
   'shopifyConsulting',
@@ -206,6 +207,9 @@ export default function ConsultoriaShopify() {
           </div>
         </div>
       </section>
+
+      {/* Related Services Section */}
+      <RelatedServices currentService="shopify-consulting" />
 
       {/* FAQ Section */}
       <section className="py-20 bg-white">

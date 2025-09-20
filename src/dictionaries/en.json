@@ -157,5 +157,52 @@
       "sending": "Sending...",
       "success": "Message sent successfully! We will contact you soon."
     }
+  },
+  "relatedServices": {
+    "title": "RELATED SERVICES",
+    "subtitle": "Discover other services that can boost your Shopify store",
+    "learnMore": "Learn more",
+    "services": {
+      "storeSetup": {
+        "title": "Shopify Store Setup",
+        "description": "Complete development of your online store from scratch with professional design."
+      },
+      "design": {
+        "title": "Shopify Design",
+        "description": "Unique and attractive designs that convert visitors into customers."
+      },
+      "themeCustomization": {
+        "title": "Theme Customization",
+        "description": "Adapt your Shopify theme to your brand's specific needs."
+      },
+      "migration": {
+        "title": "Shopify Migration",
+        "description": "Migrate your store to Shopify without losing data or interrupting sales."
+      },
+      "seo": {
+        "title": "Shopify SEO",
+        "description": "Search engine optimization for greater online visibility."
+      },
+      "cro": {
+        "title": "Shopify CRO",
+        "description": "Conversion rate optimization to maximize your store's sales."
+      },
+      "plus": {
+        "title": "Shopify Plus",
+        "description": "Enterprise solutions for high-volume businesses and growth."
+      },
+      "consulting": {
+        "title": "Shopify Consulting",
+        "description": "Strategic advisory to optimize and grow your business."
+      },
+      "growthPartner": {
+        "title": "Growth Partner",
+        "description": "Comprehensive growth partnership to scale your online business."
+      },
+      "abTesting": {
+        "title": "A/B Testing Shopify",
+        "description": "A/B testing to optimize user experience and conversions."
+      }
+    }
   }
 }

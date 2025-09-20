@@ -3,6 +3,7 @@ import FAQAccordion from '@/app/_components/faq-accordion';
 import SmoothScrollButton from '@/app/_components/smooth-scroll-button';
 import ServiceStructuredData from '@/app/_components/service-structured-data';
 import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
+import RelatedServices from '@/app/_components/related-services';
 import { growthPartnerFAQsEs } from '@/lib/faqs';
 import { generatePageMetadata } from "@/lib/seo-utils";
 
@@ -206,6 +207,9 @@ export default function GrowthPartnerShopify() {
           </div>
         </div>
       </section>
+
+      {/* Related Services Section */}
+      <RelatedServices currentService="shopify-growth-partner" />
 
       {/* FAQ Section */}
       <section className="py-20 bg-white">
