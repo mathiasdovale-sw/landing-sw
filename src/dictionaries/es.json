@@ -119,7 +119,42 @@
     ]
   },
   "contact": {
+    "title": "HABLEMOS",
+    "description": "¿Listo para llevar tu tienda Shopify al siguiente nivel? Contacta con nosotros para una consulta personalizada.",
+    "info": {
+      "email": "Email",
+      "phone": "Teléfono",
+      "location": "Ubicación"
+    },
     "form": {
+      "title": "ENVÍANOS UN MENSAJE",
+      "name": {
+        "label": "Nombre completo",
+        "placeholder": "Tu nombre"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "tu@email.com"
+      },
+      "company": {
+        "label": "Empresa (opcional)",
+        "placeholder": "Nombre de tu empresa"
+      },
+      "service": {
+        "label": "Servicio de interés",
+        "placeholder": "Selecciona un servicio...",
+        "development": "Crear Tienda Shopify / Desarrollo",
+        "optimization": "SEO & CRO / Optimización",
+        "migration": "Migración a Shopify", 
+        "maintenance": "Mantenimiento & Soporte",
+        "consulting": "Consultoría Shopify"
+      },
+      "message": {
+        "label": "Mensaje",
+        "placeholder": "Cuéntanos sobre tu proyecto..."
+      },
+      "submit": "Enviar mensaje",
+      "sending": "Enviando...",
       "success": "¡Mensaje enviado correctamente! Te contactaremos pronto."
     }
   }
