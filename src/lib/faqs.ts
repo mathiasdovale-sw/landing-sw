@@ -392,19 +392,9 @@ export const migracionShopifyFAQsEs: FAQ[] = [
     answer: 'Sí, reconfiguramos integraciones con CRM, email marketing, contabilidad, inventario y otras herramientas en el ecosistema Shopify.'
   },
   {
-    id: 'migracion-7',
-    question: '¿Qué pasa si encuentran problemas durante la migración?',
-    answer: 'Realizamos pruebas exhaustivas pre-migración para minimizar riesgos. Si surgen problemas relacionados con nuestro trabajo durante el período de garantía establecido, trabajamos para resolverlos según los términos acordados.'
-  },
-  {
     id: 'migracion-8',
     question: '¿Hacen backup completo antes de la migración?',
     answer: 'Absolutamente. Realizamos backup completo de la plataforma origen y configuramos staging en Shopify para pruebas antes del go-live.'
-  },
-  {
-    id: 'migracion-9',
-    question: '¿Capacitan al equipo después de la migración?',
-    answer: 'Sí, incluimos capacitación personalizada del admin de Shopify, documentación detallada y soporte post-migración durante 30 días.'
   },
   {
     id: 'migracion-10',
@@ -445,19 +435,9 @@ export const migracionShopifyFAQsEn: FAQ[] = [
     answer: 'Yes, we reconfigure integrations with CRM, email marketing, accounting, inventory and other tools in the Shopify ecosystem.'
   },
   {
-    id: 'migration-7',
-    question: 'What happens if problems are found during migration?',
-    answer: 'We perform thorough pre-migration testing to minimize risks. If issues related to our work arise during the established warranty period, we work to resolve them according to agreed terms.'
-  },
-  {
     id: 'migration-8',
     question: 'Do you make complete backup before migration?',
     answer: 'Absolutely. We perform complete backup of the source platform and set up staging on Shopify for testing before go-live.'
-  },
-  {
-    id: 'migration-9',
-    question: 'Do you train the team after migration?',
-    answer: 'Yes, we include personalized Shopify admin training, detailed documentation and 30-day post-migration support.'
   },
   {
     id: 'migration-10',
@@ -466,7 +446,7 @@ export const migracionShopifyFAQsEn: FAQ[] = [
   }
 ];
 
-// FAQ específicos para Consultoría Shopify
+// FAQ específicos para Consultoría Shopify - HASTA ACA LLEGUE VERIFICANDO
 export const consultoriaShopifyFAQsEs: FAQ[] = [
   {
     id: 'consultoria-1',
@@ -498,26 +478,6 @@ export const consultoriaShopifyFAQsEs: FAQ[] = [
     question: '¿Ayudan con estrategias de marketing digital?',
     answer: 'Sí, desarrollamos estrategias de email marketing, abandoned cart, upselling, cross-selling, y integración con Google Ads y Facebook Ads.'
   },
-  {
-    id: 'consultoria-7',
-    question: '¿Cuánto dura un proceso de consultoría?',
-    answer: 'La auditoría inicial toma 1-2 semanas. La implementación de recomendaciones puede durar 4-12 semanas según complejidad.'
-  },
-  {
-    id: 'consultoria-8',
-    question: '¿Ofrecen consultoría recurrente para Shopify?',
-    answer: 'Sí, ofrecemos planes de consultoría mensual para optimización continua, monitoreo de performance y crecimiento sostenido.'
-  },
-  {
-    id: 'consultoria-9',
-    question: '¿Pueden ayudar con cumplimiento legal (GDPR, cookies)?',
-    answer: 'Sí, implementamos políticas de privacidad, manejo de cookies, GDPR compliance, y configuraciones legales según tu mercado.'
-  },
-  {
-    id: 'consultoria-10',
-    question: '¿Qué ROI puedo esperar de la consultoría Shopify?',
-    answer: 'El ROI varía según el estado inicial de la tienda y el mercado. En proyectos anteriores hemos observado mejoras del 20-50% en conversiones y 15-30% en velocidad de carga, pero los resultados específicos dependen de múltiples factores y no pueden garantizarse.'
-  }
 ];
 
 export const consultoriaShopifyFAQsEn: FAQ[] = [
@@ -551,26 +511,6 @@ export const consultoriaShopifyFAQsEn: FAQ[] = [
     question: 'Do you help with digital marketing strategies?',
     answer: 'Yes, we develop email marketing strategies, abandoned cart, upselling, cross-selling, and integration with Google Ads and Facebook Ads.'
   },
-  {
-    id: 'consulting-7',
-    question: 'How long does a consulting process take?',
-    answer: 'Initial audit takes 1-2 weeks. Implementation of recommendations can last 4-12 weeks depending on complexity.'
-  },
-  {
-    id: 'consulting-8',
-    question: 'Do you offer recurring Shopify consulting?',
-    answer: 'Yes, we offer monthly consulting plans for continuous optimization, performance monitoring and sustained growth.'
-  },
-  {
-    id: 'consulting-9',
-    question: 'Can you help with legal compliance (GDPR, cookies)?',
-    answer: 'Yes, we implement privacy policies, cookie handling, GDPR compliance, and legal configurations according to your market.'
-  },
-  {
-    id: 'consulting-10',
-    question: 'What ROI can I expect from Shopify consulting?',
-    answer: 'ROI varies depending on the initial state of the store and market. In previous projects we have observed 20-50% improvements in conversions and 15-30% in loading speed, but specific results depend on multiple factors and cannot be guaranteed.'
-  }
 ];
 
 // FAQ específicos para CRO Shopify
@@ -583,27 +523,17 @@ export const croShopifyFAQsEs: FAQ[] = [
   {
     id: 'cro-2',
     question: '¿Cómo miden las mejoras en conversión?',
-    answer: 'Usamos Google Analytics 4, heatmaps, grabaciones de sesiones, y A/B testing para medir lift en conversiones, AOV y revenue por visitante.'
-  },
-  {
-    id: 'cro-3',
-    question: '¿Qué elementos optimizan en el proceso de checkout?',
-    answer: 'Simplificamos pasos, agregamos trust signals, optimizamos campos de formulario, opciones de pago, y reducimos el abandono de carrito.'
+    answer: 'Usamos Google Analytics 4, heatmaps, y A/B testing para medir lift en conversiones, AOV, revenue por visitante, entre otras métricas.'
   },
   {
     id: 'cro-4',
     question: '¿Pueden optimizar las páginas de producto para más ventas?',
-    answer: 'Sí, optimizamos imágenes, descripciones, reviews, precios, urgencia, cross-selling, y todos los elementos que impactan la decisión de compra.'
+    answer: 'Sí, optimizamos imágenes, descripciones, reviews, precios, upselling, cross-selling, y todos los elementos que impactan la decisión de compra.'
   },
   {
     id: 'cro-5',
     question: '¿Qué herramientas usan para el análisis CRO?',
-    answer: 'Hotjar, Google Analytics, Google Optimize, Klaviyo, y herramientas específicas de Shopify para análisis de comportamiento y testing.'
-  },
-  {
-    id: 'cro-6',
-    question: '¿Cuánto tiempo se ven resultados en CRO?',
-    answer: 'Los primeros indicadores pueden verse en 2-4 semanas, aunque los resultados varían según el sitio web y las optimizaciones implementadas. Para optimizaciones completas con A/B testing significativo, típicamente 2-3 meses.'
+    answer: 'Google Analytics, Klaviyo, y herramientas específicas de Shopify para análisis de comportamiento y testing.'
   },
   {
     id: 'cro-7',
@@ -620,11 +550,6 @@ export const croShopifyFAQsEs: FAQ[] = [
     question: '¿Pueden mejorar el Average Order Value (AOV)?',
     answer: 'Sí, implementamos estrategias de upselling, cross-selling, bundles, free shipping thresholds, y recomendaciones personalizadas.'
   },
-  {
-    id: 'cro-10',
-    question: '¿Qué mejora promedio ven en las conversiones?',
-    answer: 'Los resultados varían según cada negocio. En casos anteriores hemos observado aumentos del 25-60% en conversion rate y 15-40% en AOV, pero no podemos garantizar resultados específicos ya que dependen de múltiples factores como industria, audiencia y implementación.'
-  }
 ];
 
 export const croShopifyFAQsEn: FAQ[] = [
@@ -639,24 +564,14 @@ export const croShopifyFAQsEn: FAQ[] = [
     answer: 'We use Google Analytics 4, heatmaps, session recordings, and A/B testing to measure lift in conversions, AOV and revenue per visitor.'
   },
   {
-    id: 'cro-en-3',
-    question: 'What elements do you optimize in the checkout process?',
-    answer: 'We simplify steps, add trust signals, optimize form fields, payment options, and reduce cart abandonment.'
-  },
-  {
     id: 'cro-en-4',
     question: 'Can you optimize product pages for more sales?',
-    answer: 'Yes, we optimize images, descriptions, reviews, pricing, urgency, cross-selling, and all elements that impact purchase decisions.'
+    answer: 'Yes, we optimize images, descriptions, reviews, pricing, upselling, cross-selling, and all elements that impact purchase decisions.'
   },
   {
     id: 'cro-en-5',
     question: 'What tools do you use for CRO analysis?',
-    answer: 'Hotjar, Google Analytics, Google Optimize, Klaviyo, and Shopify-specific tools for behavior analysis and testing.'
-  },
-  {
-    id: 'cro-en-6',
-    question: 'How long before seeing CRO results?',
-    answer: 'Initial indicators may be seen in 2-4 weeks, although results vary depending on the website and optimizations implemented. For complete optimizations with significant A/B testing, typically 2-3 months.'
+    answer: 'Google Analytics, Google Optimize, Klaviyo, and Shopify-specific tools for behavior analysis and testing.'
   },
   {
     id: 'cro-en-7',
@@ -673,11 +588,6 @@ export const croShopifyFAQsEn: FAQ[] = [
     question: 'Can you improve Average Order Value (AOV)?',
     answer: 'Yes, we implement upselling, cross-selling, bundles, free shipping thresholds, and personalized recommendation strategies.'
   },
-  {
-    id: 'cro-en-10',
-    question: 'What average improvement do you see in conversions?',
-    answer: 'Results vary by business. In previous cases we have observed 25-60% increases in conversion rate and 15-40% in AOV, but we cannot guarantee specific results as they depend on multiple factors such as industry, audience, and implementation.'
-  }
 ];
 
 // FAQ específicos para A/B Testing Shopify
@@ -693,16 +603,6 @@ export const abTestingShopifyFAQsEs: FAQ[] = [
     answer: 'Testeamos headlines, CTAs, imágenes de producto, precios, checkout flow, pop-ups, emails, landing pages, y cualquier elemento que impacte conversiones.'
   },
   {
-    id: 'ab-3',
-    question: '¿Cuánto tráfico necesito para hacer A/B testing efectivo?',
-    answer: 'Mínimo 1,000 visitantes/mes por variante para resultados estadísticamente significativos. Para tests rápidos, recomendamos 5,000+ visitantes/mes.'
-  },
-  {
-    id: 'ab-4',
-    question: '¿Qué herramientas usan para A/B testing en Shopify?',
-    answer: 'Google Optimize, VWO, Optimizely, Convert, y herramientas nativas de Shopify Plus para testing más avanzado y personalización.'
-  },
-  {
     id: 'ab-5',
     question: '¿Cuánto tiempo debe durar un A/B test?',
     answer: 'Mínimo 2 semanas para capturar comportamientos semanales. Para resultados confiables, recomendamos 4-6 semanas o hasta alcanzar significancia estadística.'
@@ -712,26 +612,6 @@ export const abTestingShopifyFAQsEs: FAQ[] = [
     question: '¿Pueden testear cambios en el checkout de Shopify?',
     answer: 'Sí, en Shopify Plus podemos testear elementos del checkout. En planes regulares, testeamos pre-checkout: carrito, producto, y flujo hasta payment.'
   },
-  {
-    id: 'ab-7',
-    question: '¿Cómo aseguran que los resultados sean estadísticamente válidos?',
-    answer: 'Calculamos sample size necesario, establecemos confidence intervals (95%+), monitoreamos external validity, y consideramos factores estacionales.'
-  },
-  {
-    id: 'ab-8',
-    question: '¿Qué tipo de mejoras han logrado con A/B testing?',
-    answer: 'En proyectos anteriores hemos observado mejoras variables: aumentos del 15-80% en conversiones, 10-35% en AOV, y reducciones del 20-50% en bounce rate. Los resultados dependen del elemento testeado, la audiencia, y las condiciones específicas de cada negocio.'
-  },
-  {
-    id: 'ab-9',
-    question: '¿Hacen testing multivariate o solo A/B simple?',
-    answer: 'Ofrecemos ambos: A/B simple para tests rápidos y multivariate testing para analizar interacciones entre múltiples elementos simultáneamente.'
-  },
-  {
-    id: 'ab-10',
-    question: '¿Incluyen análisis post-test y recomendaciones?',
-    answer: 'Sí, proporcionamos análisis detallado de resultados, insights del comportamiento del usuario, y roadmap de próximos tests a implementar.'
-  }
 ];
 
 export const abTestingShopifyFAQsEn: FAQ[] = [
@@ -746,16 +626,6 @@ export const abTestingShopifyFAQsEn: FAQ[] = [
     answer: 'We test headlines, CTAs, product images, pricing, checkout flow, pop-ups, emails, landing pages, and any element that impacts conversions.'
   },
   {
-    id: 'ab-en-3',
-    question: 'How much traffic do I need for effective A/B testing?',
-    answer: 'Minimum 1,000 visitors/month per variant for statistically significant results. For faster tests, we recommend 5,000+ visitors/month.'
-  },
-  {
-    id: 'ab-en-4',
-    question: 'What tools do you use for A/B testing on Shopify?',
-    answer: 'Google Optimize, VWO, Optimizely, Convert, and native Shopify Plus tools for more advanced testing and personalization.'
-  },
-  {
     id: 'ab-en-5',
     question: 'How long should an A/B test run?',
     answer: 'Minimum 2 weeks to capture weekly behaviors. For reliable results, we recommend 4-6 weeks or until reaching statistical significance.'
@@ -765,26 +635,6 @@ export const abTestingShopifyFAQsEn: FAQ[] = [
     question: 'Can you test changes in Shopify checkout?',
     answer: 'Yes, on Shopify Plus we can test checkout elements. On regular plans, we test pre-checkout: cart, product, and flow until payment.'
   },
-  {
-    id: 'ab-en-7',
-    question: 'How do you ensure results are statistically valid?',
-    answer: 'We calculate necessary sample size, establish confidence intervals (95%+), monitor external validity, and consider seasonal factors.'
-  },
-  {
-    id: 'ab-en-8',
-    question: 'What type of improvements have you achieved with A/B testing?',
-    answer: 'In previous projects we have observed variable improvements: 15-80% increases in conversions, 10-35% in AOV, and 20-50% reductions in bounce rate. Results depend on the element tested, audience, and specific business conditions.'
-  },
-  {
-    id: 'ab-en-9',
-    question: 'Do you do multivariate testing or just simple A/B?',
-    answer: 'We offer both: simple A/B for quick tests and multivariate testing to analyze interactions between multiple elements simultaneously.'
-  },
-  {
-    id: 'ab-en-10',
-    question: 'Do you include post-test analysis and recommendations?',
-    answer: 'Yes, we provide detailed results analysis, user behavior insights, and roadmap of next tests to implement.'
-  }
 ];
 
 // FAQ específicos para SEO Shopify
@@ -802,7 +652,7 @@ export const seoShopifyFAQsEs: FAQ[] = [
   {
     id: 'seo-3',
     question: '¿Pueden solucionar problemas de contenido duplicado en Shopify?',
-    answer: 'Sí, configuramos canonical tags, optimizamos faceted navigation, URLs de variantes, y resolvemos issues comunes de duplicate content en e-commerce.'
+    answer: 'Sí, configuramos canonical tags, URLs de variantes, y resolvemos issues comunes de duplicate content en e-commerce.'
   },
   {
     id: 'seo-4',
@@ -825,20 +675,10 @@ export const seoShopifyFAQsEs: FAQ[] = [
     answer: 'Sí, optimizamos Google My Business, local schema, landing pages por ubicación, y estrategias SEO para retail omnicanal.'
   },
   {
-    id: 'seo-8',
-    question: '¿Qué resultados puedo esperar del SEO en Shopify?',
-    answer: 'Los resultados de SEO varían según la competencia, mercado y situación inicial. En casos anteriores hemos observado mejoras en 3-6 meses como aumentos del 40-150% en tráfico orgánico, pero no podemos garantizar resultados específicos ya que el SEO depende de múltiples factores externos.'
-  },
-  {
     id: 'seo-9',
     question: '¿Hacen auditorías SEO completas de tiendas Shopify?',
     answer: 'Sí, auditamos SEO técnico, contenido, UX, velocidad, mobile-friendliness, y competencia para crear estrategia SEO personalizada.'
   },
-  {
-    id: 'seo-10',
-    question: '¿Ofrecen SEO continuo o solo optimización inicial?',
-    answer: 'Ofrecemos ambos: optimización inicial completa y planes de SEO continuo con contenido, link building, y monitoreo mensual.'
-  }
 ];
 
 export const seoShopifyFAQsEn: FAQ[] = [
@@ -855,7 +695,7 @@ export const seoShopifyFAQsEn: FAQ[] = [
   {
     id: 'seo-en-3',
     question: 'Can you solve duplicate content issues in Shopify?',
-    answer: 'Yes, we configure canonical tags, optimize faceted navigation, variant URLs, and resolve common e-commerce duplicate content issues.'
+    answer: 'Yes, we configure canonical tags, variant URLs, and resolve common e-commerce duplicate content issues.'
   },
   {
     id: 'seo-en-4',
@@ -878,20 +718,10 @@ export const seoShopifyFAQsEn: FAQ[] = [
     answer: 'Yes, we optimize Google My Business, local schema, location landing pages, and SEO strategies for omnichannel retail.'
   },
   {
-    id: 'seo-en-8',
-    question: 'What results can I expect from Shopify SEO?',
-    answer: 'SEO results vary depending on competition, market, and initial situation. In previous cases we have observed improvements in 3-6 months such as 40-150% increases in organic traffic, but we cannot guarantee specific results as SEO depends on multiple external factors.'
-  },
-  {
     id: 'seo-en-9',
     question: 'Do you do complete SEO audits of Shopify stores?',
     answer: 'Yes, we audit technical SEO, content, UX, speed, mobile-friendliness, and competition to create personalized SEO strategy.'
   },
-  {
-    id: 'seo-en-10',
-    question: 'Do you offer ongoing SEO or just initial optimization?',
-    answer: 'We offer both: complete initial optimization and ongoing SEO plans with content, link building, and monthly monitoring.'
-  }
 ];
 
 // FAQ específicos para Crear Tienda Shopify
@@ -899,7 +729,7 @@ export const crearTiendaShopifyFAQsEs: FAQ[] = [
   {
     id: 'crear-1',
     question: '¿Qué incluye el servicio de crear tienda Shopify desde cero?',
-    answer: 'Incluye setup completo, diseño personalizado, configuración de productos, pagos, envíos, SEO básico, y capacitación para que puedas administrarla.'
+    answer: 'Incluye setup completo, diseño adaptado a tu marca, configuración de productos, pagos, envíos, SEO básico, y capacitación para que puedas administrarla.'
   },
   {
     id: 'crear-2',
@@ -939,25 +769,15 @@ export const crearTiendaShopifyFAQsEs: FAQ[] = [
   {
     id: 'crear-9',
     question: '¿Qué pasa si necesito funcionalidades específicas?',
-    answer: 'Evaluamos tus necesidades y desarrollamos funcionalidades custom o integramos apps especializadas para tu industria específica (sujeto a compatibilidad y políticas de apps de terceros).'
+    answer: 'Evaluamos tus necesidades y desarrollamos funcionalidades custom o integramos apps especializadas para tu industria específica.'
   },
-  {
-    id: 'crear-10',
-    question: '¿Ofrecen soporte después del lanzamiento?',
-    answer: 'Sí, incluimos 30 días de soporte post-lanzamiento y ofrecemos planes de mantenimiento continuo según tus necesidades.'
-  },
-  {
-    id: 'crear-11',
-    question: '¿Shopify maneja aranceles e impuestos internacionales automáticamente?',
-    answer: 'Shopify te permite configurar tarifas y mostrar estimaciones de impuestos y aranceles internacionales (DDP/DDU), pero los costos finales dependen del transportista y la normativa del país de destino.'
-  }
 ];
 
 export const crearTiendaShopifyFAQsEn: FAQ[] = [
   {
     id: 'create-1',
     question: 'What does the create Shopify store from scratch service include?',
-    answer: 'Includes complete setup, custom design, product configuration, payments, shipping, basic SEO, and training so you can manage it.'
+    answer: 'Includes complete setup, design tailored to your brand, product configuration, payments, shipping, basic SEO, and training so you can manage it.'
   },
   {
     id: 'create-2',
@@ -997,18 +817,8 @@ export const crearTiendaShopifyFAQsEn: FAQ[] = [
   {
     id: 'create-9',
     question: 'What if I need specific functionalities?',
-    answer: 'We evaluate your needs and develop custom functionalities or integrate specialized apps for your specific industry (subject to third-party app compatibility and policies).'
+    answer: 'We evaluate your needs and develop custom functionalities or integrate specialized apps for your specific industry.'
   },
-  {
-    id: 'create-10',
-    question: 'Do you offer support after launch?',
-    answer: 'Yes, we include 30 days of post-launch support and offer ongoing maintenance plans according to your needs.'
-  },
-  {
-    id: 'create-11',
-    question: 'Does Shopify handle international duties and taxes automatically?',
-    answer: 'Shopify allows you to configure rates and display estimates for international taxes and duties (DDP/DDU), but final costs depend on the carrier and destination country regulations.'
-  }
 ];
 
 // FAQ específicos para Personalización Tema Shopify
@@ -1022,11 +832,6 @@ export const personalizacionTemaFAQsEs: FAQ[] = [
     id: 'tema-2',
     question: '¿Trabajan con cualquier tema de Shopify o solo algunos?',
     answer: 'Trabajamos con cualquier tema: gratuitos, premium, custom themes. También creamos temas desde cero según tus necesidades específicas.'
-  },
-  {
-    id: 'tema-3',
-    question: '¿Las personalizaciones son compatibles con actualizaciones?',
-    answer: 'Documentamos todos los cambios y usamos child themes cuando es posible. Ofrecemos mantenimiento para preservar personalizaciones tras updates.'
   },
   {
     id: 'tema-4',
@@ -1051,7 +856,7 @@ export const personalizacionTemaFAQsEs: FAQ[] = [
   {
     id: 'tema-8',
     question: '¿Pueden integrar funcionalidades de apps en el tema?',
-    answer: 'Sí, integramos funcionalidades de reviews, wishlists, currency switchers, y otras apps directamente en el diseño del tema (sujeto a compatibilidad de APIs).'
+    answer: 'Sí, integramos funcionalidades de reviews, wishlists, currency switchers, y otras apps directamente en el diseño del tema.'
   },
   {
     id: 'tema-9',
@@ -1077,11 +882,6 @@ export const personalizacionTemaFAQsEn: FAQ[] = [
     answer: 'We work with any theme: free, premium, custom themes. We also create themes from scratch according to your specific needs.'
   },
   {
-    id: 'theme-3',
-    question: 'Are customizations compatible with updates?',
-    answer: 'We document all changes and use child themes when possible. We offer maintenance to preserve customizations after updates.'
-  },
-  {
     id: 'theme-4',
     question: 'Can you add completely new sections?',
     answer: 'Yes, we develop custom sections: testimonials, galleries, comparators, calculators, maps, and any specific functionality you need.'
@@ -1104,7 +904,7 @@ export const personalizacionTemaFAQsEn: FAQ[] = [
   {
     id: 'theme-8',
     question: 'Can you integrate app functionalities into the theme?',
-    answer: 'Yes, we integrate reviews, wishlists, currency switchers, and other app functionalities directly into the theme design (subject to API compatibility).'
+    answer: 'Yes, we integrate reviews, wishlists, currency switchers, and other app functionalities directly into the theme design.'
   },
   {
     id: 'theme-9',
@@ -1133,12 +933,12 @@ export const growthPartnerFAQsEs: FAQ[] = [
   {
     id: 'growth-3',
     question: '¿Cómo miden el crecimiento y éxito del programa?',
-    answer: 'Monitoreamos KPIs clave: revenue growth, LTV, CAC, conversion rate, AOV, retention rate, y ROI de cada canal de marketing.'
+    answer: 'Monitoreamos KPIs clave: revenue growth, LTV, conversion rate, AOV, retention rate, y ROI de cada canal de marketing.'
   },
   {
     id: 'growth-4',
     question: '¿Trabajan con empresas de cualquier tamaño?',
-    answer: 'Nos enfocamos en empresas que facturan $50K+ USD/año y tienen potencial de crecimiento. Diseñamos estrategias escalables para cada etapa.'
+    answer: 'Nos enfocamos en empresas que facturan $1000+ EUR/mes y tienen potencial de crecimiento. Diseñamos estrategias escalables para cada etapa.'
   },
   {
     id: 'growth-5',
@@ -1151,25 +951,10 @@ export const growthPartnerFAQsEs: FAQ[] = [
     answer: 'Absolutamente. Desarrollamos programas de loyalty, email sequences, remarketing, subscripciones, y estrategias de customer lifetime value.'
   },
   {
-    id: 'growth-7',
-    question: '¿Qué tipo de automatizaciones implementan?',
-    answer: 'Automatizamos abandoned cart, welcome series, post-purchase, win-back campaigns, segmentación avanzada, y workflows de nurturing.'
-  },
-  {
     id: 'growth-8',
     question: '¿Ofrecen análisis competitivo y benchmarking?',
     answer: 'Sí, analizamos competidores, tendencias del mercado, oportunidades de nicho, y benchmarks de industria para identificar ventajas competitivas.'
   },
-  {
-    id: 'growth-9',
-    question: '¿Cuál es el compromiso de tiempo mínimo?',
-    answer: 'Recomendamos mínimo 6 meses para ver resultados significativos. El crecimiento sostenible requiere tiempo, testing, y optimización continua.'
-  },
-  {
-    id: 'growth-10',
-    question: '¿Qué resultados típicos ven sus clientes Growth Partner?',
-    answer: 'Los resultados varían significativamente según el negocio, mercado y situación inicial. En casos anteriores hemos observado crecimientos del 40-200% en revenue y mejoras del 25-60% en conversion rate, pero no podemos garantizar resultados específicos ya que dependen de múltiples factores.'
-  }
 ];
 
 export const growthPartnerFAQsEn: FAQ[] = [
@@ -1186,12 +971,12 @@ export const growthPartnerFAQsEn: FAQ[] = [
   {
     id: 'growth-en-3',
     question: 'How do you measure growth and program success?',
-    answer: 'We monitor key KPIs: revenue growth, LTV, CAC, conversion rate, AOV, retention rate, and ROI of each marketing channel.'
+    answer: 'We monitor key KPIs: revenue growth, LTV, conversion rate, AOV, retention rate, and ROI of each marketing channel.'
   },
   {
     id: 'growth-en-4',
     question: 'Do you work with companies of any size?',
-    answer: 'We focus on companies billing $50K+ USD/year with growth potential. We design scalable strategies for each stage.'
+    answer: 'We focus on companies billing $1000+ EUR/month with growth potential. We design scalable strategies for each stage.'
   },
   {
     id: 'growth-en-5',
@@ -1204,23 +989,8 @@ export const growthPartnerFAQsEn: FAQ[] = [
     answer: 'Absolutely. We develop loyalty programs, email sequences, remarketing, subscriptions, and customer lifetime value strategies.'
   },
   {
-    id: 'growth-en-7',
-    question: 'What type of automations do you implement?',
-    answer: 'We automate abandoned cart, welcome series, post-purchase, win-back campaigns, advanced segmentation, and nurturing workflows.'
-  },
-  {
     id: 'growth-en-8',
     question: 'Do you offer competitive analysis and benchmarking?',
     answer: 'Yes, we analyze competitors, market trends, niche opportunities, and industry benchmarks to identify competitive advantages.'
   },
-  {
-    id: 'growth-en-9',
-    question: 'What is the minimum time commitment?',
-    answer: 'We recommend minimum 6 months to see significant results. Sustainable growth requires time, testing, and continuous optimization.'
-  },
-  {
-    id: 'growth-en-10',
-    question: 'What typical results do your Growth Partner clients see?',
-    answer: 'Results vary significantly by business, market, and initial situation. In previous cases we have observed 40-200% revenue growth and 25-60% improvements in conversion rate, but we cannot guarantee specific results as they depend on multiple factors.'
-  }
 ];
