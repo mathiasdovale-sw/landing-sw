@@ -35,7 +35,7 @@ export default function CrearTiendaShopify() {
               <span className="text-orange-300">SHOPIFY</span>
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed font-light">
-              Creamos tu tienda Shopify desde cero. <strong className="text-white">Configuración completa, diseño personalizado</strong> 
+              Creamos tu tienda Shopify desde cero. <strong className="text-white">Configuración completa, diseño personalizado</strong>{' '}
               y optimización para comenzar a vender desde el primer día.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -91,7 +91,7 @@ export default function CrearTiendaShopify() {
               </div>
               <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>DISEÑO PERSONALIZADO</h3>
               <p className="text-gray-300 leading-relaxed">
-                Theme único y responsive adaptado a tu marca y productos
+                Diseño adaptado a tu presupuesto y responsive para tu marca y productos
               </p>
             </div>
 
