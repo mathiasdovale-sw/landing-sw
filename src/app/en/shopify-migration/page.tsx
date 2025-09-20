@@ -35,7 +35,7 @@ export default function ShopifyMigration() {
               <span className="text-orange-300">MIGRATION</span>
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed font-light">
-              We migrate your existing store to Shopify without losing data. <strong className="text-white">Safe and optimized process</strong> 
+              We migrate your existing store to Shopify without losing data. <strong className="text-white">Safe and optimized process</strong>{' '}
               to minimize downtime and preserve your SEO.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

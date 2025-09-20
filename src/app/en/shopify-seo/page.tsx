@@ -35,7 +35,7 @@ export default function ShopifySEO() {
               <span className="text-orange-300">SEO</span>
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed font-light">
-              SEO optimization specialized for Shopify stores. <strong className="text-white">We improve your Google ranking</strong> 
+              SEO optimization specialized for Shopify stores. <strong className="text-white">We improve your Google ranking</strong>{' '}
               and increase organic traffic to your ecommerce.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
