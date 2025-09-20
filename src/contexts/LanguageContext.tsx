@@ -68,6 +68,19 @@ const translations = {
     'footer.privacy': 'Política de Privacidad',
     'footer.cookies': 'Política de Cookies',
     
+    // Footer Services
+    'footer.services.title': 'SERVICIOS',
+    'footer.services.storeSetup': 'Crear Tienda Shopify',
+    'footer.services.seo': 'SEO Shopify',
+    'footer.services.design': 'Diseño Shopify',
+    'footer.services.themeCustomization': 'Personalización de Tema',
+    'footer.services.migration': 'Migración a Shopify',
+    'footer.services.cro': 'Optimización de Conversiones',
+    'footer.services.plus': 'Shopify Plus',
+    'footer.services.consulting': 'Consultoría Shopify',
+    'footer.services.growthPartner': 'Growth Partner',
+    'footer.services.abTesting': 'A/B Testing',
+    
     // Services Section
     'services.title': 'NUESTROS SERVICIOS',
     'services.subtitle': 'En nuestra agencia Shopify ayudamos a marcas y negocios de todos los tamaños a lanzar y hacer crecer su ecommerce.',
@@ -278,6 +291,19 @@ const translations = {
     'footer.rights': 'All rights reserved.',
     'footer.privacy': 'Privacy Policy',
     'footer.cookies': 'Cookie Policy',
+    
+    // Footer Services
+    'footer.services.title': 'SERVICES',
+    'footer.services.storeSetup': 'Shopify Store Setup',
+    'footer.services.seo': 'Shopify SEO',
+    'footer.services.design': 'Shopify Design',
+    'footer.services.themeCustomization': 'Theme Customization',
+    'footer.services.migration': 'Shopify Migration',
+    'footer.services.cro': 'Conversion Optimization',
+    'footer.services.plus': 'Shopify Plus',
+    'footer.services.consulting': 'Shopify Consulting',
+    'footer.services.growthPartner': 'Growth Partner',
+    'footer.services.abTesting': 'A/B Testing',
     
     // Services Section
     'services.title': 'OUR SERVICES',

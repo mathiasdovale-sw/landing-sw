@@ -18,6 +18,17 @@ export const useLocalizedLinks = () => {
     privacyPolicy: currentLocale === 'es' ? '/es/politica-de-privacidad' : '/en/privacy-policy',
     cookiePolicy: currentLocale === 'es' ? '/es/politica-de-cookies' : '/en/cookie-policy',
     newsletterConfirmed: currentLocale === 'es' ? '/es/suscripcion-confirmada' : '/en/newsletter-confirmed',
+    // Service pages
+    shopifyStoreSetup: currentLocale === 'es' ? '/es/crear-tienda-shopify' : '/en/shopify-store-setup',
+    shopifySeo: currentLocale === 'es' ? '/es/seo-shopify' : '/en/shopify-seo',
+    shopifyDesign: currentLocale === 'es' ? '/es/diseno-shopify' : '/en/shopify-design',
+    shopifyThemeCustomization: currentLocale === 'es' ? '/es/personalizacion-tema-shopify' : '/en/shopify-theme-customization',
+    shopifyMigration: currentLocale === 'es' ? '/es/migracion-shopify' : '/en/shopify-migration',
+    shopifyCro: currentLocale === 'es' ? '/es/cro-shopify' : '/en/shopify-cro',
+    shopifyPlus: currentLocale === 'es' ? '/es/shopify-plus' : '/en/shopify-plus',
+    shopifyConsulting: currentLocale === 'es' ? '/es/consultoria-shopify' : '/en/shopify-consulting',
+    shopifyGrowthPartner: currentLocale === 'es' ? '/es/growth-partner-shopify' : '/en/shopify-growth-partner',
+    shopifyAbTesting: currentLocale === 'es' ? '/es/ab-testing-shopify' : '/en/shopify-ab-testing',
   }
   
   return {
