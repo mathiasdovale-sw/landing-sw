@@ -35,7 +35,7 @@ export default function ABTestingShopify() {
               <span className="text-orange-300">SHOPIFY</span>
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed font-light">
-              Pruebas A/B especializadas para tiendas Shopify. <strong className="text-white">Validamos cambios con datos reales</strong> 
+              Pruebas A/B especializadas para tiendas Shopify. <strong className="text-white">Validamos cambios con datos reales</strong>{' '}
               para optimizar conversiones y maximizar tus ingresos.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

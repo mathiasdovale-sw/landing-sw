@@ -35,7 +35,7 @@ export default function ShopifyThemeCustomization() {
               <span className="text-orange-300">CUSTOMIZATION</span>
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed font-light">
-              We customize Shopify themes according to your needs. <strong className="text-white">Advanced modifications</strong> 
+              We customize Shopify themes according to your needs. <strong className="text-white">Advanced modifications</strong>{' '}
               to create a unique and conversion-optimized experience.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

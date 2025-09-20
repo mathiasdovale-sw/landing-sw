@@ -35,7 +35,7 @@ export default function PersonalizacionTemaShopify() {
               <span className="text-orange-300">TEMA SHOPIFY</span>
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed font-light">
-              Personalizamos temas de Shopify según tus necesidades. <strong className="text-white">Modificaciones avanzadas</strong> 
+              Personalizamos temas de Shopify según tus necesidades. <strong className="text-white">Modificaciones avanzadas</strong>{' '}
               para crear una experiencia única y diferenciada.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

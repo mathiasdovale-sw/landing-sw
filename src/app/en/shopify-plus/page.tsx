@@ -126,7 +126,7 @@ export default function ShopifyPlus() {
               </div>
               <h3 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "sans-serif" }}>PRIORITY SUPPORT</h3>
               <p className="text-gray-300 leading-relaxed">
-                24/7 priority support and dedicated success manager
+                Access to specialized Shopify Plus support and priority channels
               </p>
             </div>
 
