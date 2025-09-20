@@ -2,6 +2,7 @@
 import Navbar from "./navbar"
 import Image from "next/image"
 import { useLanguage } from "@/contexts/LanguageContext"
+import AuroraBackground from "@/app/_components/aurora-background"
 
 const HeaderHome = () => {
   const { t } = useLanguage()
@@ -17,9 +18,28 @@ const HeaderHome = () => {
   };
 
   return (
-    <div className="min-h-[70vh] sm:min-h-[20vh] lg:min-h-screen text-white" style={{ backgroundColor: '#141417ff' }}>
+    <section className="relative min-h-[70vh] sm:min-h-[20vh] lg:min-h-screen text-white overflow-hidden" 
+             style={{ 
+               backgroundColor: '#1a1a1a',
+               width: '100vw',
+               position: 'relative',
+               left: '50%',
+               right: '50%',
+               marginLeft: '-50vw',
+               marginRight: '-50vw'
+             }}>
+      {/* Aurora Background */}
+      <div className="absolute inset-0 z-0 w-full h-full">
+        <AuroraBackground 
+          colorStops={["#79FFE1", "#0070f3", "#1a1a1a"]}
+          amplitude={1.0}
+          blend={0.8}
+          speed={0.3}
+        />
+      </div>
+      
       {/* Main Content */}
-      <main className="flex flex-col items-center justify-center px-4 sm:px-6 md:px-12 lg:px-16 py-6 sm:py-8 lg:py-12 min-h-[calc(70vh-70px)] sm:min-h-[calc(90vh-100px)] lg:min-h-[calc(100vh-120px)] text-center">
+      <main className="relative z-10 flex flex-col items-center justify-center px-8 sm:px-10 md:px-16 lg:px-20 py-6 sm:py-8 lg:py-12 min-h-[calc(70vh-70px)] sm:min-h-[calc(90vh-100px)] lg:min-h-[calc(100vh-120px)] text-center">
         {/* Main Text - Centered */}
         <div className="mb-4 sm:mb-6 lg:mb-8 max-w-6xl">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-black leading-tight xl:leading-tight 2xl:leading-tight tracking-tight break-words">
@@ -63,8 +83,8 @@ const HeaderHome = () => {
         {/* Spacer for better layout */}
         <div className="h-4 sm:h-6 lg:h-8"></div>
       </main>
-    </div>
-  )
+    </section>
+  );
 }
 
-export default HeaderHome
+export default HeaderHome;

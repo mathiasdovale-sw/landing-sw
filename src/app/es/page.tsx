@@ -1,38 +1,33 @@
 import Container from "@/app/_components/container";
-import { Intro } from "@/app/_components/intro";
 import HeaderHome from "../_components/header-home";
 import ServicesSection from "../_components/services-section";
 import ContactSection from "../_components/contact-section";
 import type { Metadata } from 'next'
+import { HomeFAQsEs } from "@/lib/faqs";
+import FAQAccordion from "../_components/faq-accordion";
+import Divider from "../_components/divider";
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: "SellifyWorks - Agencia Shopify Barcelona | Desarrollo de Tiendas Online",
-  description: "Agencia especializada en desarrollo y optimización de tiendas Shopify en Barcelona. Creamos experiencias de ecommerce que convierten visitantes en ventas.",
-  alternates: {
-    canonical: '/es/',
-    languages: {
-      es: '/es/',
-      en: '/en/',
-    },
-  },
-  openGraph: {
-    title: "SellifyWorks - Agencia Shopify Barcelona",
-    description: "Agencia especializada en desarrollo y optimización de tiendas Shopify en Barcelona. Creamos experiencias de ecommerce que convierten visitantes en ventas.",
-    type: "website",
-    locale: "es_ES",
-  },
-}
+export const metadata: Metadata = generatePageMetadata(
+  'home',
+  'es',
+  'SellifyWorks - Agencia Shopify España | Desarrollo de Tiendas Online'
+)
 
 export default function HomePage() {
   return (
-    <main>
-      <Container>
-        <HeaderHome />
-        
-      </Container>
+    <>
+      <main>
+        <Container>
+          <HeaderHome />
+          
+        </Container>
 
-      <ServicesSection />
-      <ContactSection />
-    </main>
+        <ServicesSection />
+        <ContactSection />
+        <Divider />
+        <FAQAccordion faqs={HomeFAQsEs}/>
+      </main>
+    </>
   );
 }

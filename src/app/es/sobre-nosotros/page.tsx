@@ -3,33 +3,32 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Award, CheckCircle, Eye } from 'lucide-react'
 import { getDictionary } from '@/lib/dictionaries'
+import { generatePageMetadata } from "@/lib/seo-utils";
+import OrganizationStructuredData from '@/app/_components/organization-structured-data';
+import AutoBreadcrumbStructuredData from '@/app/_components/auto-breadcrumb-structured-data';
+import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
 
 export async function generateMetadata(): Promise<Metadata> {
   const dict = await getDictionary('es')
   
-  return {
-    title: dict.about.metadata.title,
-    description: dict.about.metadata.description,
-    openGraph: {
-      title: dict.about.metadata.title,
-      description: dict.about.metadata.description,
-      type: "website",
-    },
-    alternates: {
-      canonical: '/es/sobre-nosotros',
-      languages: {
-        es: '/es/sobre-nosotros',
-        en: '/en/about',
-      },
-    },
-  }
+  return generatePageMetadata(
+    'about',
+    'es',
+    dict.about.metadata.title
+  )
 }
 
 export default async function AboutPage() {
   const dict = await getDictionary('es')
   
   return (
-    <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
+    <main className="min-h-screen">
+      <AutoBreadcrumbStructuredData />
+      <VisualBreadcrumbs maxWidth="max-w-6xl" />
+      <OrganizationStructuredData 
+        description={dict.about.metadata.description}
+        specialties={["Desarrollo Shopify", "SEO", "CRO", "Diseño Web", "Consultoría"]}
+      />
       {/* Hero Section */}
       <section className="py-16 md:py-24 lg:py-32 px-4 md:px-8 lg:px-16">
         <div className="max-w-6xl mx-auto">

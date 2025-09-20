@@ -1,9 +1,8 @@
 import Footer from "@/app/_components/footer";
-import { HOME_OG_IMAGE_URL } from "@/lib/constants";
 import Navbar from "@/app/_components/navbar";
 import NewsletterPopup from "@/app/_components/newsletter-popup-safe";
-import NewsletterTestButton from "@/app/_components/newsletter-test-button";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { ScrollProvider } from "@/contexts/ScrollContext";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import cn from "classnames";
@@ -12,7 +11,7 @@ import "./globals.css";
 const inter = Poppins({ weight: "400", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SellifyWorks | Agencia Shopify",
+  title: "SellifyWorks | Agencia Shopify España",
   description: "Agencia especializada en Shopify. Creamos, optimizamos y hacemos crecer tiendas online que convierten. Partner de Shopify.",
   keywords: ["Shopify", "Ecommerce", "Tienda Online", "Agencia", "SellifyWorks", "Partner Shopify"],
   authors: [{ name: "SellifyWorks" }],
@@ -30,7 +29,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "es_ES",
     url: "https://www.sellifyworks.com/",
-    title: "SellifyWorks | Agencia Shopify",
+    title: "SellifyWorks | Agencia Shopify España",
     description: "Agencia especializada en Shopify. Creamos, optimizamos y hacemos crecer tiendas online que convierten. Partner de Shopify.",
     siteName: "SellifyWorks",
     images: [
@@ -38,7 +37,7 @@ export const metadata: Metadata = {
         url: "/api/og",
         width: 1200,
         height: 630,
-        alt: "SellifyWorks - Agencia Shopify",
+        alt: "SellifyWorks - Agencia Shopify España",
         type: "image/png",
       },
     ],
@@ -262,11 +261,13 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <LanguageProvider>
-          <Navbar />
-          <div className="min-h-screen">{children}</div>
-          <Footer />
-          <NewsletterPopup />
-          {/* <NewsletterTestButton /> */}
+          <ScrollProvider>
+            <Navbar />
+            <div className="min-h-screen">{children}</div>
+            <Footer />    
+            <NewsletterPopup />
+            {/* <NewsletterTestButton /> */}
+          </ScrollProvider>
         </LanguageProvider>
       </body>
     </html>

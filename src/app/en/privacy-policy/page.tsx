@@ -1,20 +1,17 @@
 import type { Metadata } from 'next'
+import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy | SellifyWorks",
-  description: "SellifyWorks privacy policy. Information about how we protect your personal data.",
-  alternates: {
-    canonical: '/en/privacy-policy',
-    languages: {
-      es: '/es/politica-de-privacidad',
-      en: '/en/privacy-policy',
-    },
-  },
-}
+export const metadata: Metadata = generatePageMetadata(
+  'privacyPolicy',
+  'en',
+  'Privacy Policy | SellifyWorks'
+);
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
+    <main className="min-h-screen">
+      <VisualBreadcrumbs maxWidth="max-w-4xl" />
       <div className="max-w-4xl mx-auto px-4 md:px-8 lg:px-16 py-16 md:py-24">
         
         {/* Header */}

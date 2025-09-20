@@ -1,27 +1,20 @@
 import ContactSection from "@/app/_components/contact-section";
+import ContactStructuredData from "@/app/_components/contact-structured-data";
+import VisualBreadcrumbs from "@/app/_components/visual-breadcrumbs";
 import type { Metadata } from "next";
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: "Contacto | SellifyWorks - Agencia Shopify Barcelona",
-  description: "Ponte en contacto con SellifyWorks. Agencia especializada en desarrollo y optimización de tiendas Shopify en Barcelona. ¡Hablemos de tu proyecto!",
-  openGraph: {
-    title: "Contacto | SellifyWorks - Agencia Shopify Barcelona",
-    description: "Ponte en contacto con SellifyWorks. Agencia especializada en desarrollo y optimización de tiendas Shopify en Barcelona. ¡Hablemos de tu proyecto!",
-    type: "website",
-    locale: "es_ES",
-  },
-  alternates: {
-    canonical: '/es/contacto',
-    languages: {
-      es: '/es/contacto',
-      en: '/en/contact',
-    },
-  },
-};
+export const metadata: Metadata = generatePageMetadata(
+  'contact',
+  'es',
+  'Contacto | SellifyWorks - Agencia Shopify Barcelona'
+);
 
 export default function ContactoPage() {
   return (
     <main>
+      <ContactStructuredData />
+      <VisualBreadcrumbs />
       <ContactSection />
     </main>
   );

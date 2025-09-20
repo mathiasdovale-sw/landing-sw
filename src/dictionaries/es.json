@@ -1,4 +1,14 @@
 {
+  "seo": {
+    "metaDescriptions": {
+      "home": "Agencia experta en Shopify. Diseño, desarrollo, optimización SEO y CRO para tiendas online. Impulsa tus ventas con SellifyWorks, tu partner de crecimiento en ecommerce.",
+      "about": "Conoce a SellifyWorks, agencia especializada en Shopify con años de experiencia. Nuestro equipo de expertos te ayuda a crear y optimizar tu tienda online para maximizar ventas.",
+      "contact": "Contacta con SellifyWorks para impulsar tu tienda Shopify. Consultoría gratuita, presupuesto sin compromiso. Hablemos de cómo hacer crecer tu ecommerce juntos.",
+      "blog": "Blog de SellifyWorks: consejos, trucos y estrategias para Shopify. Aprende sobre ecommerce, SEO, CRO y marketing digital para hacer crecer tu tienda online.",
+      "privacyPolicy": "Política de privacidad de SellifyWorks. Información sobre cómo recopilamos, usamos y protegemos tus datos personales. Transparencia total en el tratamiento de información.",
+      "cookiePolicy": "Política de cookies de SellifyWorks. Explicación detallada sobre el uso de cookies en nuestro sitio web y cómo puedes gestionarlas según tus preferencias."
+    }
+  },
   "about": {
     "metadata": {
       "title": "Sobre Nosotros - SellifyWorks",
@@ -46,9 +56,153 @@
       "button": "Contactar con nosotros"
     }
   },
+  "services": {
+    "metadata": {
+      "title": "Servicios Shopify - SellifyWorks",
+      "description": "Descubre todos nuestros servicios especializados en Shopify: desarrollo, diseño, SEO, CRO, migración y más. Impulsa tu tienda online con nuestros expertos."
+    },
+    "hero": {
+      "title": "NUESTROS SERVICIOS",
+      "subtitle": "Soluciones completas de Shopify para hacer crecer tu negocio online."
+    },
+    "list": [
+      {
+        "title": "Diseño Shopify",
+        "description": "Diseños únicos y atractivos que convierten visitantes en clientes.",
+        "link": "/es/diseno-shopify"
+      },
+      {
+        "title": "Consultoría Shopify",
+        "description": "Asesoramiento estratégico para optimizar tu tienda y aumentar ventas.",
+        "link": "/es/consultoria-shopify"
+      },
+      {
+        "title": "Crear Tienda Shopify",
+        "description": "Desarrollo completo de tu tienda online desde cero.",
+        "link": "/es/crear-tienda-shopify"
+      },
+      {
+        "title": "SEO para Shopify",
+        "description": "Optimización para motores de búsqueda y mayor visibilidad online.",
+        "link": "/es/seo-shopify"
+      },
+      {
+        "title": "CRO Shopify",
+        "description": "Optimización de conversiones para maximizar tus ventas.",
+        "link": "/es/cro-shopify"
+      },
+      {
+        "title": "Migración a Shopify",
+        "description": "Migra tu tienda a Shopify sin perder datos ni ventas.",
+        "link": "/es/migracion-shopify"
+      },
+      {
+        "title": "Personalización de Tema",
+        "description": "Adapta tu tema de Shopify a las necesidades de tu marca.",
+        "link": "/es/personalizacion-tema-shopify"
+      },
+      {
+        "title": "A/B Testing Shopify",
+        "description": "Pruebas A/B para optimizar la experiencia de usuario.",
+        "link": "/es/ab-testing-shopify"
+      },
+      {
+        "title": "Shopify Plus",
+        "description": "Soluciones enterprise para negocios de alto volumen.",
+        "link": "/es/shopify-plus"
+      },
+      {
+        "title": "Growth Partner",
+        "description": "Partner de crecimiento integral para tu negocio online.",
+        "link": "/es/growth-partner-shopify"
+      }
+    ]
+  },
   "contact": {
+    "title": "HABLEMOS",
+    "description": "¿Listo para llevar tu tienda Shopify al siguiente nivel? Contacta con nosotros para una consulta personalizada.",
+    "info": {
+      "email": "Email",
+      "phone": "Teléfono",
+      "location": "Ubicación"
+    },
     "form": {
+      "title": "ENVÍANOS UN MENSAJE",
+      "name": {
+        "label": "Nombre completo",
+        "placeholder": "Tu nombre"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "tu@email.com"
+      },
+      "company": {
+        "label": "Empresa (opcional)",
+        "placeholder": "Nombre de tu empresa"
+      },
+      "service": {
+        "label": "Servicio de interés",
+        "placeholder": "Selecciona un servicio...",
+        "development": "Crear Tienda Shopify / Desarrollo",
+        "optimization": "SEO & CRO / Optimización",
+        "migration": "Migración a Shopify", 
+        "maintenance": "Mantenimiento & Soporte",
+        "consulting": "Consultoría Shopify"
+      },
+      "message": {
+        "label": "Mensaje",
+        "placeholder": "Cuéntanos sobre tu proyecto..."
+      },
+      "submit": "Enviar mensaje",
+      "sending": "Enviando...",
       "success": "¡Mensaje enviado correctamente! Te contactaremos pronto."
+    }
+  },
+  "relatedServices": {
+    "title": "SERVICIOS RELACIONADOS",
+    "subtitle": "Descubre otros servicios que pueden impulsar tu tienda Shopify",
+    "learnMore": "Más información",
+    "services": {
+      "storeSetup": {
+        "title": "Crear Tienda Shopify",
+        "description": "Desarrollo completo de tu tienda online desde cero con diseño profesional."
+      },
+      "design": {
+        "title": "Diseño Shopify",
+        "description": "Diseños únicos y atractivos que convierten visitantes en clientes."
+      },
+      "themeCustomization": {
+        "title": "Personalización de Tema",
+        "description": "Adapta tu tema de Shopify a las necesidades específicas de tu marca."
+      },
+      "migration": {
+        "title": "Migración a Shopify",
+        "description": "Migra tu tienda a Shopify sin perder datos ni interrumpir las ventas."
+      },
+      "seo": {
+        "title": "SEO para Shopify",
+        "description": "Optimización para motores de búsqueda y mayor visibilidad online."
+      },
+      "cro": {
+        "title": "CRO Shopify",
+        "description": "Optimización de conversiones para maximizar las ventas de tu tienda."
+      },
+      "plus": {
+        "title": "Shopify Plus",
+        "description": "Soluciones enterprise para negocios de alto volumen y crecimiento."
+      },
+      "consulting": {
+        "title": "Consultoría Shopify",
+        "description": "Asesoramiento estratégico para optimizar y hacer crecer tu negocio."
+      },
+      "growthPartner": {
+        "title": "Growth Partner",
+        "description": "Partner de crecimiento integral para escalar tu negocio online."
+      },
+      "abTesting": {
+        "title": "A/B Testing Shopify",
+        "description": "Pruebas A/B para optimizar la experiencia de usuario y conversiones."
+      }
     }
   }
 }

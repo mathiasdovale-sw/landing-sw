@@ -1,21 +1,18 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
+import { generatePageMetadata } from "@/lib/seo-utils";
 
-export const metadata: Metadata = {
-  title: "Blog | SellifyWorks - Consejos y Estrategias Shopify",
-  description: "Descubre las últimas tendencias, consejos y estrategias para optimizar tu tienda Shopify con nuestros artículos especializados.",
-  alternates: {
-    canonical: '/es/blog',
-    languages: {
-      es: '/es/blog',
-      en: '/en/blog',
-    },
-  },
-}
+export const metadata: Metadata = generatePageMetadata(
+  'blog',
+  'es',
+  'Blog | SellifyWorks - Consejos y Estrategias Shopify'
+)
 
 export default function BlogPage() {
   return (
-    <main className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
+    <main className="min-h-screen">
+      <VisualBreadcrumbs />
       {/* Hero Section */}
       <section className="py-16 md:py-24 lg:py-32 px-4 md:px-8 lg:px-16">
         <div className="max-w-6xl mx-auto">

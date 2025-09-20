@@ -1,11 +1,12 @@
 "use client"
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useScrollPreservation } from '@/contexts/ScrollContext'
 
 const LanguageSelector = () => {
   const pathname = usePathname()
-  const router = useRouter()
   const [currentLocale, setCurrentLocale] = useState<'es' | 'en'>('es')
+  const { preserveScrollAndNavigate } = useScrollPreservation()
 
   // Detectar el idioma actual basado en la URL
   useEffect(() => {
@@ -39,6 +40,45 @@ const LanguageSelector = () => {
       '/en/privacy-policy': { es: '/es/politica-de-privacidad', en: '/en/privacy-policy' },
       '/es/suscripcion-confirmada': { es: '/es/suscripcion-confirmada', en: '/en/newsletter-confirmed' },
       '/en/newsletter-confirmed': { es: '/es/suscripcion-confirmada', en: '/en/newsletter-confirmed' },
+      
+      // Página de servicios
+      '/es/servicios': { es: '/es/servicios', en: '/en/services' },
+      '/en/services': { es: '/es/servicios', en: '/en/services' },
+      
+      // Páginas de servicios Shopify
+      '/diseno-shopify': { es: '/es/diseno-shopify', en: '/en/shopify-design' },
+      '/es/diseno-shopify': { es: '/es/diseno-shopify', en: '/en/shopify-design' },
+      '/en/shopify-design': { es: '/es/diseno-shopify', en: '/en/shopify-design' },
+      
+      '/shopify-plus': { es: '/es/shopify-plus', en: '/en/shopify-plus' },
+      '/es/shopify-plus': { es: '/es/shopify-plus', en: '/en/shopify-plus' },
+      '/en/shopify-plus': { es: '/es/shopify-plus', en: '/en/shopify-plus' },
+      
+      '/migracion-shopify': { es: '/es/migracion-shopify', en: '/en/shopify-migration' },
+      '/es/migracion-shopify': { es: '/es/migracion-shopify', en: '/en/shopify-migration' },
+      '/en/shopify-migration': { es: '/es/migracion-shopify', en: '/en/shopify-migration' },
+      
+      '/consultoria-shopify': { es: '/es/consultoria-shopify', en: '/en/shopify-consulting' },
+      '/es/consultoria-shopify': { es: '/es/consultoria-shopify', en: '/en/shopify-consulting' },
+      '/en/shopify-consulting': { es: '/es/consultoria-shopify', en: '/en/shopify-consulting' },
+      
+      '/es/seo-shopify': { es: '/es/seo-shopify', en: '/en/shopify-seo' },
+      '/en/shopify-seo': { es: '/es/seo-shopify', en: '/en/shopify-seo' },
+      
+      '/es/cro-shopify': { es: '/es/cro-shopify', en: '/en/shopify-cro' },
+      '/en/shopify-cro': { es: '/es/cro-shopify', en: '/en/shopify-cro' },
+      
+      '/es/ab-testing-shopify': { es: '/es/ab-testing-shopify', en: '/en/shopify-ab-testing' },
+      '/en/shopify-ab-testing': { es: '/es/ab-testing-shopify', en: '/en/shopify-ab-testing' },
+      
+      '/es/growth-partner-shopify': { es: '/es/growth-partner-shopify', en: '/en/shopify-growth-partner' },
+      '/en/shopify-growth-partner': { es: '/es/growth-partner-shopify', en: '/en/shopify-growth-partner' },
+      
+      '/es/crear-tienda-shopify': { es: '/es/crear-tienda-shopify', en: '/en/shopify-store-setup' },
+      '/en/shopify-store-setup': { es: '/es/crear-tienda-shopify', en: '/en/shopify-store-setup' },
+      
+      '/es/personalizacion-tema-shopify': { es: '/es/personalizacion-tema-shopify', en: '/en/shopify-theme-customization' },
+      '/en/shopify-theme-customization': { es: '/es/personalizacion-tema-shopify', en: '/en/shopify-theme-customization' },
     }
 
     // Buscar la ruta correspondiente en el mapeo
@@ -50,7 +90,8 @@ const LanguageSelector = () => {
       newPath = newLocale === 'es' ? '/es/' : '/en/'
     }
 
-    router.push(newPath)
+    // Navegar a la nueva ruta preservando el scroll
+    preserveScrollAndNavigate(newPath)
   }
 
   return (
