@@ -96,11 +96,6 @@ const nextConfig = {
       // === REDIRECCIONES DE BLOG ===
       // Blog/Posts
       {
-        source: '/posts',
-        destination: '/es/blog',
-        permanent: true,
-      },
-      {
         source: '/blog',
         destination: '/es/blog',
         permanent: true,

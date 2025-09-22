@@ -1,60 +1,30 @@
-import type { Metadata } from 'next'
-import Link from 'next/link'
-import VisualBreadcrumbs from '@/app/_components/visual-breadcrumbs';
-import { generatePageMetadata } from "@/lib/seo-utils";
+import Container from "@/app/_components/container";
+import { HeroPost } from "@/app/_components/hero-post";
+import { Intro } from "@/app/_components/intro";
+import { MoreStories } from "@/app/_components/more-stories";
+import { getAllPosts } from "@/lib/api";
 
-export const metadata: Metadata = generatePageMetadata(
-  'blog',
-  'en',
-  'Blog | SellifyWorks - Shopify Tips and Strategies'
-);
+export default function Index() {
+  const allPosts = getAllPosts();
 
-export default function BlogPage() {
+  const heroPost = allPosts[0];
+
+  const morePosts = allPosts.slice(1);
+
   return (
-    <main className="min-h-screen">
-      <VisualBreadcrumbs />
-      {/* Hero Section */}
-      <section className="py-16 md:py-24 lg:py-32 px-4 md:px-8 lg:px-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h1
-              className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-wide mb-6"
-              style={{ fontFamily: "Bebas Neue, sans-serif" }}
-            >
-              BLOG
-            </h1>
-            <p className="text-gray-300 text-lg md:text-xl lg:text-2xl max-w-4xl mx-auto leading-relaxed">
-              Tips, strategies and the latest trends to optimize your Shopify store
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Coming Soon Section */}
-      <section className="py-16 md:py-24 px-4 md:px-8 lg:px-16">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="bg-gray-800 rounded-2xl p-8 md:p-12">
-            <h2
-              className="text-3xl md:text-4xl font-bold text-white mb-6"
-              style={{ fontFamily: "Bebas Neue, sans-serif" }}
-            >
-              Coming Soon
-            </h2>
-            <p className="text-gray-300 text-lg mb-8 leading-relaxed">
-              We're preparing valuable content about Shopify development, online store optimization and ecommerce best practices.
-            </p>
-            <p className="text-gray-400 mb-8">
-              In the meantime, don't hesitate to contact us for any questions about your Shopify project.
-            </p>
-            <Link
-              href="/en/contact"
-              className="inline-flex items-center px-8 py-4 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors"
-            >
-              Contact us
-            </Link>
-          </div>
-        </div>
-      </section>
+    <main>
+      <Container>
+        <Intro />
+        <HeroPost
+          title={heroPost.title}
+          coverImage={heroPost.coverImage}
+          date={heroPost.date}
+          author={heroPost.author}
+          slug={heroPost.slug}
+          excerpt={heroPost.excerpt}
+        />
+        {morePosts.length > 0 && <MoreStories posts={morePosts} />}
+      </Container>
     </main>
-  )
+  );
 }
