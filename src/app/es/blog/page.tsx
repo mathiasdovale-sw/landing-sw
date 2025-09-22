@@ -6,7 +6,7 @@ import VisualBreadcrumbs from "@/app/_components/visual-breadcrumbs";
 import { getAllPosts } from "@/lib/api";
 
 export default function Index() {
-  const allPosts = getAllPosts();
+  const allPosts = getAllPosts('es');
 
   const heroPost = allPosts[0];
 

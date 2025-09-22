@@ -9,7 +9,7 @@ import markdownToHtml from "@/lib/markdownToHtml";
 
 export default async function Post({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = getPostBySlug(slug, 'es');
 
   if (!post) {
     return notFound();
@@ -45,7 +45,7 @@ type Params = {
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = getPostBySlug(slug, 'es');
 
   if (!post) {
     return notFound();
@@ -65,7 +65,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-  const posts = getAllPosts();
+  const posts = getAllPosts('es');
 
   return posts.map((post) => ({
     slug: post.slug,

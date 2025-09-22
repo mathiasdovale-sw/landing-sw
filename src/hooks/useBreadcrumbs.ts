@@ -1,6 +1,5 @@
 import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { getCanonicalBaseUrl } from '@/lib/seo-utils';
 
 interface BreadcrumbItem {
   name: string;
@@ -65,7 +64,6 @@ const pathTranslations = {
 export const useBreadcrumbs = (): BreadcrumbItem[] => {
   const pathname = usePathname();
   const { language } = useLanguage();
-  const baseUrl = getCanonicalBaseUrl();
   
   // Remove language prefix and split path
   const pathWithoutLang = pathname.replace(`/${language}`, '') || '/';
@@ -87,7 +85,7 @@ export const useBreadcrumbs = (): BreadcrumbItem[] => {
     
     breadcrumbs.push({
       name,
-      url: isCurrentPage ? undefined : `${baseUrl}${currentPath}`,
+      url: isCurrentPage ? undefined : currentPath,
       position: index + 2 // +2 because home is position 1
     });
   });
