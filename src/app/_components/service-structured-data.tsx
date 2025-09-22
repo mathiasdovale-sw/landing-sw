@@ -84,7 +84,6 @@ const ServiceStructuredData = ({ serviceName, serviceType, description, price }:
       "price": price.minPrice || undefined,
       "priceRange": price.priceRange || undefined,
       "availability": "https://schema.org/InStock",
-      "validFrom": new Date().toISOString(),
       "url": serviceUrl
     } : undefined,
     "hasOfferCatalog": {
