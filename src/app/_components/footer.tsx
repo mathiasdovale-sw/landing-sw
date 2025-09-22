@@ -154,8 +154,101 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Services Column 1 */}
-          <div>
+          {/* Services - Mobile: Single Column, Desktop: Two Columns */}
+          <div className="md:hidden text-center">
+            {/* Mobile: Single Services Column */}
+            <h4 
+              className="text-lg font-bold tracking-wide mb-4 text-white"
+              style={{ fontFamily: "Bebas Neue, sans-serif" }}
+            >
+              {t('footer.services.title')}
+            </h4>
+            <ul className="space-y-2 inline-block text-center">
+              <li>
+                <a 
+                  href={links.shopifyStoreSetup} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.storeSetup')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifySeo} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.seo')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyDesign} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.design')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyThemeCustomization} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.themeCustomization')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyMigration} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.migration')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyCro} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.cro')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyPlus} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.plus')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyConsulting} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.consulting')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyGrowthPartner} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.growthPartner')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyAbTesting} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.abTesting')}
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Services Column 1 - Desktop Only */}
+          <div className="hidden md:block">
             <h4 
               className="text-lg font-bold tracking-wide mb-4 text-white"
               style={{ fontFamily: "Bebas Neue, sans-serif" }}
@@ -206,14 +299,17 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Services Column 2 */}
-          <div>
-            <h4 
-              className="text-lg font-bold tracking-wide mb-4 text-white lg:text-transparent"
-              style={{ fontFamily: "Bebas Neue, sans-serif" }}
-            >
-              {t('footer.services.title')}
-            </h4>
+          {/* Services Column 2 - Desktop Only */}
+          <div className="hidden md:block">
+            {/* Hidden title for desktop layout spacing only */}
+            <div className="hidden lg:block">
+              <h4 
+                className="text-lg font-bold tracking-wide mb-4 text-transparent"
+                style={{ fontFamily: "Bebas Neue, sans-serif" }}
+              >
+                {t('footer.services.title')}
+              </h4>
+            </div>
             <ul className="space-y-2">
               <li>
                 <a 
