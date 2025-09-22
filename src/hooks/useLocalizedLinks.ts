@@ -31,8 +31,14 @@ export const useLocalizedLinks = () => {
     shopifyAbTesting: currentLocale === 'es' ? '/es/ab-testing-shopify' : '/en/shopify-ab-testing',
   }
   
+  // Función para generar enlaces de posts de blog
+  const getBlogPostLink = (slug: string) => {
+    return currentLocale === 'es' ? `/es/blog/${slug}` : `/en/blog/${slug}`
+  }
+
   return {
     links,
-    currentLocale
+    currentLocale,
+    getBlogPostLink
   }
 }
