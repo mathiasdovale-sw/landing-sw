@@ -234,6 +234,20 @@ const translations = {
     'relatedServices.services.growthPartner.description': 'Partner de crecimiento integral para escalar tu negocio online.',
     'relatedServices.services.abTesting.title': 'A/B Testing Shopify',
     'relatedServices.services.abTesting.description': 'Pruebas A/B para optimizar la experiencia de usuario y conversiones.',
+    
+    // Blog
+    'blog.title': 'Blog',
+    'blog.subtitle': 'Artículos y consejos sobre Shopify, ecommerce y crecimiento online',
+    'blog.heroPost': 'Artículo Destacado',
+    'blog.moreStories': 'Más Artículos',
+    'blog.readMore': 'Leer más',
+    'blog.publishedOn': 'Publicado el',
+    'blog.by': 'por',
+    'blog.backToBlog': '← Volver al Blog',
+    'blog.relatedPosts': 'Artículos Relacionados',
+    'blog.shareArticle': 'Compartir artículo',
+    'blog.tags': 'Etiquetas',
+    'blog.categories': 'Categorías',
   },
   en: {
     // Navbar
@@ -458,6 +472,20 @@ const translations = {
     'relatedServices.services.growthPartner.description': 'Comprehensive growth partnership to scale your online business.',
     'relatedServices.services.abTesting.title': 'A/B Testing Shopify',
     'relatedServices.services.abTesting.description': 'A/B testing to optimize user experience and conversions.',
+    
+    // Blog
+    'blog.title': 'Blog',
+    'blog.subtitle': 'Articles and tips about Shopify, ecommerce and online growth',
+    'blog.heroPost': 'Featured Article',
+    'blog.moreStories': 'More Stories',
+    'blog.readMore': 'Read more',
+    'blog.publishedOn': 'Published on',
+    'blog.by': 'by',
+    'blog.backToBlog': '← Back to Blog',
+    'blog.relatedPosts': 'Related Posts',
+    'blog.shareArticle': 'Share article',
+    'blog.tags': 'Tags',
+    'blog.categories': 'Categories',
   }
 }
 

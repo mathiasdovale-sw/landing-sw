@@ -204,5 +204,19 @@
         "description": "Pruebas A/B para optimizar la experiencia de usuario y conversiones."
       }
     }
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Artículos y consejos sobre Shopify, ecommerce y crecimiento online",
+    "heroPost": "Artículo Destacado",
+    "moreStories": "Más Artículos",
+    "readMore": "Leer más",
+    "publishedOn": "Publicado el",
+    "by": "por",
+    "backToBlog": "← Volver al Blog",
+    "relatedPosts": "Artículos Relacionados",
+    "shareArticle": "Compartir artículo",
+    "tags": "Etiquetas",
+    "categories": "Categorías"
   }
 }

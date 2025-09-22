@@ -18,7 +18,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
   const content = await markdownToHtml(post.content || "");
 
   return (
-    <main>
+    <main className="min-h-screen bg-white">
       <Container>
         <Header />
         <article className="mb-32">

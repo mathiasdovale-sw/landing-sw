@@ -82,7 +82,7 @@ const Navbar = () => {
   const navItems = [
     { href: links.services, label: t('nav.services') },
     { href: links.about, label: t('nav.about') },
-    // { href: links.blog, label: "BLOG" },
+    { href: links.blog, label: "BLOG" },
     { href: links.contact, label: t('nav.contact') },
   ]
 

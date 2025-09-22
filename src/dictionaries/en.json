@@ -204,5 +204,19 @@
         "description": "A/B testing to optimize user experience and conversions."
       }
     }
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Articles and tips about Shopify, ecommerce and online growth",
+    "heroPost": "Featured Article",
+    "moreStories": "More Stories",
+    "readMore": "Read more",
+    "publishedOn": "Published on",
+    "by": "by",
+    "backToBlog": "← Back to Blog",
+    "relatedPosts": "Related Posts",
+    "shareArticle": "Share article",
+    "tags": "Tags",
+    "categories": "Categories"
   }
 }
