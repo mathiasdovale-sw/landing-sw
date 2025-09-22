@@ -22,7 +22,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
       <VisualBreadcrumbs />
       <div className="bg-white">
         <Container>
-          <article className="mb-32">
+          <article className="pb-32">
             <PostHeader
               title={post.title}
               coverImage={post.coverImage}
