@@ -236,7 +236,7 @@ const translations = {
     'relatedServices.services.abTesting.description': 'Pruebas A/B para optimizar la experiencia de usuario y conversiones.',
     
     // Blog
-    'blog.title': 'Blog',
+    'blog.title': 'SellifyWorks Blog',
     'blog.subtitle': 'Artículos y consejos sobre Shopify, ecommerce y crecimiento online',
     'blog.heroPost': 'Artículo Destacado',
     'blog.moreStories': 'Más Artículos',
@@ -474,7 +474,7 @@ const translations = {
     'relatedServices.services.abTesting.description': 'A/B testing to optimize user experience and conversions.',
     
     // Blog
-    'blog.title': 'Blog',
+    'blog.title': 'SellifyWorks Blog',
     'blog.subtitle': 'Articles and tips about Shopify, ecommerce and online growth',
     'blog.heroPost': 'Featured Article',
     'blog.moreStories': 'More Stories',
