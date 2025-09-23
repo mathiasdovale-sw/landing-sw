@@ -74,7 +74,7 @@
 }
 
 .markdown img {
-  @apply rounded-lg shadow-md my-8;
+  @apply rounded-lg shadow-md my-8 mx-auto block;
 }
 
 .markdown hr {

@@ -5,6 +5,7 @@ import Container from "@/app/_components/container";
 import { PostBody } from "@/app/_components/post-body";
 import { PostHeader } from "@/app/_components/post-header";
 import VisualBreadcrumbs from "@/app/_components/visual-breadcrumbs";
+import BlogCTA from "@/app/_components/blog-cta";
 import markdownToHtml from "@/lib/markdownToHtml";
 
 export default async function Post({ params }: { params: Promise<{ slug: string }> }) {
@@ -22,7 +23,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
       <VisualBreadcrumbs />
       <div className="bg-white">
         <Container>
-          <article className="pb-32">
+          <article className="pb-16">
             <PostHeader
               title={post.title}
               coverImage={post.coverImage}
@@ -30,6 +31,9 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
               author={post.author}
             />
             <PostBody content={content} />
+            
+            {/* CTA Section */}
+            <BlogCTA />
           </article>
         </Container>
       </div>
