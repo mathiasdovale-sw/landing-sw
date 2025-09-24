@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     return notFound();
   }
 
-  const title = `${post.title} | Next.js Blog Example with TypeScript`;
+  const title = `${post.title} | SellifyWorks Blog`;
 
   return {
     title,

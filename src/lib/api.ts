@@ -53,7 +53,17 @@ export function getAllPosts(language?: string): Post[] {
   
   const posts = filteredSlugs
     .map((slug) => getPostBySlug(slug, language))
-    // sort posts by date in descending order
-    .sort((post1, post2) => (post1.date > post2.date ? -1 : 1));
+    // Custom sorting: Allbirds post first, then by date in descending order
+    .sort((post1, post2) => {
+      // If either post is the Allbirds post, prioritize it
+      const isPost1Allbirds = post1.slug.toLowerCase().includes('allbirds');
+      const isPost2Allbirds = post2.slug.toLowerCase().includes('allbirds');
+      
+      if (isPost1Allbirds && !isPost2Allbirds) return -1; // post1 (Allbirds) comes first
+      if (!isPost1Allbirds && isPost2Allbirds) return 1;  // post2 (Allbirds) comes first
+      
+      // If neither or both are Allbirds posts, sort by date in descending order
+      return post1.date > post2.date ? -1 : 1;
+    });
   return posts;
 }
