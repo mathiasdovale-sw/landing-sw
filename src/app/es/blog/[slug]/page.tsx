@@ -20,7 +20,9 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
 
   return (
     <main className="min-h-screen">
-      <VisualBreadcrumbs />
+      <div className="relative">
+        <VisualBreadcrumbs />
+      </div>
       <div className="bg-white">
         <Container>
           <article className="pb-16">

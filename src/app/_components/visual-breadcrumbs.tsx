@@ -14,7 +14,7 @@ interface VisualBreadcrumbsProps {
 const VisualBreadcrumbs = ({ 
   className = '', 
   showHome = true,
-  backgroundColor = 'background-color:#141417ff',
+  backgroundColor = '',
   maxWidth = 'max-w-7xl'
 }: VisualBreadcrumbsProps) => {
   const { language } = useLanguage();
@@ -23,7 +23,7 @@ const VisualBreadcrumbs = ({
   if (breadcrumbItems.length === 0) return null;
 
   return (
-    <div className={`${backgroundColor} py-4`}>
+    <div className="py-4" style={{ backgroundColor: '#141417ff' }}>
       <div className={`${maxWidth} mx-auto px-4 sm:px-6 lg:px-8`}>
         <nav 
           className={`flex items-center space-x-2 text-sm ${className}`}

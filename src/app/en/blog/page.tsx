@@ -14,7 +14,9 @@ export default function Index() {
 
   return (
     <main className="min-h-screen">
-      <VisualBreadcrumbs />
+      <div className="relative">
+        <VisualBreadcrumbs />
+      </div>
       <div className="bg-white">
         <Container>
           <Intro />
