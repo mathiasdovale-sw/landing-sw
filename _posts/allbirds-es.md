@@ -137,7 +137,6 @@ El footer mantiene consistencia en todas las páginas y destaca por:
 #### 📧 **Suscripción a newsletter**
 - **Objetivo:** Captar emails para futuras campañas de marketing
 - **Beneficio:** Uno de los canales más eficaces tras el tráfico directo
-- **ROI típico:** $36-42 por cada $1 invertido en email marketing
 
 #### 📱 **Diseño tipo acordeón**
 - Organiza la información de manera **ordenada**

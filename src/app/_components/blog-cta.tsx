@@ -35,8 +35,8 @@ export default function BlogCTA({ className = "" }: BlogCTAProps) {
 
           <p className="text-lg text-gray-300 mb-8 leading-relaxed">
             {language === 'es'
-              ? 'En SellifyWorks, diseñamos páginas que no solo se ven bien, sino que convierten.'
-              : 'At SellifyWorks, we design pages that not only look good, but convert.'
+              ? 'Menos complicaciones, más conversiones.'
+              : 'Less complications, more conversions.'
             }
           </p>
 
