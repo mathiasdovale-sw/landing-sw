@@ -7,7 +7,7 @@ author:
   name: Mathias Do Vale
   picture: "/assets/blog/authors/mathi.webp"
 ogImage:
-  url: ""
+  url: "/assets/blog/usecase-allbirds/header.webp"
 ---
 ###### Disclaimer: This post has no commercial affiliation with the brand. Everything shown below is from its public website, and the analysis is for informational purposes only.
 # Allbirds eCommerce Analysis: A Shopify-Optimized PDP

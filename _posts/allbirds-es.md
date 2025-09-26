@@ -7,7 +7,7 @@ author:
   name: Mathias Do Vale
   picture: "/assets/blog/authors/mathi.webp"
 ogImage:
-  url: ""
+  url: "/assets/blog/usecase-allbirds/header.webp"
 ---
 ###### Disclaimer: este post no tiene ningun tipo de vinculo comercial con la marca. Todo lo que se ve a continuación proviene de su sitio web publico y el análisis es meramente informativo.
 
