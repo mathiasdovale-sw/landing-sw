@@ -10,7 +10,8 @@ export default function Index() {
 
   const heroPost = allPosts[0];
 
-  const morePosts = allPosts.slice(1);
+  // Get the posts for the "More Stories", 0 if you want to show first post also
+  const morePosts = allPosts.slice(0);
 
   return (
     <main className="min-h-screen">

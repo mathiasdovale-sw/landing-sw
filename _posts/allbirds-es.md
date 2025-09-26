@@ -2,7 +2,7 @@
 title: "Allbirds y Shopify: claves de un eCommerce de 190 millones"
 excerpt: "Cuando se piensa en un e-commerce simple y efectivo, Allbirds es una referencia clara. Su tienda, construida en Shopify, combina diseño minimalista con una experiencia de compra sin fricciones."
 coverImage: "/assets/blog/usecase-allbirds/header.png"
-date: "2025-09-03"
+date: "2025-09-22"
 author:
   name: Mathias Do Vale
   picture: "/assets/blog/authors/mathi.webp"
