@@ -10,7 +10,15 @@ import markdownToHtml from "@/lib/markdownToHtml";
 
 export default async function Post({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = getPostBySlug(slug, 'en');
+  
+  let post;
+  try {
+    post = getPostBySlug(slug, 'en');
+  } catch (error) {
+    // Security: If there's an error (like path traversal attempt), return 404
+    console.error('Security error in blog post access:', error);
+    return notFound();
+  }
 
   if (!post) {
     return notFound();
@@ -51,7 +59,14 @@ type Params = {
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug, 'en');
+  
+  let post;
+  try {
+    post = getPostBySlug(slug, 'en');
+  } catch (error) {
+    // Security: If there's an error (like path traversal attempt), return 404
+    return notFound();
+  }
 
   if (!post) {
     return notFound();

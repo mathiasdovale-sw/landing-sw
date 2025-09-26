@@ -1,7 +1,7 @@
 ---
 title: "Allbirds and Shopify: Keys to a $190 Million eCommerce"
 excerpt: "When it comes to simple and effective e-commerce, Allbirds is a clear benchmark. Its store, built on Shopify, combines minimalist design with a frictionless shopping experience."
-coverImage: "/assets/blog/usecase-allbirds/header.png"
+coverImage: "/assets/blog/usecase-allbirds/header.webp"
 date: "2025-09-22"
 author:
   name: Mathias Do Vale
@@ -40,7 +40,7 @@ Before delving into the PDP, it's important to understand how Allbirds intellige
 
 ## 🎯 PDP Homepage: First Impressions That Convert
 
-![Product Detail Page Hero - Allbirds](/assets/blog/usecase-allbirds/1.png)
+![Product Detail Page Hero - Allbirds](/assets/blog/usecase-allbirds/1.webp)
 
 ### 🔍 Key elements analyzed:
 
@@ -64,7 +64,7 @@ Sticky element throughout scrolling, ensuring **immediate assistance** when need
 #### 🛒 **Strategic CTA**
 When selecting a size, the "**ADD TO CART**" button appears with a visual highlight, prompting immediate action.
 
-![Product variants and CTA](/assets/blog/usecase-allbirds/2.png)
+![Product variants and CTA](/assets/blog/usecase-allbirds/2.webp)
 
 ---
 
@@ -84,7 +84,7 @@ The fundamental design principles are maintained:
 - 🎨 **Content aligned with branding**
 - 📱 **Responsive design**
 
-![Product details with lazy loading](/assets/blog/usecase-allbirds/3.png)
+![Product details with lazy loading](/assets/blog/usecase-allbirds/3.webp)
 
 ### 📌 Sticky Add to Cart: The element that makes the difference
 
@@ -98,7 +98,7 @@ The "**Add to Cart**" button remains visible throughout the entire scroll, an im
 
 ### 💬 Reviews: Social Proof That Converts
 
-![Customer reviews section](/assets/blog/usecase-allbirds/4.png)
+![Customer reviews section](/assets/blog/usecase-allbirds/4.webp)
 
 **🔧 Tool used:** Allbirds uses **Yotpo Product Reviews & UGC** to display customer reviews.
 
@@ -115,7 +115,7 @@ The "**Add to Cart**" button remains visible throughout the entire scroll, an im
 
 ### 🛍️ Related Products: Maximizing Customer Value
 
-![Related products section](/assets/blog/usecase-allbirds/5.png)
+![Related products section](/assets/blog/usecase-allbirds/5.webp)
 
 Recommending related products is **key to increasing the average ticket**.
 
@@ -128,7 +128,7 @@ Recommending related products is **key to increasing the average ticket**.
 
 ### 🦶 Footer: Lead Capture and Organization
 
-![Footer section](/assets/blog/usecase-allbirds/6.png)
+![Footer section](/assets/blog/usecase-allbirds/6.webp)
 
 The footer maintains consistency across all pages and stands out for:
 

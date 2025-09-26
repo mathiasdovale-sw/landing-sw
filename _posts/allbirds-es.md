@@ -1,7 +1,7 @@
 ---
 title: "Allbirds y Shopify: claves de un eCommerce de 190 millones"
 excerpt: "Cuando se piensa en un e-commerce simple y efectivo, Allbirds es una referencia clara. Su tienda, construida en Shopify, combina diseño minimalista con una experiencia de compra sin fricciones."
-coverImage: "/assets/blog/usecase-allbirds/header.png"
+coverImage: "/assets/blog/usecase-allbirds/header.webp"
 date: "2025-09-22"
 author:
   name: Mathias Do Vale
@@ -42,7 +42,7 @@ Antes de profundizar en la PDP, es importante entender cómo Allbirds organiza s
 
 ## 🎯 Inicio de la PDP: Primera impresión que convierte
 
-![Product Detail Page Hero - Allbirds](/assets/blog/usecase-allbirds/1.png)
+![Product Detail Page Hero - Allbirds](/assets/blog/usecase-allbirds/1.webp)
 
 ### 🔍 Elementos clave analizados:
 
@@ -66,7 +66,7 @@ Elemento sticky durante todo el scrolling, garantizando **asistencia inmediata**
 #### 🛒 **CTA estratégico**
 Al seleccionar un talle, aparece el botón "**ADD TO CART**" con destacado visual, impulsando la acción inmediata.
 
-![Product variants and CTA](/assets/blog/usecase-allbirds/2.png)
+![Product variants and CTA](/assets/blog/usecase-allbirds/2.webp)
 
 ---
 
@@ -86,7 +86,7 @@ Se mantienen los principios fundamentales de diseño:
 - 🎨 **Contenido alineado con el branding**
 - 📱 **Diseño responsive**
 
-![Product details with lazy loading](/assets/blog/usecase-allbirds/3.png)
+![Product details with lazy loading](/assets/blog/usecase-allbirds/3.webp)
 
 ### 📌 Sticky Add to Cart: El elemento que marca la diferencia
 
@@ -100,7 +100,7 @@ El botón "**Add to Cart**" permanece visible durante todo el scroll, una implem
 
 ### 💬 Reviews: Social proof que convierte
 
-![Customer reviews section](/assets/blog/usecase-allbirds/4.png)
+![Customer reviews section](/assets/blog/usecase-allbirds/4.webp)
 
 **🔧 Herramienta utilizada:** Allbirds utiliza **Yotpo Product Reviews & UGC** para mostrar reseñas de clientes.
 
@@ -117,7 +117,7 @@ El botón "**Add to Cart**" permanece visible durante todo el scroll, una implem
 
 ### 🛍️ Productos relacionados: Maximizando el valor por cliente
 
-![Related products section](/assets/blog/usecase-allbirds/5.png)
+![Related products section](/assets/blog/usecase-allbirds/5.webp)
 
 La recomendación de productos relacionados es **clave para aumentar el ticket promedio**. 
 
@@ -130,7 +130,7 @@ La recomendación de productos relacionados es **clave para aumentar el ticket p
 
 ### 🦶 Footer: Captura de leads y organización
 
-![Footer section](/assets/blog/usecase-allbirds/6.png)
+![Footer section](/assets/blog/usecase-allbirds/6.webp)
 
 El footer mantiene consistencia en todas las páginas y destaca por:
 
