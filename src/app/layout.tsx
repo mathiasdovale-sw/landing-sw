@@ -96,6 +96,26 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=block" rel="stylesheet" />
         
+        {/* Google Consent Mode V2 - Must load before any other tracking scripts */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            
+            // Set default consent state - BEFORE loading any tracking scripts
+            gtag('consent', 'default', {
+              'ad_storage': 'denied',
+              'ad_user_data': 'denied',
+              'ad_personalization': 'denied',
+              'analytics_storage': 'denied',
+              'functionality_storage': 'granted',
+              'personalization_storage': 'denied',
+              'security_storage': 'granted',
+              'wait_for_update': 500
+            });
+          `
+        }} />
+
         {/* Google Analytics */}
         {process.env.GOOGLE_ANALYTICS_ID && (
           <>
@@ -105,16 +125,18 @@ export default function RootLayout({
             />
             <script dangerouslySetInnerHTML={{
               __html: `
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${process.env.GOOGLE_ANALYTICS_ID}');
+                gtag('config', '${process.env.GOOGLE_ANALYTICS_ID}', {
+                  anonymize_ip: true,
+                  allow_google_signals: false,
+                  allow_ad_personalization_signals: false
+                });
               `
             }} />
           </>
         )}
 
-        {/* Meta Pixel (Facebook Pixel) */}
+        {/* Meta Pixel (Facebook Pixel) - Updated for Consent Mode V2 */}
         {process.env.META_PIXEL_ID && (
           <>
             <script dangerouslySetInnerHTML={{
@@ -127,6 +149,8 @@ export default function RootLayout({
                 t.src=v;s=b.getElementsByTagName(e)[0];
                 s.parentNode.insertBefore(t,s)}(window, document,'script',
                 'https://connect.facebook.net/en_US/fbevents.js');
+                
+                fbq('consent', 'revoke');
                 fbq('init', '${process.env.META_PIXEL_ID}');
                 fbq('track', 'PageView');
               `
@@ -253,6 +277,61 @@ export default function RootLayout({
 
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
         
+        {/* CookieYes Integration with Google Consent Mode V2 */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            // Listen for CookieYes consent changes
+            window.addEventListener('cky_updated', function(event) {
+              const consent = event.detail;
+              
+              // Update Google Consent Mode V2
+              gtag('consent', 'update', {
+                'ad_storage': consent.analytics ? 'granted' : 'denied',
+                'ad_user_data': consent.advertisement ? 'granted' : 'denied',
+                'ad_personalization': consent.advertisement ? 'granted' : 'denied',
+                'analytics_storage': consent.analytics ? 'granted' : 'denied',
+                'functionality_storage': 'granted',
+                'personalization_storage': consent.functional ? 'granted' : 'denied',
+                'security_storage': 'granted'
+              });
+
+              // Update Facebook Pixel consent
+              if (typeof fbq !== 'undefined') {
+                if (consent.advertisement) {
+                  fbq('consent', 'grant');
+                } else {
+                  fbq('consent', 'revoke');
+                }
+              }
+            });
+
+            // Handle initial consent state when CookieYes loads
+            window.addEventListener('cky_loaded', function() {
+              if (typeof CookieYes !== 'undefined') {
+                const activeCategories = CookieYes.getActiveCategories();
+                
+                gtag('consent', 'update', {
+                  'ad_storage': activeCategories.includes('analytics') ? 'granted' : 'denied',
+                  'ad_user_data': activeCategories.includes('advertisement') ? 'granted' : 'denied',
+                  'ad_personalization': activeCategories.includes('advertisement') ? 'granted' : 'denied',
+                  'analytics_storage': activeCategories.includes('analytics') ? 'granted' : 'denied',
+                  'functionality_storage': 'granted',
+                  'personalization_storage': activeCategories.includes('functional') ? 'granted' : 'denied',
+                  'security_storage': 'granted'
+                });
+
+                if (typeof fbq !== 'undefined') {
+                  if (activeCategories.includes('advertisement')) {
+                    fbq('consent', 'grant');
+                  } else {
+                    fbq('consent', 'revoke');
+                  }
+                }
+              }
+            });
+          `
+        }} />
+
         <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/66ddcee4ff6ed9e3a4552770/script.js"></script> 
       </head>
       <body
