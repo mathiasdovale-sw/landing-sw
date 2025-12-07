@@ -1,6 +1,8 @@
+"use client"
 import cn from "classnames";
 import Link from "next/link";
 import Image from "next/image";
+import { useLocalizedLinks } from "@/hooks/useLocalizedLinks";
 
 type Props = {
   title: string;
@@ -9,6 +11,8 @@ type Props = {
 };
 
 const CoverImage = ({ title, src, slug }: Props) => {
+  const { getBlogPostLink } = useLocalizedLinks();
+  
   const image = (
     <Image
       src={src}
@@ -23,7 +27,7 @@ const CoverImage = ({ title, src, slug }: Props) => {
   return (
     <div className="sm:mx-0">
       {slug ? (
-        <Link href={`/posts/${slug}`} aria-label={title}>
+        <Link href={getBlogPostLink(slug)} aria-label={title}>
           {image}
         </Link>
       ) : (

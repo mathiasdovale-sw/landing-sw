@@ -228,7 +228,7 @@ export default function ContactSection() {
       if (response.ok && result.success) {
         setSubmitStatus({
           type: 'success',
-          message: '¡Mensaje enviado correctamente! Te contactaremos pronto.'
+          message: t('contact.form.success')
         })
         // Limpiar el formulario y reCAPTCHA de forma segura
         try {

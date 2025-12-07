@@ -3,11 +3,13 @@ import { useState } from "react"
 import type React from "react"
 import Image from "next/image"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
 
 import { ArrowRight } from "lucide-react"
 
 export default function Footer() {
   const { t } = useLanguage()
+  const { links } = useLocalizedLinks()
   const [email, setEmail] = useState("")
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -36,8 +38,11 @@ export default function Footer() {
         setIsSubscribed(true)
         setEmail("")
         
-        // Verificar el mensaje específico del backend
-        if (data.message === 'Ya estás suscrito a nuestra newsletter') {
+        // Verificar el mensaje específico del backend basado en idioma
+        const alreadySubscribedES = 'Ya estás suscrito a nuestra newsletter'
+        const alreadySubscribedEN = 'You are already subscribed to our newsletter'
+        
+        if (data.message === alreadySubscribedES || data.message === alreadySubscribedEN) {
           setSubscriptionMessage(t('footer.newsletter.already'))
         } else {
           setSubscriptionMessage(t('footer.newsletter.success'))
@@ -135,7 +140,7 @@ export default function Footer() {
 
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 py-12 md:py-16">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 items-start">
+        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-12 items-start">
           {/* Company Info */}
           <div className="lg:col-span-2">
             <div
@@ -147,6 +152,206 @@ export default function Footer() {
             <p className="text-gray-400 leading-relaxed mb-6 max-w-md">
               {t('footer.description')}
             </p>
+          </div>
+
+          {/* Services - Mobile: Single Column, Desktop: Two Columns */}
+          <div className="md:hidden text-center">
+            {/* Mobile: Single Services Column */}
+            <h4 
+              className="text-lg font-bold tracking-wide mb-4 text-white"
+              style={{ fontFamily: "Bebas Neue, sans-serif" }}
+            >
+              {t('footer.services.title')}
+            </h4>
+            <ul className="space-y-2 inline-block text-center">
+              <li>
+                <a 
+                  href={links.shopifyStoreSetup} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.storeSetup')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifySeo} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.seo')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyDesign} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.design')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyThemeCustomization} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.themeCustomization')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyMigration} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.migration')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyCro} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.cro')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyPlus} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.plus')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyConsulting} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.consulting')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyGrowthPartner} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.growthPartner')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyAbTesting} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.abTesting')}
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Services Column 1 - Desktop Only */}
+          <div className="hidden md:block">
+            <h4 
+              className="text-lg font-bold tracking-wide mb-4 text-white"
+              style={{ fontFamily: "Bebas Neue, sans-serif" }}
+            >
+              {t('footer.services.title')}
+            </h4>
+            <ul className="space-y-2">
+              <li>
+                <a 
+                  href={links.shopifyStoreSetup} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.storeSetup')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifySeo} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.seo')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyDesign} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.design')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyThemeCustomization} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.themeCustomization')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyMigration} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.migration')}
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Services Column 2 - Desktop Only */}
+          <div className="hidden md:block">
+            {/* Hidden title for desktop layout spacing only */}
+            <div className="hidden lg:block">
+              <h4 
+                className="text-lg font-bold tracking-wide mb-4 text-transparent"
+                style={{ fontFamily: "Bebas Neue, sans-serif" }}
+              >
+                {t('footer.services.title')}
+              </h4>
+            </div>
+            <ul className="space-y-2">
+              <li>
+                <a 
+                  href={links.shopifyCro} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.cro')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyPlus} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.plus')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyConsulting} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.consulting')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyGrowthPartner} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.growthPartner')}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={links.shopifyAbTesting} 
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('footer.services.abTesting')}
+                </a>
+              </li>
+            </ul>
           </div>
           
           {/* Logo */}
@@ -170,13 +375,13 @@ export default function Footer() {
             
             <div className="flex flex-wrap gap-6 text-sm">
               <a 
-                href="/privacy-policy" 
+                href={links.privacyPolicy} 
                 className="text-gray-400 hover:text-white transition-colors hover:underline"
               >
                 {t('footer.privacy')}
               </a>
               <a 
-                href="/cookie-policy" 
+                href={links.cookiePolicy} 
                 className="text-gray-400 hover:text-white transition-colors hover:underline"
               >
                 {t('footer.cookies')}

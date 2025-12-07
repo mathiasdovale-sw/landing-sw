@@ -1,5 +1,6 @@
 "use client"
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 
 type Language = 'es' | 'en'
 
@@ -19,7 +20,7 @@ const translations = {
     // Header
     'header.title.line1': 'MENOS COMPLICACIONES',
     'header.title.line2': 'MÁS CONVERSIONES.',
-    'header.shopify.partner': 'AGENCY PARTNER',
+    'header.shopify.partner': 'Agencia Shopify en España',
     'header.shopify.description': 'Transformamos negocios digitales',
     'header.cta': 'Habla con un experto',
     
@@ -45,6 +46,7 @@ const translations = {
     'contact.form.message.label': 'Mensaje *',
     'contact.form.submit': 'Enviar mensaje',
     'contact.form.sending': 'Enviando...',
+    'contact.form.success': '¡Mensaje enviado correctamente! Te contactaremos pronto.',
     'contact.info.phone': 'Teléfono',
     'contact.info.email': 'Email',
     'contact.info.location': 'Ubicación',
@@ -66,33 +68,65 @@ const translations = {
     'footer.privacy': 'Política de Privacidad',
     'footer.cookies': 'Política de Cookies',
     
+    // Footer Services
+    'footer.services.title': 'SERVICIOS',
+    'footer.services.storeSetup': 'Crear Tienda Shopify',
+    'footer.services.seo': 'SEO Shopify',
+    'footer.services.design': 'Diseño Shopify',
+    'footer.services.themeCustomization': 'Personalización de Tema',
+    'footer.services.migration': 'Migración a Shopify',
+    'footer.services.cro': 'Optimización de Conversiones',
+    'footer.services.plus': 'Shopify Plus',
+    'footer.services.consulting': 'Consultoría Shopify',
+    'footer.services.growthPartner': 'Growth Partner',
+    'footer.services.abTesting': 'A/B Testing',
+    
     // Services Section
     'services.title': 'NUESTROS SERVICIOS',
-    'services.subtitle': 'Soluciones completas para hacer crecer tu negocio en Shopify con estrategias validadas',
+    'services.subtitle': 'En nuestra agencia Shopify ayudamos a marcas y negocios de todos los tamaños a lanzar y hacer crecer su ecommerce.',
     'services.create.title': 'Crear',
     'services.create.description': 'Desarrollamos tu tienda Shopify desde cero con diseño personalizado y funcionalidades avanzadas',
     'services.create.detail1': 'Diseño web personalizado y responsive',
+    'services.create.detail1.url': '/diseno-shopify',
     'services.create.detail2': 'Configuración completa de Shopify',
+    'services.create.detail2.url': '/crear-tienda-shopify',
     'services.create.detail3': 'Integración de pasarelas de pago',
+    'services.create.detail3.url': '/crear-tienda-shopify',
     'services.create.detail4': 'Optimización para dispositivos móviles',
+    'services.create.detail4.url': '/diseno-shopify',
     'services.create.detail5': 'Configuración de productos y categorías',
+    'services.create.detail5.url': '/crear-tienda-shopify',
     'services.create.detail6': 'Implementación de funcionalidades avanzadas',
+    'services.create.detail6.url': '/personalizacion-tema-shopify',
     'services.strategy.title': 'Estrategia',
     'services.strategy.description': 'Mejoramos el rendimiento y conversión de tu tienda existente para maximizar resultados',
     'services.strategy.detail1': 'Auditoría completa de la tienda',
+    'services.strategy.detail1.url': '/consultoria-shopify',
     'services.strategy.detail2': 'Optimización de velocidad de carga',
+    'services.strategy.detail2.url': '/consultoria-shopify',
     'services.strategy.detail3': 'Mejora de la experiencia de usuario (UX)',
+    'services.strategy.detail3.url': '/diseno-shopify',
     'services.strategy.detail4': 'Optimización para motores de búsqueda (SEO)',
+    'services.strategy.detail4.url': '/seo-shopify',
     'services.strategy.detail5': 'Análisis y mejora del funnel de conversión',
+    'services.strategy.detail5.url': '/cro-shopify',
     'services.strategy.detail6': 'Implementación de herramientas de analytics',
+    'services.strategy.detail6.url': '/consultoria-shopify',
     'services.scale.title': 'Escalar',
     'services.scale.description': 'Escalamos tu negocio con estrategias de marketing digital y automatización avanzada',
     'services.scale.detail1': 'Marketing automation y email marketing',
+    'services.scale.detail1.url': '/growth-partner-shopify',
     'services.scale.detail2': 'Integración con plataformas de publicidad',
+    'services.scale.detail2.url': '/growth-partner-shopify',
     'services.scale.detail3': 'Optimización de conversiones avanzada',
+    'services.scale.detail3.url': '/cro-shopify',
     'services.scale.detail4': 'Implementación de programas de fidelización',
+    'services.scale.detail4.url': '/growth-partner-shopify',
     'services.scale.detail5': 'Análisis de datos y reporting personalizado',
+    'services.scale.detail5.url': '/ab-testing-shopify',
     'services.scale.detail6': 'Estrategias de retención de clientes',
+    'services.scale.detail6.url': '/growth-partner-shopify',
+    'services.more_info': 'Más información',
     
     // Case Study Section
     'casestudy.badge': 'Caso de Éxito',
@@ -199,6 +233,45 @@ const translations = {
     'cookies.contact.title': 'Contacto',
     'cookies.contact.content': 'Si tienes preguntas sobre nuestra política de cookies, puedes contactarnos en:',
     'cookies.back': 'Volver al Inicio',
+    
+    // Related Services
+    'relatedServices.title': 'SERVICIOS RELACIONADOS',
+    'relatedServices.subtitle': 'Descubre otros servicios que pueden impulsar tu tienda Shopify',
+    'relatedServices.learnMore': 'Más información',
+    'relatedServices.services.storeSetup.title': 'Crear Tienda Shopify',
+    'relatedServices.services.storeSetup.description': 'Desarrollo completo de tu tienda online desde cero con diseño profesional.',
+    'relatedServices.services.design.title': 'Diseño Shopify',
+    'relatedServices.services.design.description': 'Diseños únicos y atractivos que convierten visitantes en clientes.',
+    'relatedServices.services.themeCustomization.title': 'Personalización de Tema',
+    'relatedServices.services.themeCustomization.description': 'Adapta tu tema de Shopify a las necesidades específicas de tu marca.',
+    'relatedServices.services.migration.title': 'Migración a Shopify',
+    'relatedServices.services.migration.description': 'Migra tu tienda a Shopify sin perder datos ni interrumpir las ventas.',
+    'relatedServices.services.seo.title': 'SEO para Shopify',
+    'relatedServices.services.seo.description': 'Optimización para motores de búsqueda y mayor visibilidad online.',
+    'relatedServices.services.cro.title': 'CRO Shopify',
+    'relatedServices.services.cro.description': 'Optimización de conversiones para maximizar las ventas de tu tienda.',
+    'relatedServices.services.plus.title': 'Shopify Plus',
+    'relatedServices.services.plus.description': 'Soluciones enterprise para negocios de alto volumen y crecimiento.',
+    'relatedServices.services.consulting.title': 'Consultoría Shopify',
+    'relatedServices.services.consulting.description': 'Asesoramiento estratégico para optimizar y hacer crecer tu negocio.',
+    'relatedServices.services.growthPartner.title': 'Growth Partner',
+    'relatedServices.services.growthPartner.description': 'Partner de crecimiento integral para escalar tu negocio online.',
+    'relatedServices.services.abTesting.title': 'A/B Testing Shopify',
+    'relatedServices.services.abTesting.description': 'Pruebas A/B para optimizar la experiencia de usuario y conversiones.',
+    
+    // Blog
+    'blog.title': 'SellifyWorks Blog',
+    'blog.subtitle': 'Artículos y consejos sobre Shopify, ecommerce y crecimiento online',
+    'blog.heroPost': 'Artículo Destacado',
+    'blog.moreStories': 'Más Artículos',
+    'blog.readMore': 'Leer más',
+    'blog.publishedOn': 'Publicado el',
+    'blog.by': 'por',
+    'blog.backToBlog': '← Volver al Blog',
+    'blog.relatedPosts': 'Artículos Relacionados',
+    'blog.shareArticle': 'Compartir artículo',
+    'blog.tags': 'Etiquetas',
+    'blog.categories': 'Categorías',
   },
   en: {
     // Navbar
@@ -235,6 +308,7 @@ const translations = {
     'contact.form.message.label': 'Message *',
     'contact.form.submit': 'Send message',
     'contact.form.sending': 'Sending...',
+    'contact.form.success': 'Message sent successfully! We will contact you soon.',
     'contact.info.phone': 'Phone',
     'contact.info.email': 'Email',
     'contact.info.location': 'Location',
@@ -256,33 +330,65 @@ const translations = {
     'footer.privacy': 'Privacy Policy',
     'footer.cookies': 'Cookie Policy',
     
+    // Footer Services
+    'footer.services.title': 'SERVICES',
+    'footer.services.storeSetup': 'Shopify Store Setup',
+    'footer.services.seo': 'Shopify SEO',
+    'footer.services.design': 'Shopify Design',
+    'footer.services.themeCustomization': 'Theme Customization',
+    'footer.services.migration': 'Shopify Migration',
+    'footer.services.cro': 'Conversion Optimization',
+    'footer.services.plus': 'Shopify Plus',
+    'footer.services.consulting': 'Shopify Consulting',
+    'footer.services.growthPartner': 'Growth Partner',
+    'footer.services.abTesting': 'A/B Testing',
+    
     // Services Section
     'services.title': 'OUR SERVICES',
     'services.subtitle': 'Complete solutions to grow your Shopify business with validated strategies',
     'services.create.title': 'Create',
     'services.create.description': 'We develop your Shopify store from scratch with custom design and advanced features',
     'services.create.detail1': 'Custom and responsive web design',
+    'services.create.detail1.url': '/shopify-design',
     'services.create.detail2': 'Complete Shopify configuration',
+    'services.create.detail2.url': '/shopify-store-setup',
     'services.create.detail3': 'Payment gateway integration',
+    'services.create.detail3.url': '/shopify-store-setup',
     'services.create.detail4': 'Mobile device optimization',
+    'services.create.detail4.url': '/shopify-design',
     'services.create.detail5': 'Product and category setup',
+    'services.create.detail5.url': '/shopify-store-setup',
     'services.create.detail6': 'Advanced functionality implementation',
+    'services.create.detail6.url': '/shopify-theme-customization',
     'services.strategy.title': 'Strategy',
     'services.strategy.description': 'We improve the performance and conversion of your existing store to maximize results',
     'services.strategy.detail1': 'Complete store audit',
+    'services.strategy.detail1.url': '/shopify-consulting',
     'services.strategy.detail2': 'Loading speed optimization',
+    'services.strategy.detail2.url': '/shopify-consulting',
     'services.strategy.detail3': 'User experience (UX) improvement',
+    'services.strategy.detail3.url': '/shopify-design',
     'services.strategy.detail4': 'Search engine optimization (SEO)',
+    'services.strategy.detail4.url': '/shopify-seo',
     'services.strategy.detail5': 'Conversion funnel analysis and improvement',
+    'services.strategy.detail5.url': '/shopify-cro',
     'services.strategy.detail6': 'Analytics tools implementation',
+    'services.strategy.detail6.url': '/shopify-consulting',
     'services.scale.title': 'Scale',
     'services.scale.description': 'We scale your business with digital marketing strategies and advanced automation',
     'services.scale.detail1': 'Marketing automation and email marketing',
+    'services.scale.detail1.url': '/shopify-growth-partner',
     'services.scale.detail2': 'Advertising platform integration',
+    'services.scale.detail2.url': '/shopify-growth-partner',
     'services.scale.detail3': 'Advanced conversion optimization',
+    'services.scale.detail3.url': '/shopify-cro',
     'services.scale.detail4': 'Loyalty program implementation',
+    'services.scale.detail4.url': '/shopify-growth-partner',
     'services.scale.detail5': 'Data analysis and custom reporting',
+    'services.scale.detail5.url': '/shopify-ab-testing',
     'services.scale.detail6': 'Customer retention strategies',
+    'services.scale.detail6.url': '/shopify-growth-partner',
+    'services.more_info': 'More information',
     
     // Case Study Section
     'casestudy.badge': 'Success Story',
@@ -389,21 +495,65 @@ const translations = {
     'cookies.contact.title': 'Contact',
     'cookies.contact.content': 'If you have questions about our cookie policy, you can contact us at:',
     'cookies.back': 'Back to Home',
+    
+    // Related Services
+    'relatedServices.title': 'RELATED SERVICES',
+    'relatedServices.subtitle': 'Discover other services that can boost your Shopify store',
+    'relatedServices.learnMore': 'Learn more',
+    'relatedServices.services.storeSetup.title': 'Shopify Store Setup',
+    'relatedServices.services.storeSetup.description': 'Complete development of your online store from scratch with professional design.',
+    'relatedServices.services.design.title': 'Shopify Design',
+    'relatedServices.services.design.description': 'Unique and attractive designs that convert visitors into customers.',
+    'relatedServices.services.themeCustomization.title': 'Theme Customization',
+    'relatedServices.services.themeCustomization.description': 'Adapt your Shopify theme to your brand\'s specific needs.',
+    'relatedServices.services.migration.title': 'Shopify Migration',
+    'relatedServices.services.migration.description': 'Migrate your store to Shopify without losing data or interrupting sales.',
+    'relatedServices.services.seo.title': 'Shopify SEO',
+    'relatedServices.services.seo.description': 'Search engine optimization for greater online visibility.',
+    'relatedServices.services.cro.title': 'Shopify CRO',
+    'relatedServices.services.cro.description': 'Conversion rate optimization to maximize your store\'s sales.',
+    'relatedServices.services.plus.title': 'Shopify Plus',
+    'relatedServices.services.plus.description': 'Enterprise solutions for high-volume businesses and growth.',
+    'relatedServices.services.consulting.title': 'Shopify Consulting',
+    'relatedServices.services.consulting.description': 'Strategic advisory to optimize and grow your business.',
+    'relatedServices.services.growthPartner.title': 'Growth Partner',
+    'relatedServices.services.growthPartner.description': 'Comprehensive growth partnership to scale your online business.',
+    'relatedServices.services.abTesting.title': 'A/B Testing Shopify',
+    'relatedServices.services.abTesting.description': 'A/B testing to optimize user experience and conversions.',
+    
+    // Blog
+    'blog.title': 'SellifyWorks Blog',
+    'blog.subtitle': 'Articles and tips about Shopify, ecommerce and online growth',
+    'blog.heroPost': 'Featured Article',
+    'blog.moreStories': 'More Stories',
+    'blog.readMore': 'Read more',
+    'blog.publishedOn': 'Published on',
+    'blog.by': 'by',
+    'blog.backToBlog': '← Back to Blog',
+    'blog.relatedPosts': 'Related Posts',
+    'blog.shareArticle': 'Share article',
+    'blog.tags': 'Tags',
+    'blog.categories': 'Categories',
   }
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
   const [language, setLanguage] = useState<Language>('es')
 
-  // Cargar idioma del localStorage al inicializar
+  // Detectar idioma desde la URL
   useEffect(() => {
-    const savedLanguage = localStorage.getItem('language') as Language
-    if (savedLanguage && (savedLanguage === 'es' || savedLanguage === 'en')) {
-      setLanguage(savedLanguage)
+    if (pathname.startsWith('/en')) {
+      setLanguage('en')
+    } else if (pathname.startsWith('/es')) {
+      setLanguage('es')
+    } else {
+      // Para rutas sin prefijo de idioma, usar español por defecto
+      setLanguage('es')
     }
-  }, [])
+  }, [pathname])
 
   // Guardar idioma en localStorage cuando cambie
   useEffect(() => {

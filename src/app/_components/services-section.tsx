@@ -1,9 +1,12 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Plus, Minus, Construction, Search, Sprout } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import TranslatedLink from "@/app/_components/translated-link"
+import { useScrollPosition } from "@/hooks/useScrollPosition"
 
 interface ServiceItemProps {
+  serviceId: string; // Add service ID
   number: string;
   title: string;
   description: string;
@@ -12,9 +15,28 @@ interface ServiceItemProps {
   onToggle: () => void;
   accentColor: string;
   icon: React.ComponentType<{ size?: number; className?: string }>;
+  t: (key: string) => string;
+  scrollToContact: () => void;
 }
 
-function ServiceItem({ number, title, description, details, isExpanded, onToggle, accentColor, icon: Icon }: ServiceItemProps) {
+function ServiceItem({ serviceId, number, title, description, details, isExpanded, onToggle, accentColor, icon: Icon, t, scrollToContact }: ServiceItemProps) {
+  const { language } = useLanguage()
+  
+  // Helper function to get URL key for each detail
+  const getDetailUrlKey = (serviceType: string, detailIndex: number) => {
+    const serviceMap = {
+      'Crear': 'create',
+      'Create': 'create', 
+      'Estrategia': 'strategy',
+      'Strategy': 'strategy',
+      'Escalar': 'scale',
+      'Scale': 'scale'
+    }
+    
+    const serviceKey = serviceMap[title as keyof typeof serviceMap] || 'create'
+    return `services.${serviceKey}.detail${detailIndex + 1}.url`
+  }
+  
   return (
     <div
       className={`border-b border-gray-800 last:border-b-0 group transition-all duration-500 ${
@@ -93,21 +115,32 @@ function ServiceItem({ number, title, description, details, isExpanded, onToggle
         <div className="px-2 sm:px-3 md:px-4 lg:px-8 xl:px-16 pb-6 sm:pb-8 md:pb-12">
           <div className="ml-6 sm:ml-8 md:ml-12 lg:ml-16 xl:ml-32">
             <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 md:gap-6">
-              {details.map((detail, index) => (
-                <div key={index} className="flex items-start group/item">
-                  <div 
-                    className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mr-2 sm:mr-3 md:mr-4 mt-1.5 sm:mt-2 flex-shrink-0 group-hover/item:opacity-80 transition-colors"
-                    style={{ backgroundColor: accentColor }}
-                  ></div>
-                  <span className="text-gray-700 text-xs sm:text-sm md:text-base leading-tight sm:leading-relaxed group-hover/item:text-black transition-colors">
-                    {detail}
-                  </span>
-                </div>
-              ))}
+              {details.map((detail, index) => {
+                const urlKey = getDetailUrlKey(title, index)
+                const detailKey = `services.${title === 'Crear' || title === 'Create' ? 'create' : title === 'Estrategia' || title === 'Strategy' ? 'strategy' : 'scale'}.detail${index + 1}`
+                
+                return (
+                  <div key={index} className="flex items-start group/item">
+                    <div 
+                      className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mr-2 sm:mr-3 md:mr-4 mt-1.5 sm:mt-2 flex-shrink-0 group-hover/item:opacity-80 transition-colors"
+                      style={{ backgroundColor: accentColor }}
+                    ></div>
+                    <TranslatedLink 
+                      textKey={detailKey}
+                      urlKey={urlKey}
+                      expandedServiceId={isExpanded ? serviceId : undefined}
+                      className="text-gray-700 hover:text-blue-600 text-xs sm:text-sm md:text-base leading-tight sm:leading-relaxed transition-colors no-underline hover:underline cursor-pointer"
+                    />
+                  </div>
+                )
+              })}
             </div>
             <div className="mt-4 sm:mt-6 md:mt-8 pt-3 sm:pt-4 md:pt-6 border-t border-gray-300">
-              <button className="bg-black text-white px-4 sm:px-6 md:px-8 py-2 md:py-3 rounded-full font-medium hover:bg-gray-800 transition-colors text-xs sm:text-sm md:text-base">
-                Más información
+              <button 
+                onClick={scrollToContact}
+                className="bg-black text-white px-4 sm:px-6 md:px-8 py-2 md:py-3 rounded-full font-medium hover:bg-gray-800 transition-colors text-xs sm:text-sm md:text-base"
+              >
+                {t('services.more_info')}
               </button>
             </div>
           </div>
@@ -120,6 +153,41 @@ function ServiceItem({ number, title, description, details, isExpanded, onToggle
 export default function ServicesSection() {
   const { t } = useLanguage()
   const [expandedService, setExpandedService] = useState<string | null>(null)
+  const { restoreScrollPosition, clearSavedState } = useScrollPosition()
+
+  // Restore expanded state and scroll position when component mounts
+  useEffect(() => {
+    const savedState = restoreScrollPosition()
+    if (savedState) {
+      const { scrollPosition, expandedService } = savedState
+      
+      // Restore expanded service first
+      if (expandedService) {
+        setExpandedService(expandedService)
+      }
+      
+      // Then restore scroll position after a short delay
+      setTimeout(() => {
+        window.scrollTo({
+          top: scrollPosition,
+          behavior: 'instant'
+        })
+        
+        // Clean up saved state
+        clearSavedState()
+      }, 100)
+    }
+  }, [restoreScrollPosition, clearSavedState])
+
+  const scrollToContact = () => {
+    const contactSection = document.getElementById('contacto');
+    if (contactSection) {
+      contactSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
 
   const services = [
     {
@@ -194,6 +262,7 @@ export default function ServicesSection() {
         {services.map((service) => (
           <ServiceItem
             key={service.id}
+            serviceId={service.id}
             number={service.number}
             title={service.title}
             description={service.description}
@@ -202,6 +271,8 @@ export default function ServicesSection() {
             onToggle={() => handleToggle(service.id)}
             accentColor={service.accentColor}
             icon={service.icon}
+            t={t}
+            scrollToContact={scrollToContact}
           />
         ))}
       </div>

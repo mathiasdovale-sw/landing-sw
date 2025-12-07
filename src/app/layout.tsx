@@ -1,9 +1,8 @@
 import Footer from "@/app/_components/footer";
-import { HOME_OG_IMAGE_URL } from "@/lib/constants";
 import Navbar from "@/app/_components/navbar";
 import NewsletterPopup from "@/app/_components/newsletter-popup-safe";
-import NewsletterTestButton from "@/app/_components/newsletter-test-button";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { ScrollProvider } from "@/contexts/ScrollContext";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import cn from "classnames";
@@ -12,7 +11,7 @@ import "./globals.css";
 const inter = Poppins({ weight: "400", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SellifyWorks | Agencia Shopify",
+  title: "SellifyWorks | Agencia Shopify España",
   description: "Agencia especializada en Shopify. Creamos, optimizamos y hacemos crecer tiendas online que convierten. Partner de Shopify.",
   keywords: ["Shopify", "Ecommerce", "Tienda Online", "Agencia", "SellifyWorks", "Partner Shopify"],
   authors: [{ name: "SellifyWorks" }],
@@ -20,17 +19,17 @@ export const metadata: Metadata = {
   publisher: "SellifyWorks",
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
   alternates: {
-    canonical: "/",
+    canonical: "https://www.sellifyworks.com/",
     languages: {
-      'es': '/es',
-      'en': '/en',
+      'es': 'https://www.sellifyworks.com/es',
+      'en': 'https://www.sellifyworks.com/en',
     },
   },
   openGraph: {
     type: "website",
     locale: "es_ES",
-    url: "/",
-    title: "SellifyWorks | Agencia Shopify",
+    url: "https://www.sellifyworks.com/",
+    title: "SellifyWorks | Agencia Shopify España",
     description: "Agencia especializada en Shopify. Creamos, optimizamos y hacemos crecer tiendas online que convierten. Partner de Shopify.",
     siteName: "SellifyWorks",
     images: [
@@ -38,7 +37,7 @@ export const metadata: Metadata = {
         url: "/api/og",
         width: 1200,
         height: 630,
-        alt: "SellifyWorks - Agencia Shopify",
+        alt: "SellifyWorks - Agencia Shopify España",
         type: "image/png",
       },
     ],
@@ -66,7 +65,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'google-site-verification-code', // Agregar cuando tengas el código
+    google: process.env.GOOGLE_SITE_VERIFICATION, // Agregar en variables de entorno
   },
 };
 
@@ -96,6 +95,76 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=block" rel="stylesheet" />
+        
+        {/* Google Consent Mode V2 - Must load before any other tracking scripts */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            
+            // Set default consent state - BEFORE loading any tracking scripts
+            gtag('consent', 'default', {
+              'ad_storage': 'denied',
+              'ad_user_data': 'denied',
+              'ad_personalization': 'denied',
+              'analytics_storage': 'denied',
+              'functionality_storage': 'granted',
+              'personalization_storage': 'denied',
+              'security_storage': 'granted',
+              'wait_for_update': 500
+            });
+          `
+        }} />
+
+        {/* Google Analytics */}
+        {process.env.GOOGLE_ANALYTICS_ID && (
+          <>
+            <script 
+              async 
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GOOGLE_ANALYTICS_ID}`}
+            />
+            <script dangerouslySetInnerHTML={{
+              __html: `
+                gtag('js', new Date());
+                gtag('config', '${process.env.GOOGLE_ANALYTICS_ID}', {
+                  anonymize_ip: true,
+                  allow_google_signals: false,
+                  allow_ad_personalization_signals: false
+                });
+              `
+            }} />
+          </>
+        )}
+
+        {/* Meta Pixel (Facebook Pixel) - Updated for Consent Mode V2 */}
+        {process.env.META_PIXEL_ID && (
+          <>
+            <script dangerouslySetInnerHTML={{
+              __html: `
+                !function(f,b,e,v,n,t,s)
+                {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                n.queue=[];t=b.createElement(e);t.async=!0;
+                t.src=v;s=b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t,s)}(window, document,'script',
+                'https://connect.facebook.net/en_US/fbevents.js');
+                
+                fbq('consent', 'revoke');
+                fbq('init', '${process.env.META_PIXEL_ID}');
+                fbq('track', 'PageView');
+              `
+            }} />
+            <noscript>
+              <img 
+                height="1" 
+                width="1" 
+                style={{display: 'none'}}
+                src={`https://www.facebook.com/tr?id=${process.env.META_PIXEL_ID}&ev=PageView&noscript=1`}
+              />
+            </noscript>
+          </>
+        )}
         
         <script dangerouslySetInnerHTML={{
           __html: `
@@ -207,8 +276,63 @@ export default function RootLayout({
         <meta name="theme-color" content="#000" />
 
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
+        
+        {/* CookieYes Integration with Google Consent Mode V2 */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            // Listen for CookieYes consent changes
+            window.addEventListener('cky_updated', function(event) {
+              const consent = event.detail;
+              
+              // Update Google Consent Mode V2
+              gtag('consent', 'update', {
+                'ad_storage': consent.analytics ? 'granted' : 'denied',
+                'ad_user_data': consent.advertisement ? 'granted' : 'denied',
+                'ad_personalization': consent.advertisement ? 'granted' : 'denied',
+                'analytics_storage': consent.analytics ? 'granted' : 'denied',
+                'functionality_storage': 'granted',
+                'personalization_storage': consent.functional ? 'granted' : 'denied',
+                'security_storage': 'granted'
+              });
 
-        <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="06b8e839-4665-4847-bc71-210c298a1027" data-blockingmode="auto" type="text/javascript"></script>
+              // Update Facebook Pixel consent
+              if (typeof fbq !== 'undefined') {
+                if (consent.advertisement) {
+                  fbq('consent', 'grant');
+                } else {
+                  fbq('consent', 'revoke');
+                }
+              }
+            });
+
+            // Handle initial consent state when CookieYes loads
+            window.addEventListener('cky_loaded', function() {
+              if (typeof CookieYes !== 'undefined') {
+                const activeCategories = CookieYes.getActiveCategories();
+                
+                gtag('consent', 'update', {
+                  'ad_storage': activeCategories.includes('analytics') ? 'granted' : 'denied',
+                  'ad_user_data': activeCategories.includes('advertisement') ? 'granted' : 'denied',
+                  'ad_personalization': activeCategories.includes('advertisement') ? 'granted' : 'denied',
+                  'analytics_storage': activeCategories.includes('analytics') ? 'granted' : 'denied',
+                  'functionality_storage': 'granted',
+                  'personalization_storage': activeCategories.includes('functional') ? 'granted' : 'denied',
+                  'security_storage': 'granted'
+                });
+
+                if (typeof fbq !== 'undefined') {
+                  if (activeCategories.includes('advertisement')) {
+                    fbq('consent', 'grant');
+                  } else {
+                    fbq('consent', 'revoke');
+                  }
+                }
+              }
+            });
+          `
+        }} />
+
+        <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/66ddcee4ff6ed9e3a4552770/script.js"></script> 
       </head>
       <body
         className={cn(inter.className)}
@@ -216,11 +340,13 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <LanguageProvider>
-          <Navbar />
-          <div className="min-h-screen">{children}</div>
-          <Footer />
-          <NewsletterPopup />
-          {/* <NewsletterTestButton /> */}
+          <ScrollProvider>
+            <Navbar />
+            <div className="min-h-screen">{children}</div>
+            <Footer />    
+            <NewsletterPopup />
+            {/* <NewsletterTestButton /> */}
+          </ScrollProvider>
         </LanguageProvider>
       </body>
     </html>

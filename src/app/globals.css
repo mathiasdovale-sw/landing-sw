@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevenir scroll horizontal y permitir elementos full-width */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Permitir que elementos escapen de containers */
+body {
+  position: relative;
+}
+
 /* 404 Page Animations */
 @keyframes float {
   0%, 100% {

@@ -1,0 +1,52 @@
+# robots.txt for SellifyWorks - Shopify Agency
+# Updated: 2025 - Canonical domain: www.sellifyworks.com
+
+# Allow all crawlers access to public content
+User-agent: *
+Allow: /
+
+# Canonical sitemap location
+Sitemap: https://www.sellifyworks.com/sitemap.xml
+
+# Block sensitive or unnecessary paths
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: *.json$
+Disallow: /test-tokens/
+
+# Block newsletter test functionality from search engines
+Disallow: /newsletter-test
+
+# Allow important crawlers explicitly
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 2
+
+# Block problematic bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Allow social media crawlers for better social sharing
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /

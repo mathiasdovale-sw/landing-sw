@@ -1,0 +1,222 @@
+{
+  "seo": {
+    "metaDescriptions": {
+      "home": "Expert Shopify agency. Design, development, SEO and CRO optimization for online stores. Boost your sales with SellifyWorks, your ecommerce growth partner.",
+      "about": "Meet SellifyWorks, a specialized Shopify agency with years of experience. Our expert team helps you create and optimize your online store to maximize sales.",
+      "contact": "Contact SellifyWorks to boost your Shopify store. Free consultation, no-obligation quote. Let's talk about growing your ecommerce business together.",
+      "blog": "SellifyWorks blog: tips, tricks and strategies for Shopify. Learn about ecommerce, SEO, CRO and digital marketing to grow your online store.",
+      "privacyPolicy": "SellifyWorks privacy policy. Information about how we collect, use and protect your personal data. Complete transparency in information processing.",
+      "cookiePolicy": "SellifyWorks cookie policy. Detailed explanation about the use of cookies on our website and how you can manage them according to your preferences."
+    }
+  },
+  "about": {
+    "metadata": {
+      "title": "About Us - SellifyWorks",
+      "description": "Learn more about SellifyWorks and our team of Shopify experts. Discover our mission, vision and experience in developing successful online stores."
+    },
+    "hero": {
+      "title": "ABOUT US",
+      "subtitle": "We create exceptional e-commerce experiences on Shopify."
+    },
+    "history": {
+      "title": "OUR STORY",
+      "content": "This project started with a clear vision: to improve the shopping experience in e-commerce through high-quality technical solutions focused on Shopify. From that idea, SellifyWorks grew as a results-oriented technical consultancy, with an agile, scalable and customer-centered work model."
+    },
+    "mission": {
+      "title": "OUR MISSION",
+      "content": "We drive e-commerce businesses through personalized technical solutions on Shopify. We focus on automating processes, optimizing store performance and applying agile methodologies that ensure fast and high-quality deliveries.\n\nOur goal is for each client to be able to scale without worrying about technical complexity, trusting a consultancy that puts user experience and operational efficiency at the center of every decision."
+    },
+    "values": {
+      "title": "OUR VALUES",
+      "subtitle": "The principles that guide our work and define who we are.",
+      "quality": {
+        "title": "QUALITY",
+        "content": "We apply development practices like Extreme Programming because we believe that a good solution should not only work, but work well, fast and sustainably."
+      },
+      "validation": {
+        "title": "VALIDATION",
+        "content": "We believe in the importance of validating ideas and solutions through constant testing and real feedback. This allows us to adjust and improve our approaches, ensuring we are always on the right track."
+      },
+      "transparency": {
+        "title": "TRANSPARENCY",
+        "content": "We believe in honest relationships, in iterative processes that allow constant evolution, and in the non-negotiable commitment to deliver value in every delivery."
+      }
+    },
+    "team": {
+      "title": "OUR TEAM",
+      "subtitle": "Meet the people who make your project's success possible.",
+      "mathias": {
+        "role": "FOUNDER",
+        "description": "Computer engineer with over 10 years of experience in software development."
+      }
+    },
+    "cta": {
+      "title": "READY TO WORK TOGETHER?",
+      "subtitle": "Discover how we can help you take your business to the next level.",
+      "button": "Contact us"
+    }
+  },
+  "services": {
+    "metadata": {
+      "title": "Shopify Services - SellifyWorks",
+      "description": "Discover all our specialized Shopify services: development, design, SEO, CRO, migration and more. Boost your online store with our experts."
+    },
+    "hero": {
+      "title": "OUR SERVICES",
+      "subtitle": "Complete Shopify solutions to grow your online business."
+    },
+    "list": [
+      {
+        "title": "Shopify Design",
+        "description": "Unique and attractive designs that convert visitors into customers.",
+        "link": "/en/shopify-design"
+      },
+      {
+        "title": "Shopify Consulting",
+        "description": "Strategic advice to optimize your store and increase sales.",
+        "link": "/en/shopify-consulting"
+      },
+      {
+        "title": "Shopify Store Setup",
+        "description": "Complete development of your online store from scratch.",
+        "link": "/en/shopify-store-setup"
+      },
+      {
+        "title": "Shopify SEO",
+        "description": "Search engine optimization for greater online visibility.",
+        "link": "/en/shopify-seo"
+      },
+      {
+        "title": "Shopify CRO",
+        "description": "Conversion rate optimization to maximize your sales.",
+        "link": "/en/shopify-cro"
+      },
+      {
+        "title": "Shopify Migration",
+        "description": "Migrate your store to Shopify without losing data or sales.",
+        "link": "/en/shopify-migration"
+      },
+      {
+        "title": "Theme Customization",
+        "description": "Adapt your Shopify theme to your brand's needs.",
+        "link": "/en/shopify-theme-customization"
+      },
+      {
+        "title": "Shopify A/B Testing",
+        "description": "A/B testing to optimize user experience.",
+        "link": "/en/shopify-ab-testing"
+      },
+      {
+        "title": "Shopify Plus",
+        "description": "Enterprise solutions for high-volume businesses.",
+        "link": "/en/shopify-plus"
+      },
+      {
+        "title": "Growth Partner",
+        "description": "Comprehensive growth partner for your online business.",
+        "link": "/en/shopify-growth-partner"
+      }
+    ]
+  },
+  "contact": {
+    "title": "LET'S TALK",
+    "description": "Ready to take your Shopify store to the next level? Contact us for a personalized consultation.",
+    "info": {
+      "email": "Email",
+      "phone": "Phone",
+      "location": "Location"
+    },
+    "form": {
+      "title": "SEND US A MESSAGE",
+      "name": {
+        "label": "Full name",
+        "placeholder": "Your name"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "your@email.com"
+      },
+      "company": {
+        "label": "Company (optional)",
+        "placeholder": "Your company name"
+      },
+      "service": {
+        "label": "Service of interest",
+        "placeholder": "Select a service...",
+        "development": "Shopify Store Setup / Development",
+        "optimization": "SEO & CRO / Optimization",
+        "migration": "Migration to Shopify",
+        "maintenance": "Maintenance & Support",
+        "consulting": "Shopify Consulting"
+      },
+      "message": {
+        "label": "Message",
+        "placeholder": "Tell us about your project..."
+      },
+      "submit": "Send message",
+      "sending": "Sending...",
+      "success": "Message sent successfully! We will contact you soon."
+    }
+  },
+  "relatedServices": {
+    "title": "RELATED SERVICES",
+    "subtitle": "Discover other services that can boost your Shopify store",
+    "learnMore": "Learn more",
+    "services": {
+      "storeSetup": {
+        "title": "Shopify Store Setup",
+        "description": "Complete development of your online store from scratch with professional design."
+      },
+      "design": {
+        "title": "Shopify Design",
+        "description": "Unique and attractive designs that convert visitors into customers."
+      },
+      "themeCustomization": {
+        "title": "Theme Customization",
+        "description": "Adapt your Shopify theme to your brand's specific needs."
+      },
+      "migration": {
+        "title": "Shopify Migration",
+        "description": "Migrate your store to Shopify without losing data or interrupting sales."
+      },
+      "seo": {
+        "title": "Shopify SEO",
+        "description": "Search engine optimization for greater online visibility."
+      },
+      "cro": {
+        "title": "Shopify CRO",
+        "description": "Conversion rate optimization to maximize your store's sales."
+      },
+      "plus": {
+        "title": "Shopify Plus",
+        "description": "Enterprise solutions for high-volume businesses and growth."
+      },
+      "consulting": {
+        "title": "Shopify Consulting",
+        "description": "Strategic advisory to optimize and grow your business."
+      },
+      "growthPartner": {
+        "title": "Growth Partner",
+        "description": "Comprehensive growth partnership to scale your online business."
+      },
+      "abTesting": {
+        "title": "A/B Testing Shopify",
+        "description": "A/B testing to optimize user experience and conversions."
+      }
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Articles and tips about Shopify, ecommerce and online growth",
+    "heroPost": "Featured Article",
+    "moreStories": "More Stories",
+    "readMore": "Read more",
+    "publishedOn": "Published on",
+    "by": "by",
+    "backToBlog": "← Back to Blog",
+    "relatedPosts": "Related Posts",
+    "shareArticle": "Share article",
+    "tags": "Tags",
+    "categories": "Categories"
+  }
+}
