@@ -83,7 +83,7 @@ export function middleware(request: NextRequest) {
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: https: blob:",
-      "connect-src 'self' https://api.brevo.com https://a.klaviyo.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com",
+      "connect-src 'self' https://api.brevo.com https://a.klaviyo.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://log.cookieyes.com https://cdn-cookieyes.com",
       "frame-src 'self' https://www.google.com",
       "object-src 'none'",
       "base-uri 'self'",
