@@ -83,8 +83,7 @@ export default function RootLayout({
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:type" content="image/png" />
-        <meta name="theme-color" content="#f97316" />
-        <meta name="msapplication-TileColor" content="#f97316" />
+
         
         {/* Precargar la fuente Bebas Neue con alta prioridad */}
         <link 
@@ -117,26 +116,6 @@ export default function RootLayout({
             });
           `
         }} />
-
-        {/* Google Analytics */}
-        {process.env.GOOGLE_ANALYTICS_ID && (
-          <>
-            <script 
-              async 
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GOOGLE_ANALYTICS_ID}`}
-            />
-            <script dangerouslySetInnerHTML={{
-              __html: `
-                gtag('js', new Date());
-                gtag('config', '${process.env.GOOGLE_ANALYTICS_ID}', {
-                  anonymize_ip: true,
-                  allow_google_signals: false,
-                  allow_ad_personalization_signals: false
-                });
-              `
-            }} />
-          </>
-        )}
 
         {/* Meta Pixel (Facebook Pixel) - Updated for Consent Mode V2 */}
         {process.env.META_PIXEL_ID && (
@@ -270,12 +249,12 @@ export default function RootLayout({
           color="#000000"
         />
         <link rel="shortcut icon" href="/favicon/favicon.ico" />
-        <meta name="msapplication-TileColor" content="#000000" />
+        <meta name="msapplication-TileColor" content="#f97316" />
         <meta
           name="msapplication-config"
           content="/favicon/browserconfig.xml"
         />
-        <meta name="theme-color" content="#000" />
+        <meta name="theme-color" content="#f97316" />
 
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
         
