@@ -109,11 +109,13 @@ export default function RootLayout({
               'ad_user_data': 'denied',
               'ad_personalization': 'denied',
               'analytics_storage': 'denied',
-              'functionality_storage': 'granted',
+              'functionality_storage': 'denied',
               'personalization_storage': 'denied',
               'security_storage': 'granted',
-              'wait_for_update': 500
+              'wait_for_update': 2000
             });
+            gtag('set', 'ads_data_redaction', true);
+            gtag('set', 'url_passthrough', true);
           `
         }} />
 
@@ -263,22 +265,24 @@ export default function RootLayout({
           __html: `
             // Listen for CookieYes consent changes
             window.addEventListener('cky_updated', function(event) {
-              const consent = event.detail;
+              var detail = event.detail || {};
+              // CookieYes sends { accepted: [...], rejected: [...] }
+              var accepted = detail.accepted || [];
               
               // Update Google Consent Mode V2
               gtag('consent', 'update', {
-                'ad_storage': consent.analytics ? 'granted' : 'denied',
-                'ad_user_data': consent.advertisement ? 'granted' : 'denied',
-                'ad_personalization': consent.advertisement ? 'granted' : 'denied',
-                'analytics_storage': consent.analytics ? 'granted' : 'denied',
+                'ad_storage': accepted.includes('advertisement') ? 'granted' : 'denied',
+                'ad_user_data': accepted.includes('advertisement') ? 'granted' : 'denied',
+                'ad_personalization': accepted.includes('advertisement') ? 'granted' : 'denied',
+                'analytics_storage': accepted.includes('analytics') ? 'granted' : 'denied',
                 'functionality_storage': 'granted',
-                'personalization_storage': consent.functional ? 'granted' : 'denied',
+                'personalization_storage': accepted.includes('functional') ? 'granted' : 'denied',
                 'security_storage': 'granted'
               });
 
               // Update Facebook Pixel consent
               if (typeof fbq !== 'undefined') {
-                if (consent.advertisement) {
+                if (accepted.includes('advertisement')) {
                   fbq('consent', 'grant');
                 } else {
                   fbq('consent', 'revoke');
@@ -292,7 +296,7 @@ export default function RootLayout({
                 const activeCategories = CookieYes.getActiveCategories();
                 
                 gtag('consent', 'update', {
-                  'ad_storage': activeCategories.includes('analytics') ? 'granted' : 'denied',
+                  'ad_storage': activeCategories.includes('advertisement') ? 'granted' : 'denied',
                   'ad_user_data': activeCategories.includes('advertisement') ? 'granted' : 'denied',
                   'ad_personalization': activeCategories.includes('advertisement') ? 'granted' : 'denied',
                   'analytics_storage': activeCategories.includes('analytics') ? 'granted' : 'denied',
