@@ -79,11 +79,11 @@ export function middleware(request: NextRequest) {
     // Content Security Policy
     'Content-Security-Policy': [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://connect.facebook.net https://cdn-cookieyes.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://connect.facebook.net https://cdn-cookieyes.com https://*.google-analytics.com https://*.analytics.google.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: https: blob:",
-      "connect-src 'self' https://api.brevo.com https://a.klaviyo.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://log.cookieyes.com https://cdn-cookieyes.com",
+      "connect-src 'self' https://api.brevo.com https://a.klaviyo.com https://www.google-analytics.com https://analytics.google.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://log.cookieyes.com https://cdn-cookieyes.com https://connect.facebook.net https://www.facebook.com",
       "frame-src 'self' https://www.google.com",
       "object-src 'none'",
       "base-uri 'self'",
