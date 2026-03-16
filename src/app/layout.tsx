@@ -5,6 +5,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ScrollProvider } from "@/contexts/ScrollContext";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+import { GoogleTagManager } from "@next/third-parties/google";
 import cn from "classnames";
 import "./globals.css";
 
@@ -77,6 +78,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+
         {/* Meta tags específicos para WhatsApp y redes sociales */}
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -334,11 +336,13 @@ export default function RootLayout({
 
         <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/66ddcee4ff6ed9e3a4552770/script.js"></script> 
       </head>
+      <GoogleTagManager gtmId="GTM-W394L8VN" />
       <body
         className={cn(inter.className)}
         style={{ backgroundColor: '#141417ff' }}
         suppressHydrationWarning
       >
+        
         <LanguageProvider>
           <ScrollProvider>
             <Navbar />

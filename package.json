@@ -10,6 +10,7 @@
     "test:ci": "start-server-and-test dev http://localhost:3000 \"cypress run\""
   },
   "dependencies": {
+    "@next/third-parties": "^16.1.6",
     "classnames": "^2.5.1",
     "date-fns": "^3.6.0",
     "gray-matter": "^4.0.3",
