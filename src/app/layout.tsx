@@ -5,7 +5,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ScrollProvider } from "@/contexts/ScrollContext";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import { GoogleTagManager } from "@next/third-parties/google";
+import Script from "next/script";
 import cn from "classnames";
 import "./globals.css";
 
@@ -105,7 +105,7 @@ export default function RootLayout({
               'functionality_storage': 'denied',
               'personalization_storage': 'denied',
               'security_storage': 'granted',
-              'wait_for_update': 2000
+              'wait_for_update': 500
             });
             gtag('set', 'ads_data_redaction', true);
             gtag('set', 'url_passthrough', true);
@@ -253,16 +253,17 @@ export default function RootLayout({
 
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
         
-        {/* CookieYes Integration with Google Consent Mode V2 */}
+        {/* CookieYes consent update listeners — registered before CookieYes loads
+            so the events are always caught. If you have enabled native Consent Mode v2
+            in the CookieYes dashboard, REMOVE this entire inline script block to avoid
+            double consent updates. */}
         <script dangerouslySetInnerHTML={{
           __html: `
             // Listen for CookieYes consent changes
             window.addEventListener('cky_updated', function(event) {
               var detail = event.detail || {};
-              // CookieYes sends { accepted: [...], rejected: [...] }
               var accepted = detail.accepted || [];
               
-              // Update Google Consent Mode V2
               gtag('consent', 'update', {
                 'ad_storage': accepted.includes('advertisement') ? 'granted' : 'denied',
                 'ad_user_data': accepted.includes('advertisement') ? 'granted' : 'denied',
@@ -273,7 +274,6 @@ export default function RootLayout({
                 'security_storage': 'granted'
               });
 
-              // Update Facebook Pixel consent
               if (typeof fbq !== 'undefined') {
                 if (accepted.includes('advertisement')) {
                   fbq('consent', 'grant');
@@ -283,10 +283,10 @@ export default function RootLayout({
               }
             });
 
-            // Handle initial consent state when CookieYes loads
+            // Handle initial consent state when CookieYes loads (returning visitor)
             window.addEventListener('cky_loaded', function() {
               if (typeof CookieYes !== 'undefined') {
-                const activeCategories = CookieYes.getActiveCategories();
+                var activeCategories = CookieYes.getActiveCategories();
                 
                 gtag('consent', 'update', {
                   'ad_storage': activeCategories.includes('advertisement') ? 'granted' : 'denied',
@@ -309,16 +309,38 @@ export default function RootLayout({
             });
           `
         }} />
-
-        <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/66ddcee4ff6ed9e3a4552770/script.js"></script> 
       </head>
-      <GoogleTagManager gtmId="GTM-W394L8VN" />
       <body
         className={cn(inter.className)}
         style={{ backgroundColor: '#141417ff' }}
         suppressHydrationWarning
       >
-        
+        {/* CookieYes CMP — beforeInteractive guarantees it loads before GTM */}
+        <Script
+          id="cookieyes"
+          src="https://cdn-cookieyes.com/client_data/66ddcee4ff6ed9e3a4552770/script.js"
+          strategy="beforeInteractive"
+        />
+
+        {/* GTM — afterInteractive ensures consent defaults + CookieYes are ready */}
+        <Script
+          id="_next-gtm-init"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(w,l){
+                w[l]=w[l]||[];
+                w[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
+              })(window,'dataLayer');
+            `,
+          }}
+        />
+        <Script
+          id="_next-gtm"
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtm.js?id=GTM-W394L8VN"
+        />
+
         <LanguageProvider>
           <ScrollProvider>
             <Navbar />
