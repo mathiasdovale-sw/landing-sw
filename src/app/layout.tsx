@@ -105,18 +105,22 @@ export default function RootLayout({
               'functionality_storage': 'denied',
               'personalization_storage': 'denied',
               'security_storage': 'granted',
-              'wait_for_update': 500
+              'wait_for_update': 2000
             });
             gtag('set', 'ads_data_redaction', true);
             gtag('set', 'url_passthrough', true);
           `
         }} />
 
-        {/* Meta Pixel (Facebook Pixel) - Updated for Consent Mode V2 */}
+        {/* Meta Pixel — NOT loaded until advertisement consent is granted.
+            Loading fbevents.js before consent can set cookies (GDPR violation). */}
         {process.env.META_PIXEL_ID && (
-          <>
-            <script dangerouslySetInnerHTML={{
-              __html: `
+          <script dangerouslySetInnerHTML={{
+            __html: `
+              window.__META_PIXEL_ID = '${process.env.META_PIXEL_ID}';
+              window.__loadMetaPixel = function() {
+                if (window.__metaPixelLoaded) return;
+                window.__metaPixelLoaded = true;
                 !function(f,b,e,v,n,t,s)
                 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
                 n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -125,21 +129,12 @@ export default function RootLayout({
                 t.src=v;s=b.getElementsByTagName(e)[0];
                 s.parentNode.insertBefore(t,s)}(window, document,'script',
                 'https://connect.facebook.net/en_US/fbevents.js');
-                
-                fbq('consent', 'revoke');
-                fbq('init', '${process.env.META_PIXEL_ID}');
+                fbq('consent', 'grant');
+                fbq('init', window.__META_PIXEL_ID);
                 fbq('track', 'PageView');
-              `
-            }} />
-            <noscript>
-              <img 
-                height="1" 
-                width="1" 
-                style={{display: 'none'}}
-                src={`https://www.facebook.com/tr?id=${process.env.META_PIXEL_ID}&ev=PageView&noscript=1`}
-              />
-            </noscript>
-          </>
+              };
+            `
+          }} />
         )}
         
         <script dangerouslySetInnerHTML={{
@@ -253,57 +248,24 @@ export default function RootLayout({
 
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
         
-        {/* CookieYes consent update listeners — registered before CookieYes loads
-            so the events are always caught. If you have enabled native Consent Mode v2
-            in the CookieYes dashboard, REMOVE this entire inline script block to avoid
-            double consent updates. */}
+        {/* CookieYes handles GCM consent updates natively (Support GCM is ON).
+            These listeners ONLY handle deferred Meta Pixel loading — no gtag calls. */}
         <script dangerouslySetInnerHTML={{
           __html: `
-            // Listen for CookieYes consent changes
+            // Load Meta Pixel when user grants advertisement consent
             window.addEventListener('cky_updated', function(event) {
-              var detail = event.detail || {};
-              var accepted = detail.accepted || [];
-              
-              gtag('consent', 'update', {
-                'ad_storage': accepted.includes('advertisement') ? 'granted' : 'denied',
-                'ad_user_data': accepted.includes('advertisement') ? 'granted' : 'denied',
-                'ad_personalization': accepted.includes('advertisement') ? 'granted' : 'denied',
-                'analytics_storage': accepted.includes('analytics') ? 'granted' : 'denied',
-                'functionality_storage': 'granted',
-                'personalization_storage': accepted.includes('functional') ? 'granted' : 'denied',
-                'security_storage': 'granted'
-              });
-
-              if (typeof fbq !== 'undefined') {
-                if (accepted.includes('advertisement')) {
-                  fbq('consent', 'grant');
-                } else {
-                  fbq('consent', 'revoke');
-                }
+              var accepted = (event.detail || {}).accepted || [];
+              if (accepted.includes('advertisement') && typeof window.__loadMetaPixel === 'function') {
+                window.__loadMetaPixel();
               }
             });
 
-            // Handle initial consent state when CookieYes loads (returning visitor)
+            // Returning visitor — load Meta Pixel if advertisement was previously accepted
             window.addEventListener('cky_loaded', function() {
               if (typeof CookieYes !== 'undefined') {
-                var activeCategories = CookieYes.getActiveCategories();
-                
-                gtag('consent', 'update', {
-                  'ad_storage': activeCategories.includes('advertisement') ? 'granted' : 'denied',
-                  'ad_user_data': activeCategories.includes('advertisement') ? 'granted' : 'denied',
-                  'ad_personalization': activeCategories.includes('advertisement') ? 'granted' : 'denied',
-                  'analytics_storage': activeCategories.includes('analytics') ? 'granted' : 'denied',
-                  'functionality_storage': 'granted',
-                  'personalization_storage': activeCategories.includes('functional') ? 'granted' : 'denied',
-                  'security_storage': 'granted'
-                });
-
-                if (typeof fbq !== 'undefined') {
-                  if (activeCategories.includes('advertisement')) {
-                    fbq('consent', 'grant');
-                  } else {
-                    fbq('consent', 'revoke');
-                  }
+                var cats = CookieYes.getActiveCategories();
+                if (cats.includes('advertisement') && typeof window.__loadMetaPixel === 'function') {
+                  window.__loadMetaPixel();
                 }
               }
             });
@@ -315,7 +277,13 @@ export default function RootLayout({
         style={{ backgroundColor: '#141417ff' }}
         suppressHydrationWarning
       >
-        {/* CookieYes CMP — beforeInteractive guarantees it loads before GTM */}
+        {/* === BASIC CONSENT MODE order: Consent defaults → CookieYes → GTM ===
+            Para Advanced Consent Mode (cookieless pings / modelado):
+            1) Cambiar GTM a beforeInteractive y colocarlo ANTES de CookieYes
+            2) Activar "Allow Google tags to fire before consent" en CookieYes Dashboard
+        */}
+
+        {/* CookieYes CMP — beforeInteractive so the banner shows before GTM fires */}
         <Script
           id="cookieyes"
           src="https://cdn-cookieyes.com/client_data/66ddcee4ff6ed9e3a4552770/script.js"
