@@ -277,23 +277,17 @@ export default function RootLayout({
         style={{ backgroundColor: '#141417ff' }}
         suppressHydrationWarning
       >
-        {/* === BASIC CONSENT MODE order: Consent defaults → CookieYes → GTM ===
-            Para Advanced Consent Mode (cookieless pings / modelado):
-            1) Cambiar GTM a beforeInteractive y colocarlo ANTES de CookieYes
-            2) Activar "Allow Google tags to fire before consent" en CookieYes Dashboard
+        {/* === ADVANCED CONSENT MODE order: Consent defaults → GTM → CookieYes ===
+            GTM fires BEFORE consent is granted, sending cookieless pings for
+            conversion modeling even when the user denies cookies.
+            CookieYes updates consent state afterwards via GCM integration.
+            IMPORTANT: Enable "Allow Google tags to fire before consent" in CookieYes Dashboard.
         */}
 
-        {/* CookieYes CMP — beforeInteractive so the banner shows before GTM fires */}
-        <Script
-          id="cookieyes"
-          src="https://cdn-cookieyes.com/client_data/66ddcee4ff6ed9e3a4552770/script.js"
-          strategy="beforeInteractive"
-        />
-
-        {/* GTM — afterInteractive ensures consent defaults + CookieYes are ready */}
+        {/* GTM — beforeInteractive so it loads with denied defaults and sends cookieless pings */}
         <Script
           id="_next-gtm-init"
-          strategy="afterInteractive"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function(w,l){
@@ -305,8 +299,15 @@ export default function RootLayout({
         />
         <Script
           id="_next-gtm"
-          strategy="afterInteractive"
+          strategy="beforeInteractive"
           src="https://www.googletagmanager.com/gtm.js?id=GTM-W394L8VN"
+        />
+
+        {/* CookieYes CMP — beforeInteractive, loads after GTM to update consent state */}
+        <Script
+          id="cookieyes"
+          src="https://cdn-cookieyes.com/client_data/66ddcee4ff6ed9e3a4552770/script.js"
+          strategy="beforeInteractive"
         />
 
         <LanguageProvider>
