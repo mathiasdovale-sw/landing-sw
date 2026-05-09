@@ -1,447 +1,396 @@
 "use client"
-import { Mail, Phone, MapPin, ArrowRight } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { useLanguage } from "@/contexts/LanguageContext"
 
-// Declarar grecaptcha globalmente
 declare global {
   interface Window {
-    grecaptcha: any;
-    onRecaptchaLoad: () => void;
+    grecaptcha: any
+    onRecaptchaLoad: () => void
   }
+}
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  padding: "14px 0",
+  background: "transparent",
+  border: "none",
+  borderBottom: "1px solid var(--sw-border)",
+  outline: "none",
+  color: "var(--sw-fg-1)",
+  fontFamily: "var(--sw-font-body)",
+  fontSize: 15,
+  letterSpacing: "-0.01em",
+  transition: "border-color 200ms var(--sw-ease-out)",
+}
+
+const labelStyle: React.CSSProperties = {
+  fontFamily: "var(--sw-font-mono)",
+  fontSize: 10,
+  color: "var(--sw-fg-3)",
+  letterSpacing: "0.12em",
+  textTransform: "uppercase",
+  display: "block",
+  marginBottom: 4,
 }
 
 export default function ContactSection() {
   const { t } = useLanguage()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<{
-    type: 'success' | 'error' | null
+    type: "success" | "error" | null
     message: string
-  }>({ type: null, message: '' })
+  }>({ type: null, message: "" })
   const recaptchaRef = useRef<HTMLDivElement>(null)
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false)
   const [recaptchaWidgetId, setRecaptchaWidgetId] = useState<number | null>(null)
   const [showLoadingMessage, setShowLoadingMessage] = useState(false)
 
-  // Cargar reCAPTCHA cuando el componente se monta
   useEffect(() => {
     const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
     if (!siteKey) return
 
-    // Mostrar mensaje de carga después de un pequeño delay
     const loadingTimer = setTimeout(() => {
-      if (!recaptchaLoaded) {
-        setShowLoadingMessage(true)
-      }
+      if (!recaptchaLoaded) setShowLoadingMessage(true)
     }, 500)
 
-    // Función que se ejecuta cuando reCAPTCHA se carga
     window.onRecaptchaLoad = () => {
       try {
         if (recaptchaRef.current && window.grecaptcha) {
-          // Limpiar cualquier widget existente antes de crear uno nuevo
           if (recaptchaWidgetId !== null) {
-            try {
-              window.grecaptcha.reset(recaptchaWidgetId)
-            } catch (e) {
-              // Silencioso
-            }
+            try { window.grecaptcha.reset(recaptchaWidgetId) } catch { /* silent */ }
           }
-          
-          const widgetId = window.grecaptcha.render(recaptchaRef.current, {
+          const id = window.grecaptcha.render(recaptchaRef.current, {
             sitekey: siteKey,
-            theme: 'light',
-            size: 'normal'
+            theme: "dark",
+            size: "normal",
           })
-          setRecaptchaWidgetId(widgetId)
+          setRecaptchaWidgetId(id)
           setRecaptchaLoaded(true)
-          setShowLoadingMessage(false) // Ocultar mensaje de carga
+          setShowLoadingMessage(false)
         }
-      } catch (error) {
-        // Silencioso - si falla, simplemente no tenemos reCAPTCHA
+      } catch {
         setRecaptchaLoaded(false)
         setShowLoadingMessage(false)
       }
     }
 
-    // Verificar si reCAPTCHA ya está disponible
-    if (window.grecaptcha && window.grecaptcha.render) {
+    if (window.grecaptcha?.render) {
       clearTimeout(loadingTimer)
       window.onRecaptchaLoad()
       return
     }
 
-    // Cargar el script de reCAPTCHA si no existe
     if (!document.querySelector('script[src*="recaptcha"]')) {
-      const script = document.createElement('script')
-      script.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit'
-      script.async = true
-      script.defer = true
-      script.onload = () => {
-        // Pequeño delay para asegurar que grecaptcha esté disponible
+      const s = document.createElement("script")
+      s.src = "https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit"
+      s.async = true
+      s.defer = true
+      s.onload = () =>
         setTimeout(() => {
           if (window.grecaptcha && window.onRecaptchaLoad) {
             clearTimeout(loadingTimer)
             window.onRecaptchaLoad()
           }
         }, 100)
-      }
-      document.head.appendChild(script)
+      document.head.appendChild(s)
     } else if (window.grecaptcha) {
-      // Si ya está cargado, ejecutar directamente
       clearTimeout(loadingTimer)
       window.onRecaptchaLoad()
     }
 
     return () => {
-      // Cleanup
       clearTimeout(loadingTimer)
       if (recaptchaWidgetId !== null && window.grecaptcha) {
-        try {
-          window.grecaptcha.reset(recaptchaWidgetId)
-        } catch (e) {
-          // Silencioso
-        }
+        try { window.grecaptcha.reset(recaptchaWidgetId) } catch { /* silent */ }
       }
       setRecaptchaLoaded(false)
       setRecaptchaWidgetId(null)
       setShowLoadingMessage(false)
     }
-  }, []) // Solo ejecutar una vez al montar
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const resetRecaptcha = () => {
+    try {
+      if (!window.grecaptcha || typeof window.grecaptcha.reset !== "function") return
+      if (recaptchaWidgetId == null) return
+      window.grecaptcha.reset(recaptchaWidgetId)
+    } catch { /* silent */ }
+  }
+
+  const getRecaptchaToken = (): string | null => {
+    try {
+      if (!process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) return null
+      if (!window.grecaptcha || typeof window.grecaptcha.getResponse !== "function") return null
+      if (recaptchaWidgetId == null) return null
+      return window.grecaptcha.getResponse(recaptchaWidgetId) || null
+    } catch { return null }
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
-    setSubmitStatus({ type: null, message: '' })
+    setSubmitStatus({ type: null, message: "" })
 
     const recaptchaEnabled = !!process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+    const token = getRecaptchaToken()
 
-    // Función helper para resetear reCAPTCHA - ultra robusta
-    const resetRecaptcha = () => {
-      try {
-        // Verificar que tenemos todo lo necesario
-        if (typeof window === 'undefined') return
-        if (!window.grecaptcha) return
-        if (typeof window.grecaptcha.reset !== 'function') return
-        if (recaptchaWidgetId === null || recaptchaWidgetId === undefined) return
-        
-        // Intentar el reset
-        window.grecaptcha.reset(recaptchaWidgetId)
-      } catch (error) {
-        // Completamente silencioso - cualquier error es ignorado
-      }
-    }
-
-    // Obtener token de reCAPTCHA - ultra robusto
-    const getRecaptchaToken = () => {
-      try {
-        // Verificaciones previas
-        if (!recaptchaEnabled) return null
-        if (typeof window === 'undefined') return null
-        if (!window.grecaptcha) return null
-        if (typeof window.grecaptcha.getResponse !== 'function') return null
-        if (recaptchaWidgetId === null || recaptchaWidgetId === undefined) return null
-        
-        // Intentar obtener la respuesta
-        const response = window.grecaptcha.getResponse(recaptchaWidgetId)
-        return response || null
-      } catch (error) {
-        // Cualquier error devuelve null
-        return null
-      }
-    }
-
-    const recaptchaToken = getRecaptchaToken()
-    
-    // Solo validar reCAPTCHA si está completamente funcional (modo muy permisivo)
-    if (recaptchaEnabled && recaptchaLoaded && recaptchaWidgetId !== null && !recaptchaToken) {
-      setSubmitStatus({
-        type: 'error',
-        message: 'Por favor, completa la verificación reCAPTCHA.'
-      })
+    if (recaptchaEnabled && recaptchaLoaded && recaptchaWidgetId !== null && !token) {
+      setSubmitStatus({ type: "error", message: "Por favor, completa la verificación reCAPTCHA." })
       setIsSubmitting(false)
       return
     }
 
-    const formData = new FormData(e.currentTarget)
+    const fd = new FormData(e.currentTarget)
     const data = {
-      name: formData.get('name') as string,
-      email: formData.get('email') as string,
-      company: formData.get('company') as string,
-      service: formData.get('service') as string,
-      message: formData.get('message') as string,
-      recaptchaToken: recaptchaToken || 'dev-mode',
-    }
-
-    // Solo logear en desarrollo
-    if (process.env.NODE_ENV === 'development') {
-      console.log('📤 Datos a enviar:', {
-        ...data,
-        recaptchaToken: data.recaptchaToken === 'dev-mode' ? 'dev-mode' : '***TOKEN***'
-      })
+      name: fd.get("name") as string,
+      email: fd.get("email") as string,
+      company: fd.get("company") as string,
+      service: fd.get("service") as string,
+      message: fd.get("message") as string,
+      recaptchaToken: token || "dev-mode",
     }
 
     try {
-      
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       })
 
-      console.log('Response status:', response.status)
-      
-      // Solo mostrar detalles completos en desarrollo
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Response headers:', Object.fromEntries(response.headers.entries()))
-      }
-      
       let result
       try {
-        const responseText = await response.text()
-        
-        // Solo logear respuesta completa en desarrollo
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Raw response:', responseText)
-        }
-        
-        if (responseText) {
-          result = JSON.parse(responseText)
-          if (process.env.NODE_ENV === 'development') {
-            console.log('Parsed response body:', result)
-          }
-        } else {
-          throw new Error('Respuesta vacía del servidor')
-        }
-      } catch (jsonError) {
-        console.error('Error parsing JSON:', jsonError)
-        setSubmitStatus({
-          type: 'error',
-          message: 'Error al procesar la respuesta del servidor.'
-        })
+        const text = await res.text()
+        if (text) result = JSON.parse(text)
+        else throw new Error("Respuesta vacía")
+      } catch {
+        setSubmitStatus({ type: "error", message: "Error al procesar la respuesta del servidor." })
         resetRecaptcha()
         return
       }
 
-      if (response.ok && result.success) {
-        setSubmitStatus({
-          type: 'success',
-          message: t('contact.form.success')
-        })
-        // Limpiar el formulario y reCAPTCHA de forma segura
-        try {
-          e.currentTarget.reset()
-        } catch (error) {
-          // Silencioso - el reset del formulario a veces puede fallar
-        }
+      if (res.ok && result.success) {
+        setSubmitStatus({ type: "success", message: t("contact.form.success") })
+        try { e.currentTarget.reset() } catch { /* silent */ }
         resetRecaptcha()
       } else {
-        console.error('Error response:', result)
-        setSubmitStatus({
-          type: 'error',
-          message: result.error || 'Error al enviar el mensaje. Inténtalo de nuevo.'
-        })
+        setSubmitStatus({ type: "error", message: result.error || "Error al enviar el mensaje." })
         resetRecaptcha()
       }
-    } catch (error) {
-      console.error('Error en handleSubmit:', error)
-      
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-      console.error('Error details:', {
-        name: error instanceof Error ? error.name : 'UnknownError',
-        message: errorMessage,
-        stack: error instanceof Error ? error.stack : undefined
-      })
-      
-      setSubmitStatus({
-        type: 'error',
-        message: `Error de conexión: ${errorMessage}. Por favor, inténtalo de nuevo.`
-      })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Error desconocido"
+      setSubmitStatus({ type: "error", message: `Error de conexión: ${msg}.` })
       resetRecaptcha()
     } finally {
       setIsSubmitting(false)
     }
   }
+
+  const focusInput = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    e.currentTarget.style.borderBottomColor = "var(--sw-fg-1)"
+  }
+  const blurInput = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    e.currentTarget.style.borderBottomColor = "var(--sw-border)"
+  }
+
+  const infoItems = [
+    { label: t("contact.info.email"), value: "contact@sellifyworks.com" },
+    { label: t("contact.info.phone"), value: "+34 621 640 364" },
+    { label: t("contact.info.location"), value: "Barcelona, España" },
+  ]
+
   return (
-    <section id="contacto" className="bg-white text-gray-700 py-16 md:py-24">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Left Side - Content */}
+    <section
+      id="contacto"
+      style={{ background: "var(--sw-bg-0)", borderTop: "1px solid var(--sw-border-soft)" }}
+    >
+      <div className="sw-container" style={{ padding: "96px clamp(20px, 4vw, 32px)" }}>
+        <div className="sw-grid-2" style={{ alignItems: "flex-start" }}>
+          {/* Left — info */}
           <div>
+            <span className="sw-eyebrow">→ 03 {t("contact.title")}</span>
             <h2
-              className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-wide mb-6"
-              style={{ fontFamily: "Bebas Neue, sans-serif" }}
+              className="sw-display"
+              style={{ fontSize: "clamp(48px, 7vw, 112px)", marginTop: 16 }}
             >
-            {t('contact.title')}
+              {t("contact.title")}
+              <span className="sw-dot">.</span>
             </h2>
-            <p className="text-gray-600 text-lg md:text-xl leading-relaxed mb-8 max-w-lg">
-              {t('contact.description')}
+            <p
+              style={{
+                fontSize: 18,
+                lineHeight: 1.45,
+                color: "var(--sw-fg-2)",
+                marginTop: 24,
+                maxWidth: "32ch",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              {t("contact.description")}
             </p>
 
-            {/* Contact Info */}
-            <div className="space-y-6">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center mr-4">
-                  <Mail size={20} className="text-white" />
+            <div style={{ marginTop: 48, display: "flex", flexDirection: "column", gap: 28 }}>
+              {infoItems.map(({ label, value }) => (
+                <div key={label}>
+                  <span className="sw-eyebrow" style={{ display: "block", marginBottom: 6 }}>
+                    {label}
+                  </span>
+                  <span style={{ fontSize: 15, color: "var(--sw-fg-2)" }}>{value}</span>
                 </div>
-                <div>
-                  <p className="font-medium">{t('contact.info.email')}</p>
-                  <p className="text-gray-600">contact@sellifyworks.com</p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center mr-4">
-                  <Phone size={20} className="text-white" />
-                </div>
-                <div>
-                  <p className="font-medium">{t('contact.info.phone')}</p>
-                  <p className="text-gray-600">+34 621 640 364</p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center mr-4">
-                  <MapPin size={20} className="text-white" />
-                </div>
-                <div>
-                  <p className="font-medium">{t('contact.info.location')}</p>
-                  <p className="text-gray-600">Barcelona, España</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
-          {/* Right Side - Contact Form */}
-          <div className="bg-gray-50 p-8 md:p-10 rounded-2xl">
-            <h3 className="text-2xl md:text-3xl font-bold mb-6" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-              {t('contact.form.title')}
+          {/* Right — form */}
+          <div data-reveal>
+            <h3
+              className="sw-display"
+              style={{ fontSize: "clamp(24px, 3vw, 40px)", marginBottom: 40 }}
+            >
+              {t("contact.form.title")}
             </h3>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+              {/* Name + Email row */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 32 }}>
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('contact.form.name.label')}
-                  </label>
+                  <label style={labelStyle}>{t("contact.form.name.label")}</label>
                   <input
                     type="text"
-                    id="name"
                     name="name"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-colors"
-                    placeholder={t('contact.form.name')}
+                    placeholder={t("contact.form.name")}
+                    style={inputStyle}
+                    onFocus={focusInput}
+                    onBlur={blurInput}
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('contact.form.email.label')}
-                  </label>
+                  <label style={labelStyle}>{t("contact.form.email.label")}</label>
                   <input
                     type="email"
-                    id="email"
                     name="email"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-colors"
-                    placeholder={t('contact.form.email')}
+                    placeholder={t("contact.form.email")}
+                    style={inputStyle}
+                    onFocus={focusInput}
+                    onBlur={blurInput}
                   />
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('contact.form.company.label')}
-                </label>
+              {/* Company */}
+              <div style={{ marginTop: 32 }}>
+                <label style={labelStyle}>{t("contact.form.company.label")}</label>
                 <input
                   type="text"
-                  id="company"
                   name="company"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-colors"
-                  placeholder={t('contact.form.company')}
+                  placeholder={t("contact.form.company")}
+                  style={inputStyle}
+                  onFocus={focusInput}
+                  onBlur={blurInput}
                 />
               </div>
 
-              <div>
-                <label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('contact.form.service.label')}
-                </label>
+              {/* Service */}
+              <div style={{ marginTop: 32 }}>
+                <label style={labelStyle}>{t("contact.form.service.label")}</label>
                 <select
-                  id="service"
                   name="service"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-colors"
+                  style={{ ...inputStyle, cursor: "pointer" }}
+                  onFocus={focusInput}
+                  onBlur={blurInput}
                 >
-                  <option value="">{t('contact.form.service.placeholder')}</option>
-                  <option value="development">{t('contact.form.service.development')}</option>
-                  <option value="optimization">{t('contact.form.service.optimization')}</option>
-                  <option value="migration">{t('contact.form.service.migration')}</option>
-                  <option value="maintenance">{t('contact.form.service.maintenance')}</option>
-                  <option value="consulting">{t('contact.form.service.consulting')}</option>
+                  <option value="" style={{ background: "var(--sw-bg-2)" }}>
+                    {t("contact.form.service.placeholder")}
+                  </option>
+                  <option value="development" style={{ background: "var(--sw-bg-2)" }}>
+                    {t("contact.form.service.development")}
+                  </option>
+                  <option value="optimization" style={{ background: "var(--sw-bg-2)" }}>
+                    {t("contact.form.service.optimization")}
+                  </option>
+                  <option value="migration" style={{ background: "var(--sw-bg-2)" }}>
+                    {t("contact.form.service.migration")}
+                  </option>
+                  <option value="maintenance" style={{ background: "var(--sw-bg-2)" }}>
+                    {t("contact.form.service.maintenance")}
+                  </option>
+                  <option value="consulting" style={{ background: "var(--sw-bg-2)" }}>
+                    {t("contact.form.service.consulting")}
+                  </option>
                 </select>
               </div>
 
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('contact.form.message.label')}
-                </label>
+              {/* Message */}
+              <div style={{ marginTop: 32 }}>
+                <label style={labelStyle}>{t("contact.form.message.label")}</label>
                 <textarea
-                  id="message"
                   name="message"
                   rows={4}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-colors resize-none"
-                  placeholder={t('contact.form.message')}
-                ></textarea>
+                  placeholder={t("contact.form.message")}
+                  style={{ ...inputStyle, resize: "none" }}
+                  onFocus={focusInput}
+                  onBlur={blurInput}
+                />
               </div>
 
               {/* reCAPTCHA */}
               {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
-                <div className="flex justify-center">
-                  <div ref={recaptchaRef} id="recaptcha-container"></div>
+                <div style={{ marginTop: 24 }}>
+                  <div ref={recaptchaRef} id="recaptcha-container" />
                   {showLoadingMessage && !recaptchaLoaded && (
-                    <div className="text-gray-500 text-sm">Cargando reCAPTCHA...</div>
+                    <span
+                      style={{
+                        fontFamily: "var(--sw-font-mono)",
+                        fontSize: 11,
+                        color: "var(--sw-fg-3)",
+                      }}
+                    >
+                      Cargando reCAPTCHA...
+                    </span>
                   )}
                 </div>
               )}
 
-              {!process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <p className="text-yellow-800 text-sm">
-                    <strong>Modo desarrollo:</strong> reCAPTCHA no configurado. 
-                    Ver <code>CONTACT_SETUP.md</code> para configurar la protección anti-bot.
-                  </p>
-                  <p className="text-yellow-600 text-xs mt-1">
-                    NEXT_PUBLIC_RECAPTCHA_SITE_KEY = {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || 'undefined'}
-                  </p>
-                </div>
-              )}
+              {/* Submit + status */}
+              <div style={{ marginTop: 32, display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="sw-btn sw-btn--primary sw-btn--lg"
+                  style={{ opacity: isSubmitting ? 0.6 : 1 }}
+                >
+                  {isSubmitting ? t("contact.form.sending") : t("contact.form.submit")}
+                  {!isSubmitting && (
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      aria-hidden
+                    >
+                      <path d="M5 12h14" />
+                      <path d="m12 5 7 7-7 7" />
+                    </svg>
+                  )}
+                </button>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`w-full px-8 py-4 rounded-lg font-medium transition-colors flex items-center justify-center group ${
-                  isSubmitting 
-                    ? 'bg-gray-400 text-white cursor-not-allowed' 
-                    : 'bg-gray-600 text-white hover:bg-gray-700'
-                }`}
-              >
-                {isSubmitting ? t('contact.form.sending') : t('contact.form.submit')}
-                {!isSubmitting && (
-                  <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                {submitStatus.type && (
+                  <span
+                    style={{
+                      fontSize: 13,
+                      lineHeight: 1.4,
+                      maxWidth: "32ch",
+                      color: submitStatus.type === "success" ? "#4ade80" : "#f87171",
+                    }}
+                  >
+                    {submitStatus.message}
+                  </span>
                 )}
-              </button>
-
-              {/* Mensaje de estado */}
-              {submitStatus.type && (
-                <div className={`p-4 rounded-lg ${
-                  submitStatus.type === 'success' 
-                    ? 'bg-green-50 text-green-800 border border-green-200' 
-                    : 'bg-red-50 text-red-800 border border-red-200'
-                }`}>
-                  {submitStatus.message}
-                </div>
-              )}
+              </div>
             </form>
           </div>
         </div>

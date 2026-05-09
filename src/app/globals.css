@@ -2,61 +2,199 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Prevenir scroll horizontal y permitir elementos full-width */
-html, body {
+/* ── Design tokens ─────────────────────────────────────────── */
+:root {
+  --sw-bg-0: #0d0d0d;
+  --sw-bg-1: #111111;
+  --sw-bg-2: #181818;
+  --sw-bg-3: #222222;
+  --sw-fg-1: #ffffff;
+  --sw-fg-2: #9a9a9a;
+  --sw-fg-3: #5a5a5a;
+  --sw-fg-4: #3a3a3a;
+  --sw-border: rgba(255, 255, 255, 0.12);
+  --sw-border-soft: rgba(255, 255, 255, 0.07);
+  --sw-border-strong: rgba(255, 255, 255, 0.26);
+  --sw-accent: #f97316;
+  --sw-accent-hover: #ea6c00;
+  --sw-accent-fg: #000000;
+  --sw-white: #ffffff;
+  --sw-black: #000000;
+  --sw-font-display: 'Bebas Neue', 'Anton SC', sans-serif;
+  --sw-font-body: 'Poppins', system-ui, sans-serif;
+  --sw-font-mono: 'Courier New', 'Courier', monospace;
+  --sw-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Base ──────────────────────────────────────────────────── */
+html,
+body {
   overflow-x: hidden;
   max-width: 100%;
 }
 
-/* Permitir que elementos escapen de containers */
 body {
   position: relative;
+  background: var(--sw-bg-0);
+  color: var(--sw-fg-2);
+  font-family: var(--sw-font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* 404 Page Animations */
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; }
+img { display: block; max-width: 100%; }
+
+/* ── Display heading ───────────────────────────────────────── */
+.sw-display {
+  font-family: var(--sw-font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.93;
+  color: var(--sw-fg-1);
+  margin: 0;
+}
+
+/* ── Eyebrow label ─────────────────────────────────────────── */
+.sw-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--sw-font-body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--sw-fg-3);
+}
+
+/* ── Period accent ─────────────────────────────────────────── */
+.sw-dot { color: var(--sw-accent); }
+
+/* ── Section scaffolding ───────────────────────────────────── */
+.sw-section { padding: 96px clamp(20px, 4vw, 32px); }
+.sw-section--lg { padding: 160px clamp(20px, 4vw, 32px); }
+.sw-container { max-width: 1440px; margin: 0 auto; }
+
+/* ── Buttons ───────────────────────────────────────────────── */
+.sw-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px;
+  font-family: var(--sw-font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    background 200ms var(--sw-ease-out),
+    color 200ms var(--sw-ease-out),
+    border-color 200ms var(--sw-ease-out),
+    filter 200ms var(--sw-ease-out);
+  text-decoration: none;
+  white-space: nowrap;
+  line-height: 1;
+}
+.sw-btn--primary   { background: var(--sw-white); color: var(--sw-black); }
+.sw-btn--primary:hover { filter: brightness(0.9); }
+.sw-btn--secondary { background: transparent; color: var(--sw-white); border-color: var(--sw-border); }
+.sw-btn--secondary:hover { border-color: var(--sw-border-strong); background: var(--sw-bg-2); }
+.sw-btn--accent    { background: var(--sw-accent); color: var(--sw-accent-fg); }
+.sw-btn--accent:hover { background: var(--sw-accent-hover); }
+.sw-btn--ghost     { background: transparent; color: var(--sw-fg-2); border-color: transparent; }
+.sw-btn--ghost:hover { color: var(--sw-fg-1); }
+.sw-btn--lg        { padding: 18px 32px; font-size: 13px; }
+.sw-btn--sm        { padding: 9px 16px; font-size: 11px; }
+
+/* ── Cards ─────────────────────────────────────────────────── */
+.sw-card {
+  background: var(--sw-bg-2);
+  border: 1px solid var(--sw-border);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition:
+    border-color 200ms var(--sw-ease-out),
+    background 200ms var(--sw-ease-out);
+}
+.sw-card:hover { border-color: var(--sw-border-strong); }
+
+/* ── Responsive grid helpers ───────────────────────────────── */
+.sw-grid-2 { display: grid; grid-template-columns: 1fr 1.4fr; gap: 64px; }
+.sw-grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+@media (max-width: 900px) {
+  .sw-grid-2 { grid-template-columns: 1fr; gap: 32px; }
+  .sw-section { padding: 64px clamp(20px, 4vw, 24px); }
+  .sw-section--lg { padding: 80px clamp(20px, 4vw, 24px); }
+}
+
+@media (max-width: 600px) {
+  .sw-grid-cards { grid-template-columns: 1fr; }
+  .sw-btn--lg { padding: 14px 20px; font-size: 12px; }
+  .sw-card { padding: 24px; }
+}
+
+/* ── Reveal on scroll ──────────────────────────────────────── */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 700ms var(--sw-ease-out),
+    transform 700ms var(--sw-ease-out);
+}
+[data-reveal].is-in { opacity: 1; transform: none; }
+
+/* ── 404 page animations ───────────────────────────────────── */
 @keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
 }
-
 @keyframes rotate-slow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
+.animate-float       { animation: float 3s ease-in-out infinite; }
+.animate-rotate-slow { animation: rotate-slow 20s linear infinite; }
 
-/* Custom animations for 404 page */
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-.animate-rotate-slow {
-  animation: rotate-slow 20s linear infinite;
-}
-
-/* Smooth transitions for body rotation easter egg */
-body {
-  transition: transform 2s ease-in-out;
-}
-
-/* Gradient text animation */
+/* ── Gradient animation ────────────────────────────────────── */
 @keyframes gradient-shift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+.animate-gradient { background-size: 200% 200%; animation: gradient-shift 3s ease infinite; }
+
+/* ── Brand name (marquee) ──────────────────────────────────── */
+.sw-brand-name {
+  font-family: var(--sw-font-display);
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--sw-fg-3);
+  transition: color 200ms var(--sw-ease-out);
+}
+.sw-brand-name:hover { color: var(--sw-fg-1); }
+
+/* ── Service detail links ──────────────────────────────────── */
+.sw-service-detail a {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--sw-fg-2);
+}
+.sw-service-detail a:hover {
+  color: var(--sw-fg-1);
 }
 
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient-shift 3s ease infinite;
-}
+/* ── Font FOUT prevention ──────────────────────────────────── */
+html:not(.fonts-loaded) [style*="Bebas Neue"] { opacity: 0; transition: opacity 0.2s ease-in-out; }
+html.fonts-loaded       [style*="Bebas Neue"] { opacity: 1; }
+[style*="Bebas Neue"] { animation: fadeInFont 0.3s ease-in-out 0.2s both; }
+@keyframes fadeInFont { from { opacity: 0; } to { opacity: 1; } }

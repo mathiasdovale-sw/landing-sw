@@ -1,148 +1,191 @@
 "use client"
 import { useState, useEffect } from "react"
-import { Plus, Minus, Construction, Search, Sprout } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import TranslatedLink from "@/app/_components/translated-link"
 import { useScrollPosition } from "@/hooks/useScrollPosition"
 
 interface ServiceItemProps {
-  serviceId: string; // Add service ID
-  number: string;
-  title: string;
-  description: string;
-  details: string[];
-  isExpanded: boolean;
-  onToggle: () => void;
-  accentColor: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
-  t: (key: string) => string;
-  scrollToContact: () => void;
+  serviceId: string
+  number: string
+  title: string
+  description: string
+  details: string[]
+  isExpanded: boolean
+  onToggle: () => void
+  t: (key: string) => string
+  scrollToContact: () => void
 }
 
-function ServiceItem({ serviceId, number, title, description, details, isExpanded, onToggle, accentColor, icon: Icon, t, scrollToContact }: ServiceItemProps) {
-  const { language } = useLanguage()
-  
-  // Helper function to get URL key for each detail
-  const getDetailUrlKey = (serviceType: string, detailIndex: number) => {
-    const serviceMap = {
-      'Crear': 'create',
-      'Create': 'create', 
-      'Estrategia': 'strategy',
-      'Strategy': 'strategy',
-      'Escalar': 'scale',
-      'Scale': 'scale'
-    }
-    
-    const serviceKey = serviceMap[title as keyof typeof serviceMap] || 'create'
-    return `services.${serviceKey}.detail${detailIndex + 1}.url`
-  }
-  
+function ServiceItem({
+  serviceId,
+  number,
+  title,
+  description,
+  details,
+  isExpanded,
+  onToggle,
+  t,
+  scrollToContact,
+}: ServiceItemProps) {
+  const serviceKey =
+    serviceId === "crear" ? "create" : serviceId === "estrategia" ? "strategy" : "scale"
+
   return (
     <div
-      className={`border-b border-gray-800 last:border-b-0 group transition-all duration-500 ${
-        isExpanded ? "bg-white" : ""
-      }`}
-      style={{ backgroundColor: isExpanded ? 'white' : '#1a1a1a' }}
+      style={{
+        borderBottom: "1px solid var(--sw-border-soft)",
+        background: isExpanded ? "var(--sw-bg-1)" : "transparent",
+        transition: "background 300ms var(--sw-ease-out)",
+      }}
     >
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between py-6 sm:py-8 md:py-12 px-2 sm:px-4 md:px-8 lg:px-16 text-left hover:bg-opacity-90 transition-all duration-300"
+        style={{
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "clamp(24px, 4vw, 48px) 0",
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          textAlign: "left",
+          gap: 24,
+        }}
       >
-        <div className="flex items-center flex-1 min-w-0">
-          <div
-            className={`mr-1 sm:mr-2 md:mr-4 lg:mr-8 xl:mr-12 transition-colors duration-500 flex-shrink-0 w-10 sm:w-12 md:w-16 lg:w-24 xl:w-32 flex items-center justify-center ${
-              isExpanded ? "text-gray-300" : "text-gray-800 group-hover:text-gray-700"
-            }`}
+        <div style={{ display: "flex", alignItems: "baseline", gap: "clamp(16px, 3vw, 48px)", flex: 1 }}>
+          <span
+            style={{
+              fontFamily: "var(--sw-font-mono)",
+              fontSize: 12,
+              color: "var(--sw-fg-4)",
+              letterSpacing: "0.04em",
+              minWidth: 24,
+              flexShrink: 0,
+            }}
           >
-            <div 
-              className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-16 lg:h-16 xl:w-20 xl:h-20 rounded-full transition-colors duration-500 flex items-center justify-center"
-              style={{ 
-                backgroundColor: isExpanded ? '#d1d5db' : accentColor,
-                transition: 'background-color 0.5s ease'
-              }}
-            >
-              <Icon 
-                size={16} 
-                className={`sm:w-5 sm:h-5 md:w-6 md:h-6 transition-colors duration-500 ${
-                  isExpanded ? "text-black" : "text-white"
-                }`}
-              />
-            </div>
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3
-              className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-wide mb-2 sm:mb-2 md:mb-3 transition-colors duration-500 ${
-                isExpanded ? "text-black" : "text-white"
-              }`}
-              style={{ fontFamily: "Bebas Neue, sans-serif" }}
+            {number}
+          </span>
+          <div>
+            <div
+              className="sw-display"
+              style={{ fontSize: "clamp(28px, 5vw, 72px)" }}
             >
               {title.toUpperCase()}
-            </h3>
+            </div>
             <p
-              className={`text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed transition-colors duration-500 ${
-                isExpanded ? "text-gray-600" : "text-gray-400"
-              }`}
+              style={{
+                fontSize: "clamp(14px, 1.1vw, 17px)",
+                color: "var(--sw-fg-2)",
+                lineHeight: 1.45,
+                marginTop: 8,
+                letterSpacing: "-0.01em",
+              }}
             >
               {description}
             </p>
           </div>
         </div>
-        <div className="ml-1 sm:ml-2 md:ml-4 lg:ml-8 flex-shrink-0">
-          <div
-            className={`w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-16 xl:h-16 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
-              isExpanded ? "border-black" : "border-white hover:bg-white/10"
-            }`}
+
+        {/* Expand/collapse indicator */}
+        <div
+          style={{
+            width: 36,
+            height: 36,
+            border: "1px solid var(--sw-border)",
+            borderRadius: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            transition: "border-color 200ms var(--sw-ease-out)",
+          }}
+        >
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
             style={{
-              backgroundColor: isExpanded ? accentColor : undefined,
-              borderColor: isExpanded ? accentColor : undefined,
-              transition: 'all 0.3s ease'
+              color: "var(--sw-fg-3)",
+              transform: isExpanded ? "rotate(45deg)" : "none",
+              transition: "transform 300ms var(--sw-ease-out)",
             }}
           >
-            {isExpanded ? (
-              <Minus size={14} className="sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-white" />
-            ) : (
-              <Plus size={14} className="sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-white" />
-            )}
-          </div>
+            <path d="M12 5v14M5 12h14" />
+          </svg>
         </div>
       </button>
 
+      {/* Expanded panel */}
       <div
-        className={`overflow-hidden transition-all duration-500 ease-out ${
-          isExpanded ? "max-h-[500px] sm:max-h-[600px] md:max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-        }`}
+        style={{
+          overflow: "hidden",
+          maxHeight: isExpanded ? 600 : 0,
+          opacity: isExpanded ? 1 : 0,
+          transition: "max-height 500ms var(--sw-ease-out), opacity 400ms var(--sw-ease-out)",
+        }}
       >
-        <div className="px-2 sm:px-3 md:px-4 lg:px-8 xl:px-16 pb-6 sm:pb-8 md:pb-12">
-          <div className="ml-6 sm:ml-8 md:ml-12 lg:ml-16 xl:ml-32">
-            <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 md:gap-6">
-              {details.map((detail, index) => {
-                const urlKey = getDetailUrlKey(title, index)
-                const detailKey = `services.${title === 'Crear' || title === 'Create' ? 'create' : title === 'Estrategia' || title === 'Strategy' ? 'strategy' : 'scale'}.detail${index + 1}`
-                
-                return (
-                  <div key={index} className="flex items-start group/item">
-                    <div 
-                      className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mr-2 sm:mr-3 md:mr-4 mt-1.5 sm:mt-2 flex-shrink-0 group-hover/item:opacity-80 transition-colors"
-                      style={{ backgroundColor: accentColor }}
-                    ></div>
-                    <TranslatedLink 
-                      textKey={detailKey}
-                      urlKey={urlKey}
-                      expandedServiceId={isExpanded ? serviceId : undefined}
-                      className="text-gray-700 hover:text-blue-600 text-xs sm:text-sm md:text-base leading-tight sm:leading-relaxed transition-colors no-underline hover:underline cursor-pointer"
-                    />
-                  </div>
-                )
-              })}
-            </div>
-            <div className="mt-4 sm:mt-6 md:mt-8 pt-3 sm:pt-4 md:pt-6 border-t border-gray-300">
-              <button 
-                onClick={scrollToContact}
-                className="bg-black text-white px-4 sm:px-6 md:px-8 py-2 md:py-3 rounded-full font-medium hover:bg-gray-800 transition-colors text-xs sm:text-sm md:text-base"
+        <div
+          style={{
+            paddingLeft: "clamp(40px, 6vw, 72px)",
+            paddingBottom: 48,
+          }}
+        >
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+              gap: 16,
+            }}
+          >
+            {details.map((_, i) => (
+              <div key={i} className="sw-service-detail" style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <span
+                  style={{
+                    color: "var(--sw-accent)",
+                    fontSize: 13,
+                    lineHeight: 1.6,
+                    flexShrink: 0,
+                    marginTop: 1,
+                  }}
+                >
+                  →
+                </span>
+                <TranslatedLink
+                  textKey={`services.${serviceKey}.detail${i + 1}`}
+                  urlKey={`services.${serviceKey}.detail${i + 1}.url`}
+                  expandedServiceId={isExpanded ? serviceId : undefined}
+                  className="hover:underline"
+                />
+              </div>
+            ))}
+          </div>
+
+          <div
+            style={{
+              marginTop: 32,
+              paddingTop: 24,
+              borderTop: "1px solid var(--sw-border-soft)",
+            }}
+          >
+            <button className="sw-btn sw-btn--primary" onClick={scrollToContact}>
+              {t("services.more_info")}
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                aria-hidden
               >
-                {t('services.more_info')}
-              </button>
-            </div>
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -155,126 +198,94 @@ export default function ServicesSection() {
   const [expandedService, setExpandedService] = useState<string | null>(null)
   const { restoreScrollPosition, clearSavedState } = useScrollPosition()
 
-  // Restore expanded state and scroll position when component mounts
   useEffect(() => {
-    const savedState = restoreScrollPosition()
-    if (savedState) {
-      const { scrollPosition, expandedService } = savedState
-      
-      // Restore expanded service first
-      if (expandedService) {
-        setExpandedService(expandedService)
-      }
-      
-      // Then restore scroll position after a short delay
+    const saved = restoreScrollPosition()
+    if (saved) {
+      const { scrollPosition, expandedService: savedService } = saved
+      if (savedService) setExpandedService(savedService)
       setTimeout(() => {
-        window.scrollTo({
-          top: scrollPosition,
-          behavior: 'instant'
-        })
-        
-        // Clean up saved state
+        window.scrollTo({ top: scrollPosition, behavior: "instant" })
         clearSavedState()
       }, 100)
     }
   }, [restoreScrollPosition, clearSavedState])
 
   const scrollToContact = () => {
-    const contactSection = document.getElementById('contacto');
-    if (contactSection) {
-      contactSection.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-  };
+    document.getElementById("contacto")?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
 
   const services = [
     {
       id: "crear",
       number: "01",
-      title: t('services.create.title'),
-      description: t('services.create.description'),
-      accentColor: "#FF6C03",
-      icon: Construction,
-      details: [
-        t('services.create.detail1'),
-        t('services.create.detail2'),
-        t('services.create.detail3'),
-        t('services.create.detail4'),
-        t('services.create.detail5'),
-        t('services.create.detail6'),
-      ],
+      title: t("services.create.title"),
+      description: t("services.create.description"),
+      details: Array.from({ length: 6 }, (_, i) => t(`services.create.detail${i + 1}`)),
     },
     {
       id: "estrategia",
       number: "02",
-      title: t('services.strategy.title'),
-      description: t('services.strategy.description'),
-      accentColor: "#02ADC5",
-      icon: Search,
-      details: [
-        t('services.strategy.detail1'),
-        t('services.strategy.detail2'),
-        t('services.strategy.detail3'),
-        t('services.strategy.detail4'),
-        t('services.strategy.detail5'),
-        t('services.strategy.detail6'),
-      ],
+      title: t("services.strategy.title"),
+      description: t("services.strategy.description"),
+      details: Array.from({ length: 6 }, (_, i) => t(`services.strategy.detail${i + 1}`)),
     },
     {
       id: "escalar",
       number: "03",
-      title: t('services.scale.title'),
-      description: t('services.scale.description'),
-      accentColor: "#70764D",
-      icon: Sprout,
-      details: [
-        t('services.scale.detail1'),
-        t('services.scale.detail2'),
-        t('services.scale.detail3'),
-        t('services.scale.detail4'),
-        t('services.scale.detail5'),
-        t('services.scale.detail6'),
-      ],
+      title: t("services.scale.title"),
+      description: t("services.scale.description"),
+      details: Array.from({ length: 6 }, (_, i) => t(`services.scale.detail${i + 1}`)),
     },
   ]
 
-  const handleToggle = (serviceId: string) => {
-    setExpandedService(expandedService === serviceId ? null : serviceId)
-  }
-
   return (
-    <section id="services-section" className="text-white" style={{ backgroundColor: '#1a1a1a' }}>
-      <div className="text-center py-10 sm:py-14 md:py-18 lg:py-24 px-3 sm:px-4 md:px-6 lg:px-8 xl:px-16">
-        <h2
-          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-wide mb-4 sm:mb-5 md:mb-6"
-          style={{ fontFamily: "Bebas Neue, sans-serif" }}
-        >
-          {t('services.title')}
-        </h2>
-        <p className="text-gray-400 text-base sm:text-lg md:text-xl lg:text-2xl max-w-4xl mx-auto leading-relaxed px-3">
-          {t('services.subtitle')}
-        </p>
-      </div>
+    <section
+      id="services-section"
+      style={{ background: "var(--sw-bg-0)", borderTop: "1px solid var(--sw-border-soft)" }}
+    >
+      <div className="sw-container" style={{ padding: "96px 32px" }}>
+        {/* Section header */}
+        <div className="sw-grid-2" style={{ alignItems: "flex-start", marginBottom: 64 }}>
+          <div>
+            <span className="sw-eyebrow">→ 02 {t("nav.services")}</span>
+          </div>
+          <div data-reveal>
+            <h2 className="sw-display" style={{ fontSize: "clamp(40px, 6vw, 96px)" }}>
+              {t("services.title")}
+              <span className="sw-dot">.</span>
+            </h2>
+            <p
+              style={{
+                fontSize: 18,
+                lineHeight: 1.45,
+                letterSpacing: "-0.01em",
+                color: "var(--sw-fg-2)",
+                marginTop: 20,
+                maxWidth: "38ch",
+              }}
+            >
+              {t("services.subtitle")}
+            </p>
+          </div>
+        </div>
 
-      <div className="w-full">
-        {services.map((service) => (
-          <ServiceItem
-            key={service.id}
-            serviceId={service.id}
-            number={service.number}
-            title={service.title}
-            description={service.description}
-            details={service.details}
-            isExpanded={expandedService === service.id}
-            onToggle={() => handleToggle(service.id)}
-            accentColor={service.accentColor}
-            icon={service.icon}
-            t={t}
-            scrollToContact={scrollToContact}
-          />
-        ))}
+        {/* Accordion list */}
+        <div style={{ borderTop: "1px solid var(--sw-border-soft)" }}>
+          {services.map((s) => (
+            <ServiceItem
+              key={s.id}
+              serviceId={s.id}
+              number={s.number}
+              title={s.title}
+              description={s.description}
+              details={s.details}
+              isExpanded={expandedService === s.id}
+              onToggle={() => setExpandedService(expandedService === s.id ? null : s.id)}
+              t={t}
+              scrollToContact={scrollToContact}
+            />
+          ))}
+        </div>
       </div>
     </section>
   )

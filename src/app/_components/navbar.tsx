@@ -6,197 +6,187 @@ import LanguageSelector from "./language-selector"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
 
-interface NavItem {
-  href: string;
-  label: string;
-  onClick?: () => void;
-}
-
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const { t } = useLanguage()
   const { links } = useLocalizedLinks()
   const router = useRouter()
 
-  // Bloquear scroll cuando el menú está abierto
   useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
-
-    // Cleanup al desmontar el componente
-    return () => {
-      document.body.style.overflow = 'unset'
-    }
-  }, [isMenuOpen])
-
-  // Manejar scroll al cargar la página con hash #services
-  useEffect(() => {
-    const handleHashScroll = () => {
-      if (window.location.hash === '#services') {
-        const servicesSection = document.getElementById('services-section')
-        if (servicesSection) {
-          setTimeout(() => {
-            servicesSection.scrollIntoView({ 
-              behavior: 'smooth',
-              block: 'start'
-            })
-          }, 100) // Pequeño delay para asegurar que la página esté cargada
-        }
-      }
-    }
-
-    // Ejecutar al cargar la página
-    handleHashScroll()
-
-    // Ejecutar cuando cambie el hash
-    window.addEventListener('hashchange', handleHashScroll)
-
-    return () => {
-      window.removeEventListener('hashchange', handleHashScroll)
-    }
+    const onScroll = () => setScrolled(window.scrollY > 60)
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
-  const closeMenu = () => setIsMenuOpen(false)
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : ""
+    return () => { document.body.style.overflow = "" }
+  }, [menuOpen])
 
-  const scrollToServices = () => {
-    const servicesSection = document.getElementById('services-section')
-    
-    if (servicesSection) {
-      // Si estamos en la página principal, hacer scroll directo
-      servicesSection.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      })
-      closeMenu()
+  useEffect(() => {
+    const handle = () => {
+      if (window.location.hash === "#services") {
+        const el = document.getElementById("services-section")
+        if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 100)
+      }
+    }
+    handle()
+    window.addEventListener("hashchange", handle)
+    return () => window.removeEventListener("hashchange", handle)
+  }, [])
+
+  const scrollTo = (id: string) => {
+    const el = document.getElementById(id)
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" })
+    setMenuOpen(false)
+  }
+
+  const handleServices = () => {
+    const el = document.getElementById("services-section")
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" })
+      setMenuOpen(false)
     } else {
-      // Si no estamos en la página principal, navegar primero y luego hacer scroll
-      closeMenu()
+      setMenuOpen(false)
       router.push(`${links.home}#services`)
     }
   }
 
-  const navItems = [
-    { href: links.services, label: t('nav.services') },
-    { href: links.about, label: t('nav.about') },
-    { href: links.blog, label: "BLOG" },
-    { href: links.contact, label: t('nav.contact') },
+  const navLinks = [
+    { label: t("nav.services"), action: handleServices },
+    { label: t("nav.about"), href: links.about },
+    { label: "Blog", href: links.blog },
   ]
 
+  const linkStyle: React.CSSProperties = {
+    fontFamily: "var(--sw-font-body)",
+    fontSize: 11,
+    fontWeight: 600,
+    letterSpacing: "0.12em",
+    textTransform: "uppercase",
+    color: "var(--sw-fg-3)",
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    padding: 0,
+    transition: "color 200ms var(--sw-ease-out)",
+  }
+
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-6 md:px-12 relative" style={{ backgroundColor: '#0e0e0fff' }}>
-      {/* Logo */}
-      <Link 
-        href="/" 
-        className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-wide hover:text-gray-300 transition-colors"
-        style={{ fontFamily: "Bebas Neue, sans-serif" }}
-      >
-        SELLIFYWORKS.
+    <header
+      style={{
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "20px clamp(20px, 4vw, 32px)",
+        background: scrolled ? "rgba(13,13,13,0.9)" : "transparent",
+        backdropFilter: scrolled ? "blur(16px)" : "none",
+        WebkitBackdropFilter: scrolled ? "blur(16px)" : "none",
+        borderBottom: scrolled ? "1px solid var(--sw-border-soft)" : "1px solid transparent",
+        transition: "background 250ms var(--sw-ease-out), border-color 250ms var(--sw-ease-out)",
+      }}
+    >
+      {/* Wordmark */}
+      <Link href="/" aria-label="SELLIFYWORKS.">
+        <span
+          className="sw-display"
+          style={{ fontSize: "clamp(18px, 2vw, 26px)", lineHeight: 1, letterSpacing: "-0.01em" }}
+        >
+          SELLIFYWORKS<span className="sw-dot">.</span>
+        </span>
       </Link>
 
-      {/* Desktop Navigation */}
-      <nav className="hidden md:flex items-center space-x-8">
-        {navItems.map((item) => (
-          item.label === "CONTACT" || item.label === "CONTACTO" ? (
+      {/* Desktop nav */}
+      <nav className="hidden md:flex" style={{ gap: 32, alignItems: "center" }}>
+        {navLinks.map((item) =>
+          item.href ? (
             <Link
-              key={item.href}
+              key={item.label}
               href={item.href}
-              className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-7 py-3.5 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              style={linkStyle as React.CSSProperties}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--sw-fg-1)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--sw-fg-3)")}
             >
               {item.label}
             </Link>
           ) : (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-xl text-gray-100 font-semibold tracking-wide hover:text-white hover:scale-105 transition-all duration-200"
+            <button
+              key={item.label}
+              onClick={item.action}
+              style={linkStyle}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--sw-fg-1)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--sw-fg-3)")}
             >
               {item.label}
-            </Link>
+            </button>
           )
-        ))}
-        
-        {/* Language Selector */}
+        )}
         <LanguageSelector />
+        <button className="sw-btn sw-btn--primary sw-btn--sm" onClick={() => scrollTo("contacto")}>
+          {t("nav.contact")}
+        </button>
       </nav>
 
-      {/* Mobile Menu Button and Language Selector */}
-      <div className="md:hidden flex items-center space-x-4">
+      {/* Mobile controls */}
+      <div className="md:hidden" style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <LanguageSelector />
-        <button 
-          className={`z-50 ${isMenuOpen ? 'fixed top-6 right-6 bg-black bg-opacity-50 p-2 rounded-full' : 'relative'} text-white hover:text-gray-300 transition-all duration-200`}
-          onClick={toggleMenu} 
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
-          aria-expanded={isMenuOpen}
+          style={{ background: "none", border: "none", color: "var(--sw-fg-1)", padding: 0, lineHeight: 0 }}
         >
-          {isMenuOpen ? (
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          {menuOpen ? (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 6L6 18M6 6l12 12" />
             </svg>
           ) : (
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           )}
         </button>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile overlay */}
       <div
-        className={`fixed inset-0 bg-black z-40 transition-transform duration-300 ease-in-out md:hidden ${
-          isMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className="md:hidden"
+        style={{
+          position: "fixed", inset: 0, zIndex: 40,
+          background: "var(--sw-bg-0)",
+          display: "flex", flexDirection: "column",
+          alignItems: "center", justifyContent: "center", gap: 40,
+          transform: menuOpen ? "translateX(0)" : "translateX(100%)",
+          transition: "transform 350ms var(--sw-ease-out)",
+        }}
       >
-        <nav className="flex flex-col text-white items-center justify-center h-full space-y-8">
-          {navItems.map((item) => (
-            item.label === "CONTACT" || item.label === "CONTACTO" ? (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-10 py-5 rounded-full text-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                onClick={closeMenu}
-              >
-                {item.label}
-              </Link>
-            ) : (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-4xl font-semibold tracking-wide text-gray-100 hover:text-white hover:scale-105 transition-all duration-200"
-                onClick={closeMenu}
-              >
-                {item.label}
-              </Link>
-            )
-          ))}
-        </nav>
+        {navLinks.map((item) =>
+          item.href ? (
+            <Link
+              key={item.label}
+              href={item.href}
+              onClick={() => setMenuOpen(false)}
+              className="sw-display"
+              style={{ fontSize: "clamp(40px, 10vw, 64px)" }}
+            >
+              {item.label}
+            </Link>
+          ) : (
+            <button
+              key={item.label}
+              onClick={item.action}
+              className="sw-display"
+              style={{ fontSize: "clamp(40px, 10vw, 64px)", background: "none", border: "none" }}
+            >
+              {item.label}
+            </button>
+          )
+        )}
+        <button className="sw-btn sw-btn--primary sw-btn--lg" onClick={() => scrollTo("contacto")}>
+          {t("nav.contact")}
+        </button>
       </div>
     </header>
   )
 }
 
 export default Navbar
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,6 +1,7 @@
 import Footer from "@/app/_components/footer";
 import Navbar from "@/app/_components/navbar";
 import NewsletterPopup from "@/app/_components/newsletter-popup-safe";
+import RevealObserver from "@/app/_components/reveal-observer";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ScrollProvider } from "@/contexts/ScrollContext";
 import type { Metadata } from "next";
@@ -274,7 +275,7 @@ export default function RootLayout({
       </head>
       <body
         className={cn(inter.className)}
-        style={{ backgroundColor: '#141417ff' }}
+        style={{ backgroundColor: "var(--sw-bg-0)" }}
         suppressHydrationWarning
       >
         {/* === ADVANCED CONSENT MODE order: Consent defaults → GTM → CookieYes ===
@@ -312,9 +313,10 @@ export default function RootLayout({
 
         <LanguageProvider>
           <ScrollProvider>
+            <RevealObserver />
             <Navbar />
             <div className="min-h-screen">{children}</div>
-            <Footer />    
+            <Footer />
             <NewsletterPopup />
             {/* <NewsletterTestButton /> */}
           </ScrollProvider>

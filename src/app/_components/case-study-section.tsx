@@ -1,171 +1,162 @@
 "use client"
-import { CheckCircle2, TrendingUp, Zap, Shield, Package } from "lucide-react"
-import { useLanguage } from "@/contexts/LanguageContext"
 import Image from "next/image"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 export default function CaseStudySection() {
   const { t } = useLanguage()
 
-  const results = [
-    {
-      icon: TrendingUp,
-      text: t('casestudy.result1'),
-    },
-    {
-      icon: Zap,
-      text: t('casestudy.result2'),
-    },
-    {
-      icon: CheckCircle2,
-      text: t('casestudy.result3'),
-    },
-    {
-      icon: Shield,
-      text: t('casestudy.result4'),
-    },
-    {
-      icon: Package,
-      text: t('casestudy.result5'),
-    },
-  ]
-
   const scrollToContact = () => {
-    const contactSection = document.getElementById('contacto');
-    if (contactSection) {
-      contactSection.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-  };
+    document.getElementById("contacto")?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
+
+  const results = [1, 2, 3, 4, 5].map((i) => t(`casestudy.result${i}`))
 
   return (
-    <section className="py-16 sm:py-20 lg:py-24 bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-12 lg:mb-16">
-          <div className="inline-block mb-4">
-            <span className="text-xs sm:text-sm font-semibold text-orange-600 bg-orange-100 px-4 py-2 rounded-full tracking-wide uppercase">
-              {t('casestudy.badge')}
-            </span>
-          </div>
-          
-          {/* Client Logo */}
-          <div className="flex justify-center mb-6">
-            <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
+    <section
+      style={{
+        background: "var(--sw-bg-1)",
+        borderTop: "1px solid var(--sw-border-soft)",
+        borderBottom: "1px solid var(--sw-border-soft)",
+      }}
+    >
+      <div className="sw-container" style={{ padding: "96px 32px" }}>
+        {/* Header row */}
+        <div
+          className="sw-grid-2"
+          style={{ alignItems: "flex-start", marginBottom: 64 }}
+        >
+          <div>
+            <span className="sw-eyebrow">→ 01 {t("casestudy.badge")}</span>
+            <div style={{ marginTop: 32 }}>
               <Image
                 src="/assets/img/canramos-logo.jpg"
-                alt="Can Ramos Logo"
-                width={300}
-                height={200}
-                className="h-16 sm:h-28 w-auto"
-                priority
+                alt="Can Ramos"
+                width={180}
+                height={80}
+                style={{
+                  filter: "brightness(0) invert(1)",
+                  opacity: 0.65,
+                  objectFit: "contain",
+                  height: "auto",
+                  maxHeight: 64,
+                  width: "auto",
+                }}
               />
             </div>
           </div>
-
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-gray-900 mb-4 sm:mb-6 leading-tight tracking-tight">
-            {t('casestudy.title')}
-          </h2>
-          <p className="text-lg sm:text-xl lg:text-2xl text-gray-700 max-w-3xl mx-auto font-normal leading-relaxed">
-            {t('casestudy.subtitle')}
-          </p>
+          <div data-reveal>
+            <h2
+              className="sw-display"
+              style={{ fontSize: "clamp(40px, 6vw, 96px)" }}
+            >
+              {t("casestudy.title")}
+              <span className="sw-dot">.</span>
+            </h2>
+            <p
+              style={{
+                fontSize: "clamp(16px, 1.3vw, 20px)",
+                lineHeight: 1.45,
+                color: "var(--sw-fg-2)",
+                marginTop: 20,
+                maxWidth: "38ch",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              {t("casestudy.subtitle")}
+            </p>
+          </div>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-          {/* Left Column - Story */}
-          <div className="space-y-6 lg:space-y-8">
-            {/* Challenge */}
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-4">
-                {t('casestudy.challenge.title')}
-              </h3>
-              <p className="text-gray-700 leading-relaxed text-base sm:text-lg font-normal">
-                {t('casestudy.challenge.description')}
-              </p>
-            </div>
-
-            {/* Solution */}
-            <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-white mb-4">
-                {t('casestudy.solution.title')}
-              </h3>
-              <p className="text-white leading-relaxed text-base sm:text-lg font-normal">
-                {t('casestudy.solution.description')}
-              </p>
-            </div>
-
-            {/* Expertise Section */}
-            <div className="bg-gray-900 rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-white mb-4">
-                {t('casestudy.expertise.title')}
-              </h3>
-              <p className="text-gray-200 leading-relaxed text-base sm:text-lg font-normal mb-4">
-                {t('casestudy.expertise.description')}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <span className="text-xs font-semibold text-orange-400 bg-orange-950 px-3 py-1 rounded-full">
-                  {t('casestudy.expertise.tag1')}
-                </span>
-                <span className="text-xs font-semibold text-orange-400 bg-orange-950 px-3 py-1 rounded-full">
-                  {t('casestudy.expertise.tag2')}
-                </span>
-                <span className="text-xs font-semibold text-orange-400 bg-orange-950 px-3 py-1 rounded-full">
-                  {t('casestudy.expertise.tag3')}
-                </span>
-              </div>
-            </div>
+        {/* Card grid */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: 2,
+          }}
+        >
+          {/* Challenge */}
+          <div className="sw-card" data-reveal>
+            <span className="sw-eyebrow">{t("casestudy.challenge.title")}</span>
+            <p style={{ fontSize: 15, lineHeight: 1.6, color: "var(--sw-fg-2)", marginTop: 8 }}>
+              {t("casestudy.challenge.description")}
+            </p>
           </div>
 
-          {/* Right Column - Results */}
-          <div className="space-y-6 lg:space-y-8">
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-200">
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-6">
-                {t('casestudy.results.title')}
-              </h3>
-              <div className="space-y-4 sm:space-y-5">
-                {results.map((result, index) => (
-                  <div key={index} className="flex items-start group">
-                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
-                      <result.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                    </div>
-                    <div className="flex-1 pt-1">
-                      <p className="text-gray-800 text-base sm:text-lg font-normal leading-relaxed">
-                        {result.text}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* CTA Card */}
-            <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-6 sm:p-8 shadow-lg text-center">
-              <h4 className="text-xl sm:text-2xl font-extrabold text-white mb-3">
-                {t('casestudy.cta.title')}
-              </h4>
-              <p className="text-gray-200 mb-6 text-base sm:text-lg font-normal leading-relaxed">
-                {t('casestudy.cta.description')}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                <button 
-                  onClick={scrollToContact}
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base"
-                >
-                  {t('casestudy.cta.button')}
-                </button>
-                <a
-                  href="https://www.canramos.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-white hover:bg-gray-100 text-gray-900 font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base inline-flex items-center justify-center"
-                >
-                  {t('casestudy.cta.viewcase')}
-                </a>
-              </div>
-            </div>
+          {/* Solution */}
+          <div
+            className="sw-card"
+            data-reveal
+            style={{ borderColor: "var(--sw-accent)" }}
+          >
+            <span className="sw-eyebrow" style={{ color: "var(--sw-accent)" }}>
+              {t("casestudy.solution.title")}
+            </span>
+            <p style={{ fontSize: 15, lineHeight: 1.6, color: "var(--sw-fg-2)", marginTop: 8 }}>
+              {t("casestudy.solution.description")}
+            </p>
           </div>
+        </div>
+
+        {/* Results */}
+        <div
+          className="sw-card"
+          data-reveal
+          style={{ marginTop: 2 }}
+        >
+          <span className="sw-eyebrow">{t("casestudy.results.title")}</span>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+              gap: 24,
+              marginTop: 8,
+            }}
+          >
+            {results.map((r, i) => (
+              <div key={i} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                <span
+                  style={{
+                    fontFamily: "var(--sw-font-mono)",
+                    fontSize: 11,
+                    color: "var(--sw-accent)",
+                    letterSpacing: "0.04em",
+                    flexShrink: 0,
+                    paddingTop: 2,
+                  }}
+                >
+                  0{i + 1}
+                </span>
+                <span style={{ fontSize: 14, color: "var(--sw-fg-2)", lineHeight: 1.55 }}>{r}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* CTA row */}
+        <div style={{ marginTop: 48, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+          <button className="sw-btn sw-btn--primary" onClick={scrollToContact}>
+            {t("casestudy.cta.button")}
+          </button>
+          <a
+            href="https://www.canramos.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="sw-btn sw-btn--secondary"
+          >
+            {t("casestudy.cta.viewcase")}
+            <svg
+              width="11"
+              height="11"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              aria-hidden
+            >
+              <path d="M7 17L17 7M7 7h10v10" />
+            </svg>
+          </a>
         </div>
       </div>
     </section>

@@ -1,11 +1,9 @@
 "use client"
 import { useState } from "react"
 import type React from "react"
-import Image from "next/image"
+import Link from "next/link"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
-
-import { ArrowRight } from "lucide-react"
 
 export default function Footer() {
   const { t } = useLanguage()
@@ -19,374 +17,289 @@ export default function Footer() {
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
-
     setIsSubmitting(true)
     setError("")
 
     try {
-      const response = await fetch('/api/newsletter', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       })
+      const data = await res.json()
 
-      const data = await response.json()
-
-      if (response.ok) {
+      if (res.ok) {
         setIsSubscribed(true)
         setEmail("")
-        
-        // Verificar el mensaje específico del backend basado en idioma
-        const alreadySubscribedES = 'Ya estás suscrito a nuestra newsletter'
-        const alreadySubscribedEN = 'You are already subscribed to our newsletter'
-        
-        if (data.message === alreadySubscribedES || data.message === alreadySubscribedEN) {
-          setSubscriptionMessage(t('footer.newsletter.already'))
-        } else {
-          setSubscriptionMessage(t('footer.newsletter.success'))
-        }
-        
-        setTimeout(() => {
-          setIsSubscribed(false)
-          setSubscriptionMessage('')
-        }, 6000)
+        const alreadyMsgs = [
+          "Ya estás suscrito a nuestra newsletter",
+          "You are already subscribed to our newsletter",
+        ]
+        setSubscriptionMessage(
+          alreadyMsgs.includes(data.message)
+            ? t("footer.newsletter.already")
+            : t("footer.newsletter.success")
+        )
+        setTimeout(() => { setIsSubscribed(false); setSubscriptionMessage("") }, 6000)
+      } else if (res.status === 409) {
+        setIsSubscribed(true)
+        setSubscriptionMessage(t("footer.newsletter.already"))
+        setEmail("")
+        setTimeout(() => { setIsSubscribed(false); setSubscriptionMessage("") }, 4000)
       } else {
-        // Manejar diferentes tipos de errores
-        if (response.status === 409) {
-          // Usuario ya existe - mostrar mensaje específico
-          setIsSubscribed(true)
-          setSubscriptionMessage(t('footer.newsletter.already'))
-          setEmail("")
-          
-          setTimeout(() => {
-            setIsSubscribed(false)
-            setSubscriptionMessage('')
-          }, 4000)
-        } else {
-          setError(data.error || t('footer.newsletter.error'))
-          setTimeout(() => setError(""), 4000)
-        }
+        setError(data.error || t("footer.newsletter.error"))
+        setTimeout(() => setError(""), 4000)
       }
-    } catch (error) {
-      setError(t('footer.newsletter.connection_error'))
+    } catch {
+      setError(t("footer.newsletter.connection_error"))
       setTimeout(() => setError(""), 4000)
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  const serviceLinks = [
+    { label: t("footer.services.storeSetup"), href: links.shopifyStoreSetup },
+    { label: t("footer.services.seo"), href: links.shopifySeo },
+    { label: t("footer.services.design"), href: links.shopifyDesign },
+    { label: t("footer.services.themeCustomization"), href: links.shopifyThemeCustomization },
+    { label: t("footer.services.migration"), href: links.shopifyMigration },
+    { label: t("footer.services.cro"), href: links.shopifyCro },
+    { label: t("footer.services.plus"), href: links.shopifyPlus },
+    { label: t("footer.services.consulting"), href: links.shopifyConsulting },
+    { label: t("footer.services.growthPartner"), href: links.shopifyGrowthPartner },
+    { label: t("footer.services.abTesting"), href: links.shopifyAbTesting },
+  ]
+
+  const linkHoverStyle = {
+    onMouseEnter: (e: React.MouseEvent<HTMLAnchorElement>) =>
+      (e.currentTarget.style.color = "var(--sw-fg-1)"),
+    onMouseLeave: (e: React.MouseEvent<HTMLAnchorElement>) =>
+      (e.currentTarget.style.color = "var(--sw-fg-3)"),
+  }
+
   return (
-    <footer className="text-white" style={{ backgroundColor: '#141417ff' }}>
-      {/* Newsletter Section */}
-      <div className="border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 py-16 md:py-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+    <footer style={{ background: "var(--sw-bg-0)", borderTop: "1px solid var(--sw-border-soft)" }}>
+      {/* Newsletter band */}
+      <div style={{ borderBottom: "1px solid var(--sw-border-soft)" }}>
+        <div className="sw-container" style={{ padding: "96px clamp(20px, 4vw, 32px)" }}>
+          <div className="sw-grid-2" style={{ alignItems: "flex-end" }}>
             <div>
-              <h3
-                className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-wide mb-4"
-                style={{ fontFamily: "Bebas Neue, sans-serif" }}
-              >
-                {t('footer.newsletter.title')}
+              <h3 className="sw-display" style={{ fontSize: "clamp(36px, 5vw, 80px)" }}>
+                {t("footer.newsletter.title")}
+                <span className="sw-dot">.</span>
               </h3>
-              <p className="text-gray-400 text-lg leading-relaxed">
-                {t('footer.newsletter.description')}
+              <p
+                style={{
+                  fontSize: 16,
+                  lineHeight: 1.5,
+                  color: "var(--sw-fg-2)",
+                  marginTop: 16,
+                  maxWidth: "34ch",
+                }}
+              >
+                {t("footer.newsletter.description")}
               </p>
             </div>
 
-            <div>
-              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t('footer.newsletter.placeholder')}
-                  required
-                  disabled={isSubmitting}
-                  className="flex-1 px-6 py-4 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white focus:border-transparent transition-colors disabled:opacity-50"
-                />
-                <button
-                  type="submit"
-                  disabled={isSubscribed || isSubmitting}
-                  className="bg-white text-black px-8 py-4 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center group disabled:opacity-50"
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <form onSubmit={handleSubscribe}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    borderBottom: "1px solid var(--sw-border)",
+                  }}
                 >
-                  {isSubmitting ? t('footer.newsletter.sending') : isSubscribed ? (subscriptionMessage || t('footer.newsletter.subscribed')) : t('footer.newsletter.button')}
-                  {!isSubscribed && !isSubmitting && (
-                    <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
-                  )}
-                </button>
-              </form>
-              
-              {/* Success message */}
-              {isSubscribed && subscriptionMessage && (
-                <div className="overflow-hidden transition-all duration-500 ease-out max-h-20 opacity-100 mt-4">
-                  <span className="text-green-400 text-sm md:text-base leading-relaxed group-hover/item:text-green-300 transition-colors">
-                    {subscriptionMessage}
-                  </span>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={t("footer.newsletter.placeholder")}
+                    disabled={isSubmitting}
+                    style={{
+                      flex: 1,
+                      padding: "14px 0",
+                      background: "transparent",
+                      border: "none",
+                      outline: "none",
+                      color: "var(--sw-fg-1)",
+                      fontFamily: "var(--sw-font-body)",
+                      fontSize: 15,
+                      letterSpacing: "-0.01em",
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSubscribed || isSubmitting}
+                    className="sw-btn sw-btn--primary"
+                    style={{ flexShrink: 0 }}
+                  >
+                    {isSubmitting
+                      ? t("footer.newsletter.sending")
+                      : isSubscribed
+                      ? "✓"
+                      : t("footer.newsletter.button")}
+                  </button>
                 </div>
+              </form>
+
+              {isSubscribed && subscriptionMessage && (
+                <span
+                  style={{
+                    fontFamily: "var(--sw-font-mono)",
+                    fontSize: 11,
+                    color: "#4ade80",
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  {subscriptionMessage}
+                </span>
               )}
-              
-              {/* Error message */}
               {error && (
-                <p className="text-red-400 text-sm mt-3">
+                <span
+                  style={{
+                    fontFamily: "var(--sw-font-mono)",
+                    fontSize: 11,
+                    color: "#f87171",
+                    letterSpacing: "0.04em",
+                  }}
+                >
                   {error}
-                </p>
+                </span>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Footer */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 py-12 md:py-16">
-        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-12 items-start">
-          {/* Company Info */}
-          <div className="lg:col-span-2">
-            <div
-              className="text-2xl md:text-3xl font-bold tracking-wide mb-4"
-              style={{ fontFamily: "Bebas Neue, sans-serif" }}
-            >
-              {t('footer.company')}
-            </div>
-            <p className="text-gray-400 leading-relaxed mb-6 max-w-md">
-              {t('footer.description')}
+      {/* Main footer grid */}
+      <div className="sw-container" style={{ padding: "64px clamp(20px, 4vw, 32px) 24px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            flexWrap: "wrap",
+            gap: 48,
+            marginBottom: 64,
+          }}
+        >
+          {/* Company info */}
+          <div>
+            <span className="sw-display" style={{ fontSize: "clamp(22px, 2.5vw, 32px)" }}>
+              SELLIFYWORKS<span className="sw-dot">.</span>
+            </span>
+            <p style={{ color: "var(--sw-fg-3)", fontSize: 13, marginTop: 12 }}>
+              contact@sellifyworks.com
+            </p>
+            <p style={{ color: "var(--sw-fg-4)", fontSize: 12, marginTop: 4 }}>
+              Barcelona · España
             </p>
           </div>
 
-          {/* Services - Mobile: Single Column, Desktop: Two Columns */}
-          <div className="md:hidden text-center">
-            {/* Mobile: Single Services Column */}
-            <h4 
-              className="text-lg font-bold tracking-wide mb-4 text-white"
-              style={{ fontFamily: "Bebas Neue, sans-serif" }}
-            >
-              {t('footer.services.title')}
-            </h4>
-            <ul className="space-y-2 inline-block text-center">
-              <li>
-                <a 
-                  href={links.shopifyStoreSetup} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
+          {/* Link columns */}
+          <div style={{ display: "flex", gap: "clamp(24px, 4vw, 56px)", flexWrap: "wrap" }}>
+            {/* Services col 1 */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <span className="sw-eyebrow" style={{ marginBottom: 4 }}>
+                {t("footer.services.title")}
+              </span>
+              {serviceLinks.slice(0, 5).map((l) => (
+                <a
+                  key={l.label}
+                  href={l.href}
+                  style={{ color: "var(--sw-fg-3)", fontSize: 13, transition: "color 200ms var(--sw-ease-out)" }}
+                  {...linkHoverStyle}
                 >
-                  {t('footer.services.storeSetup')}
+                  {l.label}
                 </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifySeo} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.seo')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyDesign} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.design')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyThemeCustomization} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.themeCustomization')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyMigration} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.migration')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyCro} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.cro')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyPlus} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.plus')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyConsulting} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.consulting')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyGrowthPartner} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.growthPartner')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyAbTesting} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.abTesting')}
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Services Column 1 - Desktop Only */}
-          <div className="hidden md:block">
-            <h4 
-              className="text-lg font-bold tracking-wide mb-4 text-white"
-              style={{ fontFamily: "Bebas Neue, sans-serif" }}
-            >
-              {t('footer.services.title')}
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <a 
-                  href={links.shopifyStoreSetup} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.storeSetup')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifySeo} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.seo')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyDesign} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.design')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyThemeCustomization} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.themeCustomization')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyMigration} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.migration')}
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Services Column 2 - Desktop Only */}
-          <div className="hidden md:block">
-            {/* Hidden title for desktop layout spacing only */}
-            <div className="hidden lg:block">
-              <h4 
-                className="text-lg font-bold tracking-wide mb-4 text-transparent"
-                style={{ fontFamily: "Bebas Neue, sans-serif" }}
-              >
-                {t('footer.services.title')}
-              </h4>
+              ))}
             </div>
-            <ul className="space-y-2">
-              <li>
-                <a 
-                  href={links.shopifyCro} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
+
+            {/* Services col 2 */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <span className="sw-eyebrow" style={{ marginBottom: 4, opacity: 0 }} aria-hidden>
+                ·
+              </span>
+              {serviceLinks.slice(5).map((l) => (
+                <a
+                  key={l.label}
+                  href={l.href}
+                  style={{ color: "var(--sw-fg-3)", fontSize: 13, transition: "color 200ms var(--sw-ease-out)" }}
+                  {...linkHoverStyle}
                 >
-                  {t('footer.services.cro')}
+                  {l.label}
                 </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyPlus} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
+              ))}
+            </div>
+
+            {/* Studio col */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <span className="sw-eyebrow" style={{ marginBottom: 4 }}>Studio</span>
+              {[
+                { label: t("nav.about"), href: links.about },
+                { label: "Blog", href: links.blog },
+                { label: t("nav.contact"), href: links.contact },
+              ].map((l) => (
+                <Link
+                  key={l.label}
+                  href={l.href}
+                  style={{ color: "var(--sw-fg-3)", fontSize: 13, transition: "color 200ms var(--sw-ease-out)" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "var(--sw-fg-1)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "var(--sw-fg-3)")}
                 >
-                  {t('footer.services.plus')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyConsulting} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.consulting')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyGrowthPartner} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.growthPartner')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyAbTesting} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.abTesting')}
-                </a>
-              </li>
-            </ul>
-          </div>
-          
-          {/* Logo */}
-          <div className="flex justify-center md:justify-end">
-            <Image
-              src="/assets/img/logoSW.png"
-              alt="SellifyWorks Logo"
-              width={120}
-              height={120}
-              className="object-contain"
-            />
+                  {l.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
-        
-        {/* Legal Links */}
-        <div className="mt-12 pt-8 border-t border-gray-800">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="text-gray-400 text-sm">
-              2025 {t('footer.company')} {t('footer.rights')}
-            </div>
-            
-            <div className="flex flex-wrap gap-6 text-sm">
-              <a 
-                href={links.privacyPolicy} 
-                className="text-gray-400 hover:text-white transition-colors hover:underline"
+
+        {/* Bottom bar */}
+        <div
+          style={{
+            paddingTop: 24,
+            borderTop: "1px solid var(--sw-border-soft)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 12,
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--sw-font-mono)",
+              fontSize: 11,
+              color: "var(--sw-fg-4)",
+              letterSpacing: "0.04em",
+            }}
+          >
+            © 2026 SELLIFYWORKS. — {t("footer.rights")}
+          </span>
+          <div style={{ display: "flex", gap: 24 }}>
+            {[
+              { label: t("footer.privacy"), href: links.privacyPolicy },
+              { label: t("footer.cookies"), href: links.cookiePolicy },
+            ].map((l) => (
+              <a
+                key={l.label}
+                href={l.href}
+                style={{
+                  fontFamily: "var(--sw-font-mono)",
+                  fontSize: 11,
+                  color: "var(--sw-fg-4)",
+                  letterSpacing: "0.04em",
+                  transition: "color 200ms var(--sw-ease-out)",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "var(--sw-fg-2)")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "var(--sw-fg-4)")}
               >
-                {t('footer.privacy')}
+                {l.label}
               </a>
-              <a 
-                href={links.cookiePolicy} 
-                className="text-gray-400 hover:text-white transition-colors hover:underline"
-              >
-                {t('footer.cookies')}
-              </a>
-            </div>
+            ))}
           </div>
         </div>
       </div>

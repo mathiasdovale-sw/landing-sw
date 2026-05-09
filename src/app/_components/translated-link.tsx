@@ -28,10 +28,10 @@ export default function TranslatedLink({ textKey, urlKey, className = '', childr
   };
   
   return (
-    <Link 
-      href={finalUrl} 
+    <Link
+      href={finalUrl}
       onClick={handleClick}
-      className={`text-blue-600 hover:text-blue-800 underline transition-colors cursor-pointer ${className}`}
+      className={`transition-colors cursor-pointer ${className}`}
     >
       {children || text}
     </Link>

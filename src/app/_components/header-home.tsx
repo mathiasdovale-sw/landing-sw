@@ -1,90 +1,145 @@
 "use client"
-import Navbar from "./navbar"
 import Image from "next/image"
 import { useLanguage } from "@/contexts/LanguageContext"
-import AuroraBackground from "@/app/_components/aurora-background"
 
 const HeaderHome = () => {
-  const { t } = useLanguage()
-  
-  const scrollToContact = () => {
-    const contactSection = document.getElementById('contacto');
-    if (contactSection) {
-      contactSection.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-  };
+  const { t, language } = useLanguage()
+
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
 
   return (
-    <section className="relative min-h-[70vh] sm:min-h-[20vh] lg:min-h-screen text-white overflow-hidden" 
-             style={{ 
-               backgroundColor: '#1a1a1a',
-               width: '100vw',
-               position: 'relative',
-               left: '50%',
-               right: '50%',
-               marginLeft: '-50vw',
-               marginRight: '-50vw'
-             }}>
-      {/* Aurora Background */}
-      <div className="absolute inset-0 z-0 w-full h-full">
-        <AuroraBackground 
-          colorStops={["#79FFE1", "#0070f3", "#1a1a1a"]}
-          amplitude={1.0}
-          blend={0.8}
-          speed={0.3}
-        />
-      </div>
-      
-      {/* Main Content */}
-      <main className="relative z-10 flex flex-col items-center justify-center px-8 sm:px-10 md:px-16 lg:px-20 py-6 sm:py-8 lg:py-12 min-h-[calc(70vh-70px)] sm:min-h-[calc(90vh-100px)] lg:min-h-[calc(100vh-120px)] text-center">
-        {/* Main Text - Centered */}
-        <div className="mb-4 sm:mb-6 lg:mb-8 max-w-6xl">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-black leading-tight xl:leading-tight 2xl:leading-tight tracking-tight break-words">
-            {t('header.title.line1')}
-            <br />
-            <span className="text-orange-300">{t('header.title.line2')}</span>
-          </h1>
-          
-          {/* Shopify Integration - More cohesive placement */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mt-6 sm:mt-8 lg:mt-10">
-            <div className="flex items-center gap-3">
-              <Image
-                src="/assets/img/shopifyLogo.png"
-                alt="Shopify Partner Agency"
-                width={50}
-                height={40}
-                className="w-12 h-auto sm:w-14 lg:w-16"
-                priority
-              />
-              <div className="text-sm sm:text-base lg:text-lg font-medium text-gray-300 tracking-wide">
-                {t('header.shopify.partner')}
-              </div>
-            </div>
-            <div className="hidden sm:block w-px h-8 bg-gray-600"></div>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-300 font-light text-center sm:text-left max-w-md">
-              {t('header.shopify.description')}
-            </p>
-          </div>
-        </div>
+    <section
+      id="top"
+      style={{
+        position: "relative",
+        minHeight: "100vh",
+        padding: "clamp(120px, 14vw, 200px) clamp(20px, 4vw, 32px) 96px",
+        display: "flex",
+        alignItems: "center",
+        borderBottom: "1px solid var(--sw-border-soft)",
+        overflow: "hidden",
+        background: "var(--sw-bg-0)",
+        /* break out of Container */
+        width: "100vw",
+        marginLeft: "calc(-50vw + 50%)",
+      }}
+    >
+      <div className="sw-container" style={{ width: "100%" }}>
+        {/* Eyebrow */}
+        <span className="sw-eyebrow">
+          → {t("header.shopify.partner")} · {language === "es" ? "España" : "Spain"}
+        </span>
 
-        {/* Call to Action Button */}
-        <div className="mb-4 sm:mb-6 lg:mb-8">
-          <button 
-            onClick={scrollToContact}
-            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 sm:py-5 sm:px-10 lg:py-6 lg:px-12 rounded-full text-lg sm:text-xl lg:text-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+        {/* Headline */}
+        <h1
+          className="sw-display"
+          data-reveal
+          style={{
+            fontSize: "clamp(52px, 9.5vw, 148px)",
+            marginTop: 24,
+            maxWidth: "16ch",
+          }}
+        >
+          {t("header.title.line1")}
+          <br />
+          {t("header.title.line2")}
+          <span className="sw-dot">.</span>
+        </h1>
+
+        {/* Subtext */}
+        <p
+          data-reveal
+          style={{
+            marginTop: 32,
+            maxWidth: 560,
+            fontSize: "clamp(16px, 1.4vw, 20px)",
+            lineHeight: 1.5,
+            letterSpacing: "-0.01em",
+            color: "var(--sw-fg-2)",
+          }}
+        >
+          {t("header.shopify.description")}
+        </p>
+
+        {/* CTAs */}
+        <div
+          data-reveal
+          style={{ marginTop: 40, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}
+        >
+          <button
+            className="sw-btn sw-btn--primary sw-btn--lg"
+            onClick={() => scrollTo("contacto")}
           >
-            {t('header.cta')}
+            {t("header.cta")}
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              aria-hidden
+            >
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          </button>
+          <button
+            className="sw-btn sw-btn--secondary sw-btn--lg"
+            onClick={() => scrollTo("services-section")}
+          >
+            {t("nav.services")}
           </button>
         </div>
 
-        {/* Spacer for better layout */}
-        <div className="h-4 sm:h-6 lg:h-8"></div>
-      </main>
+        {/* Shopify badge */}
+        <div
+          data-reveal
+          style={{ marginTop: 72, display: "flex", alignItems: "center", gap: 12 }}
+        >
+          <Image
+            src="/assets/img/shopifyLogo.png"
+            alt="Shopify Partner"
+            width={32}
+            height={24}
+            priority
+            style={{ filter: "brightness(0) invert(1)", opacity: 0.3 }}
+          />
+          <span
+            style={{
+              fontFamily: "var(--sw-font-mono)",
+              fontSize: 10,
+              color: "var(--sw-fg-4)",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+            }}
+          >
+            Shopify Partner · {language === "es" ? "España" : "Spain"}
+          </span>
+        </div>
+      </div>
+
+      {/* Watermark logo bottom-right — hidden on mobile to avoid overlap */}
+      <Image
+        src="/assets/img/logoSW.png"
+        alt=""
+        aria-hidden
+        width={160}
+        height={160}
+        className="hidden md:block"
+        style={{
+          position: "absolute",
+          right: 32,
+          bottom: 32,
+          opacity: 0.04,
+          filter: "brightness(0) invert(1)",
+          pointerEvents: "none",
+        }}
+      />
     </section>
-  );
+  )
 }
 
-export default HeaderHome;
+export default HeaderHome

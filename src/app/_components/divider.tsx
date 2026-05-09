@@ -1,19 +1,5 @@
-interface DividerProps {
-  className?: string;
-  lineColor?: string;
-  backgroundColor?: string;
-  padding?: string;
-}
-
-export default function Divider({ 
-  className = '', 
-  lineColor = 'via-gray-300',
-  backgroundColor = 'bg-white',
-  padding = 'py-8'
-}: DividerProps) {
+export default function Divider() {
   return (
-    <div className={`${backgroundColor} ${padding} ${className}`}>
-      <div className={`w-full h-px bg-gradient-to-r from-transparent ${lineColor} to-transparent`}></div>
-    </div>
-  );
+    <div style={{ background: "var(--sw-bg-1)", height: 1, borderTop: "1px solid var(--sw-border-soft)" }} />
+  )
 }
