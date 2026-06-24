@@ -1,6 +1,7 @@
 "use client"
 import { Mail, Phone, MapPin, ArrowRight } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
+import { motion } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
 
 declare global {
@@ -453,9 +454,11 @@ export default function ContactSection() {
                 </div>
               )}
 
-              <button
+              <motion.button
                 type="submit"
                 disabled={isSubmitting}
+                whileHover={!isSubmitting ? { scale: 1.02 } : {}}
+                whileTap={!isSubmitting ? { scale: 0.98 } : {}}
                 className={`flex w-full items-center justify-center rounded-sm px-8 py-4 font-medium text-white transition-colors ${
                   isSubmitting ? 'cursor-not-allowed bg-sw-fg-4' : 'bg-sw-brand hover:bg-sw-brand-hover'
                 }`}
@@ -464,7 +467,7 @@ export default function ContactSection() {
                 {!isSubmitting && (
                   <ArrowRight size={20} className="ml-2 transition-transform group-hover:translate-x-1" />
                 )}
-              </button>
+              </motion.button>
 
               {submitStatus.type && (
                 <div className={`font-mono-label text-[13px] normal-case tracking-normal ${

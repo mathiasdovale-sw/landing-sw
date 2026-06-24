@@ -1,6 +1,7 @@
 "use client"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { motion } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
 import { getServicesByGroup, ServiceGroupKey } from "@/lib/services-config"
@@ -73,8 +74,10 @@ export default function ServicesSection() {
                     ]
 
                     return (
-                      <div
+                      <motion.div
                         key={service.key}
+                        whileHover={{ y: -6 }}
+                        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                         className="flex min-w-[80vw] shrink-0 snap-center flex-col rounded-sm border border-sw-line bg-sw-bg-2 p-6 sm:min-w-0 sm:shrink"
                       >
                         <div className="flex items-baseline justify-between gap-3">
@@ -126,7 +129,7 @@ export default function ServicesSection() {
                             </p>
                           ))}
                         </div>
-                      </div>
+                      </motion.div>
                     )
                   })}
                 </div>
@@ -140,12 +143,14 @@ export default function ServicesSection() {
         </p>
 
         <div className="mt-12">
-          <button
+          <motion.button
             onClick={scrollToContact}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             className="rounded-sm bg-sw-brand px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-sw-brand-hover"
           >
             {t('services.cta')}
-          </button>
+          </motion.button>
         </div>
       </div>
     </section>

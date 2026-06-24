@@ -2,6 +2,7 @@
 import { useState } from "react"
 import type React from "react"
 import Image from "next/image"
+import { motion } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
 import { SERVICES } from "@/lib/services-config"
@@ -101,16 +102,18 @@ export default function Footer() {
                   disabled={isSubmitting}
                   className="flex-1 rounded-sm border border-sw-line-strong bg-sw-bg-2 px-6 py-4 text-sw-fg-1 outline-none transition-colors focus:border-sw-brand disabled:opacity-50"
                 />
-                <button
+                <motion.button
                   type="submit"
                   disabled={isSubscribed || isSubmitting}
+                  whileHover={!isSubscribed && !isSubmitting ? { scale: 1.03 } : {}}
+                  whileTap={!isSubscribed && !isSubmitting ? { scale: 0.97 } : {}}
                   className="group flex items-center justify-center rounded-sm bg-sw-brand px-8 py-4 font-medium text-white transition-colors hover:bg-sw-brand-hover disabled:opacity-50"
                 >
                   {isSubmitting ? t('footer.newsletter.sending') : isSubscribed ? (subscriptionMessage || t('footer.newsletter.subscribed')) : t('footer.newsletter.button')}
                   {!isSubscribed && !isSubmitting && (
                     <ArrowRight size={20} className="ml-2 transition-transform group-hover:translate-x-1" />
                   )}
-                </button>
+                </motion.button>
               </form>
 
               {isSubscribed && subscriptionMessage && (

@@ -1,4 +1,5 @@
 "use client"
+import { motion } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
 
 export default function CloseSection() {
@@ -18,12 +19,14 @@ export default function CloseSection() {
           {t('close.title')}
         </h2>
         <div className="mt-12 flex flex-wrap items-end justify-between gap-6">
-          <button
+          <motion.button
             onClick={scrollToContact}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             className="rounded-sm bg-sw-brand px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-sw-brand-hover"
           >
             {t('close.cta')}
-          </button>
+          </motion.button>
           <span className="font-mono-label normal-case tracking-normal text-sw-fg-3">
             contact@sellifyworks.com
           </span>

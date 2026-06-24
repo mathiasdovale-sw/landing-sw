@@ -1,5 +1,6 @@
 "use client"
 import { CheckCircle2, TrendingUp, Zap, Shield, Package } from "lucide-react"
+import { motion } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
 import Image from "next/image"
 
@@ -149,20 +150,24 @@ export default function CaseStudySection() {
                 {t('casestudy.cta.description')}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                <button
+                <motion.button
                   onClick={scrollToContact}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
                   className="bg-sw-brand hover:bg-sw-brand-hover text-white font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-sm transition-colors text-sm sm:text-base"
                 >
                   {t('casestudy.cta.button')}
-                </button>
-                <a
+                </motion.button>
+                <motion.a
                   href="https://www.canramos.com"
                   target="_blank"
                   rel="noopener noreferrer"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
                   className="border border-sw-line-strong hover:border-sw-fg-1 text-sw-fg-1 font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-sm transition-colors text-sm sm:text-base inline-flex items-center justify-center"
                 >
                   {t('casestudy.cta.viewcase')}
-                </a>
+                </motion.a>
               </div>
             </div>
           </div>

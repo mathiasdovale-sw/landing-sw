@@ -1,4 +1,5 @@
 import HeaderHome from "../_components/header-home";
+import Reveal from "../_components/reveal";
 import ProblemSection from "../_components/problem-section";
 import ServicesSection from "../_components/services-section";
 import CaseStudySection from "../_components/case-study-section";
@@ -20,12 +21,12 @@ export default function HomePage() {
     <main>
       <HeaderHome />
 
-      <ProblemSection />
-      <ServicesSection />
-      <CaseStudySection />
-      <CloseSection />
-      <ContactSection />
-      <FAQAccordion faqs={HomeFAQsEn} className="bg-sw-bg-1" />
+      <Reveal><ProblemSection /></Reveal>
+      <Reveal><ServicesSection /></Reveal>
+      <Reveal><CaseStudySection /></Reveal>
+      <Reveal><CloseSection /></Reveal>
+      <Reveal><ContactSection /></Reveal>
+      <Reveal><FAQAccordion faqs={HomeFAQsEn} className="bg-sw-bg-1" /></Reveal>
     </main>
   );
 }

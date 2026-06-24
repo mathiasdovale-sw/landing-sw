@@ -1,9 +1,12 @@
 "use client"
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { motion } from "framer-motion"
 import LanguageSelector from "./language-selector"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
+
+const MotionLink = motion.create(Link)
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -84,12 +87,14 @@ const Navbar = () => {
 
             <LanguageSelector />
 
-            <Link
+            <MotionLink
               href={links.contact}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               className="rounded-sm border border-sw-brand px-4 py-2 font-mono-label text-sw-fg-1 transition-colors hover:bg-sw-brand"
             >
               {t('nav.contact')}
-            </Link>
+            </MotionLink>
           </nav>
 
           {/* Mobile controls */}
@@ -142,13 +147,15 @@ const Navbar = () => {
               {item.label}
             </Link>
           ))}
-          <Link
+          <MotionLink
             href={links.contact}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             className="rounded-sm bg-sw-brand px-8 py-4 font-mono-label text-sw-fg-1"
             onClick={closeMenu}
           >
             {t('nav.contact')}
-          </Link>
+          </MotionLink>
         </nav>
       </div>
     </header>
