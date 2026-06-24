@@ -1,90 +1,74 @@
 "use client"
-import Navbar from "./navbar"
-import Image from "next/image"
 import { useLanguage } from "@/contexts/LanguageContext"
-import AuroraBackground from "@/app/_components/aurora-background"
 
 const HeaderHome = () => {
   const { t } = useLanguage()
-  
+
   const scrollToContact = () => {
-    const contactSection = document.getElementById('contacto');
+    const contactSection = document.getElementById('contacto')
     if (contactSection) {
-      contactSection.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
+      contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
-  };
+  }
+
+  const scrollToServices = () => {
+    const servicesSection = document.getElementById('services-section')
+    if (servicesSection) {
+      servicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  const stats = [
+    { num: t('hero.stat1.num'), label: t('hero.stat1.label') },
+    { num: t('hero.stat2.num'), label: t('hero.stat2.label') },
+    { num: t('hero.stat3.num'), label: t('hero.stat3.label') },
+  ]
 
   return (
-    <section className="relative min-h-[70vh] sm:min-h-[20vh] lg:min-h-screen text-white overflow-hidden" 
-             style={{ 
-               backgroundColor: '#1a1a1a',
-               width: '100vw',
-               position: 'relative',
-               left: '50%',
-               right: '50%',
-               marginLeft: '-50vw',
-               marginRight: '-50vw'
-             }}>
-      {/* Aurora Background */}
-      <div className="absolute inset-0 z-0 w-full h-full">
-        <AuroraBackground 
-          colorStops={["#79FFE1", "#0070f3", "#1a1a1a"]}
-          amplitude={1.0}
-          blend={0.8}
-          speed={0.3}
-        />
-      </div>
-      
-      {/* Main Content */}
-      <main className="relative z-10 flex flex-col items-center justify-center px-8 sm:px-10 md:px-16 lg:px-20 py-6 sm:py-8 lg:py-12 min-h-[calc(70vh-70px)] sm:min-h-[calc(90vh-100px)] lg:min-h-[calc(100vh-120px)] text-center">
-        {/* Main Text - Centered */}
-        <div className="mb-4 sm:mb-6 lg:mb-8 max-w-6xl">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-black leading-tight xl:leading-tight 2xl:leading-tight tracking-tight break-words">
-            {t('header.title.line1')}
-            <br />
-            <span className="text-orange-300">{t('header.title.line2')}</span>
-          </h1>
-          
-          {/* Shopify Integration - More cohesive placement */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mt-6 sm:mt-8 lg:mt-10">
-            <div className="flex items-center gap-3">
-              <Image
-                src="/assets/img/shopifyLogo.png"
-                alt="Shopify Partner Agency"
-                width={50}
-                height={40}
-                className="w-12 h-auto sm:w-14 lg:w-16"
-                priority
-              />
-              <div className="text-sm sm:text-base lg:text-lg font-medium text-gray-300 tracking-wide">
-                {t('header.shopify.partner')}
-              </div>
-            </div>
-            <div className="hidden sm:block w-px h-8 bg-gray-600"></div>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-300 font-light text-center sm:text-left max-w-md">
-              {t('header.shopify.description')}
-            </p>
-          </div>
+    <section className="bg-sw-bg-0 pb-16 pt-14 sm:pb-20 sm:pt-20 lg:pb-28 lg:pt-28">
+      <div className="mx-auto max-w-7xl px-5">
+        <div className="mb-7 flex items-center gap-3">
+          <span className="font-mono-label text-sw-fg-3">{t('hero.eyebrow')}</span>
         </div>
 
-        {/* Call to Action Button */}
-        <div className="mb-4 sm:mb-6 lg:mb-8">
-          <button 
+        <h1 className="font-display text-5xl text-sw-fg-1 sm:text-6xl md:text-7xl lg:text-8xl">
+          {t('hero.title.line1')}
+          <br />
+          <span className="text-sw-brand">{t('hero.title.line2')}</span>
+        </h1>
+
+        <p className="mt-8 max-w-2xl text-lg leading-relaxed text-sw-fg-2 sm:text-xl">
+          {t('hero.sub')}
+        </p>
+
+        <div className="mt-10 flex flex-wrap items-center gap-4">
+          <button
             onClick={scrollToContact}
-            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 sm:py-5 sm:px-10 lg:py-6 lg:px-12 rounded-full text-lg sm:text-xl lg:text-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            className="rounded-sm bg-sw-brand px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-sw-brand-hover"
           >
-            {t('header.cta')}
+            {t('hero.cta1')}
+          </button>
+          <button
+            onClick={scrollToServices}
+            className="rounded-sm border border-sw-line-strong px-7 py-4 text-base font-semibold text-sw-fg-1 transition-colors hover:border-sw-fg-1"
+          >
+            {t('hero.cta2')}
           </button>
         </div>
 
-        {/* Spacer for better layout */}
-        <div className="h-4 sm:h-6 lg:h-8"></div>
-      </main>
+        <div className="mt-14 flex flex-wrap gap-8 border-t border-sw-line pt-7 sm:gap-16">
+          {stats.map((stat) => (
+            <div key={stat.label}>
+              <div className="font-display text-3xl text-sw-fg-1 sm:text-4xl">{stat.num}</div>
+              <div className="mt-2 max-w-[24ch] font-mono-label normal-case tracking-normal text-sw-fg-3">
+                {stat.label}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </section>
-  );
+  )
 }
 
-export default HeaderHome;
+export default HeaderHome

@@ -60,3 +60,21 @@ body {
   background-size: 200% 200%;
   animation: gradient-shift 3s ease infinite;
 }
+
+/* ==========================================================================
+   Editorial dark / brutalist rediseño — utilidades compartidas
+   ========================================================================== */
+.font-display {
+  font-family: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+  line-height: 1.05;
+}
+
+.font-mono-label {
+  font-family: var(--font-jbmono), ui-monospace, Menlo, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 12px;
+}

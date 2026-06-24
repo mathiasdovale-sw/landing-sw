@@ -19,16 +19,15 @@ export const useLocalizedLinks = () => {
     cookiePolicy: currentLocale === 'es' ? '/es/politica-de-cookies' : '/en/cookie-policy',
     newsletterConfirmed: currentLocale === 'es' ? '/es/suscripcion-confirmada' : '/en/newsletter-confirmed',
     // Service pages
-    shopifyStoreSetup: currentLocale === 'es' ? '/es/crear-tienda-shopify' : '/en/shopify-store-setup',
-    shopifySeo: currentLocale === 'es' ? '/es/seo-shopify' : '/en/shopify-seo',
-    shopifyDesign: currentLocale === 'es' ? '/es/diseno-shopify' : '/en/shopify-design',
-    shopifyThemeCustomization: currentLocale === 'es' ? '/es/personalizacion-tema-shopify' : '/en/shopify-theme-customization',
-    shopifyMigration: currentLocale === 'es' ? '/es/migracion-shopify' : '/en/shopify-migration',
-    shopifyCro: currentLocale === 'es' ? '/es/cro-shopify' : '/en/shopify-cro',
-    shopifyPlus: currentLocale === 'es' ? '/es/shopify-plus' : '/en/shopify-plus',
-    shopifyConsulting: currentLocale === 'es' ? '/es/consultoria-shopify' : '/en/shopify-consulting',
-    shopifyGrowthPartner: currentLocale === 'es' ? '/es/growth-partner-shopify' : '/en/shopify-growth-partner',
-    shopifyAbTesting: currentLocale === 'es' ? '/es/ab-testing-shopify' : '/en/shopify-ab-testing',
+    migration: currentLocale === 'es' ? '/es/migracion-shopify' : '/en/shopify-migration',
+    migrationPlus: currentLocale === 'es' ? '/es/migracion-plus' : '/en/shopify-migration-plus',
+    customDev: currentLocale === 'es' ? '/es/desarrollos-a-medida' : '/en/custom-shopify-development',
+    conversionResearch: currentLocale === 'es' ? '/es/conversion-research' : '/en/conversion-research',
+    conversionAudit: currentLocale === 'es' ? '/es/auditoria-conversion' : '/en/conversion-audit',
+    landingPages: currentLocale === 'es' ? '/es/optimizacion-landing-pages' : '/en/landing-page-optimization',
+    emailAutomation: currentLocale === 'es' ? '/es/email-marketing-automation' : '/en/email-marketing-automation',
+    emailCampaigns: currentLocale === 'es' ? '/es/campanas-email-marketing' : '/en/email-marketing-campaigns',
+    maintenance: currentLocale === 'es' ? '/es/mantenimiento-shopify' : '/en/shopify-maintenance',
   }
   
   // Función para generar enlaces de posts de blog

@@ -1,280 +1,152 @@
 "use client"
-import { useState, useEffect } from "react"
-import { Plus, Minus, Construction, Search, Sprout } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
-import TranslatedLink from "@/app/_components/translated-link"
-import { useScrollPosition } from "@/hooks/useScrollPosition"
+import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
+import { getServicesByGroup, ServiceGroupKey } from "@/lib/services-config"
 
-interface ServiceItemProps {
-  serviceId: string; // Add service ID
-  number: string;
-  title: string;
-  description: string;
-  details: string[];
-  isExpanded: boolean;
-  onToggle: () => void;
-  accentColor: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
-  t: (key: string) => string;
-  scrollToContact: () => void;
+function formatPrice(amount: number, locale: 'es' | 'en') {
+  // No depende de datos ICU/Intl (poco fiables en algunos runtimes de Node):
+  // agrupa de a miles manualmente con el separador correcto por idioma.
+  const separator = locale === 'es' ? '.' : ','
+  const grouped = amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator)
+  return locale === 'es' ? `${grouped}€` : `€${grouped}`
 }
 
-function ServiceItem({ serviceId, number, title, description, details, isExpanded, onToggle, accentColor, icon: Icon, t, scrollToContact }: ServiceItemProps) {
-  const { language } = useLanguage()
-  
-  // Helper function to get URL key for each detail
-  const getDetailUrlKey = (serviceType: string, detailIndex: number) => {
-    const serviceMap = {
-      'Crear': 'create',
-      'Create': 'create', 
-      'Estrategia': 'strategy',
-      'Strategy': 'strategy',
-      'Escalar': 'scale',
-      'Scale': 'scale'
-    }
-    
-    const serviceKey = serviceMap[title as keyof typeof serviceMap] || 'create'
-    return `services.${serviceKey}.detail${detailIndex + 1}.url`
-  }
-  
-  return (
-    <div
-      className={`border-b border-gray-800 last:border-b-0 group transition-all duration-500 ${
-        isExpanded ? "bg-white" : ""
-      }`}
-      style={{ backgroundColor: isExpanded ? 'white' : '#1a1a1a' }}
-    >
-      <button
-        onClick={onToggle}
-        className="w-full flex items-center justify-between py-6 sm:py-8 md:py-12 px-2 sm:px-4 md:px-8 lg:px-16 text-left hover:bg-opacity-90 transition-all duration-300"
-      >
-        <div className="flex items-center flex-1 min-w-0">
-          <div
-            className={`mr-1 sm:mr-2 md:mr-4 lg:mr-8 xl:mr-12 transition-colors duration-500 flex-shrink-0 w-10 sm:w-12 md:w-16 lg:w-24 xl:w-32 flex items-center justify-center ${
-              isExpanded ? "text-gray-300" : "text-gray-800 group-hover:text-gray-700"
-            }`}
-          >
-            <div 
-              className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-16 lg:h-16 xl:w-20 xl:h-20 rounded-full transition-colors duration-500 flex items-center justify-center"
-              style={{ 
-                backgroundColor: isExpanded ? '#d1d5db' : accentColor,
-                transition: 'background-color 0.5s ease'
-              }}
-            >
-              <Icon 
-                size={16} 
-                className={`sm:w-5 sm:h-5 md:w-6 md:h-6 transition-colors duration-500 ${
-                  isExpanded ? "text-black" : "text-white"
-                }`}
-              />
-            </div>
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3
-              className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-wide mb-2 sm:mb-2 md:mb-3 transition-colors duration-500 ${
-                isExpanded ? "text-black" : "text-white"
-              }`}
-              style={{ fontFamily: "Bebas Neue, sans-serif" }}
-            >
-              {title.toUpperCase()}
-            </h3>
-            <p
-              className={`text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed transition-colors duration-500 ${
-                isExpanded ? "text-gray-600" : "text-gray-400"
-              }`}
-            >
-              {description}
-            </p>
-          </div>
-        </div>
-        <div className="ml-1 sm:ml-2 md:ml-4 lg:ml-8 flex-shrink-0">
-          <div
-            className={`w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-16 xl:h-16 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
-              isExpanded ? "border-black" : "border-white hover:bg-white/10"
-            }`}
-            style={{
-              backgroundColor: isExpanded ? accentColor : undefined,
-              borderColor: isExpanded ? accentColor : undefined,
-              transition: 'all 0.3s ease'
-            }}
-          >
-            {isExpanded ? (
-              <Minus size={14} className="sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-white" />
-            ) : (
-              <Plus size={14} className="sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-white" />
-            )}
-          </div>
-        </div>
-      </button>
-
-      <div
-        className={`overflow-hidden transition-all duration-500 ease-out ${
-          isExpanded ? "max-h-[500px] sm:max-h-[600px] md:max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-        }`}
-      >
-        <div className="px-2 sm:px-3 md:px-4 lg:px-8 xl:px-16 pb-6 sm:pb-8 md:pb-12">
-          <div className="ml-6 sm:ml-8 md:ml-12 lg:ml-16 xl:ml-32">
-            <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 md:gap-6">
-              {details.map((detail, index) => {
-                const urlKey = getDetailUrlKey(title, index)
-                const detailKey = `services.${title === 'Crear' || title === 'Create' ? 'create' : title === 'Estrategia' || title === 'Strategy' ? 'strategy' : 'scale'}.detail${index + 1}`
-                
-                return (
-                  <div key={index} className="flex items-start group/item">
-                    <div 
-                      className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mr-2 sm:mr-3 md:mr-4 mt-1.5 sm:mt-2 flex-shrink-0 group-hover/item:opacity-80 transition-colors"
-                      style={{ backgroundColor: accentColor }}
-                    ></div>
-                    <TranslatedLink 
-                      textKey={detailKey}
-                      urlKey={urlKey}
-                      expandedServiceId={isExpanded ? serviceId : undefined}
-                      className="text-gray-700 hover:text-blue-600 text-xs sm:text-sm md:text-base leading-tight sm:leading-relaxed transition-colors no-underline hover:underline cursor-pointer"
-                    />
-                  </div>
-                )
-              })}
-            </div>
-            <div className="mt-4 sm:mt-6 md:mt-8 pt-3 sm:pt-4 md:pt-6 border-t border-gray-300">
-              <button 
-                onClick={scrollToContact}
-                className="bg-black text-white px-4 sm:px-6 md:px-8 py-2 md:py-3 rounded-full font-medium hover:bg-gray-800 transition-colors text-xs sm:text-sm md:text-base"
-              >
-                {t('services.more_info')}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+const GROUPS: { key: ServiceGroupKey; num: string }[] = [
+  { key: 'foundation', num: '01' },
+  { key: 'conversion', num: '02' },
+  { key: 'recurring', num: '03' },
+]
 
 export default function ServicesSection() {
-  const { t } = useLanguage()
-  const [expandedService, setExpandedService] = useState<string | null>(null)
-  const { restoreScrollPosition, clearSavedState } = useScrollPosition()
-
-  // Restore expanded state and scroll position when component mounts
-  useEffect(() => {
-    const savedState = restoreScrollPosition()
-    if (savedState) {
-      const { scrollPosition, expandedService } = savedState
-      
-      // Restore expanded service first
-      if (expandedService) {
-        setExpandedService(expandedService)
-      }
-      
-      // Then restore scroll position after a short delay
-      setTimeout(() => {
-        window.scrollTo({
-          top: scrollPosition,
-          behavior: 'instant'
-        })
-        
-        // Clean up saved state
-        clearSavedState()
-      }, 100)
-    }
-  }, [restoreScrollPosition, clearSavedState])
+  const { t, language } = useLanguage()
+  const { links } = useLocalizedLinks()
+  const router = useRouter()
 
   const scrollToContact = () => {
-    const contactSection = document.getElementById('contacto');
+    const contactSection = document.getElementById('contacto')
     if (contactSection) {
-      contactSection.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
+      contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    } else {
+      router.push(links.contact)
     }
-  };
-
-  const services = [
-    {
-      id: "crear",
-      number: "01",
-      title: t('services.create.title'),
-      description: t('services.create.description'),
-      accentColor: "#FF6C03",
-      icon: Construction,
-      details: [
-        t('services.create.detail1'),
-        t('services.create.detail2'),
-        t('services.create.detail3'),
-        t('services.create.detail4'),
-        t('services.create.detail5'),
-        t('services.create.detail6'),
-      ],
-    },
-    {
-      id: "estrategia",
-      number: "02",
-      title: t('services.strategy.title'),
-      description: t('services.strategy.description'),
-      accentColor: "#02ADC5",
-      icon: Search,
-      details: [
-        t('services.strategy.detail1'),
-        t('services.strategy.detail2'),
-        t('services.strategy.detail3'),
-        t('services.strategy.detail4'),
-        t('services.strategy.detail5'),
-        t('services.strategy.detail6'),
-      ],
-    },
-    {
-      id: "escalar",
-      number: "03",
-      title: t('services.scale.title'),
-      description: t('services.scale.description'),
-      accentColor: "#70764D",
-      icon: Sprout,
-      details: [
-        t('services.scale.detail1'),
-        t('services.scale.detail2'),
-        t('services.scale.detail3'),
-        t('services.scale.detail4'),
-        t('services.scale.detail5'),
-        t('services.scale.detail6'),
-      ],
-    },
-  ]
-
-  const handleToggle = (serviceId: string) => {
-    setExpandedService(expandedService === serviceId ? null : serviceId)
   }
 
   return (
-    <section id="services-section" className="text-white" style={{ backgroundColor: '#1a1a1a' }}>
-      <div className="text-center py-10 sm:py-14 md:py-18 lg:py-24 px-3 sm:px-4 md:px-6 lg:px-8 xl:px-16">
-        <h2
-          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-wide mb-4 sm:mb-5 md:mb-6"
-          style={{ fontFamily: "Bebas Neue, sans-serif" }}
-        >
-          {t('services.title')}
-        </h2>
-        <p className="text-gray-400 text-base sm:text-lg md:text-xl lg:text-2xl max-w-4xl mx-auto leading-relaxed px-3">
-          {t('services.subtitle')}
-        </p>
-      </div>
+    <section id="services-section" className="bg-sw-bg-1 py-16 sm:py-20 lg:py-24">
+      <div className="mx-auto max-w-7xl px-5">
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
+          <h2 className="font-display text-4xl text-sw-fg-1 sm:text-5xl lg:text-6xl">
+            {t('services.title')}
+          </h2>
+          <p className="max-w-md text-lg text-sw-fg-2">{t('services.sub')}</p>
+        </div>
 
-      <div className="w-full">
-        {services.map((service) => (
-          <ServiceItem
-            key={service.id}
-            serviceId={service.id}
-            number={service.number}
-            title={service.title}
-            description={service.description}
-            details={service.details}
-            isExpanded={expandedService === service.id}
-            onToggle={() => handleToggle(service.id)}
-            accentColor={service.accentColor}
-            icon={service.icon}
-            t={t}
-            scrollToContact={scrollToContact}
-          />
-        ))}
+        {GROUPS.map((group) => {
+          const groupServices = getServicesByGroup(group.key)
+          return (
+            <div key={group.key} className="mt-14">
+              <div className="mb-6 flex flex-wrap items-baseline gap-4">
+                <span className="font-mono-label text-sw-fg-3">{group.num}</span>
+                <span className="font-display text-2xl text-sw-fg-1 sm:text-3xl">
+                  {t(`services.group.${group.key}.name`)}
+                </span>
+                <span className="ml-auto max-w-[34ch] text-right text-sm text-sw-fg-3">
+                  {t(`services.group.${group.key}.desc`)}
+                </span>
+              </div>
+
+              {/* Cards: scroll horizontal con snap en mobile, grid en desktop */}
+              <div className="-mx-5 overflow-x-auto px-5 pb-2 sm:mx-0 sm:overflow-visible sm:px-0">
+                <div className="flex snap-x snap-mandatory gap-5 sm:grid sm:snap-none sm:grid-cols-3 sm:gap-6">
+                  {groupServices.map((service) => {
+                    const href = links[service.key as keyof typeof links] as string
+                    const isCustom = service.price.amount === null
+                    const unit = language === 'es' ? service.price.unitEs : service.price.unitEn
+                    const tag = t(`services.${service.key}.tag`)
+                    const hasTag = tag !== `services.${service.key}.tag`
+                    const bullets = [
+                      t(`services.${service.key}.bullet1`),
+                      t(`services.${service.key}.bullet2`),
+                      t(`services.${service.key}.bullet3`),
+                    ]
+
+                    return (
+                      <div
+                        key={service.key}
+                        className="flex min-w-[80vw] shrink-0 snap-center flex-col rounded-sm border border-sw-line bg-sw-bg-2 p-6 sm:min-w-0 sm:shrink"
+                      >
+                        <div className="flex items-baseline justify-between gap-3">
+                          <h3 className="text-lg font-semibold text-sw-fg-1">
+                            {t(`services.${service.key}.name`)}
+                          </h3>
+                          <div className="text-right">
+                            <span className="font-display text-xl text-sw-fg-1">
+                              {isCustom ? t(`services.${service.key}.price`) : formatPrice(service.price.amount!, language)}
+                            </span>
+                            {!isCustom && (
+                              <span className="ml-1 font-mono-label text-[11px] normal-case tracking-normal text-sw-fg-3">
+                                {t('services.unit.iva')}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {unit && (
+                          <span className="mt-1 font-mono-label text-[11px] normal-case tracking-normal text-sw-fg-4">
+                            {unit}
+                          </span>
+                        )}
+
+                        {hasTag && (
+                          <span className="mt-3 inline-block self-start rounded-sm border border-sw-brand px-2 py-0.5 font-mono-label text-[11px] text-sw-brand">
+                            {tag}
+                          </span>
+                        )}
+
+                        <p className="mt-3 text-sm text-sw-brand">
+                          {t(`services.${service.key}.tagline`)}
+                        </p>
+
+                        <Link
+                          href={href}
+                          className="mt-5 block rounded-sm border border-sw-line-strong px-4 py-3 text-center text-sm font-semibold text-sw-fg-1 transition-colors hover:border-sw-fg-1"
+                        >
+                          {t('services.viewDetail')}
+                        </Link>
+
+                        <div className="mt-6 flex flex-1 flex-col">
+                          {bullets.map((bullet) => (
+                            <p
+                              key={bullet}
+                              className="border-b border-sw-line py-3 text-sm text-sw-fg-2 last:border-b-0"
+                            >
+                              {bullet}
+                            </p>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+
+        <p className="mt-8 max-w-3xl text-xs leading-relaxed text-sw-fg-4">
+          {t('services.note')}
+        </p>
+
+        <div className="mt-12">
+          <button
+            onClick={scrollToContact}
+            className="rounded-sm bg-sw-brand px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-sw-brand-hover"
+          >
+            {t('services.cta')}
+          </button>
+        </div>
       </div>
     </section>
   )

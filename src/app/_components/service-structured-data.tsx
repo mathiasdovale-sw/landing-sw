@@ -1,12 +1,11 @@
 "use client"
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getCanonicalBaseUrl } from "@/lib/seo-utils";
+import { getService, getServicePath } from "@/lib/services-config";
 
 interface ServiceSchemaProps {
   serviceName: string;
-  serviceType: 'shopifyConsulting' | 'shopifyDesign' | 'shopifyStoreSetup' | 'shopifyMigration' | 
-               'shopifyThemeCustomization' | 'shopifySeo' | 'shopifyCro' | 'shopifyAbTesting' | 
-               'shopifyGrowthPartner' | 'shopifyPlus';
+  serviceType: string;
   description: string;
   price?: {
     currency: string;
@@ -16,37 +15,24 @@ interface ServiceSchemaProps {
   };
 }
 
+const serviceCategories: Record<string, string> = {
+  migration: 'Platform Migration',
+  migrationPlus: 'Platform Migration',
+  customDev: 'Custom Software Development',
+  conversionResearch: 'Conversion Research',
+  conversionAudit: 'Conversion Optimization',
+  landingPages: 'Conversion Optimization',
+  emailAutomation: 'Email Marketing',
+  emailCampaigns: 'Email Marketing',
+  maintenance: 'Website Maintenance',
+};
+
 const ServiceStructuredData = ({ serviceName, serviceType, description, price }: ServiceSchemaProps) => {
   const { language } = useLanguage();
   const baseUrl = getCanonicalBaseUrl();
-  
-  const serviceCategories = {
-    shopifyConsulting: 'Consulting',
-    shopifyDesign: 'Web Design',
-    shopifyStoreSetup: 'E-commerce Setup',
-    shopifyMigration: 'Platform Migration',
-    shopifyThemeCustomization: 'Theme Development',
-    shopifySeo: 'SEO Services',
-    shopifyCro: 'Conversion Optimization',
-    shopifyAbTesting: 'A/B Testing',
-    shopifyGrowthPartner: 'Growth Marketing',
-    shopifyPlus: 'Enterprise Solutions'
-  };
 
-  const urls = {
-    shopifyConsulting: { es: '/es/consultoria-shopify', en: '/en/shopify-consulting' },
-    shopifyDesign: { es: '/es/diseno-shopify', en: '/en/shopify-design' },
-    shopifyStoreSetup: { es: '/es/crear-tienda-shopify', en: '/en/shopify-store-setup' },
-    shopifyMigration: { es: '/es/migracion-shopify', en: '/en/shopify-migration' },
-    shopifyThemeCustomization: { es: '/es/personalizacion-tema-shopify', en: '/en/shopify-theme-customization' },
-    shopifySeo: { es: '/es/seo-shopify', en: '/en/shopify-seo' },
-    shopifyCro: { es: '/es/cro-shopify', en: '/en/shopify-cro' },
-    shopifyAbTesting: { es: '/es/ab-testing-shopify', en: '/en/shopify-ab-testing' },
-    shopifyGrowthPartner: { es: '/es/growth-partner-shopify', en: '/en/shopify-growth-partner' },
-    shopifyPlus: { es: '/es/shopify-plus', en: '/en/shopify-plus' }
-  };
-
-  const serviceUrl = `${baseUrl}${urls[serviceType][language as keyof typeof urls[typeof serviceType]]}`;
+  const service = getService(serviceType);
+  const serviceUrl = `${baseUrl}${getServicePath(serviceType, language as 'es' | 'en')}`;
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -58,20 +44,18 @@ const ServiceStructuredData = ({ serviceName, serviceType, description, price }:
       "name": "SellifyWorks",
       "url": baseUrl,
       "logo": `${baseUrl}/assets/img/logoSW.png`,
-      "sameAs": [
-        // Add social media URLs here when available
-      ],
+      "sameAs": [],
       "address": {
         "@type": "PostalAddress",
         "addressCountry": "ES",
         "addressLocality": "Barcelona"
       }
     },
-    "serviceType": serviceCategories[serviceType],
+    "serviceType": serviceCategories[service.key] || 'E-commerce Services',
     "category": "E-commerce Services",
     "audience": {
       "@type": "BusinessAudience",
-      "audienceType": "E-commerce businesses"
+      "audienceType": "Small e-commerce businesses"
     },
     "areaServed": {
       "@type": "Country",

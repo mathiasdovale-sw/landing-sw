@@ -50,16 +50,15 @@ export async function GET(request: NextRequest) {
 
   // Service pages
   const servicePages: Array<keyof typeof seoUrls> = [
-    'shopifyConsulting',
-    'shopifyDesign', 
-    'shopifyStoreSetup',
-    'shopifyMigration',
-    'shopifyThemeCustomization',
-    'shopifySeo',
-    'shopifyCro',
-    'shopifyAbTesting',
-    'shopifyGrowthPartner',
-    'shopifyPlus'
+    'migration',
+    'migrationPlus',
+    'customDev',
+    'conversionResearch',
+    'conversionAudit',
+    'landingPages',
+    'emailAutomation',
+    'emailCampaigns',
+    'maintenance'
   ]
 
   servicePages.forEach(page => {

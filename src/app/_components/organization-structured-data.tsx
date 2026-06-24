@@ -27,20 +27,20 @@ const OrganizationStructuredData = ({
 
   const defaultSpecialties = {
     es: [
-      "Desarrollo Shopify",
-      "Optimización SEO",
-      "Conversión CRO", 
-      "Diseño Web",
-      "Consultoría Ecommerce",
-      "Shopify Plus"
+      "Migración a Shopify",
+      "Optimización de conversión (CRO)",
+      "Email marketing automation",
+      "Auditoría de conversión",
+      "Mantenimiento Shopify",
+      "Desarrollos a medida"
     ],
     en: [
-      "Shopify Development",
-      "SEO Optimization", 
-      "CRO Conversion",
-      "Web Design",
-      "Ecommerce Consulting",
-      "Shopify Plus"
+      "Shopify Migration",
+      "Conversion Rate Optimization",
+      "Email Marketing Automation",
+      "Conversion Audit",
+      "Shopify Maintenance",
+      "Custom Development"
     ]
   };
 
@@ -112,24 +112,24 @@ const OrganizationStructuredData = ({
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": language === 'es' ? "Consultoría Shopify" : "Shopify Consulting",
-            "url": `${baseUrl}/${language}/${language === 'es' ? 'consultoria-shopify' : 'shopify-consulting'}`
-          }
-        },
-        {
-          "@type": "Offer", 
-          "itemOffered": {
-            "@type": "Service",
-            "name": language === 'es' ? "Diseño Shopify" : "Shopify Design",
-            "url": `${baseUrl}/${language}/${language === 'es' ? 'diseno-shopify' : 'shopify-design'}`
+            "name": language === 'es' ? "Migración a Shopify" : "Shopify Migration",
+            "url": `${baseUrl}/${language}/${language === 'es' ? 'migracion-shopify' : 'shopify-migration'}`
           }
         },
         {
           "@type": "Offer",
           "itemOffered": {
-            "@type": "Service", 
-            "name": language === 'es' ? "SEO Shopify" : "Shopify SEO",
-            "url": `${baseUrl}/${language}/${language === 'es' ? 'seo-shopify' : 'shopify-seo'}`
+            "@type": "Service",
+            "name": language === 'es' ? "Auditoría de conversión" : "Conversion Audit",
+            "url": `${baseUrl}/${language}/${language === 'es' ? 'auditoria-conversion' : 'conversion-audit'}`
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": language === 'es' ? "Mantenimiento" : "Maintenance",
+            "url": `${baseUrl}/${language}/${language === 'es' ? 'mantenimiento-shopify' : 'shopify-maintenance'}`
           }
         }
       ]

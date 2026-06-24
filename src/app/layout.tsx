@@ -4,12 +4,22 @@ import NewsletterPopup from "@/app/_components/newsletter-popup-safe";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ScrollProvider } from "@/contexts/ScrollContext";
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Poppins, Archivo, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import cn from "classnames";
 import "./globals.css";
 
 const inter = Poppins({ weight: "400", subsets: ["latin"] });
+const archivo = Archivo({
+  weight: ["600", "700", "800", "900"],
+  subsets: ["latin"],
+  variable: "--font-archivo",
+});
+const jetbrainsMono = JetBrains_Mono({
+  weight: ["400", "500"],
+  subsets: ["latin"],
+  variable: "--font-jbmono",
+});
 
 export const metadata: Metadata = {
   title: "SellifyWorks | Agencia Shopify España",
@@ -273,7 +283,7 @@ export default function RootLayout({
         }} />
       </head>
       <body
-        className={cn(inter.className)}
+        className={cn(inter.className, archivo.variable, jetbrainsMono.variable)}
         style={{ backgroundColor: '#141417ff' }}
         suppressHydrationWarning
       >

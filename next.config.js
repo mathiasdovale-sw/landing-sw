@@ -101,6 +101,28 @@ const nextConfig = {
         permanent: true,
       },
 
+      // === REDIRECCIONES DE SERVICIOS LEGACY ===
+      // Rediseño de oferta de servicios: las páginas viejas se mapean a la
+      // oferta nueva más cercana, o a /servicios cuando no hay equivalente directo.
+      { source: '/es/diseno-shopify', destination: '/es/servicios', permanent: true },
+      { source: '/en/shopify-design', destination: '/en/services', permanent: true },
+      { source: '/es/crear-tienda-shopify', destination: '/es/servicios', permanent: true },
+      { source: '/en/shopify-store-setup', destination: '/en/services', permanent: true },
+      { source: '/es/personalizacion-tema-shopify', destination: '/es/servicios', permanent: true },
+      { source: '/en/shopify-theme-customization', destination: '/en/services', permanent: true },
+      { source: '/es/seo-shopify', destination: '/es/servicios', permanent: true },
+      { source: '/en/shopify-seo', destination: '/en/services', permanent: true },
+      { source: '/es/growth-partner-shopify', destination: '/es/servicios', permanent: true },
+      { source: '/en/shopify-growth-partner', destination: '/en/services', permanent: true },
+      { source: '/es/consultoria-shopify', destination: '/es/auditoria-conversion', permanent: true },
+      { source: '/en/shopify-consulting', destination: '/en/conversion-audit', permanent: true },
+      { source: '/es/cro-shopify', destination: '/es/conversion-research', permanent: true },
+      { source: '/en/shopify-cro', destination: '/en/conversion-research', permanent: true },
+      { source: '/es/ab-testing-shopify', destination: '/es/conversion-research', permanent: true },
+      { source: '/en/shopify-ab-testing', destination: '/en/conversion-research', permanent: true },
+      { source: '/es/shopify-plus', destination: '/es/desarrollos-a-medida', permanent: true },
+      { source: '/en/shopify-plus', destination: '/en/custom-shopify-development', permanent: true },
+
       // === REDIRECCIONES DE NEWSLETTER ===
       // Newsletter confirmado
       {

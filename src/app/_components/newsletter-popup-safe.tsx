@@ -198,12 +198,12 @@ function NewsletterPopupContent() {
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-auto relative animate-in fade-in zoom-in duration-300">
+      <div className="bg-sw-bg-1 border border-sw-line rounded-sm shadow-2xl max-w-md w-full mx-auto relative animate-in fade-in zoom-in duration-300">
         {/* Botón cerrar */}
         <button
           onClick={handleClose}
           data-testid="close-button"
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+          className="absolute top-4 right-4 text-sw-fg-3 hover:text-sw-fg-1 transition-colors"
         >
           <X size={24} />
         </button>
@@ -213,24 +213,21 @@ function NewsletterPopupContent() {
             <>
               {/* Icono */}
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-gradient-to-r from-black to-cyan-500 rounded-full flex items-center justify-center">
+                <div className="w-16 h-16 bg-sw-brand rounded-full flex items-center justify-center">
                   <Mail size={28} className="text-white" />
                 </div>
               </div>
 
               {/* Título */}
-              <h2 
-                className="text-2xl md:text-3xl font-bold text-center text-black mb-3"
-                style={{ fontFamily: "Bebas Neue, sans-serif" }}
-              >
-                {language === 'en' 
+              <h2 className="font-display text-2xl md:text-3xl text-center text-sw-fg-1 mb-3">
+                {language === 'en'
                   ? "DON'T MISS OUR TIPS!"
                   : "¡NO TE PIERDAS NUESTROS CONSEJOS!"
                 }
               </h2>
 
               {/* Descripción */}
-              <p className="text-gray-600 text-center mb-6 leading-relaxed">
+              <p className="text-sw-fg-3 text-center mb-6 leading-relaxed">
                 {language === 'en'
                   ? 'Subscribe to our newsletter and receive exclusive tips about Shopify, conversion strategies, and the latest e-commerce trends.'
                   : 'Suscríbete a nuestra newsletter y recibe tips exclusivos sobre Shopify, estrategias de conversión y las últimas tendencias del e-commerce.'
@@ -246,16 +243,16 @@ function NewsletterPopupContent() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="tu@email.com"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 border border-sw-line-strong bg-sw-bg-2 text-sw-fg-1 rounded-sm focus:ring-2 focus:ring-sw-brand focus:border-transparent outline-none transition-all"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-black to-cyan-500 text-white font-semibold py-3 px-6 rounded-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-sw-brand text-white font-semibold py-3 px-6 rounded-sm hover:bg-sw-brand-hover transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting 
+                  {isSubmitting
                     ? (language === 'en' ? "Subscribing..." : "Suscribiendo...")
                     : (language === 'en' ? "Subscribe Free" : "Suscribirme Gratis")
                   }
@@ -264,13 +261,13 @@ function NewsletterPopupContent() {
 
               {/* Error message */}
               {error && (
-                <p className="text-red-500 text-sm text-center mt-3">
+                <p className="text-sw-danger text-sm text-center mt-3">
                   {error}
                 </p>
               )}
 
               {/* Nota */}
-              <p className="text-xs text-gray-500 text-center mt-4">
+              <p className="text-xs text-sw-fg-4 text-center mt-4">
                 {language === 'en'
                   ? 'No spam. You can unsubscribe at any time.'
                   : 'No spam. Puedes darte de baja en cualquier momento.'
@@ -280,20 +277,19 @@ function NewsletterPopupContent() {
           ) : (
             /* Estado de éxito */
             <div className="text-center" data-testid="success-state">
-              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-sw-success rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                 </svg>
               </div>
-              <h2 
-                className="text-2xl font-bold text-black mb-2"
-                style={{ fontFamily: "Bebas Neue, sans-serif" }}
+              <h2
+                className="font-display text-2xl text-sw-fg-1 mb-2"
                 data-testid="success-title"
               >
                 {successMessage || (language === 'en' ? 'WELCOME ABOARD!' : '¡BIENVENIDO A BORDO!')}
               </h2>
               <div className="overflow-hidden transition-all duration-500 ease-out max-h-20 opacity-100">
-                <span className="text-gray-700 text-sm md:text-base leading-relaxed group-hover/item:text-black transition-colors" data-testid="success-message">
+                <span className="text-sw-fg-2 text-sm md:text-base leading-relaxed transition-colors" data-testid="success-message">
                   {successMessage === (language === 'en' ? 'You are already subscribed to our newsletter!' : '¡Ya estás suscrito a nuestra newsletter!')
                     ? (language === 'en' ? "Don't worry, you already receive our exclusive tips." : 'No te preocupes, ya recibes nuestros consejos exclusivos.')
                     : successMessage === (language === 'en' ? 'You are already subscribed!' : '¡Ya estás suscrito!')

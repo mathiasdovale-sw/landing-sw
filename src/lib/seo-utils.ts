@@ -54,45 +54,41 @@ export const metaDescriptions: Record<string, MetaDescription> = {
   },
   
   // Services meta descriptions
-  shopifyConsulting: {
-    es: "Consultoría experta en Shopify. Auditorías completas y estrategias de crecimiento. Maximiza el potencial de tu ecommerce con SellifyWorks.",
-    en: "Expert Shopify consulting. Complete audits, growth strategies and online store optimization. Maximize your ecommerce potential with SellifyWorks."
+  migration: {
+    es: "Migración a Shopify llave en mano: auditoría, diseño, carga de productos y transferencia, sin cortar tus ventas. 2.640€ + IVA.",
+    en: "Turnkey Shopify migration: audit, design, product upload and handover, with zero sales downtime. €2,640 + VAT."
   },
-  shopifyDesign: {
-    es: "Diseño profesional de tiendas Shopify. Interfaces atractivas, responsive y optimizadas para conversión. Crea la mejor experiencia de usuario con SellifyWorks.",
-    en: "Professional Shopify store design. Attractive, responsive interfaces optimized for conversion. Create the best user experience with SellifyWorks."
+  migrationPlus: {
+    es: "Migración a Shopify + conversion research para lanzar tu tienda ya optimizada desde el día uno. Ideal para tiendas que facturan +4.000€/mes.",
+    en: "Shopify migration + conversion research to launch your store already optimized from day one. Ideal for stores doing over €4,000/month."
   },
-  shopifyStoreSetup: {
-    es: "Configuración completa de tiendas Shopify desde cero. Instalación, personalización y optimización para lanzar tu ecommerce exitosamente con SellifyWorks.",
-    en: "Complete Shopify store setup from scratch. Installation, customization and optimization to successfully launch your ecommerce with SellifyWorks."
+  customDev: {
+    es: "Desarrollos a medida para Shopify: integraciones, automatizaciones y funcionalidades a medida cuando lo estándar no alcanza.",
+    en: "Custom Shopify development: integrations, automations and bespoke functionality when the standard scope isn't enough."
   },
-  shopifyMigration: {
-    es: "Migración segura a Shopify desde cualquier plataforma. Transferencia completa de datos, productos y configuraciones sin perder información ni ventas.",
-    en: "Safe migration to Shopify from any platform. Complete transfer of data, products and configurations without losing information or sales."
+  conversionResearch: {
+    es: "Conversion research para Shopify: Google Analytics + investigación cualitativa para entender por qué tus visitantes no compran.",
+    en: "Conversion research for Shopify: Google Analytics + qualitative research to understand why your visitors aren't buying."
   },
-  shopifyThemeCustomization: {
-    es: "Personalización avanzada de themes Shopify. Modificaciones únicas, funcionalidades custom y optimización para destacar tu marca en el mercado.",
-    en: "Advanced Shopify theme customization. Unique modifications, custom functionalities and optimization to make your brand stand out in the market."
+  conversionAudit: {
+    es: "Auditoría de conversión para tiendas Shopify pequeñas. Detectamos qué frena tus ventas y te entregamos un plan de acción priorizado.",
+    en: "Conversion audit for small Shopify stores. We find what's holding your sales back and hand you a prioritized action plan."
   },
-  shopifySeo: {
-    es: "SEO especializado para Shopify. Optimización técnica, contenido y estructura para mejorar posicionamiento y aumentar tráfico orgánico a tu tienda.",
-    en: "Specialized SEO for Shopify. Technical optimization, content and structure to improve rankings and increase organic traffic to your store."
+  landingPages: {
+    es: "Optimización de landing pages en Shopify aplicando heurísticas de CRO probadas. 339€ + IVA por página.",
+    en: "Shopify landing page optimization applying proven CRO heuristics. €339 + VAT per page."
   },
-  shopifyCro: {
-    es: "Optimización de conversión (CRO) para Shopify. Análisis, testing y mejoras para incrementar ventas y maximizar el valor de cada visitante de tu tienda.",
-    en: "Conversion rate optimization (CRO) for Shopify. Analysis, testing and improvements to increase sales and maximize the value of each store visitor."
+  emailAutomation: {
+    es: "Email marketing automation para Shopify: welcome flow, post-compra, carrito abandonado y más. 149€ + IVA por flujo.",
+    en: "Email marketing automation for Shopify: welcome flow, post-purchase, abandoned cart and more. €149 + VAT per flow."
   },
-  shopifyAbTesting: {
-    es: "A/B Testing profesional para tiendas Shopify. Pruebas científicas de elementos, páginas y flujos para optimizar conversiones basándose en datos reales.",
-    en: "Professional A/B testing for Shopify stores. Scientific testing of elements, pages and flows to optimize conversions based on real data."
+  emailCampaigns: {
+    es: "Campañas mensuales de email marketing para Shopify: estrategia, diseño e implementación de 8 emails al mes.",
+    en: "Monthly email marketing campaigns for Shopify: strategy, design and implementation of 8 emails a month."
   },
-  shopifyGrowthPartner: {
-    es: "Partner de crecimiento para Shopify. Estrategias integrales de marketing, optimización y escalamiento para impulsar tu ecommerce al siguiente nivel.",
-    en: "Growth partner for Shopify. Comprehensive marketing strategies, optimization and scaling to take your ecommerce to the next level."
-  },
-  shopifyPlus: {
-    es: "Servicios especializados en Shopify Plus. Desarrollo enterprise, integraciones avanzadas y soluciones escalables para grandes volúmenes de ventas.",
-    en: "Specialized services in Shopify Plus. Enterprise development, advanced integrations and scalable solutions for high sales volumes."
+  maintenance: {
+    es: "Mantenimiento mensual para tiendas Shopify pequeñas: 10 tareas al mes para mantener tu tienda siempre al día.",
+    en: "Monthly maintenance for small Shopify stores: 10 tasks a month to keep your store always up to date."
   }
 }
 
@@ -108,17 +104,22 @@ export const seoUrls: Record<string, SeoUrl> = {
   newsletterConfirmed: { es: '/suscripcion-confirmada', en: '/newsletter-confirmed' },
   
   // Services
-  shopifyConsulting: { es: '/consultoria-shopify', en: '/shopify-consulting' },
-  shopifyDesign: { es: '/diseno-shopify', en: '/shopify-design' },
-  shopifyStoreSetup: { es: '/crear-tienda-shopify', en: '/shopify-store-setup' },
-  shopifyMigration: { es: '/migracion-shopify', en: '/shopify-migration' },
-  shopifyThemeCustomization: { es: '/personalizacion-tema-shopify', en: '/shopify-theme-customization' },
-  shopifySeo: { es: '/seo-shopify', en: '/shopify-seo' },
-  shopifyCro: { es: '/cro-shopify', en: '/shopify-cro' },
-  shopifyAbTesting: { es: '/ab-testing-shopify', en: '/shopify-ab-testing' },
-  shopifyGrowthPartner: { es: '/growth-partner-shopify', en: '/shopify-growth-partner' },
-  shopifyPlus: { es: '/shopify-plus', en: '/shopify-plus' }
+  migration: { es: '/migracion-shopify', en: '/shopify-migration' },
+  migrationPlus: { es: '/migracion-plus', en: '/shopify-migration-plus' },
+  customDev: { es: '/desarrollos-a-medida', en: '/custom-shopify-development' },
+  conversionResearch: { es: '/conversion-research', en: '/conversion-research' },
+  conversionAudit: { es: '/auditoria-conversion', en: '/conversion-audit' },
+  landingPages: { es: '/optimizacion-landing-pages', en: '/landing-page-optimization' },
+  emailAutomation: { es: '/email-marketing-automation', en: '/email-marketing-automation' },
+  emailCampaigns: { es: '/campanas-email-marketing', en: '/email-marketing-campaigns' },
+  maintenance: { es: '/mantenimiento-shopify', en: '/shopify-maintenance' }
 }
+
+// Service keys (subset of seoUrls) used for sitemap / catalog generation
+export const SERVICE_PAGE_KEYS = [
+  'migration', 'migrationPlus', 'customDev', 'conversionResearch',
+  'conversionAudit', 'landingPages', 'emailAutomation', 'emailCampaigns', 'maintenance'
+] as const
 
 // Generate hreflang alternates for a given page
 export function generateHreflangs(pageKey: keyof typeof seoUrls, baseUrl?: string) {
@@ -145,14 +146,10 @@ export function getCanonicalUrl(pageKey: keyof typeof seoUrls, locale: string, b
 
 // Get all service pages for sitemap generation
 export function getAllServicePages() {
-  const serviceKeys = Object.keys(seoUrls).filter(key => 
-    key.startsWith('shopify') && key !== 'shopifyPlus'
-  )
-  
-  return serviceKeys.map(key => ({
+  return SERVICE_PAGE_KEYS.map(key => ({
     key,
-    es: seoUrls[key as keyof typeof seoUrls].es,
-    en: seoUrls[key as keyof typeof seoUrls].en
+    es: seoUrls[key].es,
+    en: seoUrls[key].en
   }))
 }
 

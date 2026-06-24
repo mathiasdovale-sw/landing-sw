@@ -4,6 +4,7 @@ import type React from "react"
 import Image from "next/image"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
+import { SERVICES } from "@/lib/services-config"
 
 import { ArrowRight } from "lucide-react"
 
@@ -37,29 +38,26 @@ export default function Footer() {
       if (response.ok) {
         setIsSubscribed(true)
         setEmail("")
-        
-        // Verificar el mensaje específico del backend basado en idioma
+
         const alreadySubscribedES = 'Ya estás suscrito a nuestra newsletter'
         const alreadySubscribedEN = 'You are already subscribed to our newsletter'
-        
+
         if (data.message === alreadySubscribedES || data.message === alreadySubscribedEN) {
           setSubscriptionMessage(t('footer.newsletter.already'))
         } else {
           setSubscriptionMessage(t('footer.newsletter.success'))
         }
-        
+
         setTimeout(() => {
           setIsSubscribed(false)
           setSubscriptionMessage('')
         }, 6000)
       } else {
-        // Manejar diferentes tipos de errores
         if (response.status === 409) {
-          // Usuario ya existe - mostrar mensaje específico
           setIsSubscribed(true)
           setSubscriptionMessage(t('footer.newsletter.already'))
           setEmail("")
-          
+
           setTimeout(() => {
             setIsSubscribed(false)
             setSubscriptionMessage('')
@@ -78,25 +76,22 @@ export default function Footer() {
   }
 
   return (
-    <footer className="text-white" style={{ backgroundColor: '#141417ff' }}>
+    <footer className="bg-sw-bg-0 text-sw-fg-1">
       {/* Newsletter Section */}
-      <div className="border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 py-16 md:py-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="border-b border-sw-line">
+        <div className="mx-auto max-w-7xl px-5 py-16 md:py-20">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
             <div>
-              <h3
-                className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-wide mb-4"
-                style={{ fontFamily: "Bebas Neue, sans-serif" }}
-              >
+              <h3 className="font-display text-3xl text-sw-fg-1 sm:text-4xl">
                 {t('footer.newsletter.title')}
               </h3>
-              <p className="text-gray-400 text-lg leading-relaxed">
+              <p className="mt-4 text-lg leading-relaxed text-sw-fg-3">
                 {t('footer.newsletter.description')}
               </p>
             </div>
 
             <div>
-              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4">
+              <form onSubmit={handleSubscribe} className="flex flex-col gap-4 sm:flex-row">
                 <input
                   type="email"
                   value={email}
@@ -104,34 +99,26 @@ export default function Footer() {
                   placeholder={t('footer.newsletter.placeholder')}
                   required
                   disabled={isSubmitting}
-                  className="flex-1 px-6 py-4 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white focus:border-transparent transition-colors disabled:opacity-50"
+                  className="flex-1 rounded-sm border border-sw-line-strong bg-sw-bg-2 px-6 py-4 text-sw-fg-1 outline-none transition-colors focus:border-sw-brand disabled:opacity-50"
                 />
                 <button
                   type="submit"
                   disabled={isSubscribed || isSubmitting}
-                  className="bg-white text-black px-8 py-4 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center group disabled:opacity-50"
+                  className="group flex items-center justify-center rounded-sm bg-sw-brand px-8 py-4 font-medium text-white transition-colors hover:bg-sw-brand-hover disabled:opacity-50"
                 >
                   {isSubmitting ? t('footer.newsletter.sending') : isSubscribed ? (subscriptionMessage || t('footer.newsletter.subscribed')) : t('footer.newsletter.button')}
                   {!isSubscribed && !isSubmitting && (
-                    <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight size={20} className="ml-2 transition-transform group-hover:translate-x-1" />
                   )}
                 </button>
               </form>
-              
-              {/* Success message */}
+
               {isSubscribed && subscriptionMessage && (
-                <div className="overflow-hidden transition-all duration-500 ease-out max-h-20 opacity-100 mt-4">
-                  <span className="text-green-400 text-sm md:text-base leading-relaxed group-hover/item:text-green-300 transition-colors">
-                    {subscriptionMessage}
-                  </span>
-                </div>
+                <p className="mt-4 text-sm text-sw-success">{subscriptionMessage}</p>
               )}
-              
-              {/* Error message */}
+
               {error && (
-                <p className="text-red-400 text-sm mt-3">
-                  {error}
-                </p>
+                <p className="mt-3 text-sm text-sw-danger">{error}</p>
               )}
             </div>
           </div>
@@ -139,223 +126,37 @@ export default function Footer() {
       </div>
 
       {/* Main Footer */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 py-12 md:py-16">
-        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-12 items-start">
+      <div className="mx-auto max-w-7xl px-5 py-12 md:py-16">
+        <div className="grid items-start gap-10 md:grid-cols-2 lg:grid-cols-5 lg:gap-12">
           {/* Company Info */}
           <div className="lg:col-span-2">
-            <div
-              className="text-2xl md:text-3xl font-bold tracking-wide mb-4"
-              style={{ fontFamily: "Bebas Neue, sans-serif" }}
-            >
-              {t('footer.company')}
+            <div className="font-display text-2xl text-sw-fg-1">
+              {t('footer.company')}<span className="text-sw-brand">.</span>
             </div>
-            <p className="text-gray-400 leading-relaxed mb-6 max-w-md">
+            <p className="mt-4 max-w-md leading-relaxed text-sw-fg-3">
               {t('footer.description')}
             </p>
           </div>
 
-          {/* Services - Mobile: Single Column, Desktop: Two Columns */}
-          <div className="md:hidden text-center">
-            {/* Mobile: Single Services Column */}
-            <h4 
-              className="text-lg font-bold tracking-wide mb-4 text-white"
-              style={{ fontFamily: "Bebas Neue, sans-serif" }}
-            >
-              {t('footer.services.title')}
-            </h4>
-            <ul className="space-y-2 inline-block text-center">
-              <li>
-                <a 
-                  href={links.shopifyStoreSetup} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.storeSetup')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifySeo} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.seo')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyDesign} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.design')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyThemeCustomization} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.themeCustomization')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyMigration} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.migration')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyCro} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.cro')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyPlus} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.plus')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyConsulting} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.consulting')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyGrowthPartner} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.growthPartner')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyAbTesting} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.abTesting')}
-                </a>
-              </li>
+          {/* Services */}
+          <div className="lg:col-span-2">
+            <h4 className="mb-4 font-mono-label text-sw-fg-3">{t('footer.services.title')}</h4>
+            <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {SERVICES.map((service) => (
+                <li key={service.key}>
+                  <a
+                    href={links[service.key as keyof typeof links]}
+                    className="text-sm text-sw-fg-2 transition-colors hover:text-sw-brand"
+                  >
+                    {t(`footer.services.${service.key}`)}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Services Column 1 - Desktop Only */}
-          <div className="hidden md:block">
-            <h4 
-              className="text-lg font-bold tracking-wide mb-4 text-white"
-              style={{ fontFamily: "Bebas Neue, sans-serif" }}
-            >
-              {t('footer.services.title')}
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <a 
-                  href={links.shopifyStoreSetup} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.storeSetup')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifySeo} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.seo')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyDesign} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.design')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyThemeCustomization} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.themeCustomization')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyMigration} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.migration')}
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Services Column 2 - Desktop Only */}
-          <div className="hidden md:block">
-            {/* Hidden title for desktop layout spacing only */}
-            <div className="hidden lg:block">
-              <h4 
-                className="text-lg font-bold tracking-wide mb-4 text-transparent"
-                style={{ fontFamily: "Bebas Neue, sans-serif" }}
-              >
-                {t('footer.services.title')}
-              </h4>
-            </div>
-            <ul className="space-y-2">
-              <li>
-                <a 
-                  href={links.shopifyCro} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.cro')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyPlus} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.plus')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyConsulting} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.consulting')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyGrowthPartner} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.growthPartner')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={links.shopifyAbTesting} 
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {t('footer.services.abTesting')}
-                </a>
-              </li>
-            </ul>
-          </div>
-          
           {/* Logo */}
-          <div className="flex justify-center md:justify-end">
+          <div className="flex justify-start md:justify-end">
             <Image
               src="/assets/img/logoSW.png"
               alt="SellifyWorks Logo"
@@ -365,25 +166,19 @@ export default function Footer() {
             />
           </div>
         </div>
-        
+
         {/* Legal Links */}
-        <div className="mt-12 pt-8 border-t border-gray-800">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="text-gray-400 text-sm">
-              2025 {t('footer.company')} {t('footer.rights')}
+        <div className="mt-12 border-t border-sw-line pt-8">
+          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+            <div className="font-mono-label normal-case tracking-normal text-sw-fg-3">
+              2026 {t('footer.company')}. {t('footer.rights')}
             </div>
-            
+
             <div className="flex flex-wrap gap-6 text-sm">
-              <a 
-                href={links.privacyPolicy} 
-                className="text-gray-400 hover:text-white transition-colors hover:underline"
-              >
+              <a href={links.privacyPolicy} className="text-sw-fg-3 transition-colors hover:text-sw-fg-1">
                 {t('footer.privacy')}
               </a>
-              <a 
-                href={links.cookiePolicy} 
-                className="text-gray-400 hover:text-white transition-colors hover:underline"
-              >
+              <a href={links.cookiePolicy} className="text-sw-fg-3 transition-colors hover:text-sw-fg-1">
                 {t('footer.cookies')}
               </a>
             </div>
