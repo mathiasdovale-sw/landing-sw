@@ -1,4 +1,5 @@
 "use client"
+import Image from "next/image"
 import { motion } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
 import AnimatedStat from "./animated-stat"
@@ -88,6 +89,34 @@ const HeaderHome = () => {
           >
             {t('hero.cta2')}
           </motion.button>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.35 }}
+          className="mt-10 flex flex-wrap items-center gap-6"
+        >
+          <div className="flex items-center gap-2 opacity-80">
+            <Image
+              src="/assets/img/shopifyLogo.png"
+              alt="Shopify Partner"
+              width={110}
+              height={28}
+              className="h-7 w-auto object-contain"
+            />
+            <span className="font-mono-label text-sw-fg-3">Shopify Partner</span>
+          </div>
+          <div className="hidden h-4 w-px bg-sw-line-strong sm:block" />
+          <div className="flex items-center opacity-80">
+            <Image
+              src="/assets/img/klaviyo-partner-badge-light.webp"
+              alt="Klaviyo Partner"
+              width={400}
+              height={174}
+              className="h-11 w-auto object-contain"
+            />
+          </div>
         </motion.div>
 
         <div className="mt-14 flex flex-wrap gap-8 border-t border-sw-line pt-7 sm:gap-16">
