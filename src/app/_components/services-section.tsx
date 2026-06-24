@@ -20,6 +20,16 @@ const GROUPS: { key: ServiceGroupKey; num: string }[] = [
   { key: 'recurring', num: '03' },
 ]
 
+const cardContainerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08 } },
+}
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 28 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const } },
+}
+
 export default function ServicesSection() {
   const { t, language } = useLanguage()
   const { links } = useLocalizedLinks()
@@ -60,7 +70,13 @@ export default function ServicesSection() {
 
               {/* Cards: scroll horizontal con snap en mobile, grid en desktop */}
               <div className="-mx-5 overflow-x-auto px-5 pb-2 sm:mx-0 sm:overflow-visible sm:px-0">
-                <div className="flex snap-x snap-mandatory gap-5 sm:grid sm:snap-none sm:grid-cols-3 sm:gap-6">
+                <motion.div
+                  className="flex snap-x snap-mandatory gap-5 sm:grid sm:snap-none sm:grid-cols-3 sm:gap-6"
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: "-60px" }}
+                  variants={cardContainerVariants}
+                >
                   {groupServices.map((service) => {
                     const href = links[service.key as keyof typeof links] as string
                     const isCustom = service.price.amount === null
@@ -76,8 +92,8 @@ export default function ServicesSection() {
                     return (
                       <motion.div
                         key={service.key}
-                        whileHover={{ y: -6 }}
-                        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                        variants={cardVariants}
+                        whileHover={{ y: -6, transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] } }}
                         className="flex min-w-[80vw] shrink-0 snap-center flex-col rounded-sm border border-sw-line bg-sw-bg-2 p-6 sm:min-w-0 sm:shrink"
                       >
                         <div className="flex items-baseline justify-between gap-3">
@@ -103,12 +119,12 @@ export default function ServicesSection() {
                         )}
 
                         {hasTag && (
-                          <span className="mt-3 inline-block self-start rounded-sm border border-sw-brand px-2 py-0.5 font-mono-label text-[11px] text-sw-brand">
+                          <span className="mt-3 inline-block self-start rounded-sm border border-sw-secondary px-2 py-0.5 font-mono-label text-[11px] text-sw-secondary">
                             {tag}
                           </span>
                         )}
 
-                        <p className="mt-3 text-sm text-sw-brand">
+                        <p className="mt-3 text-sm text-sw-secondary">
                           {t(`services.${service.key}.tagline`)}
                         </p>
 
@@ -132,7 +148,7 @@ export default function ServicesSection() {
                       </motion.div>
                     )
                   })}
-                </div>
+                </motion.div>
               </div>
             </div>
           )

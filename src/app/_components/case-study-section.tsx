@@ -46,7 +46,7 @@ export default function CaseStudySection() {
         {/* Header */}
         <div className="text-center mb-12 lg:mb-16">
           <div className="inline-block mb-4">
-            <span className="font-mono-label text-sw-brand bg-sw-bg-2 px-4 py-2 rounded-sm">
+            <span className="font-mono-label text-sw-secondary bg-sw-bg-2 px-4 py-2 rounded-sm">
               {t('casestudy.badge')}
             </span>
           </div>
@@ -88,7 +88,7 @@ export default function CaseStudySection() {
             </div>
 
             {/* Solution */}
-            <div className="bg-sw-brand rounded-sm p-6 sm:p-8">
+            <div className="bg-sw-secondary-strong rounded-sm p-6 sm:p-8">
               <h3 className="font-display text-2xl sm:text-3xl text-white mb-4 normal-case">
                 {t('casestudy.solution.title')}
               </h3>
@@ -106,13 +106,13 @@ export default function CaseStudySection() {
                 {t('casestudy.expertise.description')}
               </p>
               <div className="flex flex-wrap gap-2">
-                <span className="font-mono-label text-sw-brand bg-sw-bg-0 px-3 py-1 rounded-sm">
+                <span className="font-mono-label text-sw-secondary bg-sw-bg-0 px-3 py-1 rounded-sm">
                   {t('casestudy.expertise.tag1')}
                 </span>
-                <span className="font-mono-label text-sw-brand bg-sw-bg-0 px-3 py-1 rounded-sm">
+                <span className="font-mono-label text-sw-secondary bg-sw-bg-0 px-3 py-1 rounded-sm">
                   {t('casestudy.expertise.tag2')}
                 </span>
-                <span className="font-mono-label text-sw-brand bg-sw-bg-0 px-3 py-1 rounded-sm">
+                <span className="font-mono-label text-sw-secondary bg-sw-bg-0 px-3 py-1 rounded-sm">
                   {t('casestudy.expertise.tag3')}
                 </span>
               </div>
@@ -128,7 +128,7 @@ export default function CaseStudySection() {
               <div className="space-y-4 sm:space-y-5">
                 {results.map((result, index) => (
                   <div key={index} className="flex items-start group">
-                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-sw-brand rounded-full flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
+                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-sw-secondary-strong rounded-full flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
                       <result.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                     <div className="flex-1 pt-1">

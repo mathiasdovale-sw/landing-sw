@@ -34,16 +34,28 @@ const HeaderHome = () => {
           <span className="font-mono-label text-sw-fg-3">{t('hero.eyebrow')}</span>
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.05 }}
-          className="font-display text-5xl text-sw-fg-1 sm:text-6xl md:text-7xl lg:text-8xl"
-        >
-          {t('hero.title.line1')}
-          <br />
-          <span className="text-sw-brand">{t('hero.title.line2')}</span>
-        </motion.h1>
+        <h1 className="font-display text-5xl text-sw-fg-1 sm:text-6xl md:text-7xl lg:text-8xl">
+          <span className="block overflow-hidden">
+            <motion.span
+              className="block"
+              initial={{ y: "110%" }}
+              animate={{ y: "0%" }}
+              transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {t('hero.title.line1')}
+            </motion.span>
+          </span>
+          <span className="block overflow-hidden">
+            <motion.span
+              className="block text-sw-secondary"
+              initial={{ y: "110%" }}
+              animate={{ y: "0%" }}
+              transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {t('hero.title.line2')}
+            </motion.span>
+          </span>
+        </h1>
 
         <motion.p
           initial={{ opacity: 0, y: 16 }}

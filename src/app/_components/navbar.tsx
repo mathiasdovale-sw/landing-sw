@@ -141,7 +141,7 @@ const Navbar = () => {
             <Link
               key={item.href}
               href={item.href}
-              className="font-display text-3xl text-sw-fg-1 hover:text-sw-brand transition-colors"
+              className="font-display text-3xl text-sw-fg-1 hover:text-sw-secondary transition-colors"
               onClick={closeMenu}
             >
               {item.label}

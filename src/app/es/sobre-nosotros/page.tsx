@@ -80,7 +80,7 @@ export default async function AboutPage() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
             {values.map((value, index) => (
               <div key={value.title} className="rounded-sm border border-sw-line bg-sw-bg-2 p-6">
-                <span className="font-mono-label text-sw-brand">{String(index + 1).padStart(2, '0')}</span>
+                <span className="font-mono-label text-sw-secondary">{String(index + 1).padStart(2, '0')}</span>
                 <h3 className="mt-3 text-lg font-semibold text-sw-fg-1">{value.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-sw-fg-2">{value.content}</p>
               </div>
@@ -107,7 +107,7 @@ export default async function AboutPage() {
             />
             <div>
               <h3 className="text-lg font-semibold text-sw-fg-1">Mathias Do Vale</h3>
-              <p className="font-mono-label text-sw-brand">{dict.about.team.mathias.role}</p>
+              <p className="font-mono-label text-sw-secondary">{dict.about.team.mathias.role}</p>
               <p className="mt-3 text-sm leading-relaxed text-sw-fg-2">
                 {dict.about.team.mathias.description}
               </p>

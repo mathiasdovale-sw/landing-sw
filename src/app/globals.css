@@ -78,3 +78,13 @@ body {
   letter-spacing: 0.16em;
   font-size: 12px;
 }
+
+/* Cinta de texto infinita (marquee) — el contenido se duplica 2x en el JSX
+   y se desplaza -50% para que el loop sea perfectamente continuo. */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 26s linear infinite;
+}

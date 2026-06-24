@@ -1,5 +1,16 @@
 "use client"
+import { motion } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
+
+const listVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const } },
+}
 
 export default function ProblemSection() {
   const { t } = useLanguage()
@@ -24,21 +35,28 @@ export default function ProblemSection() {
               {t('problem.lede')}
             </p>
 
-            <ul className="mt-8">
+            <motion.ul
+              className="mt-8"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-60px" }}
+              variants={listVariants}
+            >
               {items.map((item, index) => (
-                <li
+                <motion.li
                   key={item}
+                  variants={itemVariants}
                   className="flex items-baseline gap-4 border-b border-sw-line py-4"
                 >
-                  <span className="min-w-[24px] font-mono-label text-sw-brand">
+                  <span className="min-w-[24px] font-mono-label text-sw-secondary">
                     {String(index + 1).padStart(2, '0')}
                   </span>
                   <span className="text-base leading-snug text-sw-fg-2 sm:text-lg">{item}</span>
-                </li>
+                </motion.li>
               ))}
-            </ul>
+            </motion.ul>
 
-            <p className="mt-8 text-xl text-sw-brand sm:text-2xl">{t('whom.foot')}</p>
+            <p className="mt-8 text-xl text-sw-secondary sm:text-2xl">{t('whom.foot')}</p>
           </div>
         </div>
       </div>

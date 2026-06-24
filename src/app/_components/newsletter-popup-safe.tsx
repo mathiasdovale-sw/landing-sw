@@ -213,7 +213,7 @@ function NewsletterPopupContent() {
             <>
               {/* Icono */}
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-sw-brand rounded-full flex items-center justify-center">
+                <div className="w-16 h-16 bg-sw-secondary-strong rounded-full flex items-center justify-center">
                   <Mail size={28} className="text-white" />
                 </div>
               </div>
@@ -243,14 +243,14 @@ function NewsletterPopupContent() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="tu@email.com"
                     required
-                    className="w-full px-4 py-3 border border-sw-line-strong bg-sw-bg-2 text-sw-fg-1 rounded-sm focus:ring-2 focus:ring-sw-brand focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 border border-sw-line-strong bg-sw-bg-2 text-sw-fg-1 rounded-sm focus:ring-2 focus:ring-sw-secondary focus:border-transparent outline-none transition-all"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-sw-brand text-white font-semibold py-3 px-6 rounded-sm hover:bg-sw-brand-hover transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-sw-secondary-strong text-white font-semibold py-3 px-6 rounded-sm hover:bg-sw-secondary transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting
                     ? (language === 'en' ? "Subscribing..." : "Suscribiendo...")

@@ -100,14 +100,14 @@ export default function Footer() {
                   placeholder={t('footer.newsletter.placeholder')}
                   required
                   disabled={isSubmitting}
-                  className="flex-1 rounded-sm border border-sw-line-strong bg-sw-bg-2 px-6 py-4 text-sw-fg-1 outline-none transition-colors focus:border-sw-brand disabled:opacity-50"
+                  className="flex-1 rounded-sm border border-sw-line-strong bg-sw-bg-2 px-6 py-4 text-sw-fg-1 outline-none transition-colors focus:border-sw-secondary disabled:opacity-50"
                 />
                 <motion.button
                   type="submit"
                   disabled={isSubscribed || isSubmitting}
                   whileHover={!isSubscribed && !isSubmitting ? { scale: 1.03 } : {}}
                   whileTap={!isSubscribed && !isSubmitting ? { scale: 0.97 } : {}}
-                  className="group flex items-center justify-center rounded-sm bg-sw-brand px-8 py-4 font-medium text-white transition-colors hover:bg-sw-brand-hover disabled:opacity-50"
+                  className="group flex items-center justify-center rounded-sm bg-sw-secondary-strong px-8 py-4 font-medium text-white transition-colors hover:bg-sw-secondary disabled:opacity-50"
                 >
                   {isSubmitting ? t('footer.newsletter.sending') : isSubscribed ? (subscriptionMessage || t('footer.newsletter.subscribed')) : t('footer.newsletter.button')}
                   {!isSubscribed && !isSubmitting && (
@@ -149,7 +149,7 @@ export default function Footer() {
                 <li key={service.key}>
                   <a
                     href={links[service.key as keyof typeof links]}
-                    className="text-sm text-sw-fg-2 transition-colors hover:text-sw-brand"
+                    className="text-sm text-sw-fg-2 transition-colors hover:text-sw-secondary"
                   >
                     {t(`footer.services.${service.key}`)}
                   </a>

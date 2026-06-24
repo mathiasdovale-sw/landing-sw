@@ -55,7 +55,7 @@ export default function ServicePageTemplate({ content }: { content: ServicePageC
             {c.lede}
           </p>
           <div className="mt-8">
-            <span className="font-display text-3xl text-sw-brand sm:text-4xl">{c.priceLabel}</span>
+            <span className="font-display text-3xl text-sw-secondary sm:text-4xl">{c.priceLabel}</span>
             {c.priceNote && (
               <span className="ml-2 font-mono-label text-sw-fg-3">{c.priceNote}</span>
             )}
@@ -89,7 +89,7 @@ export default function ServicePageTemplate({ content }: { content: ServicePageC
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
             {c.includes.map((item) => (
               <div key={item.title} className="flex gap-4">
-                <CheckCircle2 className="mt-1 h-6 w-6 flex-shrink-0 text-sw-brand" />
+                <CheckCircle2 className="mt-1 h-6 w-6 flex-shrink-0 text-sw-secondary" />
                 <div>
                   <h3 className="text-lg font-semibold text-sw-fg-1">{item.title}</h3>
                   <p className="mt-1 text-sw-fg-2">{item.description}</p>

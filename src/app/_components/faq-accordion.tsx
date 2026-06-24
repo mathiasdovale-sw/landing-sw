@@ -55,7 +55,7 @@ export default function FAQAccordion({ faqs, title = 'Preguntas Frecuentes', cla
                     </h3>
                     <div className="flex-shrink-0">
                       {isOpen ? (
-                        <ChevronUpIcon className="h-5 w-5 text-sw-brand" />
+                        <ChevronUpIcon className="h-5 w-5 text-sw-secondary" />
                       ) : (
                         <ChevronDownIcon className="h-5 w-5 text-sw-fg-3" />
                       )}

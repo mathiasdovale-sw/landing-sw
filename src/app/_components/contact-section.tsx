@@ -380,7 +380,7 @@ export default function ContactSection() {
                     value={values.name}
                     onChange={handleChange('name')}
                     onBlur={handleBlur('name')}
-                    className={`w-full rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors focus:border-sw-brand ${fieldBorderClass('name')}`}
+                    className={`w-full rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors focus:border-sw-secondary ${fieldBorderClass('name')}`}
                     placeholder={t('contact.form.name')}
                   />
                   <span className={`mt-1.5 block min-h-[14px] font-mono-label text-[12px] normal-case tracking-normal ${fieldMessageClass('name')}`}>
@@ -398,7 +398,7 @@ export default function ContactSection() {
                     value={values.email}
                     onChange={handleChange('email')}
                     onBlur={handleBlur('email')}
-                    className={`w-full rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors focus:border-sw-brand ${fieldBorderClass('email')}`}
+                    className={`w-full rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors focus:border-sw-secondary ${fieldBorderClass('email')}`}
                     placeholder={t('contact.form.email')}
                   />
                   <span className={`mt-1.5 block min-h-[14px] font-mono-label text-[12px] normal-case tracking-normal ${fieldMessageClass('email')}`}>
@@ -418,7 +418,7 @@ export default function ContactSection() {
                   value={values.company}
                   onChange={handleChange('company')}
                   onBlur={handleBlur('company')}
-                  className={`w-full rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors focus:border-sw-brand ${fieldBorderClass('company')}`}
+                  className={`w-full rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors focus:border-sw-secondary ${fieldBorderClass('company')}`}
                   placeholder={t('contact.form.company')}
                 />
                 <span className={`mt-1.5 block min-h-[14px] font-mono-label text-[12px] normal-case tracking-normal ${fieldMessageClass('company')}`}>
@@ -437,7 +437,7 @@ export default function ContactSection() {
                   value={values.message}
                   onChange={handleChange('message')}
                   onBlur={handleBlur('message')}
-                  className={`w-full resize-none rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors focus:border-sw-brand ${fieldBorderClass('message')}`}
+                  className={`w-full resize-none rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors focus:border-sw-secondary ${fieldBorderClass('message')}`}
                   placeholder={t('contact.form.message')}
                 ></textarea>
                 <span className={`mt-1.5 block min-h-[14px] font-mono-label text-[12px] normal-case tracking-normal ${fieldMessageClass('message')}`}>

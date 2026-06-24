@@ -57,7 +57,7 @@ const VisualBreadcrumbs = ({
                 {item.name}
               </Link>
             ) : (
-              <span className="text-sw-brand font-medium">
+              <span className="text-sw-secondary font-medium">
                 {item.name}
               </span>
             )}

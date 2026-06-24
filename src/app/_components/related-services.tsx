@@ -40,16 +40,16 @@ export default function RelatedServices({ currentService, className = '' }: Rela
             <Link
               key={service.key}
               href={links[service.key as keyof typeof links]}
-              className="group bg-sw-bg-0 p-8 rounded-sm border border-sw-line hover:border-sw-brand transition-colors"
+              className="group bg-sw-bg-0 p-8 rounded-sm border border-sw-line hover:border-sw-secondary transition-colors"
             >
               <div className="text-center">
-                <h3 className="text-xl md:text-2xl font-semibold text-sw-fg-1 mb-4 group-hover:text-sw-brand transition-colors">
+                <h3 className="text-xl md:text-2xl font-semibold text-sw-fg-1 mb-4 group-hover:text-sw-secondary transition-colors">
                   {t(`relatedServices.services.${service.key}.title`)}
                 </h3>
                 <p className="text-sw-fg-3 leading-relaxed mb-6">
                   {t(`relatedServices.services.${service.key}.description`)}
                 </p>
-                <div className="inline-flex items-center text-sw-brand font-semibold">
+                <div className="inline-flex items-center text-sw-secondary font-semibold">
                   {t('relatedServices.learnMore')}
                   <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
