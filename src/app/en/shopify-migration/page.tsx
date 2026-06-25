@@ -28,9 +28,10 @@ export default function ShopifyMigration() {
         includes: [
           { title: 'Upfront audit', description: 'We review your current store, catalog and settings before moving anything.' },
           { title: 'Tailored design', description: 'Your new Shopify store, true to your brand, ready to sell from day one.' },
-          { title: 'Product upload & copy', description: 'We upload your full catalog with carefully written product pages.' },
+          { title: 'Product upload & copy*', description: 'We upload your full catalog with carefully written product pages.' },
           { title: 'Zero-downtime handover', description: 'Your current store keeps selling until the final switch, no interruptions.' },
         ],
+        includesNote: '*Includes up to 25 products/variants.',
         closingTitle: 'Ready to move to Shopify?',
         closingLede: "Tell us what platform you're on today and we'll tell you exactly what migrating your store involves.",
         faqTitle: 'Migration FAQ',

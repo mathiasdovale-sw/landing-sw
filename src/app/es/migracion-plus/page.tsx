@@ -26,11 +26,12 @@ export default function MigracionPlus() {
         includesEyebrow: 'Qué incluye',
         includesTitle: 'Migración + el research que evita rediseñar dos veces.',
         includes: [
-          { title: 'Todo lo de Migración', description: 'Auditoría, diseño, carga de productos y transferencia sin cortar ventas.' },
+          { title: 'Todo lo de Migración*', description: 'Auditoría, diseño, carga de productos y transferencia sin cortar ventas.' },
           { title: 'Conversion research incluido', description: 'Analizamos por qué tus visitantes actuales no compran antes de construir.' },
           { title: 'Decisiones basadas en datos', description: 'El research informa el diseño de la nueva tienda, no al revés.' },
           { title: 'Pensado para tiendas que ya facturan', description: 'Ideal si superas los 4.000€/mes y no quieres perder tiempo optimizando después.' },
         ],
+        includesNote: '*Incluye hasta 25 productos/variantes.',
         closingTitle: 'Lanza optimizando desde el primer día.',
         closingLede: 'Si tu tienda ya genera ventas, no tiene sentido migrar a ciegas y optimizar después. Hagámoslo junto.',
         faqTitle: 'Preguntas sobre Migración Plus',

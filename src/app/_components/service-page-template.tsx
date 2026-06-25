@@ -19,6 +19,7 @@ export interface ServicePageContent {
   includesEyebrow: string
   includesTitle: string
   includes: { title: string; description: string }[]
+  includesNote?: string
   closingTitle: string
   closingLede: string
   faqTitle: string
@@ -97,6 +98,9 @@ export default function ServicePageTemplate({ content }: { content: ServicePageC
               </div>
             ))}
           </div>
+          {c.includesNote && (
+            <p className="mt-8 text-sm text-sw-fg-4">{c.includesNote}</p>
+          )}
         </div>
       </section>
 

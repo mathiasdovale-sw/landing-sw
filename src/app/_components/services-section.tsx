@@ -145,6 +145,10 @@ export default function ServicesSection() {
                             </p>
                           ))}
                         </div>
+
+                        {(service.key === 'migration' || service.key === 'migrationPlus') && (
+                          <p className="mt-3 text-xs text-sw-fg-4">{t('services.catalogNote')}</p>
+                        )}
                       </motion.div>
                     )
                   })}
