@@ -26,10 +26,9 @@ export default function MigracionShopify() {
         includes: [
           { title: 'Auditoría previa', description: 'Revisamos tu tienda actual, catálogo y configuraciones antes de mover nada.' },
           { title: 'Diseño adaptado', description: 'Tu nueva tienda en Shopify, fiel a tu marca, lista para vender desde el primer día.' },
-          { title: 'Carga y copy de productos*', description: 'Subimos tu catálogo completo con fichas de producto cuidadas.' },
+          { title: 'Carga y copy de productos', description: 'Subimos tu catálogo completo con fichas de producto cuidadas.' },
           { title: 'Transferencia sin downtime', description: 'Tu tienda actual sigue vendiendo hasta el cambio final, sin cortes.' },
         ],
-        includesNote: '*Incluye hasta 25 productos/variantes.',
         closingTitle: '¿Listo para mudarte a Shopify?',
         closingLede: 'Cuéntanos en qué plataforma estás hoy y te decimos exactamente qué implica migrar tu tienda.',
         faqTitle: 'Preguntas sobre la migración',

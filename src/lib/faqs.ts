@@ -12,11 +12,6 @@ export const HomeFAQsEs: FAQ[] = [
     answer: 'Sí, con servicios de SEO, personalización de themes y diseño CRO (optimización de conversiones) logramos aumentar el tráfico cualificado y las ventas.'
   },
   {
-    id: 'home-3',
-    question: '¿Puedo contratar solo un servicio o necesito un paquete completo?',
-    answer: 'Puedes contratar servicios individuales como SEO, diseño o CRO, o bien un plan integral según las necesidades de tu ecommerce.'
-  },
-  {
     id: 'home-4',
     question: '¿Por qué elegir una agencia Shopify en España en lugar de hacerlo por mi cuenta?',
     answer: 'Una agencia especializada te ahorra tiempo y evita errores costosos. Tenemos la experiencia técnica, conocimiento de mejores prácticas y experiencia con integraciones complejas que aseguran que tu tienda esté optimizada desde el primer día.'
@@ -30,11 +25,6 @@ export const HomeFAQsEs: FAQ[] = [
     id: 'home-6',
     question: '¿Ofrecen migración desde otras plataformas a Shopify?',
     answer: 'Sí, realizamos migraciones desde WooCommerce, PrestaShop, Magento y otras plataformas, cuidando la estructura SEO y minimizando riesgos de pérdida de tráfico.'
-  },
-  {
-    id: 'home-7',
-    question: '¿Cuánto cuesta crear una tienda Shopify con agencia?',
-    answer: 'Shopify tiene planes desde aproximadamente $22 EUR/mes (precios sujetos a cambios). El coste de desarrollo y configuración con agencia es adicional y depende de la complejidad del proyecto. Ofrecemos presupuestos personalizados adaptados a tu negocio.'
   },
   {
     id: 'home-8',
@@ -56,43 +46,33 @@ export const HomeFAQsEs: FAQ[] = [
 export const HomeFAQsEn: FAQ[] = [
   {
     id: 'home-1',
+    question: 'How much does an audit of my current store cost?',
+    answer: '€450 + VAT, fixed price — no surprises afterwards.'
+  },
+  {
+    id: 'home-2',
+    question: 'Can you help me improve sales on my current Shopify store?',
+    answer: 'Yes, with SEO services, theme customization and CRO design (conversion optimization) we help increase qualified traffic and sales.'
+  },
+  {
+    id: 'home-4',
     question: 'Why choose a Shopify agency in Spain instead of doing it myself?',
     answer: 'A specialized agency saves you time and avoids costly mistakes. We have the technical expertise, knowledge of best practices, and experience with complex integrations that ensure your store is optimized from day one.'
   },
   {
-    id: 'home-2',
+    id: 'home-5',
     question: 'What\'s the difference between Shopify and other platforms like WooCommerce or PrestaShop?',
     answer: 'Shopify is a cloud-based SaaS platform that automatically manages hosting, security, and updates. This means you don\'t have to worry about servers or technical maintenance, and your store can easily scale as your business grows. It also offers a broad ecosystem of apps and 24/7 official support. WooCommerce and PrestaShop, on the other hand, are open-source solutions that require a hosting contract and the responsibility for installation, updates, and security.'
   },
   {
-    id: 'home-3',
+    id: 'home-6',
     question: 'Do you offer migration from other platforms to Shopify?',
     answer: 'Yes, we perform migrations from WooCommerce, PrestaShop, Magento and other platforms, taking care of SEO structure and minimizing risks of traffic loss.'
   },
-    {
-    id: 'home-4',
-    question: 'Can I hire just a specific service (e.g. SEO or design) or do I need a complete package?',
-    answer: 'You can hire individual services like SEO, design or CRO, or an integrated plan according to your ecommerce needs.'
-  },
-  {
-    id: 'home-5',
-    question: 'Do you work with Shopify Plus?',
-    answer: 'Yes. We help high-volume companies scale with Shopify Plus, which offers advanced features like automation with Shopify Flow, B2B integrations, and greater customization.'
-  },
-  {
-    id: 'home-6',
-    question: 'How much does it cost to create a Shopify store with an agency?',
-    answer: 'Shopify has plans starting from approximately $22 EUR/month (prices subject to change). Development and setup costs with an agency are additional and depend on project complexity. We offer personalized quotes tailored to your business.'
-  },
-    {
-    id: 'home-7',
-    question: 'Can you help me improve sales on my current Shopify store?',
-    answer: 'Yes, with SEO services, theme customization and CRO design (conversion optimization) we achieve increased qualified traffic and sales.'
-  },
   {
     id: 'home-8',
-    question: 'Do you provide technical support in English?',
-    answer: 'Of course, we offer support in English and Spanish to resolve incidents, optimize your store and accompany you at all times.'
+    question: 'Do you offer technical support in Spanish?',
+    answer: 'Of course, we offer support in Spanish (also English) to resolve incidents, optimize your store and accompany you at all times.'
   },
   {
     id: 'home-9',
@@ -103,11 +83,6 @@ export const HomeFAQsEn: FAQ[] = [
     id: 'home-10',
     question: 'How can I start working with you?',
     answer: 'Very easy: fill out our contact form, tell us about your project and one of our experts will contact you for a free first session.'
-  },
-  {
-    id: 'home-11',
-    question: 'Does Shopify allow local payment methods in different countries?',
-    answer: 'Yes, Shopify Markets allows you to activate local payment methods in each region, provided they are available in the corresponding country. Each market has different payment options according to local regulations.'
   }
 ];
 
@@ -273,24 +248,14 @@ export const conversionAuditFAQsEs: FAQ[] = [
     answer: 'No hay una respuesta única sin mirar tu tienda. Empezamos por una auditoría de tu funnel completo — home, producto, carrito, checkout — y te decimos, en orden, qué está frenando la venta. Así dejás de probar cambios sueltos sin saber si sirven.'
   },
   {
-    id: 'conv-audit-2',
-    question: 'Tengo visitas pero no vendo. ¿Por qué el tráfico no alcanza?',
-    answer: 'Tener visitas no garantiza ventas. El tráfico trae gente a la tienda; lo que decide si compra es lo que encuentra ahí adentro: velocidad, claridad del producto, confianza, proceso de compra. Si nunca revisaste eso, es lo primero que hay que mirar antes de invertir en más tráfico.'
-  },
-  {
     id: 'conv-audit-3',
     question: '¿Cuánto cuesta la auditoría de conversión?',
     answer: '450€ + IVA, precio cerrado. Sin sorpresas después de contratar.'
   },
   {
-    id: 'conv-audit-4',
-    question: '¿La auditoría es de toda mi tienda o de una página puntual?',
-    answer: 'Lo definimos antes de cotizar, según tu caso. Podemos revisar tu tienda completa o centrarnos en una página específica, como tu producto top o el checkout.'
-  },
-  {
     id: 'conv-audit-5',
     question: '¿Cuánto tarda en llegarme el resultado?',
-    answer: 'Normalmente 1-2 semanas desde que arrancamos. Confirmamos el plazo exacto antes de empezar.'
+    answer: 'Normalmente entre 2-3 semanas desde que arrancamos. Confirmamos el plazo exacto antes de empezar.'
   },
   {
     id: 'conv-audit-6',
@@ -302,18 +267,23 @@ export const conversionAuditFAQsEs: FAQ[] = [
 export const conversionAuditFAQsEn: FAQ[] = [
   {
     id: 'conv-audit-en-1',
-    question: 'Is the audit for my whole site or a single page?',
-    answer: "Whichever you prefer: we can audit your full store or focus on one page (e.g. your top product or checkout) if you already know where the problem is."
-  },
-  {
-    id: 'conv-audit-en-2',
-    question: 'What exactly do I receive?',
-    answer: 'A document with the issues found, ranked from highest to lowest impact on your sales, with concrete next steps.'
+    question: 'I have traffic but I\'m not selling. What should I check first?',
+    answer: "There's no one-size-fits-all answer without looking at your store. We start with an audit of your entire funnel — home, product, cart, checkout — and tell you, in order, what's holding back sales. That way you stop testing random changes without knowing if they actually work."
   },
   {
     id: 'conv-audit-en-3',
-    question: 'Do you implement the changes or do I?',
-    answer: "The audit is a diagnosis. If you want us to implement the changes, we quote it as custom development depending on the case."
+    question: 'How much does the conversion audit cost?',
+    answer: '€450 + VAT, fixed price. No surprises after hiring us.'
+  },
+  {
+    id: 'conv-audit-en-5',
+    question: 'How long until I get the results?',
+    answer: 'Usually between 2-3 weeks from when we start. We confirm the exact timeline before beginning.'
+  },
+  {
+    id: 'conv-audit-en-6',
+    question: 'Do you guarantee my sales will go up?',
+    answer: "No. No one can guarantee you an exact conversion rate — if someone promises that, they're not being honest. What we give you is a method: a clear diagnosis and a roadmap so you know exactly what to do next."
   }
 ];
 

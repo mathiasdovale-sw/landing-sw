@@ -276,10 +276,10 @@ const translations = {
 
     // Hero
     'hero.eyebrow': 'Shopify agency · Spain',
-    'hero.title.line1': 'Enterprise-grade Shopify.',
-    'hero.title.line2': 'Finally accessible.',
-    'hero.sub': 'You\'ve got traffic, but it doesn\'t convert. We help you fix it with the same processes the big brands use — at the price of your stage.',
-    'hero.cta1': 'Talk to an expert',
+    'hero.title.line1': 'Isn\'t your Shopify store',
+    'hero.title.line2': 'taking off?',
+    'hero.sub': 'You\'ve got traffic, but it doesn\'t convert. We help you fix it with the same processes the big brands use — at the price of your stage, with AI-powered processes.',
+    'hero.cta1': 'Get my audit',
     'hero.cta2': 'See services & pricing',
     'hero.stat1.label': 'conversions/month — we work with low-traffic stores',
     'hero.stat2.label': 'full Shopify migration, turnkey',
@@ -290,10 +290,10 @@ const translations = {
     'problem.eyebrow': 'The problem',
     'problem.title': 'Agencies chase the big players.',
     'problem.lede': 'Your store doesn\'t have a product problem. It has a conversion problem — and you\'ll know if this sounds like you:',
-    'whom.item1': 'You sell on Shopify — or you want to migrate to it.',
-    'whom.item2': 'Traffic comes in, but conversions don\'t follow.',
+    'whom.item1': 'You\'ve got traffic, but sales aren\'t coming in.',
+    'whom.item2': 'You don\'t know if the problem is your store, your product, or your traffic.',
     'whom.item3': 'Whether you already sell on Shopify or want to migrate to it, the starting point is the same: understanding your store before we touch anything.',
-    'whom.item4': 'You don\'t have an enterprise budget — and you shouldn\'t need one.',
+    'whom.item4': 'You want to grow and don\'t know where to start.',
     'whom.item5': 'Your agency, if you have one, isn\'t looking out for you.',
     'whom.foot': 'Exactly who we\'re here for.',
 
@@ -304,7 +304,7 @@ const translations = {
     'funnel.node.paid': 'Paid ads',
     'funnel.node.home': 'Home',
     'funnel.node.collection': 'Collection',
-    'funnel.node.pdp': 'PDP',
+    'funnel.node.pdp': 'Product page',
     'funnel.node.checkout': 'Checkout',
 
     // Close / CTA
@@ -373,7 +373,7 @@ const translations = {
     'services.swipeHint': 'Swipe to see more',
     'services.migration.name': 'Shopify migration',
     'services.migration.tagline': 'For migrating without losing sales',
-    'services.migration.bullet1': 'Full audit before moving anything',
+    'services.migration.bullet1': 'Prior diagnosis, no surprises',
     'services.migration.bullet2': 'Upload and copy for your whole catalog',
     'services.migration.bullet3': 'Zero downtime',
     'services.customDev.name': 'Custom development',
@@ -397,7 +397,6 @@ const translations = {
     'services.requestAudit': 'Request an audit',
 
     // Case Study Section
-    'casestudy.badge': 'Real case',
     'casestudy.title': 'Clients who trusted us',
     'casestudy.subtitle': 'Two different ways of working together: fixing what you already had, or building something new from scratch.',
     'casestudy.swipeHint': 'Swipe to see the other case',
@@ -410,23 +409,8 @@ const translations = {
     'casestudy.card2.bullet1': 'New store, built from scratch',
     'casestudy.card2.bullet2': 'Selling across Europe',
     'casestudy.card2.bullet3': 'Live in a month and a half',
-    'casestudy.challenge.title': 'The problem',
-    'casestudy.challenge.description': 'Slow loading, confusing checkout, zero email marketing. Can Ramos already had customers — every visit that didn\'t convert was money left on the table.',
-    'casestudy.solution.title': 'What we did',
-    'casestudy.solution.description': 'Migrated to Shopify without losing a single sale or data point. A store with their real identity, checkout upsells, and a welcome flow that sells on its own.',
-    'casestudy.results.title': 'The result',
-    'casestudy.result1': 'Design with real identity: more trust, more conversions',
-    'casestudy.result2': 'Welcome flow selling on autopilot, 24/7',
-    'casestudy.result3': 'Higher average ticket with checkout upsells',
-    'casestudy.result4': 'Faster loading, fewer checkout drop-offs',
-    'casestudy.result5': 'Zero losses: products, customers and SEO intact',
-    'casestudy.expertise.title': 'Why it worked',
-    'casestudy.expertise.description': 'We audited what was slowing sales down, redesigned with conversion in mind, and automated what used to be manual.',
-    'casestudy.expertise.tag1': 'Design with identity',
-    'casestudy.expertise.tag2': 'Automated email',
-    'casestudy.expertise.tag3': 'Higher average ticket',
-    'casestudy.cta.title': 'Is your store limiting you?',
-    'casestudy.cta.description': 'If you have traffic but feel you should be selling more, let\'s talk. We\'ll show you what\'s holding back your conversions.',
+    'casestudy.cta.title': 'Do you have traffic but aren\'t selling?',
+    'casestudy.cta.description': 'We\'ll show you exactly what\'s holding back your conversions.',
     'casestudy.cta.button': 'Let\'s talk for 15 minutes',
     'casestudy.cta.viewcase': 'See real cases',
     
@@ -473,7 +457,7 @@ const translations = {
     
     // Privacy Policy Page
     'privacy.title': 'PRIVACY POLICY',
-    'privacy.subtitle': 'Last updated: August 2024',
+    'privacy.subtitle': 'Last updated: August 2025',
     'privacy.section1.title': 'Information We Collect',
     'privacy.section1.content': 'At SellifyWorks, we collect personal information that you voluntarily provide to us when you contact us, subscribe to our newsletter, or use our services.',
     'privacy.section2.title': 'Types of Data',
@@ -494,7 +478,7 @@ const translations = {
     
     // Cookie Policy Page
     'cookies.title': 'COOKIE POLICY',
-    'cookies.subtitle': 'Last updated: August 2024',
+    'cookies.subtitle': 'Last updated: August 2025',
     'cookies.section1.title': 'What are Cookies?',
     'cookies.section1.content': 'Cookies are small text files that are stored on your device when you visit our website. They help us improve your browsing experience and understand how you use our site.',
     'cookies.section2.title': 'Types of Cookies We Use',
