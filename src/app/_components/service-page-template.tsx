@@ -12,8 +12,6 @@ export interface ServicePageContent {
   eyebrow: string
   title: string
   lede: string
-  priceLabel: string
-  priceNote?: string
   ctaPrimaryLabel: string
   ctaSecondaryLabel: string
   includesEyebrow: string
@@ -27,7 +25,6 @@ export interface ServicePageContent {
   structuredData: {
     serviceName: string
     description: string
-    price?: { currency: string; minPrice?: number; priceRange?: string }
   }
   locale: 'es' | 'en'
 }
@@ -41,7 +38,6 @@ export default function ServicePageTemplate({ content }: { content: ServicePageC
         serviceName={c.structuredData.serviceName}
         serviceType={c.serviceKey}
         description={c.structuredData.description}
-        price={c.structuredData.price}
       />
       <VisualBreadcrumbs />
 
@@ -55,12 +51,6 @@ export default function ServicePageTemplate({ content }: { content: ServicePageC
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-sw-fg-2 sm:text-xl">
             {c.lede}
           </p>
-          <div className="mt-8">
-            <span className="font-display text-3xl text-sw-secondary sm:text-4xl">{c.priceLabel}</span>
-            {c.priceNote && (
-              <span className="ml-2 font-mono-label text-sw-fg-3">{c.priceNote}</span>
-            )}
-          </div>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
             <Link
               href={c.contactHref}

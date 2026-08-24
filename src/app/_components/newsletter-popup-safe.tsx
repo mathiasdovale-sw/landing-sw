@@ -2,7 +2,9 @@
 import { useState, useEffect } from "react"
 import { X, Mail } from "lucide-react"
 import dynamic from "next/dynamic"
+import { usePathname } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { CHROMELESS_ROUTES } from "@/lib/chromeless-routes"
 
 // Hook personalizado para manejar localStorage de forma segura
 function useLocalStorage(key: string, initialValue: string | null = null) {
@@ -41,6 +43,7 @@ function useLocalStorage(key: string, initialValue: string | null = null) {
 
 function NewsletterPopupContent() {
   const { t, language } = useLanguage()
+  const pathname = usePathname()
   const [isVisible, setIsVisible] = useState(false)
   const [email, setEmail] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -193,8 +196,8 @@ function NewsletterPopupContent() {
     }
   }
 
-  // No renderizar nada hasta que localStorage esté cargado
-  if (!isLocalStorageLoaded || !isVisible) return null
+  // No renderizar nada hasta que localStorage esté cargado, ni en landings de campaña
+  if (!isLocalStorageLoaded || !isVisible || CHROMELESS_ROUTES.includes(pathname)) return null
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">

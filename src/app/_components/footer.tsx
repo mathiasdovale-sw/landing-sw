@@ -3,15 +3,18 @@ import { useState } from "react"
 import type React from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
+import { usePathname } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
 import { SERVICES } from "@/lib/services-config"
+import { CHROMELESS_ROUTES } from "@/lib/chromeless-routes"
 
 import { ArrowRight } from "lucide-react"
 
 export default function Footer() {
   const { t } = useLanguage()
   const { links } = useLocalizedLinks()
+  const pathname = usePathname()
   const [email, setEmail] = useState("")
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -75,6 +78,8 @@ export default function Footer() {
       setIsSubmitting(false)
     }
   }
+
+  if (CHROMELESS_ROUTES.includes(pathname)) return null
 
   return (
     <footer className="bg-sw-bg-0 text-sw-fg-1">

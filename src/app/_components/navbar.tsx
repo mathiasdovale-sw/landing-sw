@@ -2,9 +2,11 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
+import { usePathname } from "next/navigation"
 import LanguageSelector from "./language-selector"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
+import { CHROMELESS_ROUTES } from "@/lib/chromeless-routes"
 
 const MotionLink = motion.create(Link)
 
@@ -12,6 +14,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { t } = useLanguage()
   const { links } = useLocalizedLinks()
+  const pathname = usePathname()
 
   // Bloquear scroll cuando el menú está abierto
   useEffect(() => {
@@ -49,6 +52,8 @@ const Navbar = () => {
       window.removeEventListener('hashchange', handleHashScroll)
     }
   }, [])
+
+  if (CHROMELESS_ROUTES.includes(pathname)) return null
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
   const closeMenu = () => setIsMenuOpen(false)

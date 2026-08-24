@@ -1,18 +1,16 @@
 "use client"
 import Image from "next/image"
+import Link from "next/link"
 import { motion } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
 import AnimatedStat from "./animated-stat"
+
+const MotionLink = motion.create(Link)
 
 const HeaderHome = () => {
   const { t, language } = useLanguage()
-
-  const scrollToContact = () => {
-    const contactSection = document.getElementById('contacto')
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }
+  const { links } = useLocalizedLinks()
 
   const scrollToServices = () => {
     const servicesSection = document.getElementById('services-section')
@@ -73,14 +71,14 @@ const HeaderHome = () => {
           transition={{ duration: 0.6, delay: 0.25 }}
           className="mt-10 flex flex-wrap items-center gap-4"
         >
-          <motion.button
-            onClick={scrollToContact}
+          <MotionLink
+            href={links.conversionAudit}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             className="rounded-sm bg-sw-brand px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-sw-brand-hover"
           >
             {t('hero.cta1')}
-          </motion.button>
+          </MotionLink>
           <motion.button
             onClick={scrollToServices}
             whileHover={{ scale: 1.03 }}
@@ -126,14 +124,6 @@ const HeaderHome = () => {
             locale={language}
             label={t('hero.stat1.label')}
             delay={0}
-          />
-          <AnimatedStat
-            target={2640}
-            prefix={currency.prefix}
-            suffix={currency.suffix}
-            locale={language}
-            label={t('hero.stat2.label')}
-            delay={0.15}
           />
           <AnimatedStat
             staticValue={t('hero.stat3.num')}

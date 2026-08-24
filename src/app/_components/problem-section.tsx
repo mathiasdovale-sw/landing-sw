@@ -15,7 +15,7 @@ const itemVariants = {
 export default function ProblemSection() {
   const { t } = useLanguage()
 
-  const items = [t('whom.item1'), t('whom.item2'), t('whom.item3'), t('whom.item4'), t('whom.item5')]
+  const items = [t('whom.item1'), t('whom.item2'), t('whom.item3'), t('whom.item4')]
 
   return (
     <section className="bg-sw-bg-1 py-16 sm:py-20 lg:py-24">

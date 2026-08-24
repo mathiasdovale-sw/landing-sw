@@ -2,7 +2,7 @@
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useLocalizedLinks } from '@/hooks/useLocalizedLinks';
-import { SERVICES, getServicesByGroup } from '@/lib/services-config';
+import { SERVICES } from '@/lib/services-config';
 import Link from 'next/link';
 
 interface RelatedServicesProps {
@@ -14,12 +14,7 @@ export default function RelatedServices({ currentService, className = '' }: Rela
   const { t } = useLanguage();
   const { links } = useLocalizedLinks();
 
-  const current = SERVICES.find((s) => s.key === currentService);
-  if (!current) return null;
-
-  const relatedServices = getServicesByGroup(current.group)
-    .filter((s) => s.key !== currentService)
-    .slice(0, 3);
+  const relatedServices = SERVICES.filter((s) => s.key !== currentService).slice(0, 3);
 
   if (relatedServices.length === 0) return null;
 

@@ -51,14 +51,9 @@ export async function GET(request: NextRequest) {
   // Service pages
   const servicePages: Array<keyof typeof seoUrls> = [
     'migration',
-    'migrationPlus',
     'customDev',
-    'conversionResearch',
     'conversionAudit',
-    'landingPages',
-    'emailAutomation',
-    'emailCampaigns',
-    'maintenance'
+    'emailAutomation'
   ]
 
   servicePages.forEach(page => {
@@ -78,7 +73,7 @@ export async function GET(request: NextRequest) {
     posts.forEach(post => {
       const postDate = new Date(post.date).toISOString()
       const blogPostHreflangs = [
-        { hreflang: 'es', href: `${baseUrl}/es/blog/${post.slug}` },
+        { hreflang: 'es-ES', href: `${baseUrl}/es/blog/${post.slug}` },
         { hreflang: 'en', href: `${baseUrl}/en/blog/${post.slug}` },
         { hreflang: 'x-default', href: `${baseUrl}/es/blog/${post.slug}` }
       ]

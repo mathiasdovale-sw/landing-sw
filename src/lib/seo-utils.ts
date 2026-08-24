@@ -21,8 +21,8 @@ export function getCanonicalBaseUrl(): string {
 // Meta descriptions for all pages in both languages
 export const metaDescriptions: Record<string, MetaDescription> = {
   home: {
-    es: "Agencia experta en Shopify. Diseño, desarrollo, optimización SEO y CRO para tiendas online. Impulsa tus ventas con SellifyWorks, tu partner de crecimiento en ecommerce.",
-    en: "Expert Shopify agency. Design, development, SEO and CRO optimization for online stores. Boost your sales with SellifyWorks, your ecommerce growth partner."
+    es: "Ayudamos a tiendas Shopify que no despegan a pesar de tener tráfico. Te damos un plan de acción claro con nuestra auditoría de conversión.",
+    en: "We help Shopify stores that aren't growing despite having traffic. Get a clear action plan with our conversion audit."
   },
   about: {
     es: "Conoce a SellifyWorks, agencia especializada en Shopify. Nuestro equipo de expertos te ayuda a optimizar tu tienda online para maximizar ventas.",
@@ -55,40 +55,20 @@ export const metaDescriptions: Record<string, MetaDescription> = {
   
   // Services meta descriptions
   migration: {
-    es: "Migración a Shopify llave en mano: auditoría, diseño, carga de productos y transferencia, sin cortar tus ventas. 2.640€ + IVA.",
-    en: "Turnkey Shopify migration: audit, design, product upload and handover, with zero sales downtime. €2,640 + VAT."
-  },
-  migrationPlus: {
-    es: "Migración a Shopify + conversion research para lanzar tu tienda ya optimizada desde el día uno. Ideal para tiendas que facturan +4.000€/mes.",
-    en: "Shopify migration + conversion research to launch your store already optimized from day one. Ideal for stores doing over €4,000/month."
+    es: "Migración a Shopify llave en mano: auditoría, diseño, carga de productos y transferencia, sin cortar tus ventas.",
+    en: "Turnkey Shopify migration: audit, design, product upload and handover, with zero sales downtime."
   },
   customDev: {
     es: "Desarrollos a medida para Shopify: integraciones, automatizaciones y funcionalidades a medida cuando lo estándar no alcanza.",
     en: "Custom Shopify development: integrations, automations and bespoke functionality when the standard scope isn't enough."
   },
-  conversionResearch: {
-    es: "Conversion research para Shopify: Google Analytics + investigación cualitativa para entender por qué tus visitantes no compran.",
-    en: "Conversion research for Shopify: Google Analytics + qualitative research to understand why your visitors aren't buying."
-  },
   conversionAudit: {
-    es: "Auditoría de conversión para tiendas Shopify pequeñas. Detectamos qué frena tus ventas y te entregamos un plan de acción priorizado.",
-    en: "Conversion audit for small Shopify stores. We find what's holding your sales back and hand you a prioritized action plan."
-  },
-  landingPages: {
-    es: "Optimización de landing pages en Shopify aplicando heurísticas de CRO probadas. 339€ + IVA por página.",
-    en: "Shopify landing page optimization applying proven CRO heuristics. €339 + VAT per page."
+    es: "¿Tenés sesiones pero no vendes? Te ayudamos a entender qué frena a tus clientes: auditoría completa y roadmap priorizado. Desde 450€ + IVA.",
+    en: "Getting sessions but no sales? We help you understand what's stopping your customers with a full store audit and a prioritized roadmap. From €450 + VAT."
   },
   emailAutomation: {
-    es: "Email marketing automation para Shopify: welcome flow, post-compra, carrito abandonado y más. 149€ + IVA por flujo.",
-    en: "Email marketing automation for Shopify: welcome flow, post-purchase, abandoned cart and more. €149 + VAT per flow."
-  },
-  emailCampaigns: {
-    es: "Campañas mensuales de email marketing para Shopify: estrategia, diseño e implementación de 8 emails al mes.",
-    en: "Monthly email marketing campaigns for Shopify: strategy, design and implementation of 8 emails a month."
-  },
-  maintenance: {
-    es: "Mantenimiento mensual para tiendas Shopify pequeñas: 10 tareas al mes para mantener tu tienda siempre al día.",
-    en: "Monthly maintenance for small Shopify stores: 10 tasks a month to keep your store always up to date."
+    es: "Email marketing automation para Shopify: welcome flow, post-compra, carrito abandonado y más.",
+    en: "Email marketing automation for Shopify: welcome flow, post-purchase, abandoned cart and more."
   }
 }
 
@@ -105,20 +85,14 @@ export const seoUrls: Record<string, SeoUrl> = {
   
   // Services
   migration: { es: '/migracion-shopify', en: '/shopify-migration' },
-  migrationPlus: { es: '/migracion-plus', en: '/shopify-migration-plus' },
   customDev: { es: '/desarrollos-a-medida', en: '/custom-shopify-development' },
-  conversionResearch: { es: '/conversion-research', en: '/conversion-research' },
   conversionAudit: { es: '/auditoria-conversion', en: '/conversion-audit' },
-  landingPages: { es: '/optimizacion-landing-pages', en: '/landing-page-optimization' },
-  emailAutomation: { es: '/email-marketing-automation', en: '/email-marketing-automation' },
-  emailCampaigns: { es: '/campanas-email-marketing', en: '/email-marketing-campaigns' },
-  maintenance: { es: '/mantenimiento-shopify', en: '/shopify-maintenance' }
+  emailAutomation: { es: '/email-marketing-automation', en: '/email-marketing-automation' }
 }
 
 // Service keys (subset of seoUrls) used for sitemap / catalog generation
 export const SERVICE_PAGE_KEYS = [
-  'migration', 'migrationPlus', 'customDev', 'conversionResearch',
-  'conversionAudit', 'landingPages', 'emailAutomation', 'emailCampaigns', 'maintenance'
+  'migration', 'customDev', 'conversionAudit', 'emailAutomation'
 ] as const
 
 // Generate hreflang alternates for a given page
@@ -128,7 +102,7 @@ export function generateHreflangs(pageKey: keyof typeof seoUrls, baseUrl?: strin
   if (!urls) return []
 
   return [
-    { hreflang: 'es', href: `${canonicalBaseUrl}/es${urls.es}` },
+    { hreflang: 'es-ES', href: `${canonicalBaseUrl}/es${urls.es}` },
     { hreflang: 'en', href: `${canonicalBaseUrl}/en${urls.en}` },
     { hreflang: 'x-default', href: `${canonicalBaseUrl}/es${urls.es}` } // Spanish as default
   ]
@@ -180,7 +154,7 @@ export function generatePageMetadata(
     alternates: {
       canonical,
       languages: {
-        'es': hreflangs.find(h => h.hreflang === 'es')?.href,
+        'es-ES': hreflangs.find(h => h.hreflang === 'es-ES')?.href,
         'en': hreflangs.find(h => h.hreflang === 'en')?.href,
         'x-default': hreflangs.find(h => h.hreflang === 'x-default')?.href,
       }
@@ -218,11 +192,11 @@ export function generateBlogPostMetadata(
     : getMetaDescription('blog', locale)
   
   const blogHreflangs = [
-    { hreflang: 'es', href: `${baseUrl}/es/blog/${slug}` },
+    { hreflang: 'es-ES', href: `${baseUrl}/es/blog/${slug}` },
     { hreflang: 'en', href: `${baseUrl}/en/blog/${slug}` },
     { hreflang: 'x-default', href: `${baseUrl}/es/blog/${slug}` }
   ]
-  
+
   return {
     title: `${title} | SellifyWorks Blog`,
     description,
@@ -230,7 +204,7 @@ export function generateBlogPostMetadata(
     alternates: {
       canonical,
       languages: {
-        'es': blogHreflangs.find(h => h.hreflang === 'es')?.href,
+        'es-ES': blogHreflangs.find(h => h.hreflang === 'es-ES')?.href,
         'en': blogHreflangs.find(h => h.hreflang === 'en')?.href,
         'x-default': blogHreflangs.find(h => h.hreflang === 'x-default')?.href,
       }

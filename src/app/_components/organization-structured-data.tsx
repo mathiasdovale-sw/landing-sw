@@ -28,18 +28,14 @@ const OrganizationStructuredData = ({
   const defaultSpecialties = {
     es: [
       "Migración a Shopify",
-      "Optimización de conversión (CRO)",
-      "Email marketing automation",
       "Auditoría de conversión",
-      "Mantenimiento Shopify",
+      "Email marketing automation",
       "Desarrollos a medida"
     ],
     en: [
       "Shopify Migration",
-      "Conversion Rate Optimization",
-      "Email Marketing Automation",
       "Conversion Audit",
-      "Shopify Maintenance",
+      "Email Marketing Automation",
       "Custom Development"
     ]
   };
@@ -128,8 +124,16 @@ const OrganizationStructuredData = ({
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": language === 'es' ? "Mantenimiento" : "Maintenance",
-            "url": `${baseUrl}/${language}/${language === 'es' ? 'mantenimiento-shopify' : 'shopify-maintenance'}`
+            "name": language === 'es' ? "Desarrollos a medida" : "Custom Development",
+            "url": `${baseUrl}/${language}/${language === 'es' ? 'desarrollos-a-medida' : 'custom-shopify-development'}`
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": language === 'es' ? "Email marketing automation" : "Email Marketing Automation",
+            "url": `${baseUrl}/${language}/${language === 'es' ? 'email-marketing-automation' : 'email-marketing-automation'}`
           }
         }
       ]

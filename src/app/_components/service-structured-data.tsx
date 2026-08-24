@@ -7,27 +7,16 @@ interface ServiceSchemaProps {
   serviceName: string;
   serviceType: string;
   description: string;
-  price?: {
-    currency: string;
-    minPrice?: number;
-    priceCurrency?: string;
-    priceRange?: string;
-  };
 }
 
 const serviceCategories: Record<string, string> = {
   migration: 'Platform Migration',
-  migrationPlus: 'Platform Migration',
   customDev: 'Custom Software Development',
-  conversionResearch: 'Conversion Research',
   conversionAudit: 'Conversion Optimization',
-  landingPages: 'Conversion Optimization',
   emailAutomation: 'Email Marketing',
-  emailCampaigns: 'Email Marketing',
-  maintenance: 'Website Maintenance',
 };
 
-const ServiceStructuredData = ({ serviceName, serviceType, description, price }: ServiceSchemaProps) => {
+const ServiceStructuredData = ({ serviceName, serviceType, description }: ServiceSchemaProps) => {
   const { language } = useLanguage();
   const baseUrl = getCanonicalBaseUrl();
 
@@ -62,14 +51,6 @@ const ServiceStructuredData = ({ serviceName, serviceType, description, price }:
       "name": language === 'es' ? 'España' : 'Spain'
     },
     "url": serviceUrl,
-    "offers": price ? {
-      "@type": "Offer",
-      "priceCurrency": price.currency || "EUR",
-      "price": price.minPrice || undefined,
-      "priceRange": price.priceRange || undefined,
-      "availability": "https://schema.org/InStock",
-      "url": serviceUrl
-    } : undefined,
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
       "name": language === 'es' ? 'Servicios de Shopify' : 'Shopify Services',

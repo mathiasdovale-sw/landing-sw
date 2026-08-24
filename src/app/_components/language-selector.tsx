@@ -58,29 +58,14 @@ const LanguageSelector = () => {
         '/es/migracion-shopify': { es: '/es/migracion-shopify', en: '/en/shopify-migration' },
         '/en/shopify-migration': { es: '/es/migracion-shopify', en: '/en/shopify-migration' },
 
-        '/es/migracion-plus': { es: '/es/migracion-plus', en: '/en/shopify-migration-plus' },
-        '/en/shopify-migration-plus': { es: '/es/migracion-plus', en: '/en/shopify-migration-plus' },
-
         '/es/desarrollos-a-medida': { es: '/es/desarrollos-a-medida', en: '/en/custom-shopify-development' },
         '/en/custom-shopify-development': { es: '/es/desarrollos-a-medida', en: '/en/custom-shopify-development' },
-
-        '/es/conversion-research': { es: '/es/conversion-research', en: '/en/conversion-research' },
-        '/en/conversion-research': { es: '/es/conversion-research', en: '/en/conversion-research' },
 
         '/es/auditoria-conversion': { es: '/es/auditoria-conversion', en: '/en/conversion-audit' },
         '/en/conversion-audit': { es: '/es/auditoria-conversion', en: '/en/conversion-audit' },
 
-        '/es/optimizacion-landing-pages': { es: '/es/optimizacion-landing-pages', en: '/en/landing-page-optimization' },
-        '/en/landing-page-optimization': { es: '/es/optimizacion-landing-pages', en: '/en/landing-page-optimization' },
-
         '/es/email-marketing-automation': { es: '/es/email-marketing-automation', en: '/en/email-marketing-automation' },
         '/en/email-marketing-automation': { es: '/es/email-marketing-automation', en: '/en/email-marketing-automation' },
-
-        '/es/campanas-email-marketing': { es: '/es/campanas-email-marketing', en: '/en/email-marketing-campaigns' },
-        '/en/email-marketing-campaigns': { es: '/es/campanas-email-marketing', en: '/en/email-marketing-campaigns' },
-
-        '/es/mantenimiento-shopify': { es: '/es/mantenimiento-shopify', en: '/en/shopify-maintenance' },
-        '/en/shopify-maintenance': { es: '/es/mantenimiento-shopify', en: '/en/shopify-maintenance' },
       }
 
       // Buscar la ruta correspondiente en el mapeo
