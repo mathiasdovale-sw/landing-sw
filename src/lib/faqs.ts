@@ -4,7 +4,7 @@ export const HomeFAQsEs: FAQ[] = [
   {
     id: 'home-1',
     question: '¿Cuánto cuesta una auditoría de mi tienda actual?',
-    answer: '450€ + IVA, precio cerrado — sin sorpresas después. Podés auditar tu tienda completa o una página puntual, según lo que necesites.'
+    answer: '450€ + IVA, precio cerrado — sin sorpresas después.'
   },
   {
     id: 'home-2',
@@ -290,12 +290,12 @@ export const conversionAuditFAQsEs: FAQ[] = [
   {
     id: 'conv-audit-5',
     question: '¿Cuánto tarda en llegarme el resultado?',
-    answer: 'Normalmente 1-2 semanas desde que arrancamos, según si es tienda completa o una página puntual. Confirmamos el plazo exacto antes de empezar.'
+    answer: 'Normalmente 1-2 semanas desde que arrancamos. Confirmamos el plazo exacto antes de empezar.'
   },
   {
     id: 'conv-audit-6',
     question: '¿Garantizan que van a subir mis ventas?',
-    answer: 'No. Nadie puede garantizarte una tasa de conversión exacta — si alguien te lo promete, no está siendo honesto. Te damos método: un diagnóstico claro y un roadmap priorizado para que sepas exactamente qué hacer después.'
+    answer: 'No. Nadie puede garantizarte una tasa de conversión exacta — si alguien te lo promete, no está siendo honesto. Te damos método: un diagnóstico claro y un roadmap para que sepas exactamente qué hacer después.'
   }
 ];
 

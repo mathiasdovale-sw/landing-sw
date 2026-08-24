@@ -36,14 +36,14 @@ export default function AuditoriaConversion() {
           locale: 'es',
           eyebrow: 'Conversión · Auditoría',
           title: 'Auditoría de conversión',
-          lede: 'Detectamos exactamente qué está frenando tus ventas y te entregamos un plan de acción priorizado por impacto. Tú decides el alcance: tu tienda completa o una página puntual.',
+          lede: 'Detectamos exactamente qué está frenando tus ventas y te entregamos un listado de tareas segun la etapa del funnel.',
           ctaPrimaryLabel: 'Contactar',
           ctaSecondaryLabel: 'Ver qué incluye',
           includesEyebrow: 'Qué incluye',
           includesTitle: 'Un plan claro, no una lista de 50 sugerencias genéricas.',
           includes: [
-            { title: 'Web completa o página puntual', description: 'Auditamos toda tu tienda o nos enfocamos en la página que más te preocupa: home, producto, carrito o checkout.' },
-            { title: 'Priorización por impacto', description: 'Te decimos qué arreglar primero según lo que más vende.' },
+            { title: 'Web completa', description: 'Auditamos toda tu tienda' },
+            { title: 'Listado de tareas', description: 'Te decimos qué arreglar segun la etapa del funnel.' },
             { title: 'Sin jerga, sin relleno', description: 'Un documento que puedes leer y entender en una sentada.' },
             { title: 'Próximos pasos concretos', description: 'Sabes exactamente qué hacer después de leerlo.' },
           ],
@@ -53,7 +53,7 @@ export default function AuditoriaConversion() {
           faqs: conversionAuditFAQsEs,
           structuredData: {
             serviceName: 'Auditoría de conversión',
-            description: 'Detectamos qué está frenando tus ventas, en tu web completa o en una página puntual, y entregamos un plan de acción priorizado por impacto.',
+            description: 'Detectamos qué está frenando tus ventas, y entregamos un plan de acción segun la etapa del funnel.',
           },
         }}
       />
