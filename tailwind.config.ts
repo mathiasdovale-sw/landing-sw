@@ -20,6 +20,30 @@ const config: Config = {
         "accent-7": "#333",
         success: "#0070f3",
         cyan: "#79FFE1",
+        // Editorial dark / brutalist tokens (rediseño SellifyWorks)
+        "sw-bg-0": "#000000",
+        "sw-bg-1": "#0A0A0A",
+        "sw-bg-2": "#111111",
+        "sw-bg-3": "#1A1A1A",
+        "sw-fg-1": "#FFFFFF",
+        "sw-fg-2": "#D0D0D0",
+        "sw-fg-3": "#888888",
+        "sw-fg-4": "#555555",
+        "sw-line": "#1F1F1F",
+        "sw-line-strong": "#2A2A2A",
+        "sw-brand": "#FF6B00",
+        "sw-brand-hover": "#FF8533",
+        "sw-brand-press": "#CC5500",
+        // Color secundario: acentos, tags, números, hovers. El naranja queda
+        // reservado exclusivamente para los CTA principales (contratar/hablar).
+        "sw-secondary": "#7CB3E0",
+        "sw-secondary-strong": "#2F5C84",
+        "sw-success": "#00E58A",
+        "sw-danger": "#FF4D4D",
+      },
+      fontFamily: {
+        display: ["var(--font-archivo)", "Helvetica Neue", "Arial", "sans-serif"],
+        mono: ["var(--font-jbmono)", "ui-monospace", "Menlo", "monospace"],
       },
       spacing: {
         28: "7rem",

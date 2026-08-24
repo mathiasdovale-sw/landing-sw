@@ -1,90 +1,140 @@
 "use client"
-import Navbar from "./navbar"
 import Image from "next/image"
+import Link from "next/link"
+import { motion } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
-import AuroraBackground from "@/app/_components/aurora-background"
+import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
+import AnimatedStat from "./animated-stat"
+
+const MotionLink = motion.create(Link)
 
 const HeaderHome = () => {
-  const { t } = useLanguage()
-  
-  const scrollToContact = () => {
-    const contactSection = document.getElementById('contacto');
-    if (contactSection) {
-      contactSection.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
+  const { t, language } = useLanguage()
+  const { links } = useLocalizedLinks()
+
+  const scrollToServices = () => {
+    const servicesSection = document.getElementById('services-section')
+    if (servicesSection) {
+      servicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
-  };
+  }
+
+  const currency = language === 'es' ? { prefix: '', suffix: '€' } : { prefix: '€', suffix: '' }
 
   return (
-    <section className="relative min-h-[70vh] sm:min-h-[20vh] lg:min-h-screen text-white overflow-hidden" 
-             style={{ 
-               backgroundColor: '#1a1a1a',
-               width: '100vw',
-               position: 'relative',
-               left: '50%',
-               right: '50%',
-               marginLeft: '-50vw',
-               marginRight: '-50vw'
-             }}>
-      {/* Aurora Background */}
-      <div className="absolute inset-0 z-0 w-full h-full">
-        <AuroraBackground 
-          colorStops={["#79FFE1", "#0070f3", "#1a1a1a"]}
-          amplitude={1.0}
-          blend={0.8}
-          speed={0.3}
-        />
-      </div>
-      
-      {/* Main Content */}
-      <main className="relative z-10 flex flex-col items-center justify-center px-8 sm:px-10 md:px-16 lg:px-20 py-6 sm:py-8 lg:py-12 min-h-[calc(70vh-70px)] sm:min-h-[calc(90vh-100px)] lg:min-h-[calc(100vh-120px)] text-center">
-        {/* Main Text - Centered */}
-        <div className="mb-4 sm:mb-6 lg:mb-8 max-w-6xl">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-black leading-tight xl:leading-tight 2xl:leading-tight tracking-tight break-words">
-            {t('header.title.line1')}
-            <br />
-            <span className="text-orange-300">{t('header.title.line2')}</span>
-          </h1>
-          
-          {/* Shopify Integration - More cohesive placement */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mt-6 sm:mt-8 lg:mt-10">
-            <div className="flex items-center gap-3">
-              <Image
-                src="/assets/img/shopifyLogo.png"
-                alt="Shopify Partner Agency"
-                width={50}
-                height={40}
-                className="w-12 h-auto sm:w-14 lg:w-16"
-                priority
-              />
-              <div className="text-sm sm:text-base lg:text-lg font-medium text-gray-300 tracking-wide">
-                {t('header.shopify.partner')}
-              </div>
-            </div>
-            <div className="hidden sm:block w-px h-8 bg-gray-600"></div>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-300 font-light text-center sm:text-left max-w-md">
-              {t('header.shopify.description')}
-            </p>
-          </div>
-        </div>
+    <section className="bg-sw-bg-0 pb-16 pt-14 sm:pb-20 sm:pt-20 lg:pb-28 lg:pt-28">
+      <div className="mx-auto max-w-7xl px-5">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-7 flex items-center gap-3"
+        >
+          <span className="font-mono-label text-sw-fg-3">{t('hero.eyebrow')}</span>
+        </motion.div>
 
-        {/* Call to Action Button */}
-        <div className="mb-4 sm:mb-6 lg:mb-8">
-          <button 
-            onClick={scrollToContact}
-            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 sm:py-5 sm:px-10 lg:py-6 lg:px-12 rounded-full text-lg sm:text-xl lg:text-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+        <h1 className="font-display text-5xl text-sw-fg-1 sm:text-6xl md:text-7xl lg:text-8xl">
+          <span className="block overflow-hidden">
+            <motion.span
+              className="block"
+              initial={{ y: "110%" }}
+              animate={{ y: "0%" }}
+              transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {t('hero.title.line1')}
+            </motion.span>
+          </span>
+          <span className="block overflow-hidden">
+            <motion.span
+              className="block text-sw-secondary"
+              initial={{ y: "110%" }}
+              animate={{ y: "0%" }}
+              transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {t('hero.title.line2')}
+            </motion.span>
+          </span>
+        </h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="mt-8 max-w-2xl text-lg leading-relaxed text-sw-fg-2 sm:text-xl"
+        >
+          {t('hero.sub')}
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.25 }}
+          className="mt-10 flex flex-wrap items-center gap-4"
+        >
+          <MotionLink
+            href={links.conversionAudit}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="rounded-sm bg-sw-brand px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-sw-brand-hover"
           >
-            {t('header.cta')}
-          </button>
-        </div>
+            {t('hero.cta1')}
+          </MotionLink>
+          <motion.button
+            onClick={scrollToServices}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="rounded-sm border border-sw-line-strong px-7 py-4 text-base font-semibold text-sw-fg-1 transition-colors hover:border-sw-fg-1"
+          >
+            {t('hero.cta2')}
+          </motion.button>
+        </motion.div>
 
-        {/* Spacer for better layout */}
-        <div className="h-4 sm:h-6 lg:h-8"></div>
-      </main>
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.35 }}
+          className="mt-10 flex flex-wrap items-center gap-6"
+        >
+          <div className="flex items-center gap-2 opacity-80">
+            <Image
+              src="/assets/img/shopifyLogo.png"
+              alt="Shopify Partner"
+              width={110}
+              height={28}
+              className="h-7 w-auto object-contain"
+            />
+            <span className="font-mono-label text-sw-fg-3">Shopify Partner</span>
+          </div>
+          <div className="hidden h-4 w-px bg-sw-line-strong sm:block" />
+          <div className="flex items-center opacity-80">
+            <Image
+              src="/assets/img/klaviyo-partner-badge-light.webp"
+              alt="Klaviyo Partner"
+              width={400}
+              height={174}
+              className="h-11 w-auto object-contain"
+            />
+          </div>
+        </motion.div>
+
+        <div className="mt-14 flex flex-wrap gap-8 border-t border-sw-line pt-7 sm:gap-16">
+          <AnimatedStat
+            target={1000}
+            prefix="<"
+            locale={language}
+            label={t('hero.stat1.label')}
+            delay={0}
+          />
+          <AnimatedStat
+            staticValue={t('hero.stat3.num')}
+            locale={language}
+            label={t('hero.stat3.label')}
+            delay={0.3}
+          />
+        </div>
+      </div>
     </section>
-  );
+  )
 }
 
-export default HeaderHome;
+export default HeaderHome

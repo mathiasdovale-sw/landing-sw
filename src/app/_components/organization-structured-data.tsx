@@ -27,20 +27,16 @@ const OrganizationStructuredData = ({
 
   const defaultSpecialties = {
     es: [
-      "Desarrollo Shopify",
-      "Optimización SEO",
-      "Conversión CRO", 
-      "Diseño Web",
-      "Consultoría Ecommerce",
-      "Shopify Plus"
+      "Migración a Shopify",
+      "Auditoría de conversión",
+      "Email marketing automation",
+      "Desarrollos a medida"
     ],
     en: [
-      "Shopify Development",
-      "SEO Optimization", 
-      "CRO Conversion",
-      "Web Design",
-      "Ecommerce Consulting",
-      "Shopify Plus"
+      "Shopify Migration",
+      "Conversion Audit",
+      "Email Marketing Automation",
+      "Custom Development"
     ]
   };
 
@@ -112,24 +108,32 @@ const OrganizationStructuredData = ({
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": language === 'es' ? "Consultoría Shopify" : "Shopify Consulting",
-            "url": `${baseUrl}/${language}/${language === 'es' ? 'consultoria-shopify' : 'shopify-consulting'}`
-          }
-        },
-        {
-          "@type": "Offer", 
-          "itemOffered": {
-            "@type": "Service",
-            "name": language === 'es' ? "Diseño Shopify" : "Shopify Design",
-            "url": `${baseUrl}/${language}/${language === 'es' ? 'diseno-shopify' : 'shopify-design'}`
+            "name": language === 'es' ? "Migración a Shopify" : "Shopify Migration",
+            "url": `${baseUrl}/${language}/${language === 'es' ? 'migracion-shopify' : 'shopify-migration'}`
           }
         },
         {
           "@type": "Offer",
           "itemOffered": {
-            "@type": "Service", 
-            "name": language === 'es' ? "SEO Shopify" : "Shopify SEO",
-            "url": `${baseUrl}/${language}/${language === 'es' ? 'seo-shopify' : 'shopify-seo'}`
+            "@type": "Service",
+            "name": language === 'es' ? "Auditoría de conversión" : "Conversion Audit",
+            "url": `${baseUrl}/${language}/${language === 'es' ? 'auditoria-conversion' : 'conversion-audit'}`
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": language === 'es' ? "Desarrollos a medida" : "Custom Development",
+            "url": `${baseUrl}/${language}/${language === 'es' ? 'desarrollos-a-medida' : 'custom-shopify-development'}`
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": language === 'es' ? "Email marketing automation" : "Email Marketing Automation",
+            "url": `${baseUrl}/${language}/${language === 'es' ? 'email-marketing-automation' : 'email-marketing-automation'}`
           }
         }
       ]

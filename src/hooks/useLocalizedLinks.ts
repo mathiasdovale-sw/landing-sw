@@ -19,16 +19,10 @@ export const useLocalizedLinks = () => {
     cookiePolicy: currentLocale === 'es' ? '/es/politica-de-cookies' : '/en/cookie-policy',
     newsletterConfirmed: currentLocale === 'es' ? '/es/suscripcion-confirmada' : '/en/newsletter-confirmed',
     // Service pages
-    shopifyStoreSetup: currentLocale === 'es' ? '/es/crear-tienda-shopify' : '/en/shopify-store-setup',
-    shopifySeo: currentLocale === 'es' ? '/es/seo-shopify' : '/en/shopify-seo',
-    shopifyDesign: currentLocale === 'es' ? '/es/diseno-shopify' : '/en/shopify-design',
-    shopifyThemeCustomization: currentLocale === 'es' ? '/es/personalizacion-tema-shopify' : '/en/shopify-theme-customization',
-    shopifyMigration: currentLocale === 'es' ? '/es/migracion-shopify' : '/en/shopify-migration',
-    shopifyCro: currentLocale === 'es' ? '/es/cro-shopify' : '/en/shopify-cro',
-    shopifyPlus: currentLocale === 'es' ? '/es/shopify-plus' : '/en/shopify-plus',
-    shopifyConsulting: currentLocale === 'es' ? '/es/consultoria-shopify' : '/en/shopify-consulting',
-    shopifyGrowthPartner: currentLocale === 'es' ? '/es/growth-partner-shopify' : '/en/shopify-growth-partner',
-    shopifyAbTesting: currentLocale === 'es' ? '/es/ab-testing-shopify' : '/en/shopify-ab-testing',
+    migration: currentLocale === 'es' ? '/es/migracion-shopify' : '/en/shopify-migration',
+    customDev: currentLocale === 'es' ? '/es/desarrollos-a-medida' : '/en/custom-shopify-development',
+    conversionAudit: currentLocale === 'es' ? '/es/auditoria-conversion' : '/en/conversion-audit',
+    emailAutomation: currentLocale === 'es' ? '/es/email-marketing-automation' : '/en/email-marketing-automation',
   }
   
   // Función para generar enlaces de posts de blog

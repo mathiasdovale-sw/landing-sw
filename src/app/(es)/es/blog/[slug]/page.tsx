@@ -1,0 +1,93 @@
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getAllPosts, getPostBySlug } from "@/lib/api";
+import Container from "@/app/_components/container";
+import { PostBody } from "@/app/_components/post-body";
+import { PostHeader } from "@/app/_components/post-header";
+import VisualBreadcrumbs from "@/app/_components/visual-breadcrumbs";
+import BlogCTA from "@/app/_components/blog-cta";
+import markdownToHtml from "@/lib/markdownToHtml";
+import { generateBlogPostMetadata } from "@/lib/seo-utils";
+
+export default async function Post({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  
+  let post;
+  try {
+    post = getPostBySlug(slug, 'es');
+  } catch (error) {
+    // Security: If there's an error (like path traversal attempt), return 404
+    console.error('Security error in blog post access:', error);
+    return notFound();
+  }
+
+  if (!post) {
+    return notFound();
+  }
+
+  const content = await markdownToHtml(post.content || "");
+
+  return (
+    <main className="min-h-screen">
+      <div className="relative">
+        <VisualBreadcrumbs />
+      </div>
+      <div className="bg-white">
+        <Container>
+          <article className="pb-16">
+            <PostHeader
+              title={post.title}
+              coverImage={post.coverImage}
+              date={post.date}
+              author={post.author}
+            />
+            <PostBody content={content} />
+            
+            {/* CTA Section */}
+            <BlogCTA />
+          </article>
+        </Container>
+      </div>
+    </main>
+  );
+}
+
+type Params = {
+  params: Promise<{
+    slug: string;
+  }>;
+};
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { slug } = await params;
+  
+  let post;
+  try {
+    post = getPostBySlug(slug, 'es');
+  } catch (error) {
+    // Security: If there's an error (like path traversal attempt), return 404
+    return notFound();
+  }
+
+  if (!post) {
+    return notFound();
+  }
+
+  return generateBlogPostMetadata(
+    post.title,
+    post.excerpt,
+    post.slug,
+    'es',
+    post.date,
+    post.author?.name,
+    post.coverImage
+  ) as Metadata;
+}
+
+export async function generateStaticParams() {
+  const posts = getAllPosts('es');
+
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}

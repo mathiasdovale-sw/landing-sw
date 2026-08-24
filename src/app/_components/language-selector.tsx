@@ -55,39 +55,17 @@ const LanguageSelector = () => {
         '/en/services': { es: '/es/servicios', en: '/en/services' },
         
         // Páginas de servicios Shopify
-        '/diseno-shopify': { es: '/es/diseno-shopify', en: '/en/shopify-design' },
-        '/es/diseno-shopify': { es: '/es/diseno-shopify', en: '/en/shopify-design' },
-        '/en/shopify-design': { es: '/es/diseno-shopify', en: '/en/shopify-design' },
-        
-        '/shopify-plus': { es: '/es/shopify-plus', en: '/en/shopify-plus' },
-        '/es/shopify-plus': { es: '/es/shopify-plus', en: '/en/shopify-plus' },
-        '/en/shopify-plus': { es: '/es/shopify-plus', en: '/en/shopify-plus' },
-        
-        '/migracion-shopify': { es: '/es/migracion-shopify', en: '/en/shopify-migration' },
         '/es/migracion-shopify': { es: '/es/migracion-shopify', en: '/en/shopify-migration' },
         '/en/shopify-migration': { es: '/es/migracion-shopify', en: '/en/shopify-migration' },
-        
-        '/consultoria-shopify': { es: '/es/consultoria-shopify', en: '/en/shopify-consulting' },
-        '/es/consultoria-shopify': { es: '/es/consultoria-shopify', en: '/en/shopify-consulting' },
-        '/en/shopify-consulting': { es: '/es/consultoria-shopify', en: '/en/shopify-consulting' },
-        
-        '/es/seo-shopify': { es: '/es/seo-shopify', en: '/en/shopify-seo' },
-        '/en/shopify-seo': { es: '/es/seo-shopify', en: '/en/shopify-seo' },
-        
-        '/es/cro-shopify': { es: '/es/cro-shopify', en: '/en/shopify-cro' },
-        '/en/shopify-cro': { es: '/es/cro-shopify', en: '/en/shopify-cro' },
-        
-        '/es/ab-testing-shopify': { es: '/es/ab-testing-shopify', en: '/en/shopify-ab-testing' },
-        '/en/shopify-ab-testing': { es: '/es/ab-testing-shopify', en: '/en/shopify-ab-testing' },
-        
-        '/es/growth-partner-shopify': { es: '/es/growth-partner-shopify', en: '/en/shopify-growth-partner' },
-        '/en/shopify-growth-partner': { es: '/es/growth-partner-shopify', en: '/en/shopify-growth-partner' },
-        
-        '/es/crear-tienda-shopify': { es: '/es/crear-tienda-shopify', en: '/en/shopify-store-setup' },
-        '/en/shopify-store-setup': { es: '/es/crear-tienda-shopify', en: '/en/shopify-store-setup' },
-        
-        '/es/personalizacion-tema-shopify': { es: '/es/personalizacion-tema-shopify', en: '/en/shopify-theme-customization' },
-        '/en/shopify-theme-customization': { es: '/es/personalizacion-tema-shopify', en: '/en/shopify-theme-customization' },
+
+        '/es/desarrollos-a-medida': { es: '/es/desarrollos-a-medida', en: '/en/custom-shopify-development' },
+        '/en/custom-shopify-development': { es: '/es/desarrollos-a-medida', en: '/en/custom-shopify-development' },
+
+        '/es/auditoria-conversion': { es: '/es/auditoria-conversion', en: '/en/conversion-audit' },
+        '/en/conversion-audit': { es: '/es/auditoria-conversion', en: '/en/conversion-audit' },
+
+        '/es/email-marketing-automation': { es: '/es/email-marketing-automation', en: '/en/email-marketing-automation' },
+        '/en/email-marketing-automation': { es: '/es/email-marketing-automation', en: '/en/email-marketing-automation' },
       }
 
       // Buscar la ruta correspondiente en el mapeo

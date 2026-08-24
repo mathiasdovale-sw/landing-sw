@@ -1,38 +1,104 @@
 "use client"
-import { CheckCircle2, TrendingUp, Zap, Shield, Package } from "lucide-react"
-import { useLanguage } from "@/contexts/LanguageContext"
+import { useState } from "react"
 import Image from "next/image"
+import { motion } from "framer-motion"
+import { Check, MoveRight, Smartphone } from "lucide-react"
+import { useLanguage } from "@/contexts/LanguageContext"
+
+// Assets por caso: `logo` es opcional (favicon/isotipo del cliente, junto al nombre).
+// `image` apunta a una captura vertical (mobile) de la home de la tienda. Subí el
+// archivo a esa ruta exacta en /public y aparece solo; si falta, se ve un placeholder.
+const CASE_ASSETS: Record<string, { logo?: string; image?: string }> = {
+  card1: {
+    logo: "/assets/img/canramos-logo.jpg",
+    image: "/assets/img/case-canramos-home.jpg",
+  },
+  card2: {
+    logo: "/assets/img/termolar-logo.jpg",
+    image: "/assets/img/case-termolar-home.jpg",
+  },
+}
+
+function CaseScreenshot({ src, alt }: { src?: string; alt: string }) {
+  const [failed, setFailed] = useState(false)
+
+  if (!src || failed) {
+    return (
+      <div className="flex aspect-[9/17] w-full max-w-[130px] shrink-0 flex-col items-center justify-center gap-2 rounded-md border border-dashed border-sw-line bg-sw-bg-0 sm:max-w-[170px]">
+        <Smartphone className="h-6 w-6 text-sw-fg-4" aria-hidden="true" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative aspect-[9/17] w-full max-w-[130px] shrink-0 overflow-hidden rounded-md border border-sw-line-strong shadow-lg sm:max-w-[170px]">
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className="object-cover object-top"
+        sizes="(min-width: 640px) 170px, 130px"
+        onError={() => setFailed(true)}
+      />
+    </div>
+  )
+}
+
+function CaseLogo({ src, alt }: { src?: string; alt: string }) {
+  const [failed, setFailed] = useState(false)
+
+  if (!src || failed) return null
+
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={28}
+      height={28}
+      className="h-7 w-7 shrink-0 rounded-full border border-sw-line object-cover"
+      onError={() => setFailed(true)}
+    />
+  )
+}
 
 export default function CaseStudySection() {
   const { t } = useLanguage()
 
-  const results = [
+  const cards = [
     {
-      icon: TrendingUp,
-      text: t('casestudy.result1'),
+      key: "card1",
+      title: t('casestudy.card1.title'),
+      bullets: [
+        t('casestudy.card1.bullet1'),
+        t('casestudy.card1.bullet2'),
+        t('casestudy.card1.bullet3'),
+      ],
     },
     {
-      icon: Zap,
-      text: t('casestudy.result2'),
-    },
-    {
-      icon: CheckCircle2,
-      text: t('casestudy.result3'),
-    },
-    {
-      icon: Shield,
-      text: t('casestudy.result4'),
-    },
-    {
-      icon: Package,
-      text: t('casestudy.result5'),
+      key: "card2",
+      title: t('casestudy.card2.title'),
+      bullets: [
+        t('casestudy.card2.bullet1'),
+        t('casestudy.card2.bullet2'),
+        t('casestudy.card2.bullet3'),
+      ],
     },
   ]
 
   const scrollToContact = () => {
     const contactSection = document.getElementById('contacto');
     if (contactSection) {
-      contactSection.scrollIntoView({ 
+      contactSection.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
+  const scrollToCases = () => {
+    const casesSection = document.getElementById('casos-reales');
+    if (casesSection) {
+      casesSection.scrollIntoView({
         behavior: 'smooth',
         block: 'start'
       });
@@ -40,131 +106,97 @@ export default function CaseStudySection() {
   };
 
   return (
-    <section className="py-16 sm:py-20 lg:py-24 bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="casos-reales" className="py-16 sm:py-20 lg:py-24 bg-sw-bg-1">
+      <div className="max-w-5xl mx-auto px-5">
         {/* Header */}
-        <div className="text-center mb-12 lg:mb-16">
-          <div className="inline-block mb-4">
-            <span className="text-xs sm:text-sm font-semibold text-orange-600 bg-orange-100 px-4 py-2 rounded-full tracking-wide uppercase">
-              {t('casestudy.badge')}
-            </span>
-          </div>
-          
-          {/* Client Logo */}
-          <div className="flex justify-center mb-6">
-            <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-              <Image
-                src="/assets/img/canramos-logo.jpg"
-                alt="Can Ramos Logo"
-                width={300}
-                height={200}
-                className="h-16 sm:h-28 w-auto"
-                priority
-              />
-            </div>
-          </div>
-
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-gray-900 mb-4 sm:mb-6 leading-tight tracking-tight">
+        <div className="text-center mb-12">
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-sw-fg-1 mb-4">
             {t('casestudy.title')}
           </h2>
-          <p className="text-lg sm:text-xl lg:text-2xl text-gray-700 max-w-3xl mx-auto font-normal leading-relaxed">
+          <p className="text-lg sm:text-xl text-sw-fg-2 max-w-2xl mx-auto leading-relaxed">
             {t('casestudy.subtitle')}
           </p>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-          {/* Left Column - Story */}
-          <div className="space-y-6 lg:space-y-8">
-            {/* Challenge */}
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-4">
-                {t('casestudy.challenge.title')}
-              </h3>
-              <p className="text-gray-700 leading-relaxed text-base sm:text-lg font-normal">
-                {t('casestudy.challenge.description')}
-              </p>
-            </div>
+        {/* Hint de swipe: solo mobile, donde las cards son un carrousel horizontal */}
+        <div className="mb-3 flex items-center gap-2 text-sw-fg-4 sm:hidden">
+          <span className="font-mono-label">{t('casestudy.swipeHint')}</span>
+          <motion.span
+            animate={{ x: [0, 5, 0] }}
+            transition={{ duration: 1.3, repeat: Infinity, ease: "easeInOut" }}
+            className="flex"
+          >
+            <MoveRight className="h-4 w-4" aria-hidden="true" />
+          </motion.span>
+        </div>
 
-            {/* Solution */}
-            <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-white mb-4">
-                {t('casestudy.solution.title')}
-              </h3>
-              <p className="text-white leading-relaxed text-base sm:text-lg font-normal">
-                {t('casestudy.solution.description')}
-              </p>
-            </div>
+        {/* Cards: carrousel deslizable con snap en mobile, grid en desktop */}
+        <div className="relative -mx-5 sm:mx-0">
+          <div className="overflow-x-auto px-5 pb-2 sm:overflow-visible sm:px-0">
+            <div className="flex snap-x snap-mandatory gap-4 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-6">
+              {cards.map((card) => {
+                const assets = CASE_ASSETS[card.key]
+                return (
+                  <div
+                    key={card.title}
+                    className="flex w-[93%] min-w-0 shrink-0 snap-start gap-4 rounded-sm border border-sw-line bg-sw-bg-2 p-6 sm:w-auto sm:shrink sm:gap-5 sm:p-8"
+                  >
+                    <CaseScreenshot src={assets.image} alt={`${card.title} — ${t('casestudy.screenshotAlt')}`} />
 
-            {/* Expertise Section */}
-            <div className="bg-gray-900 rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-white mb-4">
-                {t('casestudy.expertise.title')}
-              </h3>
-              <p className="text-gray-200 leading-relaxed text-base sm:text-lg font-normal mb-4">
-                {t('casestudy.expertise.description')}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <span className="text-xs font-semibold text-orange-400 bg-orange-950 px-3 py-1 rounded-full">
-                  {t('casestudy.expertise.tag1')}
-                </span>
-                <span className="text-xs font-semibold text-orange-400 bg-orange-950 px-3 py-1 rounded-full">
-                  {t('casestudy.expertise.tag2')}
-                </span>
-                <span className="text-xs font-semibold text-orange-400 bg-orange-950 px-3 py-1 rounded-full">
-                  {t('casestudy.expertise.tag3')}
-                </span>
-              </div>
+                    <div className="flex min-w-0 flex-1 flex-col">
+                      <div className="flex items-center gap-2">
+                        <CaseLogo src={assets.logo} alt={card.title} />
+                        <h3 className="min-w-0 break-words font-display text-xl sm:text-2xl text-sw-fg-1">
+                          {card.title}
+                        </h3>
+                      </div>
+                      <ul className="mt-4 flex flex-col gap-2.5">
+                        {card.bullets.map((bullet) => (
+                          <li key={bullet} className="flex items-start gap-2 text-sm text-sw-fg-2">
+                            <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sw-secondary" aria-hidden="true" />
+                            <span className="leading-snug">{bullet}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
 
-          {/* Right Column - Results */}
-          <div className="space-y-6 lg:space-y-8">
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-200">
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-6">
-                {t('casestudy.results.title')}
-              </h3>
-              <div className="space-y-4 sm:space-y-5">
-                {results.map((result, index) => (
-                  <div key={index} className="flex items-start group">
-                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
-                      <result.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                    </div>
-                    <div className="flex-1 pt-1">
-                      <p className="text-gray-800 text-base sm:text-lg font-normal leading-relaxed">
-                        {result.text}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+          {/* Degradado que insinúa que hay más tarjetas fuera de vista, solo mobile */}
+          <div
+            className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-sw-bg-1 to-transparent sm:hidden"
+            aria-hidden="true"
+          />
+        </div>
 
-            {/* CTA Card */}
-            <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-6 sm:p-8 shadow-lg text-center">
-              <h4 className="text-xl sm:text-2xl font-extrabold text-white mb-3">
-                {t('casestudy.cta.title')}
-              </h4>
-              <p className="text-gray-200 mb-6 text-base sm:text-lg font-normal leading-relaxed">
-                {t('casestudy.cta.description')}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                <button 
-                  onClick={scrollToContact}
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base"
-                >
-                  {t('casestudy.cta.button')}
-                </button>
-                <a
-                  href="https://www.canramos.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-white hover:bg-gray-100 text-gray-900 font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base inline-flex items-center justify-center"
-                >
-                  {t('casestudy.cta.viewcase')}
-                </a>
-              </div>
-            </div>
+        {/* CTA Card */}
+        <div className="mt-8 bg-sw-bg-0 border border-sw-line rounded-sm p-6 sm:p-8 text-center">
+          <h4 className="font-display text-xl sm:text-2xl text-sw-fg-1 mb-3">
+            {t('casestudy.cta.title')}
+          </h4>
+          <p className="text-sw-fg-2 mb-6 text-base sm:text-lg leading-relaxed">
+            {t('casestudy.cta.description')}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+            <motion.button
+              onClick={scrollToContact}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="bg-sw-brand hover:bg-sw-brand-hover text-white font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-sm transition-colors text-sm sm:text-base"
+            >
+              {t('casestudy.cta.button')}
+            </motion.button>
+            <motion.button
+              onClick={scrollToCases}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="border border-sw-line-strong hover:border-sw-fg-1 text-sw-fg-1 font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-sm transition-colors text-sm sm:text-base"
+            >
+              {t('casestudy.cta.viewcase')}
+            </motion.button>
           </div>
         </div>
       </div>
