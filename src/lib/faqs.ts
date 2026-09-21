@@ -4,7 +4,7 @@ export const HomeFAQsEs: FAQ[] = [
   {
     id: 'home-1',
     question: '¿Cuánto cuesta una auditoría de mi tienda actual?',
-    answer: '450€ + IVA, precio cerrado — sin sorpresas después.'
+    answer: '140€ + IVA, precio cerrado — sin sorpresas después.'
   },
   {
     id: 'home-2',
@@ -47,7 +47,7 @@ export const HomeFAQsEn: FAQ[] = [
   {
     id: 'home-1',
     question: 'How much does an audit of my current store cost?',
-    answer: '€450 + VAT, fixed price — no surprises afterwards.'
+    answer: '€140 + VAT, fixed price — no surprises afterwards.'
   },
   {
     id: 'home-2',
@@ -250,7 +250,7 @@ export const conversionAuditFAQsEs: FAQ[] = [
   {
     id: 'conv-audit-3',
     question: '¿Cuánto cuesta la auditoría de conversión?',
-    answer: '450€ + IVA, precio cerrado. Sin sorpresas después de contratar.'
+    answer: '140€ + IVA, precio cerrado. Sin sorpresas después de contratar.'
   },
   {
     id: 'conv-audit-5',
@@ -273,7 +273,7 @@ export const conversionAuditFAQsEn: FAQ[] = [
   {
     id: 'conv-audit-en-3',
     question: 'How much does the conversion audit cost?',
-    answer: '€450 + VAT, fixed price. No surprises after hiring us.'
+    answer: '€140 + VAT, fixed price. No surprises after hiring us.'
   },
   {
     id: 'conv-audit-en-5',

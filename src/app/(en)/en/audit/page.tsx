@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import AuditAdsLanding from '@/app/_components/audit-ads-landing'
 
 export const metadata: Metadata = {
-  title: 'Conversion Audit — €450 + VAT | SellifyWorks',
+  title: 'Conversion Audit | SellifyWorks',
   description: "Conversion audit for Shopify stores: we tell you what's holding your sales back. You walk away with a prioritized roadmap, not a theoretical report.",
   robots: { index: false, follow: false },
 }
@@ -19,7 +19,7 @@ export default function AuditAdsPage() {
         hero: {
           h1: "You have traffic. You don't know why it's not converting.",
           subhead: "Conversion audit for Shopify stores. We tell you what's holding your sales back and what order to fix it in. You walk away with a prioritized roadmap, not a theoretical report.",
-          ctaLabel: 'I want my audit — €450 + VAT',
+          ctaLabel: 'I want my audit — €140 + VAT',
         },
         recognition: {
           question: "Do you get hundreds or thousands of sessions a month and the sales just aren't coming? Have you already tried changing the design, the ads, or the copy, and still don't know if the problem is your store, your product, or your traffic?",
@@ -42,7 +42,7 @@ export default function AuditAdsPage() {
             { title: 'No jargon, no filler', description: 'A document you can read and understand in one sitting.' },
             { title: 'Prioritized roadmap', description: 'What to fix first, with estimated time and cost.' },
           ],
-          priceLine: '€450 + VAT — no surprises after',
+          priceLine: '€140 + VAT — no surprises after',
           ctaLabel: 'I want my audit',
         },
         noGuarantee: {
@@ -51,7 +51,7 @@ export default function AuditAdsPage() {
         },
         finalCta: {
           title: "You don't know what to look at first. We do.",
-          ctaLabel: 'Request my audit — €450 + VAT',
+          ctaLabel: 'Request my audit — €140 + VAT',
         },
         legal: {
           company: 'SellifyWorks',

@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import AuditAdsLanding from '@/app/_components/audit-ads-landing'
 
 export const metadata: Metadata = {
-  title: 'Auditoría de conversión — 450€ + IVA | SellifyWorks',
+  title: 'Auditoría de conversión | SellifyWorks',
   description: 'Auditoría de conversión para tiendas Shopify: te decimos qué está frenando tus ventas. Salís con un listado de tareas, no con un informe teórico.',
   robots: { index: false, follow: false },
 }
@@ -19,7 +19,7 @@ export default function AuditoriaAdsPage() {
         hero: {
           h1: 'Tenés tráfico. No sabés por qué no convierte.',
           subhead: 'Auditoría de conversión para tiendas Shopify. Te decimos qué está frenando tus ventas y en qué orden atacarlo. Salís con un listado de tareas, no con un informe teórico.',
-          ctaLabel: 'Quiero mi auditoría — 450€ + IVA',
+          ctaLabel: 'Quiero mi auditoría — 140€ + IVA',
         },
         recognition: {
           question: '¿Tenés cientos o miles de sesiones al mes y las ventas no llegan? ¿Ya probaste cambiar diseño, publicidad o copy, y no sabés si el problema es tu tienda, tu producto o tu tráfico?',
@@ -42,7 +42,7 @@ export default function AuditoriaAdsPage() {
             { title: 'Sin jerga, sin relleno', description: 'Un documento que podés leer y entender en una sola sentada.' },
             { title: 'Roadmap (listado de tareas)', description: 'Qué arreglar, con tiempo y costo estimado.' },
           ],
-          priceLine: '450€ + IVA — sin sorpresas después',
+          priceLine: '140€ + IVA — sin sorpresas después',
           ctaLabel: 'Quiero mi auditoría',
         },
         noGuarantee: {
@@ -51,7 +51,7 @@ export default function AuditoriaAdsPage() {
         },
         finalCta: {
           title: 'No sabés qué mirar primero. Nosotros sí.',
-          ctaLabel: 'Pedir mi auditoría — 450€ + IVA',
+          ctaLabel: 'Pedir mi auditoría — 140€ + IVA',
         },
         legal: {
           company: 'SellifyWorks',

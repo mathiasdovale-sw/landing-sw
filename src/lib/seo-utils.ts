@@ -63,8 +63,8 @@ export const metaDescriptions: Record<string, MetaDescription> = {
     en: "Custom Shopify development: integrations, automations and bespoke functionality when the standard scope isn't enough."
   },
   conversionAudit: {
-    es: "¿Tenés sesiones pero no vendes? Te ayudamos a entender qué frena a tus clientes: auditoría completa y roadmap (listado de tareas) a implementar. Desde 450€ + IVA.",
-    en: "Getting sessions but no sales? We help you understand what's stopping your customers with a full store audit and a prioritized roadmap. From €450 + VAT."
+    es: "¿Tenés sesiones pero no vendes? Te ayudamos a entender qué frena a tus clientes: auditoría completa y roadmap (listado de tareas) a implementar.",
+    en: "Getting sessions but no sales? We help you understand what's stopping your customers with a full store audit and a prioritized roadmap."
   },
   emailAutomation: {
     es: "Email marketing automation para Shopify: welcome flow, post-compra, carrito abandonado y más.",
