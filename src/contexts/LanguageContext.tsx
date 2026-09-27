@@ -42,7 +42,7 @@ const translations = {
     'whom.foot': 'Justo por eso estamos aquí.',
 
     // Funnel leak section (puente visual entre "el problema" y "servicios")
-    'funnel.title': 'Así se ve un funnel con fugas',
+    'funnel.title': 'Así se ve una tienda con fugas',
     'funnel.srSummary': 'Diagrama animado: el tráfico llega por búsqueda orgánica y publicidad paga, recorre home, colección, producto y checkout, y la mayoría se pierde antes de completar la compra.',
     'funnel.node.organic': 'Orgánico',
     'funnel.node.paid': 'Paid ads',
@@ -129,7 +129,7 @@ const translations = {
     'services.conversionAudit.name': 'Auditoría de conversión',
     'services.conversionAudit.tagline': 'Tienda completa 140€ + iva',
     'services.conversionAudit.bullet1': 'Auditoría de tu tienda completa',
-    'services.conversionAudit.bullet2': 'Listado de tareas a implementar por etapa del funnel',
+    'services.conversionAudit.bullet2': 'Listado de tareas a implementar, en orden de impacto',
     'services.conversionAudit.bullet3': 'Próximos pasos concretos',
     'services.emailAutomation.name': 'Email marketing automation',
     'services.emailAutomation.tagline': 'Para vender mientras duermes',
@@ -298,7 +298,7 @@ const translations = {
     'whom.foot': 'Exactly who we\'re here for.',
 
     // Funnel leak section (visual bridge between "the problem" and "services")
-    'funnel.title': 'This is what a leaky funnel looks like',
+    'funnel.title': 'This is what a leaky store looks like',
     'funnel.srSummary': 'Animated diagram: traffic arrives through organic search and paid ads, moves through home, collection, product and checkout, and most of it drops off before completing a purchase.',
     'funnel.node.organic': 'Organic',
     'funnel.node.paid': 'Paid ads',
@@ -385,7 +385,7 @@ const translations = {
     'services.conversionAudit.name': 'Conversion audit',
     'services.conversionAudit.tagline': 'Full store, €140 + VAT',
     'services.conversionAudit.bullet1': 'Audit of your entire store',
-    'services.conversionAudit.bullet2': 'List of tasks to implement, organized by funnel stage',
+    'services.conversionAudit.bullet2': 'List of tasks to implement, in order of impact',
     'services.conversionAudit.bullet3': 'Concrete next steps',
     'services.emailAutomation.name': 'Email marketing automation',
     'services.emailAutomation.tagline': 'For selling while you sleep',

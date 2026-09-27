@@ -4,12 +4,12 @@ export const HomeFAQsEs: FAQ[] = [
   {
     id: 'home-1',
     question: '¿Cuánto cuesta una auditoría de mi tienda actual?',
-    answer: '140€ + IVA, precio cerrado — sin sorpresas después.'
+    answer: '140€ + IVA, precio cerrado — sin sorpresas después. Es solo la auditoría: la implementación de las mejoras se presupuesta aparte.'
   },
   {
     id: 'home-2',
     question: '¿Pueden ayudarme a mejorar las ventas de mi tienda Shopify actual?',
-    answer: 'Sí, con servicios de SEO, personalización de themes y diseño CRO (optimización de conversiones) logramos aumentar el tráfico cualificado y las ventas.'
+    answer: 'Sí, con servicios de SEO, personalización de themes y diseño orientado a la conversión trabajamos para atraer tráfico más cualificado y quitar lo que frena las ventas.'
   },
   {
     id: 'home-4',
@@ -47,12 +47,12 @@ export const HomeFAQsEn: FAQ[] = [
   {
     id: 'home-1',
     question: 'How much does an audit of my current store cost?',
-    answer: '€140 + VAT, fixed price — no surprises afterwards.'
+    answer: '€140 + VAT, fixed price — no surprises afterwards. That is the audit alone: implementing the improvements is quoted separately.'
   },
   {
     id: 'home-2',
     question: 'Can you help me improve sales on my current Shopify store?',
-    answer: 'Yes, with SEO services, theme customization and CRO design (conversion optimization) we help increase qualified traffic and sales.'
+    answer: 'Yes, with SEO services, theme customization and conversion-focused design we work to attract more qualified traffic and remove what holds sales back.'
   },
   {
     id: 'home-4',
@@ -245,22 +245,22 @@ export const conversionAuditFAQsEs: FAQ[] = [
   {
     id: 'conv-audit-1',
     question: 'Tengo tráfico pero no vendo. ¿Qué reviso primero?',
-    answer: 'No hay una respuesta única sin mirar tu tienda. Empezamos por una auditoría de tu funnel completo — home, producto, carrito, checkout — y te decimos, en orden, qué está frenando la venta. Así dejás de probar cambios sueltos sin saber si sirven.'
+    answer: 'Empieza por el camino de compra: ficha de producto, carrito y checkout. Ahí es donde se pierden la mayoría de clientes — y es justo lo primero que reviso en la auditoría.'
   },
   {
     id: 'conv-audit-3',
     question: '¿Cuánto cuesta la auditoría de conversión?',
-    answer: '140€ + IVA, precio cerrado. Sin sorpresas después de contratar.'
+    answer: '140€ + IVA, precio cerrado. Es el precio de la auditoría: si después quieres que implemente las mejoras, eso va con presupuesto aparte.'
   },
   {
     id: 'conv-audit-5',
     question: '¿Cuánto tarda en llegarme el resultado?',
-    answer: 'Normalmente entre 2-3 semanas desde que arrancamos. Confirmamos el plazo exacto antes de empezar.'
+    answer: 'La auditoría te llega en 7-10 días. A partir de ahí, cada ciclo de mejora dura entre 2 y 4 semanas, con las fechas cerradas en el presupuesto antes de empezar.'
   },
   {
     id: 'conv-audit-6',
     question: '¿Garantizan que van a subir mis ventas?',
-    answer: 'No. Nadie puede garantizarte una tasa de conversión exacta — si alguien te lo promete, no está siendo honesto. Te damos método: un diagnóstico claro y un roadmap para que sepas exactamente qué hacer después.'
+    answer: 'No. Nadie puede garantizarte una tasa de conversión exacta — si alguien te lo promete, no está siendo honesto. Lo que te doy es método: un diagnóstico claro y un listado de tareas para que sepas exactamente qué se va a hacer.'
   }
 ];
 
@@ -268,22 +268,22 @@ export const conversionAuditFAQsEn: FAQ[] = [
   {
     id: 'conv-audit-en-1',
     question: 'I have traffic but I\'m not selling. What should I check first?',
-    answer: "There's no one-size-fits-all answer without looking at your store. We start with an audit of your entire funnel — home, product, cart, checkout — and tell you, in order, what's holding back sales. That way you stop testing random changes without knowing if they actually work."
+    answer: "Start with the buying path: product page, cart and checkout. That's where most customers drop off — and it's exactly the first thing I check in the audit."
   },
   {
     id: 'conv-audit-en-3',
     question: 'How much does the conversion audit cost?',
-    answer: '€140 + VAT, fixed price. No surprises after hiring us.'
+    answer: '€140 + VAT, fixed price. That is the price of the audit: if you then want me to implement the improvements, that is quoted separately.'
   },
   {
     id: 'conv-audit-en-5',
     question: 'How long until I get the results?',
-    answer: 'Usually between 2-3 weeks from when we start. We confirm the exact timeline before beginning.'
+    answer: 'The audit reaches you in 7-10 days. From there, each improvement cycle takes between 2 and 4 weeks, with the dates agreed in the quote before starting.'
   },
   {
     id: 'conv-audit-en-6',
     question: 'Do you guarantee my sales will go up?',
-    answer: "No. No one can guarantee you an exact conversion rate — if someone promises that, they're not being honest. What we give you is a method: a clear diagnosis and a roadmap so you know exactly what to do next."
+    answer: "No. No one can guarantee you an exact conversion rate — if someone promises that, they're not being honest. What I give you is a method: a clear diagnosis and a task list so you know exactly what to do next."
   }
 ];
 

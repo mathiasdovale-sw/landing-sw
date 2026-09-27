@@ -4,6 +4,7 @@ import Marquee from "@/app/_components/marquee";
 import ProblemSection from "@/app/_components/problem-section";
 import FunnelLeakSection from "@/app/_components/funnel-leak-section";
 import ServicesSection from "@/app/_components/services-section";
+import HowIWorkSection from "@/app/_components/how-i-work-section";
 import CaseStudySection from "@/app/_components/case-study-section";
 import CloseSection from "@/app/_components/close-section";
 import ContactSection from "@/app/_components/contact-section";
@@ -27,6 +28,9 @@ export default function HomePage() {
       <Reveal><ProblemSection /></Reveal>
       <Reveal><FunnelLeakSection /></Reveal>
       <Reveal><ServicesSection /></Reveal>
+      <Reveal>
+        <HowIWorkSection locale="en" variant="compact" ctaHref="/en/conversion-audit" />
+      </Reveal>
       <Reveal><CaseStudySection /></Reveal>
       <Marquee />
       <Reveal><CloseSection /></Reveal>

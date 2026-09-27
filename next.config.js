@@ -120,6 +120,9 @@ const nextConfig = {
       { source: '/en/shopify-cro', destination: '/en/conversion-audit', permanent: true },
       { source: '/es/ab-testing-shopify', destination: '/es/auditoria-conversion', permanent: true },
       { source: '/en/shopify-ab-testing', destination: '/en/conversion-audit', permanent: true },
+      // Landing de campaña retirada: su tráfico de Ads va a la página de auditoría
+      { source: '/es/auditoria', destination: '/es/auditoria-conversion', permanent: true },
+      { source: '/en/audit', destination: '/en/conversion-audit', permanent: true },
       { source: '/es/shopify-plus', destination: '/es/desarrollos-a-medida', permanent: true },
       { source: '/en/shopify-plus', destination: '/en/custom-shopify-development', permanent: true },
 

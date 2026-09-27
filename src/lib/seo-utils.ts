@@ -33,8 +33,8 @@ export const metaDescriptions: Record<string, MetaDescription> = {
     en: "Contact SellifyWorks to boost your Shopify store. Free consultation, no-obligation quote. Let's talk about growing your ecommerce business together."
   },
   blog: {
-    es: "Blog de SellifyWorks: consejos, trucos y estrategias para Shopify. Aprende sobre ecommerce, SEO, CRO y marketing digital para hacer crecer tu tienda online.",
-    en: "SellifyWorks blog: tips, tricks and strategies for Shopify. Learn about ecommerce, SEO, CRO and digital marketing to grow your online store."
+    es: "Blog de SellifyWorks: consejos, trucos y estrategias para Shopify. Aprende sobre ecommerce, SEO, conversión y marketing digital para hacer crecer tu tienda online.",
+    en: "SellifyWorks blog: tips, tricks and strategies for Shopify. Learn about ecommerce, SEO, conversion and digital marketing to grow your online store."
   },
   privacyPolicy: {
     es: "Política de privacidad de SellifyWorks. Información sobre cómo recopilamos, usamos y protegemos tus datos personales. Transparencia total en el tratamiento de información.",
@@ -49,8 +49,8 @@ export const metaDescriptions: Record<string, MetaDescription> = {
     en: "Subscription confirmed! Thanks for joining the SellifyWorks community. You'll receive exclusive content about Shopify, ecommerce and growth strategies."
   },
   services: {
-    es: "Descubre todos nuestros servicios especializados en Shopify: desarrollo, diseño, SEO, CRO, migración y más. Impulsa tu tienda online con nuestros expertos.",
-    en: "Discover all our specialized Shopify services: development, design, SEO, CRO, migration and more. Boost your online store with our experts."
+    es: "Descubre todos nuestros servicios especializados en Shopify: desarrollo, diseño, SEO, conversión, migración y más. Impulsa tu tienda online con nuestros expertos.",
+    en: "Discover all our specialized Shopify services: development, design, SEO, conversion, migration and more. Boost your online store with our experts."
   },
   
   // Services meta descriptions
@@ -63,8 +63,8 @@ export const metaDescriptions: Record<string, MetaDescription> = {
     en: "Custom Shopify development: integrations, automations and bespoke functionality when the standard scope isn't enough."
   },
   conversionAudit: {
-    es: "¿Tenés sesiones pero no vendes? Te ayudamos a entender qué frena a tus clientes: auditoría completa y roadmap (listado de tareas) a implementar.",
-    en: "Getting sessions but no sales? We help you understand what's stopping your customers with a full store audit and a prioritized roadmap."
+    es: "¿Tenés sesiones pero no vendes? Te digo qué frena a tus clientes: auditoría completa de tu tienda y un listado de tareas ordenado por impacto.",
+    en: "Getting sessions but no sales? I tell you what's stopping your customers: a full store audit and a task list ordered by impact."
   },
   emailAutomation: {
     es: "Email marketing automation para Shopify: welcome flow, post-compra, carrito abandonado y más.",
