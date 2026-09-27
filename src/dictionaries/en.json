@@ -1,42 +1,58 @@
 {
   "about": {
     "metadata": {
-      "title": "About Us - SellifyWorks",
-      "description": "SellifyWorks is the Shopify agency for small and medium stores the big agencies ignore. Enterprise process, your stage's price."
+      "title": "About me — Mathias, founder of SellifyWorks",
+      "description": "I'm Mathias, a software engineer. I founded SellifyWorks in late 2024 to work with growing Shopify stores. You talk to me, not to a sales rep."
     },
     "hero": {
-      "eyebrow": "About us",
-      "title": "An agency for the stores the big players ignore.",
-      "subtitle": "We don't compete for brands that already have an enterprise budget. We built SellifyWorks for the ones that don't, yet."
+      "titleLine1": "Hi, I'm",
+      "titleLine2": "Mathias.",
+      "subtitle": "Software engineer, Argentinian living in Barcelona. I founded SellifyWorks in late 2024."
     },
-    "why": {
-      "eyebrow": "Why we exist",
-      "title": "Big agencies don't pick up the phone for an 800-conversion-a-month store.",
-      "p1": "The agencies that actually deliver charge like you're a nine-figure brand. The cheap ones treat your store like one more project on a list of a hundred. Neither one looks closely.",
-      "p2": "SellifyWorks exists for the middle: enterprise-grade process — audits, conversion research, automation — at the price and pace of a store that's still growing."
-    },
-    "values": {
-      "eyebrow": "How we work",
-      "title": "Three rules we don't negotiate.",
-      "outcomes": {
-        "title": "Outcomes, not hours",
-        "content": "We charge for what we deliver, not for how long it takes us to deliver it."
-      },
-      "data": {
-        "title": "Data, not opinions",
-        "content": "Every recommendation comes from real numbers — Analytics, research, testing — not from what \"looks better\"."
-      },
-      "honesty": {
-        "title": "Honest about scope",
-        "content": "If a task doesn't fit your plan, we tell you before charging you, not after."
+    "journey": {
+      "eyebrow": "My path",
+      "photoAlt": "Mathias Do Vale, founder of SellifyWorks",
+      "photoPlaceholder": "Photo of Mathias — vertical 4:5",
+      "name": "Mathias Do Vale",
+      "role": "Founder · Barcelona",
+      "titleLine1": "Technology makes sense",
+      "titleLine2": "when it serves people.",
+      "body": "I chose computing because of that idea. Behind SellifyWorks there is no sales rep handing your store to a team you have never met: you talk to the person who designs and builds your project, end to end.",
+      "card": {
+        "eyebrow": "What I learned in all those teams",
+        "text": "The best work comes out of a team. With you, too."
       }
     },
-    "team": {
-      "eyebrow": "Who's on the other side",
-      "mathias": {
-        "role": "Founder",
-        "description": "Software engineer with 10+ years of experience. Designs and builds every SellifyWorks project end to end."
-      }
+    "timeline": {
+      "eyebrow": "Timeline",
+      "range": "2019 → Today",
+      "items": [
+        {
+          "year": "2019",
+          "title": "I started with data",
+          "description": "Reports, models and dashboards so other people could make better decisions.",
+          "tags": ["Reports", "Models", "Dashboards"]
+        },
+        {
+          "year": "2020",
+          "title": "Computer Engineer",
+          "description": "I graduated from UADE, in Argentina.",
+          "tags": ["UADE", "Argentina"]
+        },
+        {
+          "year": "Later",
+          "title": "I moved into development",
+          "description": "A digital wallet, clients in the United States and a public-sector project built for citizens.",
+          "tags": ["Fintech", "USA", "Public sector"]
+        },
+        {
+          "year": "2024",
+          "title": "I founded SellifyWorks",
+          "description": "From Barcelona, to bring all of that to growing Shopify stores.",
+          "tags": ["Barcelona", "Shopify"],
+          "highlight": true
+        }
+      ]
     },
     "cta": {
       "title": "Does your store fit this profile?",

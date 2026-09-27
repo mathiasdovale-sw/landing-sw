@@ -1,42 +1,58 @@
 {
   "about": {
     "metadata": {
-      "title": "Sobre Nosotros - SellifyWorks",
-      "description": "SellifyWorks es la agencia Shopify para tiendas pequeñas y medianas que las agencias grandes ignoran. Procesos enterprise, precio de tu etapa."
+      "title": "Sobre mí — Mathias, fundador de SellifyWorks",
+      "description": "Soy Mathias, ingeniero en informática. A finales de 2024 fundé SellifyWorks para trabajar con tiendas Shopify que están creciendo. Hablas conmigo, no con un comercial."
     },
     "hero": {
-      "eyebrow": "Sobre nosotros",
-      "title": "Una agencia para las tiendas que las grandes ignoran.",
-      "subtitle": "No competimos por marcas con presupuesto enterprise. Construimos SellifyWorks para las que todavía no lo tienen."
+      "titleLine1": "Hola, soy",
+      "titleLine2": "Mathias.",
+      "subtitle": "Ingeniero en informática, argentino viviendo en Barcelona. A finales de 2024 fundé SellifyWorks."
     },
-    "why": {
-      "eyebrow": "Por qué existimos",
-      "title": "Las agencias grandes no contestan el teléfono a una tienda de 800 conversiones al mes.",
-      "p1": "Las agencias que de verdad entregan cobran como si fueras una marca de nueve cifras. Las baratas tratan tu tienda como un proyecto más en una lista de cien. Ninguna de las dos te mira de cerca.",
-      "p2": "SellifyWorks existe para el medio: procesos de nivel enterprise — auditorías, conversion research, automatización — al precio y al ritmo de una tienda que recién está creciendo."
-    },
-    "values": {
-      "eyebrow": "Cómo trabajamos",
-      "title": "Tres reglas que no negociamos.",
-      "outcomes": {
-        "title": "Resultados, no horas",
-        "content": "Cobramos por lo que entregamos, no por el tiempo que tardamos en entregarlo."
-      },
-      "data": {
-        "title": "Datos, no opiniones",
-        "content": "Cada recomendación sale de números reales — Analytics, research, testing — no de lo que \"se ve mejor\"."
-      },
-      "honesty": {
-        "title": "Honestidad sobre el alcance",
-        "content": "Si una tarea no entra en tu plan, te lo decimos antes de cobrarte, no después."
+    "journey": {
+      "eyebrow": "Mi recorrido",
+      "photoAlt": "Mathias Do Vale, fundador de SellifyWorks",
+      "photoPlaceholder": "Foto de Mathias — vertical 4:5",
+      "name": "Mathias Do Vale",
+      "role": "Fundador · Barcelona",
+      "titleLine1": "La tecnología tiene sentido",
+      "titleLine2": "cuando le sirve a las personas.",
+      "body": "Elegí la informática por esa idea. Detrás de SellifyWorks no hay un comercial pasándole tu tienda a un equipo que no conoces: hablas con quien diseña y construye tu proyecto, de punta a punta.",
+      "card": {
+        "eyebrow": "Lo que aprendí en todos esos equipos",
+        "text": "Lo mejor sale cuando se trabaja en equipo. Contigo, también."
       }
     },
-    "team": {
-      "eyebrow": "Quién está del otro lado",
-      "mathias": {
-        "role": "Founder",
-        "description": "Ingeniero de software con más de 10 años de experiencia. Diseña y construye cada proyecto de SellifyWorks de punta a punta."
-      }
+    "timeline": {
+      "eyebrow": "Línea de tiempo",
+      "range": "2019 → Hoy",
+      "items": [
+        {
+          "year": "2019",
+          "title": "Empecé con datos",
+          "description": "Informes, modelos y tableros para que otros pudieran tomar mejores decisiones.",
+          "tags": ["Informes", "Modelos", "Tableros"]
+        },
+        {
+          "year": "2020",
+          "title": "Ingeniero en Informática",
+          "description": "Me gradué en la UADE, en Argentina.",
+          "tags": ["UADE", "Argentina"]
+        },
+        {
+          "year": "Después",
+          "title": "Pasé al desarrollo",
+          "description": "Una billetera virtual, clientes en Estados Unidos y un proyecto público pensado para ciudadanos.",
+          "tags": ["Fintech", "EE. UU.", "Sector público"]
+        },
+        {
+          "year": "2024",
+          "title": "Fundé SellifyWorks",
+          "description": "Desde Barcelona, para llevar todo eso a las tiendas Shopify que están creciendo.",
+          "tags": ["Barcelona", "Shopify"],
+          "highlight": true
+        }
+      ]
     },
     "cta": {
       "title": "¿Tu tienda encaja en este perfil?",
