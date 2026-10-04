@@ -12,4 +12,8 @@ export type Post = {
   };
   content: string;
   preview?: boolean;
+  // Optional SEO overrides: shorter <title> and meta description than title/excerpt
+  seoTitle?: string;
+  description?: string;
+  dateModified?: string;
 };

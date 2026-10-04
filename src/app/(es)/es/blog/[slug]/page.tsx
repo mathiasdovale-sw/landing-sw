@@ -6,6 +6,7 @@ import { PostBody } from "@/app/_components/post-body";
 import { PostHeader } from "@/app/_components/post-header";
 import VisualBreadcrumbs from "@/app/_components/visual-breadcrumbs";
 import BlogCTA from "@/app/_components/blog-cta";
+import BlogPostStructuredData from "@/app/_components/blog-post-structured-data";
 import markdownToHtml from "@/lib/markdownToHtml";
 import { generateBlogPostMetadata } from "@/lib/seo-utils";
 
@@ -29,6 +30,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
 
   return (
     <main className="min-h-screen">
+      <BlogPostStructuredData post={post} locale="es" />
       <div className="relative">
         <VisualBreadcrumbs />
       </div>
@@ -80,7 +82,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     'es',
     post.date,
     post.author?.name,
-    post.coverImage
+    post.coverImage,
+    { seoTitle: post.seoTitle, description: post.description, dateModified: post.dateModified }
   ) as Metadata;
 }
 
