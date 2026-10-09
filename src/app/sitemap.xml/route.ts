@@ -69,9 +69,10 @@ export async function GET(request: NextRequest) {
 
   // Blog posts - Get all posts and add them for both languages
   try {
-    const posts = getAllPosts()
+    // One entry per post: each post has an -es and -en file sharing the same slug
+    const posts = getAllPosts('es')
     posts.forEach(post => {
-      const postDate = new Date(post.date).toISOString()
+      const postDate = new Date(post.dateModified || post.date).toISOString()
       const blogPostHreflangs = [
         { hreflang: 'es-ES', href: `${baseUrl}/es/blog/${post.slug}` },
         { hreflang: 'en', href: `${baseUrl}/en/blog/${post.slug}` },

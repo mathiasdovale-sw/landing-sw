@@ -183,13 +183,16 @@ export function generateBlogPostMetadata(
   locale: string,
   date?: string,
   author?: string,
-  coverImage?: string
+  coverImage?: string,
+  seo: { seoTitle?: string; description?: string; dateModified?: string } = {}
 ) {
   const baseUrl = getCanonicalBaseUrl()
   const canonical = `${baseUrl}/${locale}/blog/${slug}`
-  const description = excerpt && excerpt.length > 0 
-    ? excerpt.slice(0, 155) + (excerpt.length > 155 ? '...' : '')
+  const summary = seo.description || excerpt
+  const description = summary && summary.length > 0 
+    ? summary.slice(0, 155) + (summary.length > 155 ? '...' : '')
     : getMetaDescription('blog', locale)
+  const fullTitle = seo.seoTitle ? `${seo.seoTitle} | SellifyWorks` : `${title} | SellifyWorks Blog`
   
   const blogHreflangs = [
     { hreflang: 'es-ES', href: `${baseUrl}/es/blog/${slug}` },
@@ -198,7 +201,7 @@ export function generateBlogPostMetadata(
   ]
 
   return {
-    title: `${title} | SellifyWorks Blog`,
+    title: fullTitle,
     description,
     canonical,
     alternates: {
@@ -210,13 +213,14 @@ export function generateBlogPostMetadata(
       }
     },
     openGraph: {
-      title: `${title} | SellifyWorks Blog`,
+      title: fullTitle,
       description,
       url: canonical,
       siteName: 'SellifyWorks',
       locale: locale === 'es' ? 'es_ES' : 'en_US',
       type: 'article',
       publishedTime: date,
+      modifiedTime: seo.dateModified || date,
       authors: author ? [author] : ['SellifyWorks'],
       images: coverImage ? [{
         url: coverImage.startsWith('/') ? `${baseUrl}${coverImage}` : coverImage,
@@ -227,13 +231,14 @@ export function generateBlogPostMetadata(
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${title} | SellifyWorks Blog`,
+      title: fullTitle,
       description,
       images: coverImage ? [coverImage.startsWith('/') ? `${baseUrl}${coverImage}` : coverImage] : undefined
     },
     other: {
       'article:author': author || 'SellifyWorks',
       'article:published_time': date,
+      'article:modified_time': seo.dateModified || date,
       'article:section': locale === 'es' ? 'Shopify y Ecommerce' : 'Shopify and Ecommerce'
     }
   }
