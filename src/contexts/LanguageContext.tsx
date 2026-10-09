@@ -82,7 +82,6 @@ const translations = {
     'contact.form.message.short': 'Un poco más de contexto, por favor',
     'contact.form.message.ok': 'Listo',
     'contact.form.err': 'Revisa los campos marcados.',
-    'contact.info.phone': 'Teléfono',
     'contact.info.email': 'Email',
     'contact.info.location': 'Ubicación',
 
@@ -338,7 +337,6 @@ const translations = {
     'contact.form.message.short': 'A little more context, please',
     'contact.form.message.ok': 'Done',
     'contact.form.err': 'Check the highlighted fields.',
-    'contact.info.phone': 'Phone',
     'contact.info.email': 'Email',
     'contact.info.location': 'Location',
 

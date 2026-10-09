@@ -1,5 +1,5 @@
 "use client"
-import { Mail, Phone, MapPin, ArrowRight } from "lucide-react"
+import { Mail, MapPin, ArrowRight } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { motion } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -336,16 +336,6 @@ export default function ContactSection() {
                 <div>
                   <p className="font-mono-label text-sw-fg-3">{t('contact.info.email')}</p>
                   <p className="text-sw-fg-1">contact@sellifyworks.com</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-sw-bg-2">
-                  <Phone size={18} className="text-sw-fg-1" />
-                </div>
-                <div>
-                  <p className="font-mono-label text-sw-fg-3">{t('contact.info.phone')}</p>
-                  <p className="text-sw-fg-1">+34 621 640 364</p>
                 </div>
               </div>
 
