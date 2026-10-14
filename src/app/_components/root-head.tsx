@@ -59,6 +59,25 @@ export default function RootHead() {
         }} />
       )}
 
+      {/* Microsoft Clarity — NOT loaded until analytics consent is granted. */}
+      {process.env.CLARITY_PROJECT_ID && (
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            window.__CLARITY_PROJECT_ID = '${process.env.CLARITY_PROJECT_ID}';
+            window.__loadClarity = function() {
+              if (window.__clarityLoaded) return;
+              window.__clarityLoaded = true;
+              (function(c,l,a,r,i,t,y){
+                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+              })(window, document, "clarity", "script", window.__CLARITY_PROJECT_ID);
+              clarity('consentv2', { ad_Storage: 'denied', analytics_Storage: 'granted' });
+            };
+          `
+        }} />
+      )}
+
       <script dangerouslySetInnerHTML={{
         __html: `
           // Script inline para evitar FOUT
@@ -171,7 +190,7 @@ export default function RootHead() {
       <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
 
       {/* CookieYes handles GCM consent updates natively (Support GCM is ON).
-          These listeners ONLY handle deferred Meta Pixel loading — no gtag calls. */}
+          These listeners ONLY handle deferred Meta Pixel / Clarity loading — no gtag calls. */}
       <script dangerouslySetInnerHTML={{
         __html: `
           // Load Meta Pixel when user grants advertisement consent
@@ -182,12 +201,23 @@ export default function RootHead() {
             }
           });
 
-          // Returning visitor — load Meta Pixel if advertisement was previously accepted
+          // Load Microsoft Clarity when user grants analytics consent
+          window.addEventListener('cky_updated', function(event) {
+            var accepted = (event.detail || {}).accepted || [];
+            if (accepted.includes('analytics') && typeof window.__loadClarity === 'function') {
+              window.__loadClarity();
+            }
+          });
+
+          // Returning visitor — load Meta Pixel / Clarity if previously accepted
           window.addEventListener('cky_loaded', function() {
             if (typeof CookieYes !== 'undefined') {
               var cats = CookieYes.getActiveCategories();
               if (cats.includes('advertisement') && typeof window.__loadMetaPixel === 'function') {
                 window.__loadMetaPixel();
+              }
+              if (cats.includes('analytics') && typeof window.__loadClarity === 'function') {
+                window.__loadClarity();
               }
             }
           });
