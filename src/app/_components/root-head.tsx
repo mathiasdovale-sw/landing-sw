@@ -193,34 +193,35 @@ export default function RootHead() {
           These listeners ONLY handle deferred Meta Pixel / Clarity loading — no gtag calls. */}
       <script dangerouslySetInnerHTML={{
         __html: `
-          // Load Meta Pixel when user grants advertisement consent
-          window.addEventListener('cky_updated', function(event) {
-            var accepted = (event.detail || {}).accepted || [];
-            if (accepted.includes('advertisement') && typeof window.__loadMetaPixel === 'function') {
+          // CookieYes dispatches its events on document:
+          //   cookieyes_consent_update -> detail: { accepted: [...], rejected: [...] }
+          //   cookieyes_banner_load    -> detail: getCkyConsent() = { categories: { analytics: bool, ... } }
+          function applyConsent(isAccepted) {
+            if (isAccepted('advertisement') && typeof window.__loadMetaPixel === 'function') {
               window.__loadMetaPixel();
             }
-          });
-
-          // Load Microsoft Clarity when user grants analytics consent
-          window.addEventListener('cky_updated', function(event) {
-            var accepted = (event.detail || {}).accepted || [];
-            if (accepted.includes('analytics') && typeof window.__loadClarity === 'function') {
+            if (isAccepted('analytics') && typeof window.__loadClarity === 'function') {
               window.__loadClarity();
             }
+          }
+
+          // User accepts in the banner
+          document.addEventListener('cookieyes_consent_update', function(event) {
+            var accepted = (event.detail || {}).accepted || [];
+            applyConsent(function(cat) { return accepted.indexOf(cat) !== -1; });
           });
 
-          // Returning visitor — load Meta Pixel / Clarity if previously accepted
-          window.addEventListener('cky_loaded', function() {
-            if (typeof CookieYes !== 'undefined') {
-              var cats = CookieYes.getActiveCategories();
-              if (cats.includes('advertisement') && typeof window.__loadMetaPixel === 'function') {
-                window.__loadMetaPixel();
-              }
-              if (cats.includes('analytics') && typeof window.__loadClarity === 'function') {
-                window.__loadClarity();
-              }
-            }
+          // Returning visitor — consent stored from a previous visit
+          function applyStoredConsent(consent) {
+            var categories = (consent || {}).categories || {};
+            applyConsent(function(cat) { return categories[cat] === true; });
+          }
+          document.addEventListener('cookieyes_banner_load', function(event) {
+            applyStoredConsent(event.detail);
           });
+          if (typeof window.getCkyConsent === 'function') {
+            applyStoredConsent(window.getCkyConsent());
+          }
         `
       }} />
     </>
