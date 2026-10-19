@@ -269,6 +269,14 @@ export default function ContactSection() {
 
       if (response.ok && result.success) {
         setSubmitStatus({ type: 'success', message: t('contact.form.success') })
+        // GA4 vía GTM: evento de conversión (activador "Evento personalizado" = generate_lead)
+        try {
+          const w = window as unknown as { dataLayer?: Record<string, unknown>[] }
+          w.dataLayer = w.dataLayer || []
+          w.dataLayer.push({ event: 'generate_lead', form_name: 'contacto' })
+        } catch (error) {
+          // Silencioso
+        }
         try {
           e.currentTarget.reset()
         } catch (error) {
