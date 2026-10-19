@@ -55,16 +55,20 @@ export const metaDescriptions: Record<string, MetaDescription> = {
   
   // Services meta descriptions
   migration: {
-    es: "Migración a Shopify llave en mano: auditoría, diseño, carga de productos y transferencia, sin cortar tus ventas.",
-    en: "Turnkey Shopify migration: audit, design, product upload and handover, with zero sales downtime."
+    es: "Migración a Shopify llave en mano con mejoras de conversión heurísticas incluidas: diseño, carga de productos y transferencia, sin cortar tus ventas.",
+    en: "Turnkey Shopify migration with heuristic conversion improvements included: design, product upload and handover, with zero sales downtime."
   },
   customDev: {
     es: "Desarrollos a medida para Shopify: integraciones, automatizaciones y funcionalidades a medida cuando lo estándar no alcanza.",
     en: "Custom Shopify development: integrations, automations and bespoke functionality when the standard scope isn't enough."
   },
   conversionAudit: {
-    es: "¿Tenés sesiones pero no vendes? Te digo qué frena a tus clientes: auditoría completa de tu tienda y un listado de tareas ordenado por impacto.",
-    en: "Getting sessions but no sales? I tell you what's stopping your customers: a full store audit and a task list ordered by impact."
+    es: "¿Tu tienda no vende y no sabes por qué? Auditoría heurística de tu tienda Shopify por 140€ + IVA, sin necesidad de métricas: qué arreglar y en qué orden.",
+    en: "Your store isn't selling and you don't know why? Heuristic Shopify store audit for €140 + VAT, no metrics needed: what to fix and in what order."
+  },
+  monthly: {
+    es: "Mejora continua para tu tienda Shopify: 4 mejoras al mes basadas en grabaciones de sesiones reales, con acompañamiento y sin permanencia.",
+    en: "Continuous improvement for your Shopify store: 4 improvements a month based on real session recordings, with ongoing support and no lock-in."
   },
   emailAutomation: {
     es: "Email marketing automation para Shopify: welcome flow, post-compra, carrito abandonado y más.",
@@ -87,12 +91,13 @@ export const seoUrls: Record<string, SeoUrl> = {
   migration: { es: '/migracion-shopify', en: '/shopify-migration' },
   customDev: { es: '/desarrollos-a-medida', en: '/custom-shopify-development' },
   conversionAudit: { es: '/auditoria-conversion', en: '/conversion-audit' },
+  monthly: { es: '/mejora-continua', en: '/continuous-improvement' },
   emailAutomation: { es: '/email-marketing-automation', en: '/email-marketing-automation' }
 }
 
 // Service keys (subset of seoUrls) used for sitemap / catalog generation
 export const SERVICE_PAGE_KEYS = [
-  'migration', 'customDev', 'conversionAudit', 'emailAutomation'
+  'migration', 'customDev', 'conversionAudit', 'monthly', 'emailAutomation'
 ] as const
 
 // Generate hreflang alternates for a given page

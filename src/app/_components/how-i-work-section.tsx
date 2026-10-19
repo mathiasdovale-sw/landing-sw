@@ -1,21 +1,19 @@
 import Link from "next/link"
-import { Check, RotateCcw } from "lucide-react"
+import { Check } from "lucide-react"
 
 // Sección "Cómo trabajo" — un solo componente con dos variantes:
-//   - compact:  home (solo títulos de paso, sin descripciones, sin tarjeta de precio)
-//   - expanded: página de auditoría de conversión (descripciones + tarjeta de precio)
-// En ambas el ciclo vuelve del paso 05 al 02: a partir del segundo ciclo no se
-// repite la auditoría.
+//   - compact:  home (pasos con descripción corta, sin tarjeta de precio)
+//   - expanded: página de auditoría (descripciones + tarjeta de precio)
+// Tres pasos lineales: Diagnóstico → Mejoras → Acompañamiento. Sin ciclos.
 
 export type HowIWorkVariant = "compact" | "expanded"
 
 interface HowIWorkStep {
   n: string
   title: string
-  /** Solo se muestra en la variante ampliada. */
+  /** Etiqueta con el servicio que corresponde al paso. */
+  tag: string
   description: string
-  /** Solo en la variante compacta: el punto de decisión tras los pasos 03 y 05. */
-  decision?: string
 }
 
 interface HowIWorkCopy {
@@ -24,9 +22,7 @@ interface HowIWorkCopy {
   titleLine2: string
   intro: string
   steps: HowIWorkStep[]
-  auditTag: string
-  costNotes: [string, string]
-  loop: string
+  note: string
   priceCard: {
     eyebrow: string
     amount: string
@@ -41,58 +37,45 @@ interface HowIWorkCopy {
 const COPY: Record<"es" | "en", HowIWorkCopy> = {
   es: {
     eyebrow: "Cómo trabajo",
-    titleLine1: "Ciclos cortos.",
-    titleLine2: "Decides tú en cada paso.",
+    titleLine1: "Empiezas donde está tu tienda.",
+    titleLine2: "Sin permanencia.",
     intro:
-      "Un método con fechas y presupuesto claros, sin permanencia. La auditoría te llega en 7-10 días; a partir de ahí, cada ciclo de mejora dura entre 2 y 4 semanas.",
+      "Si no sabes qué falla, empezamos por la auditoría. Si tu tienda ya funciona, pasamos directamente a la mejora continua. Precio y fechas claros antes de empezar.",
     steps: [
       {
         n: "01",
-        title: "Analizo tu tienda",
-        description: "La reviso como la vería un cliente y detecto qué frena las ventas.",
+        title: "Diagnóstico",
+        tag: "Auditoría · 140€ + IVA",
+        description:
+          "Reviso tu tienda como la vería un cliente y te entrego qué frena las ventas, ordenado por impacto. No necesito acceso a tus métricas.",
       },
       {
         n: "02",
-        title: "Lista de mejoras",
+        title: "Mejoras",
+        tag: "Implementación · presupuesto cerrado",
         description:
-          "Te entrego qué cambiaría, ordenado por lo que más impacto puede tener. La primera lista sale de la auditoría; las siguientes, de los resultados del ciclo anterior.",
+          "Implementas tú las mejoras o me las encargas, con precio y fechas cerrados antes de empezar.",
       },
       {
         n: "03",
-        title: "Presupuesto",
+        title: "Acompañamiento",
+        tag: "Mejora continua · mensual",
         description:
-          "Precio y fechas cerrados antes de empezar. ¿Avanzas? Si no te convence, terminamos aquí.",
-        decision: "¿Avanzas? Si no te convence, terminamos aquí.",
-      },
-      {
-        n: "04",
-        title: "Implemento",
-        description: "Hago los cambios en tu tienda.",
-      },
-      {
-        n: "05",
-        title: "Resultados",
-        description:
-          "Revisamos juntos qué ha cambiado. ¿Otro ciclo? Lo decides tú con los datos.",
-        decision: "¿Otro ciclo? Lo decides tú con los datos.",
+          "Cuando la tienda ya está bien, analizo grabaciones de sesiones reales e implemento 4 mejoras al mes. Sin permanencia: lo dejas cuando quieras.",
       },
     ],
-    auditTag: "Auditoría · solo el 1er ciclo",
-    costNotes: [
-      "El primer ciclo incluye la auditoría.",
-      "Desde el segundo ciclo, solo pagas la implementación.",
-    ],
-    loop: "Siguiente ciclo: volvemos al paso 02 — sin repetir la auditoría",
+    note: "¿Tu tienda ya está bien? Puedes empezar directamente en el paso 03.",
     priceCard: {
       eyebrow: "Auditoría · pago único",
       amount: "140€",
       vat: "+ IVA",
-      amountNote: "Es el precio de la auditoría. La implementación se presupuesta aparte, en el paso 03.",
+      amountNote:
+        "Es el precio de la auditoría. Si quieres que implemente las mejoras, se presupuesta aparte.",
       bullets: [
         "Te llega en 7-10 días",
-        "Incluida en el primer ciclo",
-        "Desde el segundo, solo pagas la implementación",
-        "Si no te convence, terminamos ahí",
+        "Sin necesidad de acceso a tus métricas",
+        "Qué arreglar y en qué orden",
+        "Después: implementas tú, me lo encargas o pasas a la mejora continua",
       ],
       ctaLabel: "Quiero mi auditoría",
     },
@@ -100,57 +83,45 @@ const COPY: Record<"es" | "en", HowIWorkCopy> = {
   },
   en: {
     eyebrow: "How I work",
-    titleLine1: "Short cycles.",
-    titleLine2: "You decide at every step.",
+    titleLine1: "We start where your store is.",
+    titleLine2: "No lock-in.",
     intro:
-      "A method with clear dates and a clear budget, no lock-in. The audit reaches you in 7-10 days; from there, each improvement cycle takes between 2 and 4 weeks.",
+      "If you don't know what's wrong, we start with the audit. If your store already works, we go straight to continuous improvement. Clear price and dates before we start.",
     steps: [
       {
         n: "01",
-        title: "I analyse your store",
-        description: "I go through it the way a customer would and spot what's holding sales back.",
+        title: "Diagnosis",
+        tag: "Audit · €140 + VAT",
+        description:
+          "I go through your store the way a customer would and hand you what's holding sales back, ordered by impact. I don't need access to your metrics.",
       },
       {
         n: "02",
-        title: "List of improvements",
+        title: "Improvements",
+        tag: "Implementation · fixed quote",
         description:
-          "I hand you what I would change, ordered by what can have the most impact. The first list comes from the audit; the later ones come from the previous cycle's results.",
+          "You implement the improvements yourself or hand them to me, with price and dates agreed before we start.",
       },
       {
         n: "03",
-        title: "Quote",
+        title: "Ongoing support",
+        tag: "Continuous improvement · monthly",
         description:
-          "Price and dates agreed before starting. Moving forward? If you're not convinced, we stop here.",
-        decision: "Moving forward? If you're not convinced, we stop here.",
-      },
-      {
-        n: "04",
-        title: "I implement",
-        description: "I make the changes on your store.",
-      },
-      {
-        n: "05",
-        title: "Results",
-        description: "We review together what has changed. Another cycle? You decide, with the data.",
-        decision: "Another cycle? You decide, with the data.",
+          "Once the store is in good shape, I analyse real session recordings and implement 4 improvements a month. No lock-in: stop whenever you want.",
       },
     ],
-    auditTag: "Audit · first cycle only",
-    costNotes: [
-      "The first cycle includes the audit.",
-      "From the second cycle on, you only pay for the implementation.",
-    ],
-    loop: "Next cycle: back to step 02 — without repeating the audit",
+    note: "Store already in good shape? You can start straight at step 03.",
     priceCard: {
       eyebrow: "Audit · one-off",
       amount: "€140",
       vat: "+ VAT",
-      amountNote: "That's the price of the audit. Implementation is quoted separately, at step 03.",
+      amountNote:
+        "That's the price of the audit. If you want me to implement the improvements, that's quoted separately.",
       bullets: [
         "Delivered in 7-10 days",
-        "Included in the first cycle",
-        "From the second cycle on, you only pay for the implementation",
-        "If you're not convinced, we stop there",
+        "No access to your metrics needed",
+        "What to fix and in what order",
+        "Then: do it yourself, hand it to me, or move to continuous improvement",
       ],
       ctaLabel: "I want my audit",
     },
@@ -235,7 +206,7 @@ export default function HowIWorkSection({
             )}
           </div>
 
-          {/* Columna derecha: los 5 pasos como timeline vertical */}
+          {/* Columna derecha: los 3 pasos como timeline vertical */}
           <div>
             <ol>
               {copy.steps.map((step, index) => {
@@ -244,7 +215,6 @@ export default function HowIWorkSection({
 
                 return (
                   <li key={step.n} className="relative flex gap-5 pb-10 last:pb-0">
-                    {/* Línea que une los pasos */}
                     {!isLast && (
                       <span
                         aria-hidden="true"
@@ -267,49 +237,21 @@ export default function HowIWorkSection({
                       <h3 className="text-lg font-semibold leading-snug text-sw-secondary">
                         {step.title}
                       </h3>
-
-                      {isExpanded && (
-                        <p className="mt-2 text-sm leading-relaxed text-sw-fg-2">
-                          {step.description}
-                        </p>
-                      )}
-
-                      {/* En la compacta no hay descripciones, así que el punto de
-                          decisión se muestra como línea propia */}
-                      {!isExpanded && step.decision && (
-                        <p className="mt-2 text-sm leading-relaxed text-sw-fg-3">
-                          {step.decision}
-                        </p>
-                      )}
-
-                      {isFirst &&
-                        (isExpanded ? (
-                          <span className="mt-4 inline-block rounded-sm border border-sw-line-strong px-3 py-2 font-mono-label text-sw-fg-3">
-                            {copy.auditTag}
-                          </span>
-                        ) : (
-                          <div className="mt-4 rounded-sm border border-sw-line bg-sw-bg-2 p-4">
-                            <p className="text-sm leading-relaxed text-sw-fg-2">
-                              {copy.costNotes[0]}
-                            </p>
-                            <p className="mt-2 text-sm leading-relaxed text-sw-fg-2">
-                              {copy.costNotes[1]}
-                            </p>
-                          </div>
-                        ))}
+                      <p className="mt-2 text-sm leading-relaxed text-sw-fg-2">
+                        {step.description}
+                      </p>
+                      <span className="mt-4 inline-block rounded-sm border border-sw-line-strong px-3 py-2 font-mono-label text-sw-fg-3">
+                        {step.tag}
+                      </span>
                     </div>
                   </li>
                 )
               })}
             </ol>
 
-            {/* El ciclo vuelve al paso 02 */}
-            <div className="mt-2 flex items-center gap-5">
-              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center">
-                <RotateCcw className="h-4 w-4 text-sw-secondary" aria-hidden="true" />
-              </span>
-              <span className="font-mono-label text-sw-fg-3">{copy.loop}</span>
-            </div>
+            <p className="mt-8 rounded-sm border border-sw-line bg-sw-bg-2 p-4 text-sm leading-relaxed text-sw-fg-2">
+              {copy.note}
+            </p>
           </div>
         </div>
       </div>

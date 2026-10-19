@@ -24,10 +24,10 @@ export default function ServicesPage() {
         <div className="mx-auto max-w-5xl px-5 text-center">
           <span className="font-mono-label text-sw-fg-3">Services</span>
           <h1 className="mt-5 font-display text-4xl text-sw-fg-1 sm:text-5xl lg:text-6xl">
-            Four services. No filler.
+            Five services. No filler.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-sw-fg-2 sm:text-xl">
-            Every service solves a concrete problem for low-traffic stores. No generic bundles: we talk about your store and quote based on what you actually need.
+            Every service solves a concrete problem. Not sure what's wrong? Start with the audit. Store already working? Continuous improvement makes it sell more every month.
           </p>
         </div>
       </section>

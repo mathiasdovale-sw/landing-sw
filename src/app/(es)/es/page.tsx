@@ -42,7 +42,7 @@ export default function HomePage() {
             href="/es/auditoria-conversion"
             className="font-mono-label text-sw-secondary transition-colors hover:text-sw-fg-1"
           >
-            ¿Tenés tráfico pero no vendés? Mirá cómo funciona la auditoría de conversión →
+            ¿Tu tienda no vende y no sabes por qué? Mira cómo funciona la auditoría →
           </Link>
         </div>
       </Reveal>

@@ -9,7 +9,7 @@ export const HomeFAQsEs: FAQ[] = [
   {
     id: 'home-2',
     question: '¿Pueden ayudarme a mejorar las ventas de mi tienda Shopify actual?',
-    answer: 'Sí, con servicios de SEO, personalización de themes y diseño orientado a la conversión trabajamos para atraer tráfico más cualificado y quitar lo que frena las ventas.'
+    answer: 'Sí. Si no sabes qué falla, empezamos con la auditoría (140€ + IVA, sin necesidad de métricas). Si tu tienda ya funciona, la mejora continua te da 4 mejoras al mes basadas en grabaciones de sesiones reales, sin permanencia.'
   },
   {
     id: 'home-4',
@@ -52,7 +52,7 @@ export const HomeFAQsEn: FAQ[] = [
   {
     id: 'home-2',
     question: 'Can you help me improve sales on my current Shopify store?',
-    answer: 'Yes, with SEO services, theme customization and conversion-focused design we work to attract more qualified traffic and remove what holds sales back.'
+    answer: 'Yes. If you don\'t know what\'s wrong, we start with the audit (€140 + VAT, no metrics needed). If your store already works, continuous improvement gives you 4 improvements a month based on real session recordings, with no lock-in.'
   },
   {
     id: 'home-4',
@@ -177,6 +177,11 @@ export const migrationFAQsEs: FAQ[] = [
     id: 'migration-4',
     question: '¿Cuánto tarda una migración completa?',
     answer: 'Depende del tamaño de tu catálogo, pero la mayoría de migraciones de este alcance se completan en pocas semanas.'
+  },
+  {
+    id: 'migration-5',
+    question: '¿Qué mejoras incluye la migración?',
+    answer: 'Mejoras heurísticas de conversión: aplico criterios de experiencia de usuario en portada, navegación, fichas de producto y checkout para que la tienda nueva no solo cambie de plataforma, sino que venda mejor desde el primer día.'
   }
 ];
 
@@ -200,6 +205,58 @@ export const migrationFAQsEn: FAQ[] = [
     id: 'migration-en-4',
     question: 'How long does a full migration take?',
     answer: 'It depends on your catalog size, but most migrations of this scope are completed within a few weeks.'
+  },
+  {
+    id: 'migration-en-5',
+    question: 'What improvements does the migration include?',
+    answer: 'Heuristic conversion improvements: I apply user-experience criteria to the homepage, navigation, product pages and checkout so the new store doesn\'t just switch platforms — it sells better from day one.'
+  }
+];
+
+// FAQ — Mejora continua (mensual)
+export const monthlyFAQsEs: FAQ[] = [
+  {
+    id: 'monthly-1',
+    question: '¿Tiene permanencia?',
+    answer: 'No. Es una mensualidad sin permanencia: si un mes decides parar, paras.'
+  },
+  {
+    id: 'monthly-2',
+    question: '¿De dónde salen las mejoras?',
+    answer: 'De grabaciones de sesiones reales de tu tienda. Veo cómo navegan tus clientes, dónde dudan y dónde abandonan, y de ahí salen las 4 mejoras del mes.'
+  },
+  {
+    id: 'monthly-3',
+    question: '¿Qué necesito para empezar?',
+    answer: 'Una tienda que ya esté en un punto aceptable. Si está muy abandonada o no sabes qué falla, te recomiendo empezar por la auditoría.'
+  },
+  {
+    id: 'monthly-4',
+    question: '¿Quién implementa las mejoras?',
+    answer: 'Yo. Las 4 mejoras del mes están incluidas en la mensualidad, junto con el seguimiento y una revisión mensual contigo.'
+  }
+];
+
+export const monthlyFAQsEn: FAQ[] = [
+  {
+    id: 'monthly-en-1',
+    question: 'Is there a lock-in?',
+    answer: 'No. It\'s a monthly plan with no minimum term: if you decide to stop one month, you stop.'
+  },
+  {
+    id: 'monthly-en-2',
+    question: 'Where do the improvements come from?',
+    answer: 'From real session recordings of your store. I see how your customers browse, where they hesitate and where they drop off, and that\'s where the month\'s 4 improvements come from.'
+  },
+  {
+    id: 'monthly-en-3',
+    question: 'What do I need to get started?',
+    answer: 'A store that\'s already in reasonable shape. If it\'s very neglected or you don\'t know what\'s wrong, I recommend starting with the audit.'
+  },
+  {
+    id: 'monthly-en-4',
+    question: 'Who implements the improvements?',
+    answer: 'I do. The month\'s 4 improvements are included in the plan, along with follow-up and a monthly review with you.'
   }
 ];
 
@@ -244,8 +301,8 @@ export const customDevFAQsEn: FAQ[] = [
 export const conversionAuditFAQsEs: FAQ[] = [
   {
     id: 'conv-audit-1',
-    question: 'Tengo tráfico pero no vendo. ¿Qué reviso primero?',
-    answer: 'Empieza por el camino de compra: ficha de producto, carrito y checkout. Ahí es donde se pierden la mayoría de clientes — y es justo lo primero que reviso en la auditoría.'
+    question: '¿Necesitas acceso a mis métricas o a mi Shopify?',
+    answer: 'No. Es una auditoría heurística: reviso tu tienda como la vería un cliente, con criterios de experiencia de usuario y conversión. Por eso funciona incluso si tu tienda tiene pocas visitas o nunca miraste los datos.'
   },
   {
     id: 'conv-audit-3',
@@ -255,7 +312,7 @@ export const conversionAuditFAQsEs: FAQ[] = [
   {
     id: 'conv-audit-5',
     question: '¿Cuánto tarda en llegarme el resultado?',
-    answer: 'La auditoría te llega en 7-10 días. A partir de ahí, cada ciclo de mejora dura entre 2 y 4 semanas, con las fechas cerradas en el presupuesto antes de empezar.'
+    answer: 'La auditoría te llega en 7-10 días. Si después me encargas las mejoras, las fechas quedan cerradas en el presupuesto antes de empezar.'
   },
   {
     id: 'conv-audit-6',
@@ -267,8 +324,8 @@ export const conversionAuditFAQsEs: FAQ[] = [
 export const conversionAuditFAQsEn: FAQ[] = [
   {
     id: 'conv-audit-en-1',
-    question: 'I have traffic but I\'m not selling. What should I check first?',
-    answer: "Start with the buying path: product page, cart and checkout. That's where most customers drop off — and it's exactly the first thing I check in the audit."
+    question: 'Do you need access to my metrics or my Shopify admin?',
+    answer: "No. It's a heuristic audit: I go through your store the way a customer would, using user-experience and conversion criteria. That's why it works even if your store gets few visits or you've never looked at the data."
   },
   {
     id: 'conv-audit-en-3',
@@ -278,7 +335,7 @@ export const conversionAuditFAQsEn: FAQ[] = [
   {
     id: 'conv-audit-en-5',
     question: 'How long until I get the results?',
-    answer: 'The audit reaches you in 7-10 days. From there, each improvement cycle takes between 2 and 4 weeks, with the dates agreed in the quote before starting.'
+    answer: 'The audit reaches you in 7-10 days. If you then hand me the improvements, the dates are agreed in the quote before starting.'
   },
   {
     id: 'conv-audit-en-6',

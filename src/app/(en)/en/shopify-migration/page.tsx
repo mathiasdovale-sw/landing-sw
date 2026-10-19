@@ -16,14 +16,15 @@ export default function ShopifyMigration() {
         serviceKey: 'migration',
         contactHref: '/en/contact',
         locale: 'en',
-        eyebrow: 'Foundation · Migration',
+        eyebrow: 'Migration + improvements',
         title: 'Shopify Migration',
-        lede: "We migrate your store to Shopify without losing data or interrupting sales. Audit, design, product upload and handover, turnkey.",
+        lede: "We migrate your store to Shopify without losing data or interrupting sales, and use the move to apply heuristic conversion improvements. Turnkey.",
         ctaPrimaryLabel: 'Talk to an expert',
         ctaSecondaryLabel: "See what's included",
         includesEyebrow: "What's included",
         includesTitle: 'Everything you need to migrate without surprises.',
         includes: [
+          { title: 'Heuristic conversion improvements', description: 'We apply user-experience criteria to the homepage, navigation, product pages and checkout: your new store sells better than the old one.' },
           { title: 'Upfront audit', description: 'We review your current store, catalog and settings before moving anything.' },
           { title: 'Tailored design', description: 'Your new Shopify store, true to your brand, ready to sell from day one.' },
           { title: 'Product upload & copy*', description: 'We upload your full catalog with carefully written product pages.' },
@@ -36,7 +37,7 @@ export default function ShopifyMigration() {
         faqs: migrationFAQsEn,
         structuredData: {
           serviceName: 'Shopify Migration',
-          description: 'Audit, design, product upload and copy, development and handover to Shopify, with zero sales downtime.',
+          description: 'Shopify migration with heuristic conversion improvements: design, product upload and copy, development and handover, with zero sales downtime.',
         },
       }}
     />

@@ -14,8 +14,8 @@ import { FAQ } from "@/interfaces/faq"
 interface FunnelRow {
   label: string
   value: string
-  /** Ancho de la barra, en % */
-  pct: number
+  /** Ancho de la barra, en % (sin uso: la tarjeta es un checklist heurístico) */
+  pct?: number
   isLeak?: boolean
 }
 
@@ -68,29 +68,29 @@ const COPY: Record<"es" | "en", AuditCopy> = {
   es: {
     hero: {
       eyebrow: "Auditoría de conversión · Shopify",
-      titleLine1: "Tienes visitas.",
-      titleLine2: "Te faltan ventas.",
-      sub: "Te digo qué cambiaría en tu tienda para vender más, por qué, y por dónde empezar.",
+      titleLine1: "Tu tienda no vende.",
+      titleLine2: "Y no sabes por qué.",
+      sub: "Reviso tu tienda como la vería un cliente y te digo qué cambiaría para vender más, por qué, y por dónde empezar. Sin necesidad de acceso a tus métricas.",
       ctaPrimary: "Contactar",
       ctaSecondary: "Ver qué incluye",
-      meta: ["140€ + IVA", "Auditoría en 7-10 días", "Sin permanencia"],
+      meta: ["140€ + IVA", "Auditoría en 7-10 días", "Sin acceso a métricas"],
       card: {
-        eyebrow: "Dónde se pierden tus clientes",
+        eyebrow: "Lo que reviso en tu tienda",
         tag: "Ejemplo",
-        leakTag: "Fuga",
+        leakTag: "Frena ventas",
         rows: [
-          { label: "Entran a la tienda", value: "100%", pct: 100 },
-          { label: "Ven un producto", value: "58%", pct: 58 },
-          { label: "Añaden al carrito", value: "7%", pct: 7, isLeak: true },
-          { label: "Llegan al checkout", value: "4%", pct: 4 },
-          { label: "Compran", value: "1,3%", pct: 1.3 },
+          { label: "Portada: se entiende qué vendes", value: "OK" },
+          { label: "Navegación y búsqueda", value: "OK" },
+          { label: "Ficha de producto: fotos, precio, envío", value: "Revisar", isLeak: true },
+          { label: "Confianza: reseñas, políticas, contacto", value: "Revisar", isLeak: true },
+          { label: "Carrito y checkout", value: "OK" },
         ],
-        note: "La auditoría encuentra tu fuga real — y te dice qué arreglar primero.",
+        note: "La auditoría te dice qué frena tus ventas — y qué arreglar primero.",
       },
     },
     marquee: [
       "Sin permanencia",
-      "Web completa",
+      "Sin métricas",
       "Listado de tareas",
       "Sin jerga",
       "Próximos pasos",
@@ -110,8 +110,8 @@ const COPY: Record<"es" | "en", AuditCopy> = {
       goodEyebrow: "Lo que te entrego con la auditoría",
       good: [
         {
-          title: "Web completa",
-          description: "Audito toda tu tienda, desde la landing al pago.",
+          title: "Web completa, sin métricas",
+          description: "Audito toda tu tienda, de la portada al pago, con criterios de experiencia de usuario. No necesito acceso a tus datos.",
         },
         {
           title: "Listado de tareas",
@@ -123,7 +123,7 @@ const COPY: Record<"es" | "en", AuditCopy> = {
         },
         {
           title: "Próximos pasos concretos",
-          description: "Sabes exactamente qué se va a hacer después de leerlo.",
+          description: "Implementas tú, me lo encargas o, cuando la tienda esté bien, pasas a la mejora continua.",
         },
       ],
     },
@@ -142,35 +142,35 @@ const COPY: Record<"es" | "en", AuditCopy> = {
     structuredData: {
       serviceName: "Auditoría de conversión",
       description:
-        "Reviso tu tienda Shopify, detecto qué frena las ventas y te entrego un listado de tareas ordenado por impacto.",
+        "Auditoría heurística de tu tienda Shopify, sin necesidad de métricas: detecto qué frena las ventas y te entrego un listado de tareas ordenado por impacto.",
     },
   },
   en: {
     hero: {
       eyebrow: "Conversion audit · Shopify",
-      titleLine1: "You have visits.",
-      titleLine2: "You're missing sales.",
-      sub: "I tell you what I would change in your store to sell more, why, and where to start.",
+      titleLine1: "Your store isn't selling.",
+      titleLine2: "And you don't know why.",
+      sub: "I go through your store the way a customer would and tell you what I would change to sell more, why, and where to start. No access to your metrics needed.",
       ctaPrimary: "Get in touch",
       ctaSecondary: "See what's included",
-      meta: ["€140 + VAT", "Audit in 7-10 days", "No lock-in"],
+      meta: ["€140 + VAT", "Audit in 7-10 days", "No metrics needed"],
       card: {
-        eyebrow: "Where you lose customers",
+        eyebrow: "What I check in your store",
         tag: "Example",
-        leakTag: "Leak",
+        leakTag: "Hurts sales",
         rows: [
-          { label: "They land on your store", value: "100%", pct: 100 },
-          { label: "They view a product", value: "58%", pct: 58 },
-          { label: "They add to cart", value: "7%", pct: 7, isLeak: true },
-          { label: "They reach checkout", value: "4%", pct: 4 },
-          { label: "They buy", value: "1.3%", pct: 1.3 },
+          { label: "Homepage: clear what you sell", value: "OK" },
+          { label: "Navigation and search", value: "OK" },
+          { label: "Product page: photos, price, shipping", value: "Review", isLeak: true },
+          { label: "Trust: reviews, policies, contact", value: "Review", isLeak: true },
+          { label: "Cart and checkout", value: "OK" },
         ],
-        note: "The audit finds your real leak — and tells you what to fix first.",
+        note: "The audit tells you what's holding your sales back — and what to fix first.",
       },
     },
     marquee: [
       "No lock-in",
-      "Full store",
+      "No metrics needed",
       "Task list",
       "No jargon",
       "Next steps",
@@ -190,8 +190,8 @@ const COPY: Record<"es" | "en", AuditCopy> = {
       goodEyebrow: "What I hand you with the audit",
       good: [
         {
-          title: "Full store",
-          description: "I audit your whole store, from the landing page to the payment.",
+          title: "Full store, no metrics",
+          description: "I audit your whole store, from the homepage to the payment, using user-experience criteria. I don't need access to your data.",
         },
         {
           title: "Task list",
@@ -203,7 +203,7 @@ const COPY: Record<"es" | "en", AuditCopy> = {
         },
         {
           title: "Concrete next steps",
-          description: "You know exactly what will be done after reading it.",
+          description: "Do it yourself, hand it to me or, once the store is in good shape, move to continuous improvement.",
         },
       ],
     },
@@ -222,7 +222,7 @@ const COPY: Record<"es" | "en", AuditCopy> = {
     structuredData: {
       serviceName: "Conversion audit",
       description:
-        "I review your Shopify store, find what's holding sales back and hand you a task list ordered by impact.",
+        "Heuristic audit of your Shopify store, no metrics needed: I find what's holding sales back and hand you a task list ordered by impact.",
     },
   },
 }
@@ -297,16 +297,16 @@ export default function ConversionAuditPage({
               </ul>
             </div>
 
-            {/* Tarjeta de ejemplo: dónde se pierden los clientes */}
+            {/* Tarjeta de ejemplo: checklist heurístico de la auditoría */}
             <div className="rounded-sm border border-sw-line bg-sw-bg-2 p-6 sm:p-8">
               <div className="flex items-center justify-between gap-4">
                 <span className="font-mono-label text-sw-fg-3">{c.hero.card.eyebrow}</span>
                 <span className="font-mono-label text-sw-fg-4">{c.hero.card.tag}</span>
               </div>
 
-              <ul className="mt-8 space-y-5">
+              <ul className="mt-8 divide-y divide-sw-line">
                 {c.hero.card.rows.map((row) => (
-                  <li key={row.label}>
+                  <li key={row.label} className="py-4 first:pt-0">
                     <div className="flex items-center justify-between gap-4">
                       <span className="flex items-center gap-3 text-sm text-sw-fg-1">
                         {row.label}
@@ -323,12 +323,6 @@ export default function ConversionAuditPage({
                       >
                         {row.value}
                       </span>
-                    </div>
-                    <div aria-hidden="true" className="mt-2 h-1 w-full bg-sw-bg-3">
-                      <div
-                        className={`h-full ${row.isLeak ? "bg-sw-brand" : "bg-sw-secondary"}`}
-                        style={{ width: `${Math.max(row.pct, 1.5)}%` }}
-                      />
                     </div>
                   </li>
                 ))}

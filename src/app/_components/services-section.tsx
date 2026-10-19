@@ -46,7 +46,7 @@ export default function ServicesSection() {
         <div className="relative -mx-5 sm:mx-0">
           <div className="overflow-x-auto px-5 pb-2 sm:overflow-visible sm:px-0">
             <motion.div
-              className="flex snap-x snap-mandatory gap-4 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-6 lg:grid-cols-4"
+              className="flex snap-x snap-mandatory gap-4 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-6 lg:grid-cols-3"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-60px" }}
@@ -67,9 +67,9 @@ export default function ServicesSection() {
                   whileHover={{ y: -6, transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] } }}
                   className="flex w-[64%] min-w-0 shrink-0 snap-start flex-col rounded-sm border border-sw-line bg-sw-bg-2 p-6 sm:w-auto sm:shrink"
                 >
-                  {service.key === 'conversionAudit' && (
+                  {(service.key === 'conversionAudit' || service.key === 'monthly') && (
                     <span className="mb-3 inline-block w-fit rounded-sm bg-sw-bg-0 px-3 py-1 font-mono-label text-sw-secondary">
-                      {t('services.conversionAudit.badge')}
+                      {t(`services.${service.key}.badge`)}
                     </span>
                   )}
                   <h3 className="text-lg font-semibold text-sw-fg-1">

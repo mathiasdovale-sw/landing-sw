@@ -13,6 +13,7 @@ const serviceCategories: Record<string, string> = {
   migration: 'Platform Migration',
   customDev: 'Custom Software Development',
   conversionAudit: 'Conversion Optimization',
+  monthly: 'Conversion Optimization',
   emailAutomation: 'Email Marketing',
 };
 

@@ -6,6 +6,7 @@ const serviceNames: Record<string, { es: string; en: string }> = {
   migration: { es: 'Migración a Shopify', en: 'Shopify migration' },
   customDev: { es: 'Desarrollos a medida para Shopify', en: 'Custom Shopify development' },
   conversionAudit: { es: 'Auditoría de conversión', en: 'Conversion audit' },
+  monthly: { es: 'Mejora continua (mensual)', en: 'Continuous improvement (monthly)' },
   emailAutomation: { es: 'Email marketing automation', en: 'Email marketing automation' },
 }
 
@@ -27,7 +28,7 @@ export async function GET() {
 
   const body = `# SellifyWorks
 
-> SellifyWorks is a Shopify agency based in Barcelona, Spain. It helps Shopify stores that get traffic but don't sell enough, mainly through conversion audits, Shopify migrations, custom development and email marketing automation. The site is available in Spanish (/es) and English (/en).
+> SellifyWorks is a Shopify agency based in Barcelona, Spain. It helps small Shopify stores sell more through a fixed-price heuristic conversion audit, Shopify migrations with conversion improvements, a monthly continuous-improvement plan based on session recordings, custom development and email marketing automation. The site is available in Spanish (/es) and English (/en).
 
 ## Services
 

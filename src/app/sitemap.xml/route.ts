@@ -53,6 +53,7 @@ export async function GET(request: NextRequest) {
     'migration',
     'customDev',
     'conversionAudit',
+    'monthly',
     'emailAutomation'
   ]
 

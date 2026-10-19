@@ -24,10 +24,10 @@ export default function ServicesPage() {
         <div className="mx-auto max-w-5xl px-5 text-center">
           <span className="font-mono-label text-sw-fg-3">Servicios</span>
           <h1 className="mt-5 font-display text-4xl text-sw-fg-1 sm:text-5xl lg:text-6xl">
-            Cuatro servicios. Sin relleno.
+            Cinco servicios. Sin relleno.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-sw-fg-2 sm:text-xl">
-            Cada servicio resuelve un problema concreto de tiendas con poco tráfico. Sin paquetes genéricos: hablamos de tu tienda y te cotizamos según lo que necesitas.
+            Cada servicio resuelve un problema concreto. ¿No sabes qué falla? Empieza por la auditoría. ¿Tu tienda ya funciona? La mejora continua la hace vender más cada mes.
           </p>
         </div>
       </section>
