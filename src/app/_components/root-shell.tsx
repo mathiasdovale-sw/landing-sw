@@ -1,7 +1,8 @@
 import Script from "next/script";
 import Footer from "@/app/_components/footer";
 import Navbar from "@/app/_components/navbar";
-import NewsletterPopup from "@/app/_components/newsletter-popup-safe";
+// Popup de newsletter desactivado temporalmente; para reactivarlo, descomentar import y <NewsletterPopup />
+// import NewsletterPopup from "@/app/_components/newsletter-popup-safe";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ScrollProvider } from "@/contexts/ScrollContext";
 
@@ -47,7 +48,7 @@ export default function RootShell({ children }: { children: React.ReactNode }) {
           <Navbar />
           <div className="min-h-screen">{children}</div>
           <Footer />
-          <NewsletterPopup />
+          {/* <NewsletterPopup /> */}
         </ScrollProvider>
       </LanguageProvider>
     </>
