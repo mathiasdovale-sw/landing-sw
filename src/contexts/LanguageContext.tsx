@@ -101,6 +101,7 @@ const translations = {
     'footer.rights': 'Todos los derechos reservados.',
     'footer.privacy': 'Política de Privacidad',
     'footer.cookies': 'Política de Cookies',
+    'footer.legal': 'Aviso Legal',
     
     // Footer Services
     'footer.services.title': 'SERVICIOS',
@@ -365,6 +366,7 @@ const translations = {
     'footer.rights': 'All rights reserved.',
     'footer.privacy': 'Privacy Policy',
     'footer.cookies': 'Cookie Policy',
+    'footer.legal': 'Legal Notice',
     
     // Footer Services
     'footer.services.title': 'SERVICES',

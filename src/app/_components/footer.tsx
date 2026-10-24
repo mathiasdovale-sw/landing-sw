@@ -189,6 +189,9 @@ export default function Footer() {
               <a href={links.cookiePolicy} className="text-sw-fg-3 transition-colors hover:text-sw-fg-1">
                 {t('footer.cookies')}
               </a>
+              <a href={links.legalNotice} className="text-sw-fg-3 transition-colors hover:text-sw-fg-1">
+                {t('footer.legal')}
+              </a>
             </div>
           </div>
         </div>

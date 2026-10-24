@@ -17,6 +17,8 @@ export const useLocalizedLinks = () => {
     blog: currentLocale === 'es' ? '/es/blog' : '/en/blog',
     privacyPolicy: currentLocale === 'es' ? '/es/politica-de-privacidad' : '/en/privacy-policy',
     cookiePolicy: currentLocale === 'es' ? '/es/politica-de-cookies' : '/en/cookie-policy',
+    // Solo existe en español; se enlaza desde ambos idiomas
+    legalNotice: '/es/aviso-legal',
     newsletterConfirmed: currentLocale === 'es' ? '/es/suscripcion-confirmada' : '/en/newsletter-confirmed',
     // Service pages
     migration: currentLocale === 'es' ? '/es/migracion-shopify' : '/en/shopify-migration',

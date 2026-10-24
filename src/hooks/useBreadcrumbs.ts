@@ -20,6 +20,7 @@ const pathTranslations = {
     'email-marketing-automation': 'Email Marketing Automation',
     'politica-de-privacidad': 'Política de Privacidad',
     'politica-de-cookies': 'Política de Cookies',
+    'aviso-legal': 'Aviso Legal',
     'suscripcion-confirmada': 'Suscripción Confirmada',
     'blog': 'Blog',
     'posts': 'Artículos'

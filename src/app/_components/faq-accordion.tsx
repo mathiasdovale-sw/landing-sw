@@ -64,14 +64,16 @@ export default function FAQAccordion({ faqs, title = 'Preguntas Frecuentes', cla
                 </button>
                 <div
                   id={`faq-answer-${faq.id}`}
-                  className={`transition-all duration-300 ease-in-out ${
-                    isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-                  } overflow-hidden`}
+                  className={`grid transition-all duration-300 ease-in-out ${
+                    isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                  }`}
                 >
-                  <div className="px-6 pb-4 pt-2 bg-sw-bg-1">
-                    <p className="text-sw-fg-2 leading-relaxed">
-                      {faq.answer}
-                    </p>
+                  <div className="overflow-hidden">
+                    <div className="px-6 pb-4 pt-2 bg-sw-bg-1">
+                      <p className="text-sw-fg-2 leading-relaxed">
+                        {faq.answer}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -81,6 +81,12 @@ const nextConfig = {
         destination: '/es/politica-de-cookies',
         permanent: true,
       },
+      // Aviso legal
+      {
+        source: '/aviso-legal',
+        destination: '/es/aviso-legal',
+        permanent: true,
+      },
       // Política de privacidad
       {
         source: '/privacy-policy',

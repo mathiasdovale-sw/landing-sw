@@ -65,6 +65,14 @@ export async function GET(request: NextRequest) {
   addBilingualPage('privacyPolicy', pagePriorities.policies, changeFrequencies.policies)
   addBilingualPage('cookiePolicy', pagePriorities.policies, changeFrequencies.policies)
 
+  // Aviso legal (solo en español)
+  urls.push({
+    loc: `${baseUrl}/es/aviso-legal`,
+    lastmod,
+    changefreq: changeFrequencies.policies,
+    priority: pagePriorities.policies
+  })
+
   // Newsletter confirmation
   addBilingualPage('newsletterConfirmed', pagePriorities.newsletter, changeFrequencies.newsletter)
 
