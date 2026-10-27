@@ -94,6 +94,9 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
 
   return (
     <FormulaContext.Provider value={formulas}>
+      {/* data-clarity-mask: Microsoft Clarity no graba el contenido de la calculadora
+          (cifras del usuario), sea cual sea el modo de enmascarado del proyecto. */}
+      <div data-clarity-mask="True">
       {/* Formulario + resumen */}
       <section className="bg-sw-bg-0 pb-16 sm:pb-20">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:px-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-10">
@@ -453,6 +456,7 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
       <Analysis r={r} inputs={inputs} form={form} per={per} set={set} auditHref={auditHref} contactHref={contactHref} />
 
       <MobileBar r={r} per={per} />
+      </div>
     </FormulaContext.Provider>
   )
 }
