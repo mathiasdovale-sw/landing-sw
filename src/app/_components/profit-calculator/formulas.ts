@@ -86,6 +86,25 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
       ? [`(${e(r.marketing)} marketing + ${e(r.fixed)} fijos) ÷ ${d4(r.cm1PerEuro)} € = ${e(r.breakevenRevenue)}`]
       : ["Con margen antes de marketing negativo no hay punto de equilibrio"]
 
+  // Primera compra
+  if (r.firstOrderMargin !== null && r.firstOrderTicket !== null) {
+    f.firstOrderProfit = [
+      ...(r.firstOrderCustom
+        ? [
+            `Ticket del primer pedido: ${e2(r.firstOrderTicket / (1 - Math.min(100, Math.max(0, num(inp.welcomeDiscountPct))) / 100 || 1))} − ${pctIn(inp.welcomeDiscountPct)} de bienvenida = ${e2(r.firstOrderTicket)}`,
+            `Margen del primer pedido (ajustado por su importe): ${e2(r.firstOrderMargin)}`,
+          ]
+        : [`Margen del primer pedido = margen por pedido medio: ${e2(r.firstOrderMargin)}`]),
+      `${e2(r.firstOrderMargin)} − ${e2(r.cac)} (CAC) = ${e2(r.firstOrderProfit)}`,
+    ]
+    if (r.ordersToRecoverCac !== null && r.firstOrderProfit !== null) {
+      f.ordersToRecoverCac =
+        r.firstOrderProfit >= 0
+          ? [`${e2(r.cac)} ÷ ${e2(r.firstOrderMargin)} = ${d(r.ordersToRecoverCac)} → lo recuperas con el primer pedido`]
+          : [`1 + ${e2(-r.firstOrderProfit)} ÷ ${e2(r.cm1PerOrder)} = ${d(r.ordersToRecoverCac)} pedidos`]
+    }
+  }
+
   // LTV
   if (inp.ltvEnabled && r.ltvFrequency !== null) {
     const aovNet = r.orders > 0 ? r.netProductSales / r.orders : null

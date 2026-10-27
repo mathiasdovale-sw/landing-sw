@@ -102,6 +102,26 @@ export const CONCEPTS: Record<string, Concept> = {
     what: "El % que pagas sobre lo que ganas. Si eres autónomo, tu tramo aproximado de IRPF; si tienes una SL, el impuesto de sociedades.",
     how: "Solo se aplica si hay beneficio. Si no lo sabes, pregúntale a tu gestor. Déjalo en 0 para ver el resultado antes de impuestos.",
   },
+  firstOrderAov: {
+    label: "Ticket medio del primer pedido",
+    what: "Lo que gasta de media un cliente nuevo en su primera compra, antes del descuento de bienvenida. Suele ser más bajo que el de los clientes que repiten.",
+    how: "Si lo dejas vacío usamos tu ticket medio general. Sin IVA (o con IVA si así indicaste tus ventas).",
+  },
+  welcomeDiscount: {
+    label: "Descuento de bienvenida",
+    what: "El % de descuento que das en la primera compra (por ejemplo, un 10 % por suscribirse a la newsletter).",
+    how: "Si tu ticket medio general ya incluye ese descuento y no has puesto un ticket propio para el primer pedido, déjalo en 0 para no contarlo dos veces.",
+  },
+  firstOrderProfit: {
+    label: "Beneficio en la primera compra",
+    what: "Lo que ganas o pierdes con el primer pedido de un cliente nuevo después de pagar lo que te costó conseguirlo. Muchas tiendas pierden dinero aquí y lo recuperan con las siguientes compras.",
+    how: "Lo que deja el primer pedido antes de marketing − CAC.",
+  },
+  ordersToRecoverCac: {
+    label: "Pedidos para recuperar el CAC",
+    what: "Cuántos pedidos tiene que hacerte un cliente nuevo para que recuperes lo que te costó conseguirlo. Menos de 1: lo recuperas con el primero.",
+    how: "Si la primera compra deja beneficio: CAC ÷ margen del primer pedido. Si no: 1 + pérdida de la primera compra ÷ margen por pedido.",
+  },
   ltvFrequency: {
     label: "Pedidos por cliente al año",
     what: "Cuántas veces de media te compra un cliente en 12 meses. Es el dato clave para el LTV y el más difícil de saber.",

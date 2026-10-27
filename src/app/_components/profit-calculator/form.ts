@@ -48,6 +48,9 @@ export interface FormState {
   ltvEnabled: boolean
   ltvFrequency: string
 
+  firstOrderAov: string
+  welcomeDiscountPct: string
+
   croUpliftPct: string
 }
 
@@ -107,6 +110,8 @@ export function toInputs(f: FormState): Inputs {
     profitTaxPct: parseNum(f.profitTaxPct),
     ltvEnabled: f.ltvEnabled,
     ltvFrequency: parseNum(f.ltvFrequency),
+    firstOrderAov: parseNum(f.firstOrderAov ?? ""),
+    welcomeDiscountPct: parseNum(f.welcomeDiscountPct ?? ""),
     croUpliftPct: parseNum(f.croUpliftPct),
   }
 }
@@ -155,6 +160,8 @@ export function emptyForm(): FormState {
     profitTaxPct: "0",
     ltvEnabled: false,
     ltvFrequency: "",
+    firstOrderAov: "",
+    welcomeDiscountPct: "",
     croUpliftPct: "20",
   }
 }

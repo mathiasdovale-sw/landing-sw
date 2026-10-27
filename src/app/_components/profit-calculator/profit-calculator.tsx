@@ -2,7 +2,7 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { ArrowDown, ArrowRight, Plus, RotateCcw, Trash2, X } from "lucide-react"
-import { compute, dataWarnings, fmt, levelOf, MONTHS_LONG, MONTHS_SHORT, SEASON_PROFILES, type Inputs, type Level, type Results, type SeasonProfile } from "./calc"
+import { compute, dataWarnings, fmt, levelOf, ordinal, MONTHS_LONG, MONTHS_SHORT, SEASON_PROFILES, type Inputs, type Level, type Results, type SeasonProfile } from "./calc"
 import { emptyForm, exampleForm, toInputs, type FormState } from "./form"
 import { buildFormulas } from "./formulas"
 import Simulator from "./simulator"
@@ -415,13 +415,32 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
             {/* 6. LTV opcional */}
             <Section
               step={6}
-              title="Valor del cliente a 12 meses (opcional)"
-              summary={form.ltvEnabled ? `LTV ${fmt.eur(r.ltvRevenue)} · LTV:CAC ${fmt.dec(r.ltvCac)}` : "Solo si sabes cuántas veces te compra un cliente al año"}
-              done={form.ltvEnabled && r.ltvFrequency !== null}
+              title="Primera compra y valor del cliente (opcional)"
+              summary={
+                r.firstOrderProfit !== null
+                  ? `1.ª compra ${signedEur(r.firstOrderProfit)}${form.ltvEnabled && r.ltvCac !== null ? ` · LTV:CAC ${fmt.dec(r.ltvCac)}` : ""}`
+                  : "Primer pedido y LTV a 12 meses"
+              }
+              done={r.firstOrderCustom || (form.ltvEnabled && r.ltvFrequency !== null)}
               open={open.has(6)}
               onToggle={() => toggleStep(6)}
             >
               <div className="space-y-4">
+                <p className="text-sm text-sw-fg-3">
+                  El primer pedido suele dejar menos margen que los siguientes. Si lo conoces, afina el cálculo; si no, usamos tu pedido medio.
+                </p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <NumField
+                    concept="firstOrderAov"
+                    value={form.firstOrderAov}
+                    onChange={(v) => set("firstOrderAov", v)}
+                    suffix="€"
+                    placeholder={r.aov !== null ? fmt.dec(r.aov / r.vatFactor) : "0"}
+                  />
+                  <NumField concept="welcomeDiscount" value={form.welcomeDiscountPct} onChange={(v) => set("welcomeDiscountPct", v)} suffix="%" placeholder="0" />
+                </div>
+                <FirstOrderResult r={r} />
+                <div className="border-t border-sw-line" />
                 <p className="text-sm text-sw-fg-3">
                   El LTV es difícil de calcular bien. Actívalo solo si conoces (aunque sea aproximado) cuántos pedidos te hace un cliente en un año.
                 </p>
@@ -572,6 +591,14 @@ function SummaryCard({ r, per, months, periodLabel, warnings }: { r: Results; pe
               level={levelOf.contributionPct(r.contributionPct)}
             />
             <Row label="ROAS breakeven" value={fmt.x(r.roasBreakeven)} hint="ROAS mínimo para no perder" />
+            {r.firstOrderProfit !== null && (
+              <Row
+                label="Primera compra"
+                value={signedEur(r.firstOrderProfit)}
+                level={levelOf.firstOrder(r.firstOrderProfit, r.ordersToRecoverCac, r.ltvFrequency)}
+                hint="lo que ganas o pierdes con el primer pedido de un cliente nuevo"
+              />
+            )}
             {r.ltvCac !== null && (
               <Row label="LTV:CAC" value={fmt.dec(r.ltvCac)} level={levelOf.ltvCac(r.ltvCac)} hint="lo que te deja un cliente en un año ÷ lo que cuesta captarlo" />
             )}
@@ -763,6 +790,24 @@ function Analysis({ r, inputs, form, per, set, auditHref, contactHref }: Analysi
             <Kpi concept="mer" value={fmt.x(r.mer)} level={levelOf.mer(r.mer, r.roasBreakeven)} sub={`Mínimo para no perder: ${fmt.x(r.roasBreakeven)}`} />
             <Kpi concept="roasBreakeven" value={fmt.x(r.roasBreakeven)} level={r.roasBreakeven === null ? "bad" : "neutral"} />
             <Kpi concept="cac" value={fmt.eur2(r.cac)} level={levelOf.cacVsOrder(r.cac, r.cm1PerOrder)} sub={`Cada pedido deja ${fmt.eur2(r.cm1PerOrder)} antes de marketing`} />
+            <Kpi
+              concept="firstOrderProfit"
+              value={r.firstOrderProfit !== null ? signedEur(r.firstOrderProfit) : "—"}
+              level={levelOf.firstOrder(r.firstOrderProfit, r.ordersToRecoverCac, r.ltvFrequency)}
+              sub={r.firstOrderMargin !== null ? `El primer pedido deja ${fmt.eur2(r.firstOrderMargin)} · captarlo cuesta ${fmt.eur2(r.cac)}` : undefined}
+            />
+            <Kpi
+              concept="ordersToRecoverCac"
+              value={r.ordersToRecoverCac !== null ? fmt.dec(r.ordersToRecoverCac) : r.firstOrderProfit !== null ? "Nunca" : "—"}
+              level={r.firstOrderProfit === null ? "neutral" : r.ordersToRecoverCac === null ? "bad" : r.ordersToRecoverCac <= 1 ? "good" : levelOf.firstOrder(r.firstOrderProfit, r.ordersToRecoverCac, r.ltvFrequency)}
+              sub={
+                r.ordersToRecoverCac !== null
+                  ? r.ordersToRecoverCac <= 1
+                    ? "Lo recuperas con el primer pedido"
+                    : `Lo recuperas en su ${ordinal(Math.ceil(r.ordersToRecoverCac - 1e-9))} pedido`
+                  : undefined
+              }
+            />
             <Kpi concept="returningShare" value={fmt.pct(r.returningShare)} sub={`${fmt.num(r.newCustomers)} nuevos · ${fmt.num(r.returningCustomers)} recurrentes`} />
             {form.ltvEnabled && r.ltvFrequency !== null && (
               <>
@@ -837,6 +882,35 @@ function Disclaimer() {
         Condiciones de uso
       </a>
     </p>
+  )
+}
+
+const signedEur = (v: number) => `${v >= 0 ? "+" : "−"}${fmt.eur2(Math.abs(v))}`
+
+function FirstOrderResult({ r }: { r: Results }) {
+  if (r.firstOrderProfit === null || r.firstOrderMargin === null) {
+    return <p className="text-xs text-sw-fg-4">Rellena pedidos, clientes nuevos y marketing para ver lo que te deja la primera compra.</p>
+  }
+  const level = levelOf.firstOrder(r.firstOrderProfit, r.ordersToRecoverCac, r.ltvFrequency)
+  const s = LEVEL_STYLES[level]
+  return (
+    <div className={`rounded-sm border p-4 ${s.border} ${s.bg}`}>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <span className="text-sm text-sw-fg-2">Primera compra de un cliente nuevo</span>
+        <span className={`flex items-center gap-1.5 text-xl font-semibold tabular-nums ${s.text}`}>
+          <LevelIcon level={level} className="h-4 w-4" />
+          {signedEur(r.firstOrderProfit)}
+        </span>
+      </div>
+      <p className="mt-2 text-sm leading-relaxed text-sw-fg-2">
+        Su primer pedido te deja {fmt.eur2(r.firstOrderMargin)} y captarlo te cuesta {fmt.eur2(r.cac)}.{" "}
+        {r.ordersToRecoverCac === null
+          ? "Con tu margen actual no lo recuperas nunca."
+          : r.ordersToRecoverCac <= 1
+            ? "Lo recuperas con el primer pedido."
+            : `Lo recuperas en su ${ordinal(Math.ceil(r.ordersToRecoverCac - 1e-9))} pedido.`}
+      </p>
+    </div>
   )
 }
 

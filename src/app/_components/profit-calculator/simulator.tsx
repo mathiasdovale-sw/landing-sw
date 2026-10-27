@@ -257,6 +257,15 @@ export default function Simulator({ inputs, base, per, contactHref }: Props) {
               <MiniDelta label="ROAS breakeven" a={base.roasBreakeven} b={sim.roasBreakeven} format={fmt.x} better="down" />
               <MiniDelta label="MER" a={base.mer} b={sim.mer} format={fmt.x} better="up" />
               <MiniDelta label="CAC" a={base.cac} b={sim.cac} format={fmt.eur2} better="down" />
+              {base.firstOrderProfit !== null && (
+                <MiniDelta
+                  label="1.ª compra"
+                  a={base.firstOrderProfit}
+                  b={sim.firstOrderProfit}
+                  format={(v) => (v === null ? "—" : `${v >= 0 ? "+" : "−"}${fmt.eur2(Math.abs(v))}`)}
+                  better="up"
+                />
+              )}
               {base.ltvCac !== null && <MiniDelta label="LTV:CAC" a={base.ltvCac} b={sim.ltvCac} format={fmt.dec} better="up" />}
               {base.ltvMargin !== null && <MiniDelta label="LTV (margen)" a={base.ltvMargin} b={sim.ltvMargin} format={fmt.eur} better="up" />}
             </div>

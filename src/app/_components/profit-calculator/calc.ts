@@ -75,6 +75,10 @@ export interface Inputs {
   ltvEnabled: boolean
   ltvFrequency: number | null // pedidos por cliente en 12 meses
 
+  // Primera compra (opcional): si se dejan vacíos se usa el pedido medio
+  firstOrderAov: number | null // ticket medio del primer pedido, antes del descuento de bienvenida
+  welcomeDiscountPct: number | null
+
   croUpliftPct: number | null
 }
 
@@ -192,6 +196,13 @@ export interface Results {
   ltvMargin: number | null
   ltvCac: number | null
 
+  // Primera compra
+  firstOrderCustom: boolean // el usuario metió ticket o descuento propios
+  firstOrderTicket: number | null // ticket del primer pedido tras el descuento de bienvenida (sin IVA)
+  firstOrderMargin: number | null // lo que deja el primer pedido antes de marketing
+  firstOrderProfit: number | null // margen del primer pedido − CAC
+  ordersToRecoverCac: number | null // pedidos necesarios para recuperar el CAC
+
   // Proyección 12 meses
   seasonFactor: number
   weights: number[]
@@ -305,6 +316,31 @@ export function compute(inp: Inputs): Results {
   const ltvMargin = inp.ltvEnabled && ltvFrequency !== null && cm1PerOrder !== null ? cm1PerOrder * ltvFrequency : null
   const ltvCac = ltvMargin !== null && cac !== null && cac > 0 ? ltvMargin / cac : null
 
+  // Primera compra. Partimos del margen por pedido medio y ajustamos por la
+  // diferencia de importe: producto y comisiones escalan con lo vendido; envío y
+  // packaging se pagan igual en cualquier pedido.
+  const firstOrderCustom = has(inp.firstOrderAov) || (has(inp.welcomeDiscountPct) && n(inp.welcomeDiscountPct) !== 0)
+  const baseTicket = has(inp.firstOrderAov) ? Math.abs(n(inp.firstOrderAov)) * vatFactor : aov
+  const welcome = Math.min(100, Math.max(0, n(inp.welcomeDiscountPct))) / 100
+  const firstOrderTicket = baseTicket !== null ? baseTicket * (1 - welcome) : null
+  const returnRate = gross - discounts > 0 ? returns / (gross - discounts) : 0
+  const cogsRatio = netProductSales > 0 ? cogs / netProductSales : 0
+  const feesRatio = netRevenue > 0 ? fees / netRevenue : 0
+  const avgNetPerOrder = div(netProductSales, orders)
+  const firstOrderMargin =
+    cm1PerOrder !== null && avgNetPerOrder !== null && firstOrderTicket !== null
+      ? cm1PerOrder + (firstOrderTicket * (1 - returnRate) - avgNetPerOrder) * (1 - cogsRatio - feesRatio)
+      : null
+  const firstOrderProfit = firstOrderMargin !== null && cac !== null ? firstOrderMargin - cac : null
+  const ordersToRecoverCac =
+    firstOrderProfit === null || cac === null || firstOrderMargin === null
+      ? null
+      : firstOrderProfit >= 0
+        ? cac / Math.max(firstOrderMargin, 1e-9)
+        : cm1PerOrder !== null && cm1PerOrder > 0
+          ? 1 + -firstOrderProfit / cm1PerOrder
+          : null
+
   // Estacionalidad y proyección
   const weights = seasonWeights(inp.profile, inp.customWeights)
   const periodMonths = periodMonthIndexes(inp.months, inp.endMonth)
@@ -351,6 +387,7 @@ export function compute(inp: Inputs): Results {
     orders, sessions, aov, conversionRate, rpv, newCustomers, returningCustomers, returningShare,
     roasBreakeven, mer, cac, cm1PerOrder, breakevenRevenue, discountPct, returnPct,
     ltvFrequency, ltvFrequencyIsEstimate, ltvRevenue, ltvMargin, ltvCac,
+    firstOrderCustom, firstOrderTicket, firstOrderMargin, firstOrderProfit, ordersToRecoverCac,
     seasonFactor, weights, periodMonths, projection,
     projRevenue, projContribution, projProfitBeforeTax, projTax, projNetProfit, lossMonths,
     croExtraProfitYear,
@@ -372,6 +409,9 @@ export const levelOf = {
     mer === null ? "neutral" : be === null || mer < be ? "bad" : mer < be * 1.2 ? "warn" : "good",
   conversion: (v: number | null): Level => (v === null ? "neutral" : v < 0.005 ? "bad" : v < 0.01 ? "warn" : v >= 0.02 ? "good" : "neutral"),
   ltvCac: (v: number | null): Level => (v === null ? "neutral" : v < 1 ? "bad" : v < 3 ? "warn" : "good"),
+  /** ≥ 0 bien; < 0 atención si se recupera dentro del año (según LTV), problema si no */
+  firstOrder: (profit: number | null, toRecover: number | null, freq: number | null): Level =>
+    profit === null ? "neutral" : profit >= 0 ? "good" : toRecover !== null && freq !== null && toRecover <= freq ? "warn" : "bad",
   cacVsOrder: (cac: number | null, cm1PerOrder: number | null): Level =>
     cac === null || cm1PerOrder === null ? "neutral" : cac > cm1PerOrder ? "warn" : "good",
   discount: (v: number | null): Level => (v === null ? "neutral" : v > 0.2 ? "bad" : v > 0.12 ? "warn" : "good"),
@@ -491,11 +531,24 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
         text: `LTV:CAC de ${fmt.dec(r.ltvCac)}: cada euro que inviertes en captar un cliente vuelve multiplicado en el año. Hay margen para invertir más en captación.`,
       })
     }
-  } else if (levelOf.cacVsOrder(r.cac, r.cm1PerOrder) === "warn") {
+  }
+
+  if (r.firstOrderProfit !== null && r.firstOrderProfit < 0) {
+    const l = levelOf.firstOrder(r.firstOrderProfit, r.ordersToRecoverCac, r.ltvFrequency)
+    const recover =
+      r.ordersToRecoverCac === null
+        ? "Con tu margen actual no lo recuperas nunca."
+        : `Lo recuperas en su ${ordinal(Math.ceil(r.ordersToRecoverCac - 1e-9))} pedido${
+            r.ltvFrequency !== null
+              ? r.ordersToRecoverCac <= r.ltvFrequency
+                ? `, y de media te hace ${fmt.dec(r.ltvFrequency)} al año: lo recuperas dentro del año.`
+                : `, pero de media solo te hace ${fmt.dec(r.ltvFrequency)} al año: no lo recuperas en un año.`
+              : "."
+          }`
     out.push({
-      level: "warn",
-      title: "Pierdes dinero en el primer pedido de cada cliente nuevo",
-      text: `Captar un cliente te cuesta ${fmt.eur(r.cac)} y cada pedido deja ${fmt.eur(r.cm1PerOrder)} antes de marketing. Solo es rentable si vuelven a comprar: activa el cálculo de LTV para comprobarlo.`,
+      level: l,
+      title: `Pierdes ${fmt.eur2(-r.firstOrderProfit)} en la primera compra de cada cliente nuevo`,
+      text: `Captarlo te cuesta ${fmt.eur2(r.cac)} y su primer pedido te deja ${fmt.eur2(r.firstOrderMargin)} antes de marketing. ${recover} Sube el ticket del primer pedido (packs, envío gratis desde un importe), revisa el descuento de bienvenida o activa emails para la segunda compra.`,
     })
   }
 
@@ -540,6 +593,11 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
 
   const order: Record<Level, number> = { bad: 0, warn: 1, neutral: 2, good: 3 }
   return out.sort((a, b) => order[a.level] - order[b.level])
+}
+
+/** 1 → "1.er", 2 → "2.º"… */
+export function ordinal(k: number) {
+  return k === 1 ? "1.er" : `${k}.º`
 }
 
 function joinEs(items: string[]) {
@@ -627,6 +685,7 @@ export function simulate(inp: Inputs, base: Results, lv: Levers): Results {
     newCustomers: n(inp.newCustomers) * customers,
     returningCustomers: n(inp.returningCustomers) * customers,
     ltvFrequency: has(inp.ltvFrequency) ? n(inp.ltvFrequency) * repeat : inp.ltvFrequency,
+    firstOrderAov: has(inp.firstOrderAov) ? Math.abs(n(inp.firstOrderAov)) * ticket : inp.firstOrderAov,
     cogs: inp.cogsMode === "pct" ? n(inp.cogs) * f(lv.cogs) : n(inp.cogs) * nsRatio * f(lv.cogs),
     shippingPaid: n(inp.shippingPaid) * volume * f(lv.shipping),
     packaging: n(inp.packaging) * volume,
@@ -666,6 +725,7 @@ export function dataWarnings(inp: Inputs, r: Results): string[] {
   if (r.sessions > 0 && r.orders > r.sessions) w.push("Tienes más pedidos que sesiones: ¿puede que falte una cifra en las sesiones?")
   if (r.orders > 0 && r.newCustomers + r.returningCustomers > r.orders)
     w.push("Hay más clientes que pedidos: cada cliente hace al menos un pedido. Revisa clientes nuevos y recurrentes.")
+  if (Math.abs(n(inp.welcomeDiscountPct)) > 100) w.push("El descuento de bienvenida no puede superar el 100 %.")
   if (inp.cogsMode === "pct" && Math.abs(n(inp.cogs)) > 100) w.push("El coste de producto supera el 100 % del precio de venta: ¿querías ponerlo en euros?")
   if (inp.feesMode === "pct" && Math.abs(n(inp.fees)) > 10)
     w.push(`Una comisión de pasarela del ${n(inp.fees)} % es muy alta: ¿querías poner ${String(n(inp.fees) / 10).replace(".", ",")} %?`)
