@@ -12,6 +12,7 @@ import {
   MousePointerClick,
   Package,
   Percent,
+  Repeat,
   RotateCcw,
   ShoppingBag,
   Sparkles,
@@ -32,14 +33,33 @@ interface LeverDef {
   max: number
   step: number
   show: (r: Results) => string
+  /** Valor tras mover solo esta palanca (si no se puede leer directamente de la simulación) */
+  showAfter?: (base: Results, value: number) => string
 }
 
 const share = (a: number, b: number) => (b > 0 ? a / b : null)
+
+/** Pedidos de clientes recurrentes, estimados en proporción a cuántos clientes son. */
+const recurrentOrders = (r: Results) => {
+  const c = r.newCustomers + r.returningCustomers
+  return c > 0 ? (r.orders * r.returningCustomers) / c : 0
+}
 
 const LEVERS: LeverDef[] = [
   { key: "traffic", label: "Visitas", hint: "Más tráfico con la misma conversión", icon: Users, min: -50, max: 100, step: 5, show: (r) => fmt.num(r.sessions) },
   { key: "conversion", label: "Tasa de conversión", hint: "Más visitas que terminan comprando", icon: MousePointerClick, min: -50, max: 100, step: 5, show: (r) => fmt.pct(r.conversionRate) },
   { key: "aov", label: "Ticket medio", hint: "Cada pedido vale más (packs, upsells…)", icon: ShoppingBag, min: -30, max: 50, step: 1, show: (r) => fmt.eur2(r.aov) },
+  {
+    key: "repeat",
+    label: "Recompra",
+    hint: "Tus clientes recurrentes compran más veces (email, post-compra…)",
+    icon: Repeat,
+    min: -50,
+    max: 100,
+    step: 5,
+    show: (r) => `${fmt.num(recurrentOrders(r))} pedidos de recurrentes`,
+    showAfter: (b, v) => `${fmt.num(recurrentOrders(b) * (1 + v / 100))} pedidos de recurrentes`,
+  },
   { key: "discounts", label: "Descuentos", hint: "Peso de los descuentos sobre las ventas", icon: Percent, min: -100, max: 100, step: 5, show: (r) => fmt.pct(r.discountPct) },
   { key: "returns", label: "Devoluciones", hint: "Peso de las devoluciones sobre las ventas", icon: Undo2, min: -100, max: 100, step: 5, show: (r) => fmt.pct(r.returnPct) },
   { key: "cogs", label: "Coste de producto", hint: "Negociar con proveedores, cambiar de fabricante…", icon: Package, min: -30, max: 30, step: 1, show: (r) => fmt.pct(share(r.cogs, r.netProductSales)) },
@@ -52,6 +72,7 @@ const PRESETS: { label: string; levers: Partial<Levers> }[] = [
   { label: "Mejorar la tienda", levers: { conversion: 20, aov: 10, returns: -20 } },
   { label: "Recortar costes", levers: { cogs: -10, shipping: -15, fixed: -10 } },
   { label: "Escalar publicidad", levers: { ads: 50 } },
+  { label: "Fidelizar clientes", levers: { repeat: 30 } },
   { label: "Menos descuentos", levers: { discounts: -50, conversion: -5 } },
 ]
 
@@ -138,7 +159,7 @@ export default function Simulator({ inputs, base, per, contactHref }: Props) {
             key={p.label}
             type="button"
             onClick={() => setLevers({ ...ZERO_LEVERS, ...p.levers })}
-            disabled={p.levers.ads !== undefined && base.adSpend === 0}
+            disabled={(p.levers.ads !== undefined && base.adSpend === 0) || (p.levers.repeat !== undefined && base.returningCustomers === 0)}
             className="rounded-full border border-sw-line-strong bg-sw-bg-0 px-3.5 py-1.5 text-sm text-sw-fg-2 transition-colors hover:border-sw-secondary hover:text-sw-fg-1 disabled:opacity-40"
           >
             {p.label}
@@ -167,7 +188,7 @@ export default function Simulator({ inputs, base, per, contactHref }: Props) {
               effect={isolated[l.key]}
               base={base}
               sim={sim}
-              disabled={l.key === "ads" && base.adSpend === 0}
+              disabled={(l.key === "ads" && base.adSpend === 0) || (l.key === "repeat" && base.returningCustomers === 0)}
               onChange={(v) => set(l.key, v)}
             />
           ))}
@@ -236,6 +257,8 @@ export default function Simulator({ inputs, base, per, contactHref }: Props) {
               <MiniDelta label="ROAS breakeven" a={base.roasBreakeven} b={sim.roasBreakeven} format={fmt.x} better="down" />
               <MiniDelta label="MER" a={base.mer} b={sim.mer} format={fmt.x} better="up" />
               <MiniDelta label="CAC" a={base.cac} b={sim.cac} format={fmt.eur2} better="down" />
+              {base.ltvCac !== null && <MiniDelta label="LTV:CAC" a={base.ltvCac} b={sim.ltvCac} format={fmt.dec} better="up" />}
+              {base.ltvMargin !== null && <MiniDelta label="LTV (margen)" a={base.ltvMargin} b={sim.ltvMargin} format={fmt.eur} better="up" />}
             </div>
 
             {touched && delta > 0.5 && (
@@ -256,7 +279,7 @@ export default function Simulator({ inputs, base, per, contactHref }: Props) {
 
       <p className="mt-6 text-xs leading-relaxed text-sw-fg-4">
         Supuestos del simulador: visitas y conversión cambian el número de pedidos y el ticket medio su importe; descuentos y devoluciones mantienen su peso salvo que
-        muevas su palanca; envíos, packaging y comisiones crecen con los pedidos; la publicidad tiene rendimientos decrecientes (al invertir más, el ROAS baja; al recortar, sube), un supuesto orientativo; el resto de marketing no cambia. En la realidad
+        muevas su palanca; envíos, packaging y comisiones crecen con los pedidos; la recompra suma pedidos de tus clientes recurrentes (estimados en proporción a cuántos son) sin coste de marketing; la publicidad tiene rendimientos decrecientes (al invertir más, el ROAS baja; al recortar, sube), un supuesto orientativo; el resto de marketing no cambia. En la realidad
         las palancas no son independientes (por ejemplo, menos descuentos puede bajar la conversión).
       </p>
     </div>
@@ -308,7 +331,9 @@ function LeverCard({
               {value}%
             </span>
           </div>
-          <p className="text-xs text-sw-fg-4">{disabled ? "No has metido inversión en publicidad" : def.hint}</p>
+          <p className="text-xs text-sw-fg-4">
+            {disabled ? (def.key === "repeat" ? "Rellena tus clientes recurrentes (bloque 2) para usarla" : "No has metido inversión en publicidad") : def.hint}
+          </p>
         </div>
       </div>
 
@@ -331,7 +356,7 @@ function LeverCard({
           {def.show(base)}
           {active && (
             <>
-              {" "}→ <span className="text-sw-fg-1">{def.show(sim)}</span>
+              {" "}→ <span className="text-sw-fg-1">{def.showAfter ? def.showAfter(base, value) : def.show(sim)}</span>
             </>
           )}
         </span>
@@ -403,6 +428,7 @@ const RANK_LABEL: Record<LeverKey, string> = {
   traffic: "+10 % visitas",
   conversion: "+10 % conversión",
   aov: "+10 % ticket medio",
+  repeat: "+10 % recompra",
   discounts: "−10 % descuentos",
   returns: "−10 % devoluciones",
   cogs: "−10 % coste de producto",

@@ -441,6 +441,7 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
                     }
                   />
                 )}
+                {form.ltvEnabled && <LtvResult r={r} />}
               </div>
             </Section>
           </div>
@@ -571,6 +572,9 @@ function SummaryCard({ r, per, months, periodLabel, warnings }: { r: Results; pe
               level={levelOf.contributionPct(r.contributionPct)}
             />
             <Row label="ROAS breakeven" value={fmt.x(r.roasBreakeven)} hint="ROAS mínimo para no perder" />
+            {r.ltvCac !== null && (
+              <Row label="LTV:CAC" value={fmt.dec(r.ltvCac)} level={levelOf.ltvCac(r.ltvCac)} hint="lo que te deja un cliente en un año ÷ lo que cuesta captarlo" />
+            )}
           </dl>
 
           <Per100 r={r} />
@@ -760,12 +764,18 @@ function Analysis({ r, inputs, form, per, set, auditHref, contactHref }: Analysi
             <Kpi concept="roasBreakeven" value={fmt.x(r.roasBreakeven)} level={r.roasBreakeven === null ? "bad" : "neutral"} />
             <Kpi concept="cac" value={fmt.eur2(r.cac)} level={levelOf.cacVsOrder(r.cac, r.cm1PerOrder)} sub={`Cada pedido deja ${fmt.eur2(r.cm1PerOrder)} antes de marketing`} />
             <Kpi concept="returningShare" value={fmt.pct(r.returningShare)} sub={`${fmt.num(r.newCustomers)} nuevos · ${fmt.num(r.returningCustomers)} recurrentes`} />
-            {form.ltvEnabled && (
+            {form.ltvEnabled && r.ltvFrequency !== null && (
               <>
-                <Kpi concept="ltvRevenue" value={fmt.eur(r.ltvRevenue)} sub={r.ltvFrequency ? `${fmt.dec(r.ltvFrequency)} pedidos por cliente al año` : "Falta la frecuencia de compra"} />
+                <Kpi concept="ltvRevenue" value={fmt.eur(r.ltvRevenue)} sub={`${fmt.dec(r.ltvFrequency)} pedidos por cliente al año`} />
                 <Kpi concept="ltvMargin" value={fmt.eur(r.ltvMargin)} />
                 <Kpi concept="ltvCac" value={fmt.dec(r.ltvCac)} level={levelOf.ltvCac(r.ltvCac)} />
               </>
+            )}
+            {form.ltvEnabled && r.ltvFrequency === null && (
+              <div className="flex items-start gap-2 rounded-sm border border-amber-400/40 bg-amber-400/10 p-4 text-sm text-sw-fg-2">
+                <LevelIcon level="warn" className="mt-0.5 h-4 w-4 shrink-0" />
+                Para ver tu LTV, indica en el bloque 6 cuántos pedidos te hace un cliente al año.
+              </div>
             )}
           </KpiGroup>
         </div>
@@ -827,6 +837,50 @@ function Disclaimer() {
         Condiciones de uso
       </a>
     </p>
+  )
+}
+
+function LtvResult({ r }: { r: Results }) {
+  if (r.ltvFrequency === null) {
+    return (
+      <p className="flex items-start gap-1.5 text-xs leading-relaxed text-amber-400">
+        <LevelIcon level="warn" className="mt-px h-3.5 w-3.5 shrink-0" />
+        Indica cuántos pedidos te hace un cliente al año para calcular tu LTV.
+      </p>
+    )
+  }
+  const level = levelOf.ltvCac(r.ltvCac)
+  return (
+    <div className={`rounded-sm border p-4 ${level === "neutral" ? "border-sw-line bg-sw-bg-0" : `${LEVEL_STYLES[level].border} ${LEVEL_STYLES[level].bg}`}`}>
+      <div className="grid grid-cols-3 gap-3">
+        <div>
+          <p className="text-xs text-sw-fg-3">LTV (ventas)</p>
+          <p className="text-lg font-semibold tabular-nums text-sw-fg-1">{fmt.eur(r.ltvRevenue)}</p>
+        </div>
+        <div>
+          <p className="text-xs text-sw-fg-3">LTV (margen)</p>
+          <p className="text-lg font-semibold tabular-nums text-sw-fg-1">{fmt.eur(r.ltvMargin)}</p>
+        </div>
+        <div>
+          <p className="text-xs text-sw-fg-3">LTV:CAC</p>
+          <p className={`flex items-center gap-1 text-lg font-semibold tabular-nums ${LEVEL_STYLES[level].text}`}>
+            {level !== "neutral" && <LevelIcon level={level} className="h-4 w-4" />}
+            {fmt.dec(r.ltvCac)}
+          </p>
+        </div>
+      </div>
+      <p className="mt-3 text-sm leading-relaxed text-sw-fg-2">
+        {r.cac !== null && r.ltvMargin !== null
+          ? `Cada cliente te deja ${fmt.eur(r.ltvMargin)} de margen en un año y captarlo te cuesta ${fmt.eur(r.cac)}. ${
+              level === "bad"
+                ? "Pierdes dinero con cada cliente nuevo."
+                : level === "warn"
+                  ? "Lo recuperas, pero con poco margen: conviene que te compren más veces."
+                  : "Son clientes rentables."
+            }`
+          : "Para comparar con lo que cuesta captar un cliente, rellena clientes nuevos y tu gasto en marketing."}
+      </p>
+    </div>
   )
 }
 

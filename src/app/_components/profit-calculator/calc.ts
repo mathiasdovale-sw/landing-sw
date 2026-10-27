@@ -572,15 +572,15 @@ export function adReturnFactor(pct: number): number {
   return ratio === 0 ? 0 : Math.pow(ratio, AD_ELASTICITY)
 }
 
-export const LEVER_KEYS = ["traffic", "conversion", "aov", "discounts", "returns", "cogs", "shipping", "ads", "fixed"] as const
+export const LEVER_KEYS = ["traffic", "conversion", "aov", "repeat", "discounts", "returns", "cogs", "shipping", "ads", "fixed"] as const
 export type LeverKey = (typeof LEVER_KEYS)[number]
 export type Levers = Record<LeverKey, number>
 
-export const ZERO_LEVERS: Levers = { traffic: 0, conversion: 0, aov: 0, discounts: 0, returns: 0, cogs: 0, shipping: 0, ads: 0, fixed: 0 }
+export const ZERO_LEVERS: Levers = { traffic: 0, conversion: 0, aov: 0, repeat: 0, discounts: 0, returns: 0, cogs: 0, shipping: 0, ads: 0, fixed: 0 }
 
 /** Dirección en la que la palanca mejora el negocio (para el ranking). */
 export const LEVER_GOOD_DIRECTION: Record<LeverKey, 1 | -1> = {
-  traffic: 1, conversion: 1, aov: 1, discounts: -1, returns: -1, cogs: -1, shipping: -1, ads: 1, fixed: -1,
+  traffic: 1, conversion: 1, aov: 1, repeat: 1, discounts: -1, returns: -1, cogs: -1, shipping: -1, ads: 1, fixed: -1,
 }
 
 export function simulate(inp: Inputs, base: Results, lv: Levers): Results {
@@ -588,8 +588,15 @@ export function simulate(inp: Inputs, base: Results, lv: Levers): Results {
   const adShare = base.netRevenue > 0 ? Math.min(1, base.adAttributed / base.netRevenue) : 0
   const adFactor = adReturnFactor(lv.ads) // ventas de ads, con rendimientos decrecientes
   const adDemand = 1 + (adFactor - 1) * adShare
-  const visits = f(lv.traffic) * adDemand
-  const volume = visits * f(lv.conversion) // factor sobre nº de pedidos
+  // Recompra: los clientes recurrentes hacen un X % más de pedidos. Como no sabemos
+  // cuántos pedidos son de recurrentes, los estimamos en proporción a sus clientes.
+  const nc0 = Math.max(0, n(inp.newCustomers))
+  const rc0 = Math.max(0, n(inp.returningCustomers))
+  const repeatShare = nc0 + rc0 > 0 ? rc0 / (nc0 + rc0) : 0
+  const repeat = 1 + repeatShare * (lv.repeat / 100)
+  const customers = f(lv.traffic) * adDemand * f(lv.conversion) // factor sobre nº de clientes
+  const visits = f(lv.traffic) * adDemand * repeat
+  const volume = customers * repeat // factor sobre nº de pedidos
   const ticket = f(lv.aov)
 
   const gross0 = Math.abs(n(inp.grossSales))
@@ -607,7 +614,7 @@ export function simulate(inp: Inputs, base: Results, lv: Levers): Results {
   const rev0 = ns0 + ship0
   const rev1 = ns1 + shippingCharged
   const revRatio = rev0 > 0 ? rev1 / rev0 : 1
-  const salesFactor = f(lv.traffic) * f(lv.conversion) * ticket // ventas no ligadas a ads
+  const salesFactor = f(lv.traffic) * f(lv.conversion) * repeat * ticket // ventas no ligadas a ads
 
   const next: Inputs = {
     ...inp,
@@ -617,8 +624,9 @@ export function simulate(inp: Inputs, base: Results, lv: Levers): Results {
     shippingCharged,
     orders: n(inp.orders) * volume,
     sessions: n(inp.sessions) * visits,
-    newCustomers: n(inp.newCustomers) * volume,
-    returningCustomers: n(inp.returningCustomers) * volume,
+    newCustomers: n(inp.newCustomers) * customers,
+    returningCustomers: n(inp.returningCustomers) * customers,
+    ltvFrequency: has(inp.ltvFrequency) ? n(inp.ltvFrequency) * repeat : inp.ltvFrequency,
     cogs: inp.cogsMode === "pct" ? n(inp.cogs) * f(lv.cogs) : n(inp.cogs) * nsRatio * f(lv.cogs),
     shippingPaid: n(inp.shippingPaid) * volume * f(lv.shipping),
     packaging: n(inp.packaging) * volume,
@@ -637,7 +645,7 @@ export function simulate(inp: Inputs, base: Results, lv: Levers): Results {
 
 /** Cuánto cambia el beneficio neto (del periodo) al mejorar cada palanca un `step` %. */
 export function leverRanking(inp: Inputs, base: Results, step = 10) {
-  return LEVER_KEYS.filter((k) => k !== "ads" || base.adSpend > 0)
+  return LEVER_KEYS.filter((k) => (k !== "ads" || base.adSpend > 0) && (k !== "repeat" || base.returningCustomers > 0))
     .map((k) => {
       const lv = { ...ZERO_LEVERS, [k]: step * LEVER_GOOD_DIRECTION[k] }
       return { key: k, delta: simulate(inp, base, lv).netProfit - base.netProfit }
