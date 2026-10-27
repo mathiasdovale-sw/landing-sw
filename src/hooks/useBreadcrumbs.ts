@@ -21,6 +21,7 @@ const pathTranslations = {
     'politica-de-privacidad': 'Política de Privacidad',
     'politica-de-cookies': 'Política de Cookies',
     'aviso-legal': 'Aviso Legal',
+    'calculadora-rentabilidad': 'Calculadora de beneficios',
     'suscripcion-confirmada': 'Suscripción Confirmada',
     'blog': 'Blog',
     'posts': 'Artículos'

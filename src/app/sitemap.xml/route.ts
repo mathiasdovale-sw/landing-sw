@@ -73,6 +73,14 @@ export async function GET(request: NextRequest) {
     priority: pagePriorities.policies
   })
 
+  // Calculadora de beneficios (solo en español)
+  urls.push({
+    loc: `${baseUrl}/es/calculadora-rentabilidad`,
+    lastmod,
+    changefreq: 'monthly',
+    priority: pagePriorities.services
+  })
+
   // Newsletter confirmation
   addBilingualPage('newsletterConfirmed', pagePriorities.newsletter, changeFrequencies.newsletter)
 

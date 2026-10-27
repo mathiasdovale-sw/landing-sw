@@ -17,6 +17,7 @@ const translations = {
     'nav.about': 'Sobre nosotros',
     'nav.blog': 'Blog',
     'nav.contact': 'Contacto',
+    'nav.calculator': 'Calculadora',
 
     // Hero
     'hero.eyebrow': 'Agencia Shopify · España',
@@ -110,6 +111,8 @@ const translations = {
     'footer.services.conversionAudit': 'Auditoría de conversión',
     'footer.services.monthly': 'Mejora continua',
     'footer.services.emailAutomation': 'Email marketing automation',
+    'footer.tools.title': 'HERRAMIENTAS GRATIS',
+    'footer.tools.calculator': 'Calculadora de beneficios',
 
     // Services Section
     'services.eyebrow': 'Servicios',
@@ -282,6 +285,7 @@ const translations = {
     'nav.about': 'About',
     'nav.blog': 'Blog',
     'nav.contact': 'Contact',
+    'nav.calculator': 'Calculator',
 
     // Hero
     'hero.eyebrow': 'Shopify agency · Spain',
@@ -375,6 +379,8 @@ const translations = {
     'footer.services.conversionAudit': 'Conversion audit',
     'footer.services.monthly': 'Continuous improvement',
     'footer.services.emailAutomation': 'Email marketing automation',
+    'footer.tools.title': 'FREE TOOLS',
+    'footer.tools.calculator': 'Profitability calculator',
 
     // Services Section
     'services.eyebrow': 'Services',

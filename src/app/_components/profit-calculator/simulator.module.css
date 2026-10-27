@@ -1,0 +1,58 @@
+/* Deslizador del simulador: pista con relleno desde el centro (0 %) y pulgar grande
+   para usarlo cómodamente con el dedo. El relleno se pinta con el gradiente que
+   llega en la variable --fill. */
+.range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 28px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+.range:focus-visible {
+  outline: none;
+}
+.range::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--fill);
+}
+.range::-moz-range-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--fill);
+}
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 3px solid var(--thumb, #7cb3e0);
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.6), 0 0 18px var(--glow, rgba(124, 179, 224, 0.45));
+  transition: transform 0.15s ease;
+}
+.range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 3px solid var(--thumb, #7cb3e0);
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.6), 0 0 18px var(--glow, rgba(124, 179, 224, 0.45));
+}
+.range:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+.range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px rgba(124, 179, 224, 0.5);
+}
+
+/* Halo del panel de resultado */
+.glow {
+  background:
+    radial-gradient(120% 80% at 50% 0%, var(--halo, rgba(0, 229, 138, 0.16)) 0%, transparent 60%),
+    #0a0a0a;
+}

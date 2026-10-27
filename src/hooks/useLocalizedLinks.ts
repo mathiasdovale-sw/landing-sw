@@ -19,6 +19,8 @@ export const useLocalizedLinks = () => {
     cookiePolicy: currentLocale === 'es' ? '/es/politica-de-cookies' : '/en/cookie-policy',
     // Solo existe en español; se enlaza desde ambos idiomas
     legalNotice: '/es/aviso-legal',
+    // Calculadora de beneficios: solo existe en español
+    calculator: '/es/calculadora-rentabilidad',
     newsletterConfirmed: currentLocale === 'es' ? '/es/suscripcion-confirmada' : '/en/newsletter-confirmed',
     // Service pages
     migration: currentLocale === 'es' ? '/es/migracion-shopify' : '/en/shopify-migration',

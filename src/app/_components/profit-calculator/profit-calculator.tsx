@@ -1,0 +1,1188 @@
+"use client"
+import { useContext, useEffect, useMemo, useRef, useState } from "react"
+import Link from "next/link"
+import { ArrowDown, ArrowRight, Plus, RotateCcw, Trash2, X } from "lucide-react"
+import { compute, dataWarnings, fmt, levelOf, MONTHS_LONG, MONTHS_SHORT, SEASON_PROFILES, type Inputs, type Level, type Results, type SeasonProfile } from "./calc"
+import { emptyForm, exampleForm, toInputs, type FormState } from "./form"
+import { buildFormulas } from "./formulas"
+import Simulator from "./simulator"
+import { FormulaContext, Kpi, LEVEL_STYLES, LevelIcon, NumField, Section, Segmented, StatusPill, Toggle, useConcept } from "./ui"
+
+const STORAGE_KEY = "sw-profit-calculator-v1"
+
+const PROFILE_OPTIONS: { value: SeasonProfile; label: string }[] = [
+  { value: "flat", label: "Estable todo el año" },
+  { value: "xmas", label: "Pico Navidad y Black Friday" },
+  { value: "summer", label: "Pico en verano" },
+  { value: "custom", label: "Personalizado" },
+]
+
+interface Props {
+  auditHref: string
+  contactHref: string
+}
+
+export default function ProfitCalculator({ auditHref, contactHref }: Props) {
+  const [form, setForm] = useState<FormState>(exampleForm)
+  const [isExample, setIsExample] = useState(true)
+  const [open, setOpen] = useState<Set<number>>(new Set([1, 2]))
+  const loaded = useRef(false)
+
+  // Recuperar lo que el usuario metió la última vez (solo en su navegador).
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY)
+      if (raw) {
+        const saved = JSON.parse(raw)
+        if (saved?.form) {
+          setForm({ ...emptyForm(), ...saved.form })
+          setIsExample(Boolean(saved.isExample))
+        }
+      }
+    } catch {
+      /* sin almacenamiento disponible: seguimos con el ejemplo */
+    }
+    loaded.current = true
+  }, [])
+
+  useEffect(() => {
+    if (!loaded.current) return
+    const t = setTimeout(() => {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ form, isExample }))
+      } catch {
+        /* ignorar */
+      }
+    }, 300)
+    return () => clearTimeout(t)
+  }, [form, isExample])
+
+  const inputs = useMemo(() => toInputs(form), [form])
+  const r = useMemo(() => compute(inputs), [inputs])
+  const formulas = useMemo(() => buildFormulas(r, inputs), [r, inputs])
+  const warnings = useMemo(() => {
+    const w = r.hasData ? dataWarnings(inputs, r) : []
+    if (r.hasData && form.salesIncludeVat === null) w.push("Indica si tus cifras de ventas incluyen IVA (bloque 2).")
+    return w
+  }, [inputs, r, form.salesIncludeVat])
+
+  const set = <K extends keyof FormState>(key: K, value: FormState[K], keepExample = false) => {
+    setForm((f) => ({ ...f, [key]: value }))
+    if (!keepExample) setIsExample(false)
+  }
+
+  const toggleStep = (n: number) =>
+    setOpen((s) => {
+      const next = new Set(s)
+      if (next.has(n)) next.delete(n)
+      else next.add(n)
+      return next
+    })
+
+  const reset = () => {
+    setForm(emptyForm())
+    setIsExample(false)
+    setOpen(new Set([1, 2]))
+  }
+  const loadExample = () => {
+    setForm(exampleForm())
+    setIsExample(true)
+  }
+
+  const periodLabel = periodText(r.periodMonths, form.months)
+  const per = form.months === 1 ? "al mes" : `en ${form.months} meses`
+
+  return (
+    <FormulaContext.Provider value={formulas}>
+      {/* Formulario + resumen */}
+      <section className="bg-sw-bg-0 pb-16 sm:pb-20">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:px-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-10">
+          <div className="min-w-0 space-y-3">
+            {/* Barra de datos de ejemplo / vaciar */}
+            <div
+              className={`flex flex-col gap-3 rounded-sm border p-4 sm:flex-row sm:items-center sm:justify-between ${
+                isExample ? "border-sw-secondary/40 bg-sw-secondary/10" : "border-sw-line bg-sw-bg-1"
+              }`}
+            >
+              <p className="text-sm text-sw-fg-2">
+                {isExample
+                  ? "Estás viendo una tienda de ejemplo. Vacía los datos y mete los tuyos: el resultado se actualiza al instante."
+                  : "Tus datos se guardan solo en este navegador. No se envían a ningún sitio."}
+              </p>
+              <div className="flex shrink-0 gap-2">
+                <button
+                  type="button"
+                  onClick={reset}
+                  className={`inline-flex items-center gap-1.5 rounded-sm px-3 py-2 text-sm font-semibold transition-colors ${
+                    isExample ? "bg-sw-secondary-strong text-white hover:bg-sw-secondary" : "border border-sw-line-strong text-sw-fg-2 hover:text-sw-fg-1"
+                  }`}
+                >
+                  <X className="h-4 w-4" aria-hidden="true" />
+                  {isExample ? "Usar mis datos" : "Vaciar"}
+                </button>
+                {!isExample && (
+                  <button
+                    type="button"
+                    onClick={loadExample}
+                    className="inline-flex items-center gap-1.5 rounded-sm border border-sw-line-strong px-3 py-2 text-sm text-sw-fg-2 transition-colors hover:text-sw-fg-1"
+                  >
+                    <RotateCcw className="h-4 w-4" aria-hidden="true" />
+                    Ver ejemplo
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* 1. Periodo */}
+            <Section
+              step={1}
+              title="Periodo y estacionalidad"
+              summary={`${form.months === 1 ? "1 mes" : `${form.months} meses`} (${periodLabel}) · ${PROFILE_OPTIONS.find((p) => p.value === form.profile)?.label}`}
+              done
+              open={open.has(1)}
+              onToggle={() => toggleStep(1)}
+            >
+              <div className="space-y-5">
+                <FieldBlock concept="period" label="¿Cuántos meses de datos vas a meter?">
+                  <Segmented
+                    ariaLabel="Meses de datos"
+                    value={form.months}
+                    onChange={(v) => set("months", v)}
+                    options={[
+                      { value: 1, label: "1 mes" },
+                      { value: 3, label: "3 meses" },
+                      { value: 6, label: "6 meses" },
+                      { value: 12, label: "12 meses" },
+                    ]}
+                  />
+                </FieldBlock>
+
+                <div>
+                  <label htmlFor="pc-end-month" className="mb-1.5 block text-sm text-sw-fg-2">
+                    ¿Cuál es el último mes incluido?
+                  </label>
+                  <select
+                    id="pc-end-month"
+                    value={form.endMonth}
+                    onChange={(e) => set("endMonth", Number(e.target.value))}
+                    className="w-full rounded-sm border border-sw-line-strong bg-sw-bg-2 px-3 py-2.5 text-base text-sw-fg-1 outline-none focus:border-sw-secondary sm:w-auto"
+                  >
+                    {MONTHS_LONG.map((m, i) => (
+                      <option key={m} value={i}>
+                        {m.charAt(0).toUpperCase() + m.slice(1)}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-sw-fg-4">Mete en cada campo el total de {periodLabel}.</p>
+                </div>
+
+                <FieldBlock concept="seasonality" label="¿Cómo se reparten tus ventas en el año?">
+                  <Segmented ariaLabel="Perfil de estacionalidad" value={form.profile} onChange={(v) => set("profile", v)} options={PROFILE_OPTIONS} />
+                  <SeasonMini weights={r.weights} highlight={r.periodMonths} />
+                  {form.profile !== "custom" && (
+                    <p className="mt-2 text-xs text-sw-fg-4">Perfil orientativo. Si conoces tu curva, usa «Personalizado».</p>
+                  )}
+                  {form.profile === "custom" && (
+                    <div className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-6">
+                      {MONTHS_SHORT.map((m, i) => (
+                        <div key={m}>
+                          <span className="mb-1 block text-center font-mono text-[11px] text-sw-fg-3">{m}</span>
+                          <NumField
+                            ariaLabel={`Peso de ${MONTHS_LONG[i]}`}
+                            value={form.customWeights[i]}
+                            placeholder="1"
+                            onChange={(v) => {
+                              const w = [...form.customWeights]
+                              w[i] = v
+                              set("customWeights", w)
+                            }}
+                          />
+                        </div>
+                      ))}
+                      <p className="col-span-full text-xs text-sw-fg-4">1 = mes normal · 2 = el doble de ventas · 0,5 = la mitad.</p>
+                    </div>
+                  )}
+                </FieldBlock>
+              </div>
+            </Section>
+
+            {/* 2. Ventas y tráfico */}
+            <Section
+              step={2}
+              title="Ventas y tráfico"
+              summary={r.hasData ? `Ingresos netos ${fmt.eur(r.netRevenue)} · ${fmt.num(r.orders)} pedidos` : "Ventas, pedidos, visitas y clientes"}
+              done={!!form.grossSales && !!form.orders}
+              open={open.has(2)}
+              onToggle={() => toggleStep(2)}
+            >
+              <div className="space-y-5">
+                <div className="grid gap-4 sm:grid-cols-[1fr_120px] sm:items-end">
+                  <FieldBlock concept="vat" label="¿Tus cifras de ventas incluyen IVA?">
+                    <Segmented
+                      ariaLabel="Las ventas incluyen IVA"
+                      value={form.salesIncludeVat === null ? "" : form.salesIncludeVat ? "si" : "no"}
+                      onChange={(v) => set("salesIncludeVat", v === "si")}
+                      options={[
+                        { value: "no", label: "No, sin IVA" },
+                        { value: "si", label: "Sí, con IVA" },
+                      ]}
+                    />
+                  </FieldBlock>
+                  <NumField label="Tipo de IVA" value={form.vatPct} onChange={(v) => set("vatPct", v)} suffix="%" placeholder="21" />
+                </div>
+                {form.salesIncludeVat === null && (
+                  <p className="-mt-2 flex items-start gap-1.5 text-xs text-amber-400">
+                    <LevelIcon level="warn" className="mt-px h-3.5 w-3.5 shrink-0" />
+                    Revisa tu informe de ventas y elige una opción. Mientras tanto calculamos como si fueran sin IVA.
+                  </p>
+                )}
+                <p className="-mt-2 text-xs text-sw-fg-4">
+                  Se aplica a ventas, descuentos, devoluciones, envíos cobrados y ventas atribuidas. Los costes, siempre sin IVA.
+                </p>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <NumField concept="grossSales" value={form.grossSales} onChange={(v) => set("grossSales", v)} suffix="€" />
+                  <NumField concept="discounts" value={form.discounts} onChange={(v) => set("discounts", v)} suffix="€" />
+                  <NumField concept="returns" value={form.returns} onChange={(v) => set("returns", v)} suffix="€" />
+                  <NumField concept="shippingCharged" value={form.shippingCharged} onChange={(v) => set("shippingCharged", v)} suffix="€" />
+                  <NumField concept="orders" value={form.orders} onChange={(v) => set("orders", v)} integer />
+                  <NumField concept="sessions" value={form.sessions} onChange={(v) => set("sessions", v)} integer />
+                  <NumField concept="newCustomers" value={form.newCustomers} onChange={(v) => set("newCustomers", v)} integer />
+                  <NumField concept="returningCustomers" value={form.returningCustomers} onChange={(v) => set("returningCustomers", v)} integer />
+                </div>
+              </div>
+            </Section>
+
+            {/* 3. Costes de cada pedido */}
+            <Section
+              step={3}
+              title="Lo que te cuesta cada venta"
+              summary={
+                r.variableCosts > 0
+                  ? `Costes variables ${fmt.eur(r.variableCosts)} · ${fmt.pct(r.netRevenue > 0 ? r.variableCosts / r.netRevenue : null)} de tus ingresos`
+                  : "Producto, envíos, packaging y pasarela de pago"
+              }
+              done={!!form.cogs}
+              open={open.has(3)}
+              onToggle={() => toggleStep(3)}
+            >
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <NumField
+                    concept="cogs"
+                    value={form.cogs}
+                    onChange={(v) => set("cogs", v)}
+                    suffix={form.cogsMode === "pct" ? "%" : "€"}
+                    hint={form.cogsMode === "pct" ? `% sobre ventas netas sin IVA → ${fmt.eur(r.cogs)}` : "Total del periodo, sin IVA"}
+                  />
+                  <Segmented
+                    size="sm"
+                    ariaLabel="Unidad del coste de producto"
+                    value={form.cogsMode}
+                    onChange={(v) => set("cogsMode", v)}
+                    options={[
+                      { value: "pct", label: "En %" },
+                      { value: "eur", label: "En €" },
+                    ]}
+                  />
+                </div>
+                <NumField concept="shippingPaid" value={form.shippingPaid} onChange={(v) => set("shippingPaid", v)} suffix="€" />
+                <NumField concept="packaging" value={form.packaging} onChange={(v) => set("packaging", v)} suffix="€" />
+                <div className="space-y-2">
+                  {form.feesMode === "pct" ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      <NumField concept="fees" label="Pasarela de pago" value={form.fees} onChange={(v) => set("fees", v)} suffix="%" placeholder="1,5" />
+                      <NumField label="+ fijo/pedido" value={form.feesFixedPerOrder} onChange={(v) => set("feesFixedPerOrder", v)} suffix="€" placeholder="0,25" />
+                    </div>
+                  ) : (
+                    <NumField concept="fees" label="Pasarela de pago" value={form.fees} onChange={(v) => set("fees", v)} suffix="€" />
+                  )}
+                  <p className="text-xs text-sw-fg-4">{form.feesMode === "pct" ? `→ ${fmt.eur(r.fees)} en comisiones` : "Total del periodo"}</p>
+                  <Segmented
+                    size="sm"
+                    ariaLabel="Unidad de la comisión de pasarela"
+                    value={form.feesMode}
+                    onChange={(v) => set("feesMode", v)}
+                    options={[
+                      { value: "pct", label: "% + fijo" },
+                      { value: "eur", label: "Total en €" },
+                    ]}
+                  />
+                </div>
+              </div>
+            </Section>
+
+            {/* 4. Marketing */}
+            <Section
+              step={4}
+              title="Marketing"
+              summary={r.marketing > 0 ? `Inversión ${fmt.eur(r.marketing)} · MER ${fmt.x(r.mer)}` : "Ads, email marketing y otros"}
+              done={r.marketing > 0}
+              open={open.has(4)}
+              onToggle={() => toggleStep(4)}
+            >
+              <div className="space-y-5">
+                <FieldBlock concept="ads" label="Publicidad por plataforma">
+                  <div className="space-y-3">
+                    {form.ads.map((ad, i) => (
+                      <div key={ad.id} className="rounded-sm border border-sw-line bg-sw-bg-0 p-3">
+                        <div className="mb-2 flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={ad.name}
+                            aria-label="Nombre de la plataforma"
+                            placeholder="Plataforma"
+                            onChange={(e) => {
+                              const ads = [...form.ads]
+                              ads[i] = { ...ad, name: e.target.value }
+                              set("ads", ads)
+                            }}
+                            className="min-w-0 flex-1 bg-transparent text-base font-semibold text-sw-fg-1 outline-none placeholder:text-sw-fg-4"
+                          />
+                          <button
+                            type="button"
+                            aria-label={`Quitar ${ad.name || "plataforma"}`}
+                            onClick={() => set("ads", form.ads.filter((a) => a.id !== ad.id))}
+                            className="rounded-sm p-1.5 text-sw-fg-4 transition-colors hover:text-sw-danger"
+                          >
+                            <Trash2 className="h-4 w-4" aria-hidden="true" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <NumField
+                            label="Inversión"
+                            value={ad.spend}
+                            suffix="€"
+                            onChange={(v) => {
+                              const ads = [...form.ads]
+                              ads[i] = { ...ad, spend: v }
+                              set("ads", ads)
+                            }}
+                          />
+                          <NumField
+                            label="Ventas atribuidas"
+                            value={ad.attributed}
+                            suffix="€"
+                            onChange={(v) => {
+                              const ads = [...form.ads]
+                              ads[i] = { ...ad, attributed: v }
+                              set("ads", ads)
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        set("ads", [...form.ads, { id: `ad-${Date.now()}`, name: "", spend: "", attributed: "" }])
+                      }
+                      className="inline-flex items-center gap-1.5 rounded-sm border border-dashed border-sw-line-strong px-3 py-2 text-sm text-sw-fg-2 transition-colors hover:border-sw-secondary hover:text-sw-fg-1"
+                    >
+                      <Plus className="h-4 w-4" aria-hidden="true" />
+                      Añadir plataforma (Pinterest, Amazon Ads…)
+                    </button>
+                  </div>
+                </FieldBlock>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <NumField concept="emailTool" label="Herramienta de email marketing" value={form.emailToolCost} onChange={(v) => set("emailToolCost", v)} suffix="€" />
+                  <NumField label="Ventas atribuidas al email" value={form.emailAttributed} onChange={(v) => set("emailAttributed", v)} suffix="€" />
+                  <NumField concept="otherMarketing" value={form.otherMarketing} onChange={(v) => set("otherMarketing", v)} suffix="€" />
+                </div>
+              </div>
+            </Section>
+
+            {/* 5. Fijos e impuestos */}
+            <Section
+              step={5}
+              title="Gastos fijos e impuestos"
+              summary={r.fixed > 0 ? `Fijos ${fmt.eur(r.fixed)} · impuesto ${form.profitTaxPct || 0}%` : "Plataforma, apps, sueldos, alquiler…"}
+              done={r.fixed > 0}
+              open={open.has(5)}
+              onToggle={() => toggleStep(5)}
+            >
+              <div className="grid gap-4 sm:grid-cols-2">
+                <NumField concept="platformCost" value={form.platformCost} onChange={(v) => set("platformCost", v)} suffix="€" />
+                <NumField concept="otherFixed" value={form.otherFixed} onChange={(v) => set("otherFixed", v)} suffix="€" />
+                <NumField concept="profitTax" value={form.profitTaxPct} onChange={(v) => set("profitTaxPct", v)} suffix="%" />
+              </div>
+            </Section>
+
+            {/* 6. LTV opcional */}
+            <Section
+              step={6}
+              title="Valor del cliente a 12 meses (opcional)"
+              summary={form.ltvEnabled ? `LTV ${fmt.eur(r.ltvRevenue)} · LTV:CAC ${fmt.dec(r.ltvCac)}` : "Solo si sabes cuántas veces te compra un cliente al año"}
+              done={form.ltvEnabled && r.ltvFrequency !== null}
+              open={open.has(6)}
+              onToggle={() => toggleStep(6)}
+            >
+              <div className="space-y-4">
+                <p className="text-sm text-sw-fg-3">
+                  El LTV es difícil de calcular bien. Actívalo solo si conoces (aunque sea aproximado) cuántos pedidos te hace un cliente en un año.
+                </p>
+                <Toggle checked={form.ltvEnabled} onChange={(v) => set("ltvEnabled", v)} label="Calcular LTV" />
+                {form.ltvEnabled && (
+                  <NumField
+                    concept="ltvFrequency"
+                    value={form.ltvFrequency}
+                    onChange={(v) => set("ltvFrequency", v)}
+                    placeholder={r.ltvFrequencyIsEstimate && r.ltvFrequency ? fmt.dec(r.ltvFrequency) : "ej. 1,4"}
+                    hint={
+                      r.ltvFrequencyIsEstimate
+                        ? `Estimado con tus 12 meses de datos: ${fmt.dec(r.ltvFrequency)} pedidos por cliente. Puedes cambiarlo.`
+                        : form.months < 12 && !form.ltvFrequency
+                          ? "Con menos de 12 meses de datos no podemos estimarlo: mételo tú."
+                          : undefined
+                    }
+                  />
+                )}
+              </div>
+            </Section>
+          </div>
+
+          {/* Resumen siempre visible en escritorio */}
+          <aside className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto lg:[scrollbar-width:thin]">
+            <SummaryCard r={r} per={per} months={form.months} periodLabel={periodLabel} warnings={warnings} />
+          </aside>
+        </div>
+      </section>
+
+      {/* Análisis completo */}
+      <Analysis r={r} inputs={inputs} form={form} per={per} set={set} auditHref={auditHref} contactHref={contactHref} />
+
+      <MobileBar r={r} per={per} />
+    </FormulaContext.Provider>
+  )
+}
+
+// ---------------------------------------------------------------------------
+
+function FieldBlock({ concept, label, children }: { concept: string; label: string; children: React.ReactNode }) {
+  const { button, panel } = useConcept(concept)
+  return (
+    <div>
+      <div className="mb-2 flex items-center gap-2">
+        <span className="text-sm text-sw-fg-2">{label}</span>
+        {button}
+      </div>
+      {children}
+      {panel}
+    </div>
+  )
+}
+
+function periodText(months: number[], count: number) {
+  if (count === 12) return `${MONTHS_LONG[months[0]]} a ${MONTHS_LONG[months[months.length - 1]]}`
+  if (count === 1) return MONTHS_LONG[months[0]]
+  return `${MONTHS_LONG[months[0]]} a ${MONTHS_LONG[months[months.length - 1]]}`
+}
+
+function SeasonMini({ weights, highlight }: { weights: number[]; highlight: number[] }) {
+  const max = Math.max(...weights, 1)
+  return (
+    <div className="mt-4" aria-hidden="true">
+      <div className="flex h-16 items-end gap-[2px]">
+        {weights.map((w, i) => (
+          <div
+            key={i}
+            className={`flex-1 rounded-t-[3px] ${highlight.includes(i) ? "bg-sw-secondary" : "bg-sw-line-strong"}`}
+            style={{ height: `${Math.max(6, (w / max) * 100)}%` }}
+          />
+        ))}
+      </div>
+      <div className="mt-1 flex gap-[2px]">
+        {MONTHS_SHORT.map((m, i) => (
+          <span key={m} className={`flex-1 text-center font-mono text-[10px] ${highlight.includes(i) ? "text-sw-secondary" : "text-sw-fg-4"}`}>
+            {m.charAt(0)}
+          </span>
+        ))}
+      </div>
+      <p className="mt-1 text-xs text-sw-fg-4">
+        <span className="mr-1 inline-block h-2 w-2 rounded-[2px] bg-sw-secondary align-middle" />
+        Meses de tus datos
+      </p>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Resumen
+// ---------------------------------------------------------------------------
+
+function SummaryCard({ r, per, months, periodLabel, warnings }: { r: Results; per: string; months: number; periodLabel: string; warnings: string[] }) {
+  const level = levelOf.profit(r.netProfit)
+  const s = LEVEL_STYLES[level]
+  const { button, panel } = useConcept("netProfit")
+  return (
+    <div className="rounded-sm border border-sw-line-strong bg-sw-bg-1">
+      <div className={`border-b border-sw-line p-5 ${r.hasData ? s.bg : ""}`}>
+        <div className="flex items-center justify-between gap-2">
+          <span className="font-mono-label text-[11px] text-sw-fg-3">Resultado · {periodLabel}</span>
+          {button}
+        </div>
+        {r.hasData ? (
+          <>
+            <p className="mt-3 text-sm text-sw-fg-2">{r.netProfit >= 0 ? "Tu tienda gana" : "Tu tienda pierde"}</p>
+            <p className={`font-display text-5xl tabular-nums ${s.text}`}>{fmt.eur(Math.abs(r.netProfit))}</p>
+            <p className="mt-1 text-sm text-sw-fg-3">
+              de beneficio neto {per}
+              {months > 1 && <> · {fmt.eur(r.netProfit / months)} al mes</>}
+            </p>
+          </>
+        ) : (
+          <p className="mt-3 text-sm text-sw-fg-3">Mete tus ventas y costes para ver si tu tienda gana o pierde dinero.</p>
+        )}
+        {panel}
+      </div>
+
+      {warnings.length > 0 && (
+        <div className="border-b border-sw-line bg-amber-400/10 px-5 py-3" role="status">
+          <p className="flex items-center gap-1.5 text-sm font-semibold text-amber-400">
+            <LevelIcon level="warn" className="h-4 w-4" />
+            Revisa tus datos
+          </p>
+          <ul className="mt-1 list-disc space-y-0.5 pl-5 text-xs leading-relaxed text-sw-fg-2">
+            {warnings.map((w) => (
+              <li key={w}>{w}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {r.hasData && (
+        <div className="space-y-5 p-5">
+          <dl className="space-y-2.5 text-sm">
+            <Row label="Ingresos netos (sin IVA)" value={fmt.eur(r.netRevenue)} />
+            <Row
+              label="Lo que queda por cada € vendido"
+              value={fmt.eur2(r.cm1PerEuro)}
+              level={levelOf.cm1PerEuro(r.cm1PerEuro)}
+              hint="antes de marketing y fijos"
+            />
+            <Row
+              label="Margen de contribución"
+              value={`${fmt.eur(r.contribution)} · ${fmt.pct(r.contributionPct)}`}
+              level={levelOf.contributionPct(r.contributionPct)}
+            />
+            <Row label="ROAS breakeven" value={fmt.x(r.roasBreakeven)} hint="ROAS mínimo para no perder" />
+          </dl>
+
+          <Per100 r={r} />
+
+          <div className="rounded-sm border border-sw-line bg-sw-bg-0 p-3">
+            <p className="text-xs text-sw-fg-3">Próximos 12 meses, si todo sigue igual</p>
+            <p className={`mt-1 text-lg font-semibold tabular-nums ${LEVEL_STYLES[levelOf.profit(r.projNetProfit)].text}`}>
+              {r.projNetProfit >= 0 ? "Ganarías " : "Perderías "}
+              {fmt.eur(Math.abs(r.projNetProfit))}
+            </p>
+            <p className="text-xs text-sw-fg-4">sobre {fmt.eur(r.projRevenue)} de ingresos netos</p>
+            {months === 1 && <OneMonthNote />}
+          </div>
+
+          <a
+            href="#analisis"
+            className="flex items-center justify-center gap-2 rounded-sm border border-sw-line-strong px-4 py-3 text-sm font-semibold text-sw-fg-1 transition-colors hover:border-sw-fg-1"
+          >
+            Ver análisis y qué hacer
+            <ArrowDown className="h-4 w-4" aria-hidden="true" />
+          </a>
+          <Disclaimer />
+        </div>
+      )}
+    </div>
+  )
+}
+
+function Row({ label, value, level = "neutral", hint }: { label: string; value: string; level?: Level; hint?: string }) {
+  return (
+    <div className="flex items-start justify-between gap-3">
+      <dt className="text-sw-fg-3">
+        {label}
+        {hint && <span className="block text-xs text-sw-fg-4">{hint}</span>}
+      </dt>
+      <dd className={`flex shrink-0 items-center gap-1.5 font-semibold tabular-nums ${LEVEL_STYLES[level].text}`}>
+        {level !== "neutral" && <LevelIcon level={level} className="h-3.5 w-3.5" />}
+        {value}
+      </dd>
+    </div>
+  )
+}
+
+// Grises escalonados para costes; el verde/rojo queda para el resultado.
+const COST_SHADES = ["#4A4A4A", "#636363", "#7C7C7C", "#959595", "#AEAEAE", "#C7C7C7", "#E0E0E0"]
+
+function Per100({ r }: { r: Results }) {
+  const { button, panel } = useConcept("per100")
+  if (r.netRevenue <= 0) return null
+  const items = [
+    { label: "Producto", v: r.cogs },
+    { label: "Envíos", v: r.shippingPaid },
+    { label: "Packaging", v: r.packaging },
+    { label: "Pasarela", v: r.fees },
+    { label: "Marketing", v: r.marketing },
+    { label: "Gastos fijos", v: r.fixed },
+    { label: "Impuestos", v: r.tax },
+  ]
+    .map((it, i) => ({ ...it, color: COST_SHADES[i] }))
+    .filter((it) => it.v > 0)
+  const costs = items.reduce((a, b) => a + b.v, 0)
+  const scale = Math.max(r.netRevenue, costs)
+  const profit = r.netProfit
+  const per100 = (v: number) => (v / r.netRevenue) * 100
+  const fmt100 = (v: number) => `${fmt.dec(per100(v)).replace(/,00$/, "")} €`
+
+  return (
+    <div>
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <span className="text-sm font-semibold text-sw-fg-1">De cada 100 € que ingresas</span>
+        {button}
+      </div>
+      <div className="relative">
+        <div className="flex h-4 w-full gap-[2px] overflow-hidden rounded-[4px]" role="img" aria-label="Reparto de cada 100 € de ingresos">
+          {items.map((it) => (
+            <div key={it.label} style={{ width: `${(it.v / scale) * 100}%`, background: it.color }} title={`${it.label}: ${fmt100(it.v)}`} />
+          ))}
+          {profit > 0 && <div className="bg-sw-success" style={{ width: `${(profit / scale) * 100}%` }} title={`Te queda: ${fmt100(profit)}`} />}
+        </div>
+        {costs > r.netRevenue && (
+          <div className="absolute -top-1 bottom-[-4px] w-[2px] bg-sw-danger" style={{ left: `${(r.netRevenue / scale) * 100}%` }} aria-hidden="true" />
+        )}
+      </div>
+      <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+        {items.map((it) => (
+          <li key={it.label} className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-1.5 text-sw-fg-3">
+              <span className="inline-block h-2.5 w-2.5 shrink-0 rounded-[2px]" style={{ background: it.color }} />
+              {it.label}
+            </span>
+            <span className="tabular-nums text-sw-fg-2">{fmt100(it.v)}</span>
+          </li>
+        ))}
+        <li className="col-span-2 mt-1 flex items-center justify-between gap-2 border-t border-sw-line pt-1.5 text-sm">
+          <span className={`flex items-center gap-1.5 font-semibold ${profit >= 0 ? "text-sw-success" : "text-sw-danger"}`}>
+            <LevelIcon level={profit >= 0 ? "good" : "bad"} className="h-3.5 w-3.5" />
+            {profit >= 0 ? "Te queda" : "Pierdes"}
+          </span>
+          <span className={`font-semibold tabular-nums ${profit >= 0 ? "text-sw-success" : "text-sw-danger"}`}>{fmt100(Math.abs(profit))}</span>
+        </li>
+      </ul>
+      {panel}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Análisis completo
+// ---------------------------------------------------------------------------
+
+interface AnalysisProps {
+  r: Results
+  inputs: Inputs
+  form: FormState
+  per: string
+  set: <K extends keyof FormState>(key: K, value: FormState[K], keepExample?: boolean) => void
+  auditHref: string
+  contactHref: string
+}
+
+function Analysis({ r, inputs, form, per, set, auditHref, contactHref }: AnalysisProps) {
+  if (!r.hasData) {
+    return (
+      <section id="analisis" className="bg-sw-bg-1 py-16">
+        <div className="mx-auto max-w-3xl px-5 text-center text-sw-fg-3">
+          Cuando metas tus ventas y costes, aquí verás el análisis completo y qué hacer.
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <section id="analisis" className="scroll-mt-20 border-t border-sw-line bg-sw-bg-1 py-16 sm:py-20">
+      <div className="mx-auto max-w-7xl space-y-16 px-4 sm:px-6 lg:px-8">
+        {/* Qué hacer */}
+        <div>
+          <SectionTitle eyebrow="Conclusiones" title="Qué está pasando y qué hacer" />
+          <div className="grid gap-3 lg:grid-cols-2">
+            {r.insights.map((ins, i) => {
+              const s = LEVEL_STYLES[ins.level]
+              return (
+                <div key={i} className={`flex gap-3 rounded-sm border p-4 ${s.border} ${s.bg}`}>
+                  <LevelIcon level={ins.level} className="mt-0.5 h-5 w-5 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sw-fg-1">{ins.title}</p>
+                    <p className="mt-1 text-sm leading-relaxed text-sw-fg-2">{ins.text}</p>
+                    {ins.cta === "audit" && (
+                      <Link href={auditHref} className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-sw-secondary hover:text-sw-fg-1">
+                        Auditar mi web <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Cuenta de resultados */}
+        <div>
+          <SectionTitle eyebrow="Cuenta de resultados" title={`De tus ventas a tu bolsillo (${per})`} />
+          <Waterfall r={r} />
+        </div>
+
+        {/* KPIs */}
+        <div>
+          <SectionTitle eyebrow="Métricas clave" title="Tus números, uno a uno" />
+          <p className="-mt-4 mb-6 text-sm text-sw-fg-4">Toca (?) en cualquier métrica para ver qué significa y cómo se calcula. Los colores son orientativos.</p>
+          <KpiGroup title="Ventas y tráfico">
+            <Kpi concept="netProductSales" value={fmt.eur(r.netProductSales)} sub={`Brutas ${fmt.eur(r.gross)}`} />
+            <Kpi concept="netRevenue" value={fmt.eur(r.netRevenue)} sub={`Los clientes pagaron ${fmt.eur(r.totalCharged)} con IVA`} />
+            <Kpi concept="vatCollected" value={fmt.eur(r.vatCollected)} sub="No es tuyo: es de Hacienda" />
+            <Kpi concept="aov" value={fmt.eur2(r.aov)} />
+            <Kpi concept="conversionRate" value={fmt.pct(r.conversionRate)} level={levelOf.conversion(r.conversionRate)} sub={`${fmt.num(r.orders)} pedidos de ${fmt.num(r.sessions)} sesiones`} />
+            <Kpi concept="rpv" value={fmt.eur2(r.rpv)} />
+          </KpiGroup>
+          <KpiGroup title="Márgenes">
+            <Kpi concept="cm1PerEuro" value={fmt.eur2(r.cm1PerEuro)} level={levelOf.cm1PerEuro(r.cm1PerEuro)} sub={`Margen antes de marketing: ${fmt.eur(r.cm1)}`} />
+            <Kpi concept="cm1PerOrder" value={fmt.eur2(r.cm1PerOrder)} />
+            <Kpi concept="contribution" value={fmt.eur(r.contribution)} level={levelOf.profit(r.contribution)} />
+            <Kpi concept="contributionPct" value={fmt.pct(r.contributionPct)} level={levelOf.contributionPct(r.contributionPct)} />
+            <Kpi concept="breakevenRevenue" value={fmt.eur(r.breakevenRevenue)} sub={r.breakevenRevenue !== null ? `Ingresos netos ${per} para beneficio 0` : "Con margen negativo no hay punto de equilibrio"} level={r.breakevenRevenue === null ? "bad" : r.netRevenue >= r.breakevenRevenue ? "good" : "bad"} />
+            <Kpi concept="netProfit" value={fmt.eur(r.netProfit)} level={levelOf.profit(r.netProfit)} sub={`${fmt.pct(r.netMarginPct)} de tus ingresos`} />
+          </KpiGroup>
+          <KpiGroup title="Marketing y clientes">
+            <Kpi concept="mer" value={fmt.x(r.mer)} level={levelOf.mer(r.mer, r.roasBreakeven)} sub={`Mínimo para no perder: ${fmt.x(r.roasBreakeven)}`} />
+            <Kpi concept="roasBreakeven" value={fmt.x(r.roasBreakeven)} level={r.roasBreakeven === null ? "bad" : "neutral"} />
+            <Kpi concept="cac" value={fmt.eur2(r.cac)} level={levelOf.cacVsOrder(r.cac, r.cm1PerOrder)} sub={`Cada pedido deja ${fmt.eur2(r.cm1PerOrder)} antes de marketing`} />
+            <Kpi concept="returningShare" value={fmt.pct(r.returningShare)} sub={`${fmt.num(r.newCustomers)} nuevos · ${fmt.num(r.returningCustomers)} recurrentes`} />
+            {form.ltvEnabled && (
+              <>
+                <Kpi concept="ltvRevenue" value={fmt.eur(r.ltvRevenue)} sub={r.ltvFrequency ? `${fmt.dec(r.ltvFrequency)} pedidos por cliente al año` : "Falta la frecuencia de compra"} />
+                <Kpi concept="ltvMargin" value={fmt.eur(r.ltvMargin)} />
+                <Kpi concept="ltvCac" value={fmt.dec(r.ltvCac)} level={levelOf.ltvCac(r.ltvCac)} />
+              </>
+            )}
+          </KpiGroup>
+        </div>
+
+        {/* Marketing */}
+        <div>
+          <SectionTitle eyebrow="Marketing" title="¿Qué canal se paga y cuál no?" />
+          <Channels r={r} />
+          <div className="mt-8">
+            <Attribution r={r} />
+          </div>
+        </div>
+
+        {/* Proyección */}
+        <div>
+          <SectionTitle eyebrow="Proyección" title="Tus próximos 12 meses" />
+          <Projection r={r} form={form} set={set} />
+        </div>
+
+        {/* Simulador de palancas */}
+        <div id="simulador" className="scroll-mt-24">
+          <SectionTitle eyebrow="Simulador" title="Mueve las palancas y mira tu beneficio" />
+          <p className="-mt-4 mb-6 max-w-3xl text-sw-fg-2">
+            Desliza cada indicador para ver cuánto ganarías si mejoras tu tienda, tus costes o tu publicidad. Los cambios son sobre tus números actuales.
+          </p>
+          <Simulator inputs={inputs} base={r} per={per} contactHref={contactHref} />
+        </div>
+
+        {/* CTA */}
+        <div className="rounded-sm border border-sw-line-strong bg-sw-bg-0 p-6 text-center sm:p-10">
+          <h2 className="font-display text-2xl text-sw-fg-1 sm:text-4xl">¿Quieres saber qué frena las ventas de tu tienda?</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sw-fg-2">
+            Los números te dicen <em>cuánto</em> ganas o pierdes. Auditar tu web te dice <em>por qué</em>: la reviso como la vería un cliente y te entrego qué arreglar y en qué orden.
+          </p>
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+            <Link href={auditHref} className="rounded-sm bg-sw-brand px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-sw-brand-hover">
+              Auditar mi web
+            </Link>
+            <Link href={contactHref} className="rounded-sm border border-sw-line-strong px-7 py-4 text-base font-semibold text-sw-fg-1 transition-colors hover:border-sw-fg-1">
+              Hablar con Mathias
+            </Link>
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-3xl text-center">
+          <Disclaimer />
+          <p className="mt-2 text-xs leading-relaxed text-sw-fg-4">Tus datos no salen de tu navegador.</p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Disclaimer() {
+  return (
+    <p className="text-xs leading-relaxed text-sw-fg-4">
+      Resultados orientativos calculados con los datos que introduces. No constituyen asesoramiento fiscal, contable ni financiero.{" "}
+      <a href="/es/aviso-legal#herramientas" className="underline underline-offset-2 hover:text-sw-fg-2">
+        Condiciones de uso
+      </a>
+    </p>
+  )
+}
+
+function OneMonthNote() {
+  return (
+    <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-amber-400 first:mt-0">
+      <LevelIcon level="warn" className="mt-px h-3.5 w-3.5 shrink-0" />
+      Proyección calculada con un solo mes: depende mucho de la estacionalidad y puede salir muy inflada o muy baja. Para que sea fiable, mete al menos 3 meses.
+    </p>
+  )
+}
+
+function SectionTitle({ eyebrow, title }: { eyebrow: string; title: string }) {
+  return (
+    <div className="mb-8">
+      <span className="font-mono-label text-sw-fg-3">{eyebrow}</span>
+      <h2 className="mt-2 font-display text-2xl text-sw-fg-1 sm:text-3xl">{title}</h2>
+    </div>
+  )
+}
+
+function KpiGroup({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="mb-8">
+      <h3 className="mb-3 text-sm font-semibold text-sw-fg-2">{title}</h3>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">{children}</div>
+    </div>
+  )
+}
+
+function Waterfall({ r }: { r: Results }) {
+  type W = { label: string; v: number; kind: "plus" | "minus" | "total"; concept?: string; strong?: boolean }
+  const rows: W[] = [
+    { label: "Ventas brutas", v: r.gross, kind: "plus", concept: "grossSales" },
+    { label: "Descuentos", v: -r.discounts, kind: "minus", concept: "discounts" },
+    { label: "Devoluciones", v: -r.returns, kind: "minus", concept: "returns" },
+    { label: "Envíos cobrados", v: r.shippingRevenue, kind: "plus", concept: "shippingCharged" },
+    { label: "Ingresos netos", v: r.netRevenue, kind: "total", concept: "netRevenue" },
+    { label: "Coste de producto", v: -r.cogs, kind: "minus", concept: "cogs" },
+    { label: "Envíos pagados", v: -r.shippingPaid, kind: "minus", concept: "shippingPaid" },
+    { label: "Packaging", v: -r.packaging, kind: "minus", concept: "packaging" },
+    { label: "Pasarela de pago", v: -r.fees, kind: "minus", concept: "fees" },
+    { label: "Margen antes de marketing", v: r.cm1, kind: "total", concept: "cm1" },
+    ...r.channels.map((c) => ({ label: c.name, v: -c.spend, kind: "minus" as const })),
+    { label: "Herramienta de email", v: -r.emailToolCost, kind: "minus", concept: "emailTool" },
+    { label: "Otros marketing", v: -r.otherMarketing, kind: "minus", concept: "otherMarketing" },
+    { label: "Margen de contribución", v: r.contribution, kind: "total", concept: "contribution" },
+    { label: "Gastos fijos", v: -r.fixed, kind: "minus", concept: "fixed" },
+    { label: "Beneficio antes de impuestos", v: r.ebit, kind: "total", concept: "ebit" },
+    { label: "Impuesto sobre el beneficio", v: -r.tax, kind: "minus", concept: "profitTax" },
+    { label: "Beneficio neto", v: r.netProfit, kind: "total", concept: "netProfit", strong: true },
+  ]
+  const visible = rows.filter((x) => x.kind === "total" || Math.abs(x.v) > 0.004)
+  const max = Math.max(r.gross + r.shippingRevenue, ...visible.map((x) => Math.abs(x.v)), 1)
+  return (
+    <div className="overflow-hidden rounded-sm border border-sw-line bg-sw-bg-0">
+      {visible.map((row, i) => (
+        <WaterfallRow key={`${row.label}-${i}`} row={row} max={max} base={r.netRevenue} />
+      ))}
+    </div>
+  )
+}
+
+function WaterfallRow({
+  row,
+  max,
+  base,
+}: {
+  row: { label: string; v: number; kind: "plus" | "minus" | "total"; concept?: string; strong?: boolean }
+  max: number
+  base: number
+}) {
+  const { button, panel } = useConcept(row.concept)
+  const isTotal = row.kind === "total"
+  const color = isTotal ? (row.v >= 0 ? "bg-sw-success" : "bg-sw-danger") : row.kind === "plus" ? "bg-sw-secondary" : "bg-sw-fg-4"
+  const textColor = isTotal ? (row.v >= 0 ? "text-sw-success" : "text-sw-danger") : "text-sw-fg-1"
+  const pctOfBase = base > 0 ? Math.abs(row.v) / base : null
+  return (
+    <div className={`px-4 py-3 ${isTotal ? "border-y border-sw-line bg-sw-bg-1" : ""}`}>
+      <div className="flex items-center justify-between gap-3">
+        <span className={`flex min-w-0 items-center gap-2 text-sm ${isTotal ? "font-semibold text-sw-fg-1" : "text-sw-fg-2"} ${row.strong ? "text-base" : ""}`}>
+          <span className="w-3 shrink-0 text-center font-mono text-sw-fg-4">{isTotal ? "=" : row.kind === "plus" ? "+" : "−"}</span>
+          <span className="truncate">{row.label}</span>
+          {button}
+        </span>
+        <span className="flex shrink-0 items-baseline gap-3 tabular-nums">
+          <span className="hidden text-xs text-sw-fg-4 sm:inline">{pctOfBase !== null ? fmt.pct(row.v < 0 && isTotal ? -pctOfBase : pctOfBase) : ""}</span>
+          <span className={`${row.strong ? "text-lg" : "text-sm"} font-semibold ${textColor}`}>{fmt.eur(row.v)}</span>
+        </span>
+      </div>
+      <div className="ml-5 mt-1.5 h-1.5 rounded-[3px] bg-sw-bg-2">
+        <div className={`h-full rounded-[3px] ${color}`} style={{ width: `${Math.min(100, (Math.abs(row.v) / max) * 100)}%` }} />
+      </div>
+      {panel && <div className="ml-5">{panel}</div>}
+    </div>
+  )
+}
+
+function Channels({ r }: { r: Results }) {
+  const roasHelp = useConcept("roas")
+  const emailHelp = useConcept("emailRoas")
+  const rows = r.channels
+  if (rows.length === 0 && r.emailToolCost === 0) {
+    return <p className="text-sm text-sw-fg-3">No has metido gasto en marketing.</p>
+  }
+  return (
+    <div>
+      <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-sw-fg-3">
+        <span className="flex items-center gap-2">ROAS de cada canal {roasHelp.button}</span>
+        <span>
+          Para no perder dinero necesitas un ROAS de al menos <strong className="text-sw-fg-1">{fmt.x(r.roasBreakeven)}</strong>
+        </span>
+      </div>
+      {roasHelp.panel}
+      <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {rows.map((c) => (
+          <div key={c.id} className={`rounded-sm border bg-sw-bg-0 p-4 ${LEVEL_STYLES[c.level].border}`}>
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-semibold text-sw-fg-1">{c.name}</span>
+              <StatusPill level={c.level} />
+            </div>
+            <p className={`mt-2 text-2xl font-semibold tabular-nums ${LEVEL_STYLES[c.level].text}`}>{fmt.x(c.roas)}</p>
+            <p className="mt-1 text-xs text-sw-fg-4">
+              {fmt.eur(c.spend)} invertidos → {fmt.eur(c.attributed)} atribuidos
+            </p>
+            <RoasBar roas={c.roas} be={r.roasBreakeven} level={c.level} />
+          </div>
+        ))}
+        {r.emailToolCost > 0 && (
+          <div className="rounded-sm border border-sw-line bg-sw-bg-0 p-4">
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-semibold text-sw-fg-1">Email marketing</span>
+              {emailHelp.button}
+            </div>
+            <p className="mt-2 text-2xl font-semibold tabular-nums text-sw-fg-1">{fmt.x(r.emailRoas)}</p>
+            <p className="mt-1 text-xs text-sw-fg-4">
+              {fmt.eur(r.emailToolCost)} de herramienta → {fmt.eur(r.emailAttributed)} atribuidos
+            </p>
+            {emailHelp.panel}
+          </div>
+        )}
+      </div>
+      <p className="mt-3 text-xs text-sw-fg-4">
+        Ventas atribuidas según cada plataforma (sin IVA). Suelen ser optimistas: si un canal está justo en el límite, probablemente no se paga.
+      </p>
+    </div>
+  )
+}
+
+function RoasBar({ roas, be, level }: { roas: number | null; be: number | null; level: Level }) {
+  if (roas === null || be === null) return null
+  const max = Math.max(roas, be) * 1.25
+  const color = level === "good" ? "bg-sw-success" : level === "warn" ? "bg-amber-400" : "bg-sw-danger"
+  return (
+    <div className="relative mt-3 h-2 rounded-[3px] bg-sw-bg-2" aria-hidden="true">
+      <div className={`h-full rounded-[3px] ${color}`} style={{ width: `${(roas / max) * 100}%` }} />
+      <div className="absolute -top-1 h-4 w-[2px] bg-sw-fg-1" style={{ left: `${(be / max) * 100}%` }} title={`Breakeven ${fmt.x(be)}`} />
+    </div>
+  )
+}
+
+// Colores categóricos de atribución (validados para daltonismo sobre fondo oscuro).
+const ATTR_COLORS = { ads: "#7CB3E0", email: "#E0A458", rest: "#8A8A8A" }
+
+function Attribution({ r }: { r: Results }) {
+  const { button, panel } = useConcept("attribution")
+  const ads = Math.min(r.adAttributed, r.netRevenue)
+  const email = Math.min(r.emailAttributed, Math.max(0, r.netRevenue - ads))
+  const parts = [
+    { key: "ads", label: "Ads (según las plataformas)", v: ads, color: ATTR_COLORS.ads },
+    { key: "email", label: "Email marketing", v: email, color: ATTR_COLORS.email },
+    { key: "rest", label: "Orgánico, directo y otros", v: r.restRevenue, color: ATTR_COLORS.rest },
+  ].filter((p) => p.v > 0)
+  const total = parts.reduce((a, b) => a + b.v, 0) || 1
+  return (
+    <div className="rounded-sm border border-sw-line bg-sw-bg-0 p-4 sm:p-5">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <span className="font-semibold text-sw-fg-1">De dónde vienen tus ventas</span>
+        {button}
+      </div>
+      <div className="flex h-4 w-full gap-[2px] overflow-hidden rounded-[4px]" role="img" aria-label="Reparto de ventas por origen">
+        {parts.map((p) => (
+          <div key={p.key} style={{ width: `${(p.v / total) * 100}%`, background: p.color }} title={`${p.label}: ${fmt.eur(p.v)}`} />
+        ))}
+      </div>
+      <ul className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
+        {parts.map((p) => (
+          <li key={p.key} className="flex items-center justify-between gap-2 sm:block">
+            <span className="flex items-center gap-2 text-sw-fg-3">
+              <span className="inline-block h-2.5 w-2.5 shrink-0 rounded-[2px]" style={{ background: p.color }} />
+              {p.label}
+            </span>
+            <span className="tabular-nums text-sw-fg-1 sm:mt-0.5 sm:block sm:pl-[18px]">
+              {fmt.eur(p.v)} <span className="text-sw-fg-4">· {fmt.pct(p.v / total)}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+      {r.overAttribution > 0 && (
+        <p className="mt-3 flex items-start gap-2 text-xs text-amber-400">
+          <LevelIcon level="warn" className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          Las plataformas se atribuyen {fmt.eur(r.overAttribution)} más de lo que vendiste: se están pisando entre ellas.
+        </p>
+      )}
+      {panel}
+    </div>
+  )
+}
+
+function Projection({ r, form, set }: { r: Results; form: FormState; set: AnalysisProps["set"] }) {
+  const formulas = useContext(FormulaContext)
+  const [active, setActive] = useState<number | null>(null)
+  const { button, panel } = useConcept("projection")
+  const growth = Number(form.growthPct) || 0
+  const maxRev = Math.max(...r.projection.map((p) => p.revenue), 1)
+  const posMax = Math.max(0, ...r.projection.map((p) => p.profitBeforeTax))
+  const negMax = Math.max(0, ...r.projection.map((p) => -p.profitBeforeTax))
+  const span = posMax + negMax || 1
+  const zeroTop = (posMax / span) * 100
+  const shown = active !== null ? r.projection[active] : null
+
+  return (
+    <div className="space-y-4">
+      {form.months === 1 && (
+        <div className="rounded-sm border border-amber-400/40 bg-amber-400/10 px-4 py-3">
+          <OneMonthNote />
+        </div>
+      )}
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Kpi concept="projection" label="Ingresos netos (12 meses)" value={fmt.eur(r.projRevenue)} />
+        <Kpi concept="contribution" calc={formulas.projContribution} label="Margen de contribución (12 meses)" value={fmt.eur(r.projContribution)} level={levelOf.profit(r.projContribution)} />
+        <Kpi concept="netProfit" calc={formulas.projNetProfit} label="Beneficio neto (12 meses)" value={fmt.eur(r.projNetProfit)} level={levelOf.profit(r.projNetProfit)} sub={r.projTax > 0 ? `Después de ${fmt.eur(r.projTax)} de impuestos` : undefined} />
+      </div>
+
+      <div className="rounded-sm border border-sw-line bg-sw-bg-0 p-4 sm:p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <span className="flex items-center gap-2 font-semibold text-sw-fg-1">
+            Mes a mes {button}
+          </span>
+          <label className="flex w-full items-center gap-3 text-sm text-sw-fg-3 sm:w-auto">
+            <span className="shrink-0">Crecimiento esperado</span>
+            <input
+              type="range"
+              min={-50}
+              max={100}
+              step={5}
+              value={growth}
+              onChange={(e) => set("growthPct", e.target.value, true)}
+              className="w-full accent-[#7CB3E0] sm:w-40"
+              aria-label="Crecimiento esperado en %"
+            />
+            <span className="w-12 shrink-0 text-right font-semibold tabular-nums text-sw-fg-1">
+              {growth > 0 ? "+" : ""}
+              {growth}%
+            </span>
+          </label>
+        </div>
+        {panel}
+
+        <div className="mb-2 h-10 text-sm" aria-live="polite">
+          {shown ? (
+            <p>
+              <span className="font-semibold capitalize text-sw-fg-1">{MONTHS_LONG[shown.monthIndex]}</span>
+              <span className="text-sw-fg-3"> · ingresos </span>
+              <span className="tabular-nums text-sw-fg-1">{fmt.eur(shown.revenue)}</span>
+              <span className="text-sw-fg-3"> · beneficio </span>
+              <span className={`font-semibold tabular-nums ${shown.profitBeforeTax >= 0 ? "text-sw-success" : "text-sw-danger"}`}>{fmt.eur(shown.profitBeforeTax)}</span>
+            </p>
+          ) : (
+            <p className="text-sw-fg-4">Toca o pasa el ratón por un mes para ver el detalle.</p>
+          )}
+        </div>
+
+        {/* Ingresos */}
+        <p className="mb-1 text-xs text-sw-fg-4">Ingresos netos</p>
+        <div className="flex h-28 items-end gap-[2px] sm:gap-1">
+          {r.projection.map((p, i) => (
+            <button
+              key={i}
+              type="button"
+              onMouseEnter={() => setActive(i)}
+              onFocus={() => setActive(i)}
+              onClick={() => setActive(i)}
+              aria-label={`${MONTHS_LONG[p.monthIndex]}: ingresos ${fmt.eur(p.revenue)}, beneficio ${fmt.eur(p.profitBeforeTax)}`}
+              className="flex h-full flex-1 items-end"
+            >
+              <span
+                className={`block w-full rounded-t-[4px] transition-opacity ${active === null || active === i ? "opacity-100" : "opacity-40"}`}
+                style={{ height: `${Math.max(2, (p.revenue / maxRev) * 100)}%`, background: "#7CB3E0" }}
+              />
+            </button>
+          ))}
+        </div>
+
+        {/* Beneficio: la línea de cero se coloca según haya meses en pérdida o no */}
+        <p className="mb-1 mt-4 text-xs text-sw-fg-4">Beneficio antes de impuestos</p>
+        <div className="relative flex h-24 gap-[2px] sm:gap-1">
+          <div className="pointer-events-none absolute inset-x-0 h-px bg-sw-line-strong" style={{ top: `${zeroTop}%` }} aria-hidden="true" />
+          {r.projection.map((p, i) => {
+            const positive = p.profitBeforeTax >= 0
+            const h = (Math.abs(p.profitBeforeTax) / span) * 100
+            return (
+              <button
+                key={i}
+                type="button"
+                tabIndex={-1}
+                aria-hidden="true"
+                onMouseEnter={() => setActive(i)}
+                onClick={() => setActive(i)}
+                className="relative h-full flex-1"
+              >
+                <span
+                  className={`absolute inset-x-0 block transition-opacity ${positive ? "rounded-t-[4px] bg-sw-success" : "rounded-b-[4px] bg-sw-danger"} ${
+                    active === null || active === i ? "opacity-100" : "opacity-40"
+                  }`}
+                  style={positive ? { bottom: `${100 - zeroTop}%`, height: `${Math.max(1, h)}%` } : { top: `${zeroTop}%`, height: `${Math.max(1, h)}%` }}
+                />
+              </button>
+            )
+          })}
+        </div>
+        <div className="mt-1 flex gap-[2px] sm:gap-1">
+          {r.projection.map((p, i) => (
+            <span key={i} className={`flex-1 text-center font-mono text-[10px] ${active === i ? "text-sw-fg-1" : "text-sw-fg-4"}`}>
+              {p.label}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function MobileBar({ r, per }: { r: Results; per: string }) {
+  const [hidden, setHidden] = useState(false)
+  useEffect(() => {
+    const el = document.getElementById("analisis")
+    if (!el || typeof IntersectionObserver === "undefined") return
+    const io = new IntersectionObserver(([e]) => setHidden(e.isIntersecting || e.boundingClientRect.top < 0), { threshold: 0 })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [r.hasData])
+  if (!r.hasData) return null
+  const level = levelOf.profit(r.netProfit)
+  return (
+    <div
+      className={`fixed inset-x-0 bottom-0 z-40 border-t border-sw-line-strong bg-sw-bg-0/95 backdrop-blur transition-transform lg:hidden ${
+        hidden ? "translate-y-full" : "translate-y-0"
+      }`}
+    >
+      <div className="flex items-center justify-between gap-3 px-4 py-3">
+        <div className="min-w-0">
+          <p className="text-xs text-sw-fg-3">{r.netProfit >= 0 ? "Ganas" : "Pierdes"} {per}</p>
+          <p className={`text-xl font-semibold tabular-nums ${LEVEL_STYLES[level].text}`}>{fmt.eur(Math.abs(r.netProfit))}</p>
+        </div>
+        <a href="#analisis" className="flex shrink-0 items-center gap-1.5 rounded-sm bg-sw-secondary-strong px-4 py-2.5 text-sm font-semibold text-white">
+          Ver análisis
+          <ArrowDown className="h-4 w-4" aria-hidden="true" />
+        </a>
+      </div>
+    </div>
+  )
+}

@@ -13,7 +13,7 @@ const MotionLink = motion.create(Link)
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { t } = useLanguage()
-  const { links } = useLocalizedLinks()
+  const { links, currentLocale } = useLocalizedLinks()
   const pathname = usePathname()
 
   // Bloquear scroll cuando el menú está abierto
@@ -60,6 +60,8 @@ const Navbar = () => {
 
   const navItems = [
     { href: links.services, label: t('nav.services') },
+    // La calculadora solo existe en español: no se muestra en la versión EN
+    ...(currentLocale === 'es' ? [{ href: links.calculator, label: t('nav.calculator') }] : []),
     { href: links.about, label: t('nav.about') },
     { href: links.blog, label: t('nav.blog') },
   ]
@@ -69,7 +71,7 @@ const Navbar = () => {
       {/* Top bar — el blur vive en este wrapper interno, no en <header>,
           para que no se vuelva containing block del panel mobile fixed. */}
       <div className="border-b border-sw-line bg-sw-bg-0/70 backdrop-blur-md">
-        <div className="flex items-center justify-between px-6 py-4 md:px-12">
+        <div className="flex items-center justify-between px-6 py-4 md:px-12 lg:px-8 xl:px-12">
           {/* Logo */}
           <Link
             href="/"
@@ -79,12 +81,12 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-5 xl:gap-8">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="font-mono-label text-sw-fg-3 hover:text-sw-fg-1 transition-colors"
+                className="whitespace-nowrap font-mono-label text-sw-fg-3 hover:text-sw-fg-1 transition-colors"
               >
                 {item.label}
               </Link>
@@ -103,7 +105,7 @@ const Navbar = () => {
           </nav>
 
           {/* Mobile controls */}
-          <div className="flex items-center gap-4 md:hidden">
+          <div className="flex items-center gap-4 lg:hidden">
             <LanguageSelector />
             <button
               className="z-50 text-sw-fg-1 transition-colors hover:text-sw-fg-3"
@@ -128,7 +130,7 @@ const Navbar = () => {
       {/* Mobile Navigation — hermano del wrapper con blur, así su containing
           block sigue siendo el viewport y el panel cubre toda la pantalla. */}
       <div
-        className={`fixed inset-0 z-40 bg-sw-bg-0 transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed inset-0 z-40 bg-sw-bg-0 transition-transform duration-300 ease-in-out lg:hidden ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >

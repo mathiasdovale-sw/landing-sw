@@ -34,6 +34,10 @@ export async function GET() {
 
 ${services}
 
+## Free tools
+
+- [Calculadora de beneficios](${baseUrl}/es/calculadora-rentabilidad): Free Spanish-language calculator for online store owners: net profit, contribution margin, breakeven ROAS, MER, CAC, LTV and a 12-month seasonal projection.
+
 ## Blog (English)
 
 ${postsFor('en')}

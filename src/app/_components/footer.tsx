@@ -13,7 +13,7 @@ import { ArrowRight } from "lucide-react"
 
 export default function Footer() {
   const { t } = useLanguage()
-  const { links } = useLocalizedLinks()
+  const { links, currentLocale } = useLocalizedLinks()
   const pathname = usePathname()
   const [email, setEmail] = useState("")
   const [isSubscribed, setIsSubscribed] = useState(false)
@@ -161,6 +161,17 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
+            {currentLocale === 'es' && (
+              <>
+                <h4 className="mb-4 mt-8 font-mono-label text-sw-fg-3">{t('footer.tools.title')}</h4>
+                <a
+                  href={links.calculator}
+                  className="text-sm text-sw-fg-2 transition-colors hover:text-sw-secondary"
+                >
+                  {t('footer.tools.calculator')}
+                </a>
+              </>
+            )}
           </div>
 
           {/* Logo */}

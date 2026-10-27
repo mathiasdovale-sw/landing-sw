@@ -19,11 +19,11 @@ export const metadata: Metadata = {
   },
 }
 
-const LAST_UPDATED = '24 de octubre de 2026'
+const LAST_UPDATED = '27 de octubre de 2026'
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
+function Section({ title, children, id }: { title: string; children: ReactNode; id?: string }) {
   return (
-    <section>
+    <section id={id} className="scroll-mt-24">
       <h2 className="text-2xl font-bold text-white mb-4" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
         {title}
       </h2>
@@ -107,13 +107,23 @@ export default function AvisoLegalPage() {
               </p>
             </Section>
 
-            <Section title="6. Enlaces a terceros">
+            <Section id="herramientas" title="6. Herramientas gratuitas">
+              <p>
+                SellifyWorks ofrece herramientas gratuitas, como la{' '}
+                <a href="/es/calculadora-rentabilidad" className="text-orange-400 hover:underline">Calculadora de beneficios</a>, con fines exclusivamente informativos y orientativos. Los resultados dependen de los datos que introduce el usuario y de supuestos simplificados (por ejemplo, el régimen general de IVA, perfiles de estacionalidad estimados o umbrales de referencia), que pueden no ajustarse a su situación. No sustituyen el asesoramiento de un profesional.
+              </p>
+              <p>
+                SellifyWorks no garantiza la exactitud ni la idoneidad de los resultados para ningún fin concreto y no se responsabiliza de las decisiones que se tomen basándose en ellos.
+              </p>
+            </Section>
+
+            <Section title="7. Enlaces a terceros">
               <p>
                 La web puede incluir enlaces a sitios de terceros. No controlamos esos sitios ni respondemos de sus contenidos ni de sus políticas de privacidad. Si tenemos conocimiento efectivo de que un enlace lleva a contenido ilícito, lo retiraremos (art. 17 LSSI).
               </p>
             </Section>
 
-            <Section title="7. Protección de datos y cookies">
+            <Section title="8. Protección de datos y cookies">
               <p>
                 Los datos personales que nos facilites se tratarán según lo indicado en nuestra{' '}
                 <a href="/es/politica-de-privacidad" className="text-orange-400 hover:underline">Política de Privacidad</a>. Para el uso de cookies, consulta la{' '}
@@ -121,7 +131,7 @@ export default function AvisoLegalPage() {
               </p>
             </Section>
 
-            <Section title="8. Legislación aplicable y jurisdicción">
+            <Section title="9. Legislación aplicable y jurisdicción">
               <p>
                 Este aviso legal se rige por la legislación española. Para resolver cualquier conflicto, las partes se someten a los Juzgados y Tribunales de Barcelona. Si el usuario es consumidor, serán competentes los juzgados de su domicilio, conforme a la normativa de consumidores y usuarios.
               </p>
