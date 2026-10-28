@@ -1,8 +1,8 @@
 "use client"
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { ArrowDown, ArrowRight, Plus, RotateCcw, Trash2, X } from "lucide-react"
-import { applyMode, capGood, compute, dataWarnings, fmt, levelOf, ordinal, MONTHS_LONG, MONTHS_SHORT, type Inputs, type Level, type Results, type SeasonProfile } from "./calc"
-import { emptyForm, exampleForm, loadSaved, serializeSaved, STORAGE_KEY, toFullMode, toInputs, toQuickMode, type FormState } from "./form"
+import { adsScenario, applyMode, capGood, compute, dataWarnings, fmt, levelOf, ordinal, MONTHS_LONG, MONTHS_SHORT, type Inputs, type Level, type Results, type SeasonProfile } from "./calc"
+import { emptyForm, exampleForm, loadSaved, parseNum, serializeSaved, STORAGE_KEY, toFullMode, toInputs, toQuickMode, type FormState } from "./form"
 import { buildFormulas } from "./formulas"
 import ReviewRequest, { HelpRequest } from "./review-request"
 import Simulator from "./simulator"
@@ -1177,6 +1177,11 @@ function Analysis({ r, inputs, form, per, set }: AnalysisProps) {
         <div>
           <SectionTitle eyebrow="Marketing" title="¿Qué canal se paga y cuál no?" />
           <Channels r={r} />
+          {r.adSpend === 0 && r.netRevenue > 0 && (
+            <div className="mt-8">
+              <AdsScenario r={r} inputs={inputs} per={per} />
+            </div>
+          )}
           <div className="mt-8">
             <Attribution r={r} />
           </div>
@@ -1384,6 +1389,89 @@ function WaterfallRow({
         <div className={`h-full rounded-[3px] ${color}`} style={{ width: `${Math.min(100, (Math.abs(row.v) / max) * 100)}%` }} />
       </div>
       {panel && <div className="ml-5">{panel}</div>}
+    </div>
+  )
+}
+
+/**
+ * Tiendas sin publicidad: escenario "¿y si empiezas a hacer publicidad?".
+ * El usuario pone inversión y ROAS; no hay valores por defecto inventados.
+ */
+function AdsScenario({ r, inputs, per }: { r: Results; inputs: Inputs; per: string }) {
+  const [spendRaw, setSpendRaw] = useState("")
+  const [roasRaw, setRoasRaw] = useState("")
+  const spend = parseNum(spendRaw)
+  const roas = parseNum(roasRaw)
+  const sim = useMemo(
+    () => (spend !== null && roas !== null ? adsScenario(inputs, r, Math.abs(spend), Math.abs(roas)) : null),
+    [inputs, r, spend, roas],
+  )
+  const delta = sim ? sim.netProfit - r.netProfit : 0
+  const be = r.roasBreakeven
+  const belowBreakeven = roas !== null && (be === null || Math.abs(roas) < be)
+  // Sin datos completos no hay verde (mismo criterio que el resto de la calculadora)
+  const sure = r.completeness.status === "complete"
+  const deltaClass = delta < -0.5 ? "text-sw-danger" : delta > 0.5 && sure ? "text-sw-success" : "text-sw-fg-1"
+
+  return (
+    <div className="rounded-sm border border-dashed border-sw-line-strong bg-sw-bg-0 p-4 sm:p-6">
+      <h3 className="font-display text-xl text-sw-fg-1 sm:text-2xl">¿Y si empiezas a hacer publicidad?</h3>
+      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-sw-fg-2">
+        No has metido gasto en publicidad. Prueba un escenario: cuánto invertirías al mes y qué ROAS esperas. Es una estimación con tus números, no una previsión.
+      </p>
+
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        <NumField label="Inversión en publicidad al mes" value={spendRaw} onChange={setSpendRaw} suffix="€" hint="Sin IVA." />
+        <NumField
+          label="ROAS que esperas"
+          value={roasRaw}
+          onChange={setRoasRaw}
+          suffix="x"
+          hint={
+            be !== null
+              ? `Ventas sin IVA por cada euro invertido. Con tu margen necesitas al menos ${fmt.x(be)} para cubrir los costes variables de esas ventas.`
+              : "Con tu margen actual, ningún ROAS cubre los costes variables de esas ventas."
+          }
+        />
+      </div>
+
+      {sim && (
+        <div className="mt-6 rounded-sm border border-sw-line bg-sw-bg-1 p-4 sm:p-5">
+          <dl className="grid gap-4 text-sm sm:grid-cols-3">
+            <div>
+              <dt className="text-sw-fg-3">Inversión {per}</dt>
+              <dd className="mt-1 text-lg font-semibold tabular-nums text-sw-fg-1">{fmt.eur(sim.adSpend)}</dd>
+            </div>
+            <div>
+              <dt className="text-sw-fg-3">Ventas extra (sin IVA)</dt>
+              <dd className="mt-1 text-lg font-semibold tabular-nums text-sw-fg-1">{fmt.eur(sim.netRevenue - r.netRevenue)}</dd>
+            </div>
+            <div>
+              <dt className="text-sw-fg-3">Beneficio neto {per}</dt>
+              <dd className="mt-1 text-lg font-semibold tabular-nums text-sw-fg-1">
+                {fmt.eur(r.netProfit)} → {fmt.eur(sim.netProfit)}{" "}
+                <span className={`text-sm ${deltaClass}`}>
+                  ({delta >= 0 ? "+" : "−"}
+                  {fmt.eur(Math.abs(delta))})
+                </span>
+              </dd>
+            </div>
+          </dl>
+          <p className={`mt-4 text-sm leading-relaxed ${belowBreakeven ? "text-sw-danger" : "text-sw-fg-2"}`}>
+            {belowBreakeven
+              ? `Con ese ROAS, cada euro en anuncios te cuesta más de lo que te deja: el beneficio bajaría ${fmt.eur(Math.abs(delta))} ${per}.`
+              : delta >= 0
+                ? `Si consigues ese ROAS, el beneficio subiría ${fmt.eur(delta)} ${per}.`
+                : `Con ese ROAS cubres los costes variables, pero no lo suficiente: el beneficio bajaría ${fmt.eur(Math.abs(delta))} ${per}.`}
+            {!sure && " Ojo: faltan datos, así que la cifra real será peor."}
+          </p>
+        </div>
+      )}
+
+      <p className="mt-4 text-xs leading-relaxed text-sw-fg-4">
+        Supone que el ROAS se mantiene igual con esa inversión, que esas ventas tienen el mismo ticket y los mismos costes por pedido que las actuales y que tus gastos
+        fijos no cambian. Las plataformas suelen atribuirse de más: usa un ROAS prudente.
+      </p>
     </div>
   )
 }

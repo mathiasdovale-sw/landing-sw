@@ -1,16 +1,9 @@
 "use client"
 import { Mail, MapPin, ArrowRight, MessageCircle } from "lucide-react"
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { whatsappHref } from "@/lib/contact-config"
-
-declare global {
-  interface Window {
-    grecaptcha: any;
-    onRecaptchaLoad: () => void;
-  }
-}
 
 type FieldName = 'name' | 'email' | 'company' | 'url' | 'message'
 type FieldStatus = 'idle' | 'valid' | 'invalid'
@@ -28,11 +21,9 @@ export default function ContactSection() {
     type: 'success' | 'error' | null
     message: string
   }>({ type: null, message: '' })
-  const recaptchaRef = useRef<HTMLDivElement>(null)
-  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false)
-  const [recaptchaWidgetId, setRecaptchaWidgetId] = useState<number | null>(null)
-  const [showLoadingMessage, setShowLoadingMessage] = useState(false)
 
+  // Campo trampa (antispam): oculto para las personas; solo lo rellenan los bots.
+  const [trap, setTrap] = useState('')
   const [values, setValues] = useState<Record<FieldName, string>>({
     name: '', email: '', company: '', url: '', message: '',
   })
@@ -114,83 +105,6 @@ export default function ContactSection() {
     validateField(field, values[field], false)
   }
 
-  // Cargar reCAPTCHA cuando el componente se monta
-  useEffect(() => {
-    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
-    if (!siteKey) return
-
-    const loadingTimer = setTimeout(() => {
-      if (!recaptchaLoaded) {
-        setShowLoadingMessage(true)
-      }
-    }, 500)
-
-    window.onRecaptchaLoad = () => {
-      try {
-        if (recaptchaRef.current && window.grecaptcha) {
-          if (recaptchaWidgetId !== null) {
-            try {
-              window.grecaptcha.reset(recaptchaWidgetId)
-            } catch (e) {
-              // Silencioso
-            }
-          }
-
-          const widgetId = window.grecaptcha.render(recaptchaRef.current, {
-            sitekey: siteKey,
-            theme: 'dark',
-            size: 'normal'
-          })
-          setRecaptchaWidgetId(widgetId)
-          setRecaptchaLoaded(true)
-          setShowLoadingMessage(false)
-        }
-      } catch (error) {
-        setRecaptchaLoaded(false)
-        setShowLoadingMessage(false)
-      }
-    }
-
-    if (window.grecaptcha && window.grecaptcha.render) {
-      clearTimeout(loadingTimer)
-      window.onRecaptchaLoad()
-      return
-    }
-
-    if (!document.querySelector('script[src*="recaptcha"]')) {
-      const script = document.createElement('script')
-      script.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit'
-      script.async = true
-      script.defer = true
-      script.onload = () => {
-        setTimeout(() => {
-          if (window.grecaptcha && window.onRecaptchaLoad) {
-            clearTimeout(loadingTimer)
-            window.onRecaptchaLoad()
-          }
-        }, 100)
-      }
-      document.head.appendChild(script)
-    } else if (window.grecaptcha) {
-      clearTimeout(loadingTimer)
-      window.onRecaptchaLoad()
-    }
-
-    return () => {
-      clearTimeout(loadingTimer)
-      if (recaptchaWidgetId !== null && window.grecaptcha) {
-        try {
-          window.grecaptcha.reset(recaptchaWidgetId)
-        } catch (e) {
-          // Silencioso
-        }
-      }
-      setRecaptchaLoaded(false)
-      setRecaptchaWidgetId(null)
-      setShowLoadingMessage(false)
-    }
-  }, [])
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -207,59 +121,18 @@ export default function ContactSection() {
     setIsSubmitting(true)
     setSubmitStatus({ type: null, message: '' })
 
-    const recaptchaEnabled = !!process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
-
-    const resetRecaptcha = () => {
-      try {
-        if (typeof window === 'undefined') return
-        if (!window.grecaptcha) return
-        if (typeof window.grecaptcha.reset !== 'function') return
-        if (recaptchaWidgetId === null || recaptchaWidgetId === undefined) return
-        window.grecaptcha.reset(recaptchaWidgetId)
-      } catch (error) {
-        // Completamente silencioso
-      }
-    }
-
-    const getRecaptchaToken = () => {
-      try {
-        if (!recaptchaEnabled) return null
-        if (typeof window === 'undefined') return null
-        if (!window.grecaptcha) return null
-        if (typeof window.grecaptcha.getResponse !== 'function') return null
-        if (recaptchaWidgetId === null || recaptchaWidgetId === undefined) return null
-        const response = window.grecaptcha.getResponse(recaptchaWidgetId)
-        return response || null
-      } catch (error) {
-        return null
-      }
-    }
-
-    const recaptchaToken = getRecaptchaToken()
-
-    if (recaptchaEnabled && recaptchaLoaded && recaptchaWidgetId !== null && !recaptchaToken) {
-      setSubmitStatus({
-        type: 'error',
-        message: 'Por favor, completa la verificación reCAPTCHA.'
-      })
-      setIsSubmitting(false)
-      return
-    }
-
     const data = {
       name: values.name,
       email: values.email,
       company: values.company,
       message: values.message,
       storeUrl: values.url.trim(),
-      recaptchaToken: recaptchaToken || 'dev-mode',
+      // El campo trampa solo viaja si alguien (un bot) lo ha rellenado
+      ...(trap ? { website: trap } : {}),
     }
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('📤 Datos a enviar:', {
-        ...data,
-        recaptchaToken: data.recaptchaToken === 'dev-mode' ? 'dev-mode' : '***TOKEN***'
-      })
+      console.log('📤 Datos a enviar:', data)
     }
 
     try {
@@ -284,7 +157,6 @@ export default function ContactSection() {
           type: 'error',
           message: 'Error al procesar la respuesta del servidor.'
         })
-        resetRecaptcha()
         return
       }
 
@@ -311,13 +183,11 @@ export default function ContactSection() {
           url: { status: 'idle', message: '' },
           message: { status: 'idle', message: '' },
         })
-        resetRecaptcha()
       } else {
         setSubmitStatus({
           type: 'error',
           message: result.error || 'Error al enviar el mensaje. Inténtalo de nuevo.'
         })
-        resetRecaptcha()
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
@@ -325,7 +195,6 @@ export default function ContactSection() {
         type: 'error',
         message: `Error de conexión: ${errorMessage}. Por favor, inténtalo de nuevo.`
       })
-      resetRecaptcha()
     } finally {
       setIsSubmitting(false)
     }
@@ -399,7 +268,20 @@ export default function ContactSection() {
               {t('contact.form.title')}
             </h3>
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-5" noValidate>
+            <form onSubmit={handleSubmit} className="relative mt-6 space-y-5" noValidate>
+              {/* Campo trampa: fuera de pantalla, sin foco con teclado y oculto a lectores de pantalla. */}
+              <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+                <label htmlFor="contact-website">No rellenes este campo</label>
+                <input
+                  id="contact-website"
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={trap}
+                  onChange={(e) => setTrap(e.target.value)}
+                />
+              </div>
               <div className="grid gap-5 md:grid-cols-2">
                 <div>
                   <label htmlFor="name" className="mb-2 flex items-baseline justify-between font-mono-label text-sw-fg-3">
@@ -479,14 +361,6 @@ export default function ContactSection() {
                 </span>
               </div>
 
-              {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
-                <div className="flex justify-center">
-                  <div ref={recaptchaRef} id="recaptcha-container"></div>
-                  {showLoadingMessage && !recaptchaLoaded && (
-                    <div className="text-sm text-sw-fg-3">Cargando reCAPTCHA...</div>
-                  )}
-                </div>
-              )}
 
               <motion.button
                 type="submit"

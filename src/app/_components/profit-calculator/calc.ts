@@ -1010,6 +1010,47 @@ export function simulate(inp: Inputs, base: Results, lv: Levers): Results {
   return computeCore(next)
 }
 
+// ---------------------------------------------------------------------------
+// Escenario de publicidad (tiendas que hoy no invierten en ads)
+// ---------------------------------------------------------------------------
+// El usuario pone cuánto invertiría al mes y qué ROAS espera (sobre ventas sin
+// IVA). No hay valores por defecto: ningún ROAS "típico" inventado.
+// Supuestos (se explican en la página):
+// - El ROAS se mantiene igual a ese nivel de inversión.
+// - Las ventas extra tienen el mismo ticket, descuentos, devoluciones, envíos y
+//   costes por pedido que las actuales (todo escala en la misma proporción).
+// - Los pedidos extra son de clientes nuevos.
+// - Los gastos fijos no cambian.
+export function adsScenario(inp: Inputs, base: Results, monthlySpend: number, roas: number): Results | null {
+  if (base.netRevenue <= 0 || !(monthlySpend > 0) || !(roas >= 0)) return null
+  const spend = monthlySpend * inp.months
+  const extraRevenue = spend * roas // ingresos netos extra, sin IVA
+  const k = 1 + extraRevenue / base.netRevenue
+  const scale = (v: number | null) => (has(v) ? n(v) * k : v)
+  const extraOrders = n(inp.orders) * (k - 1)
+  const next: Inputs = {
+    ...inp,
+    grossSales: scale(inp.grossSales),
+    discounts: scale(inp.discounts),
+    returns: scale(inp.returns),
+    shippingCharged: scale(inp.shippingCharged),
+    orders: scale(inp.orders),
+    sessions: scale(inp.sessions),
+    newCustomers: has(inp.newCustomers) ? n(inp.newCustomers) + extraOrders : inp.newCustomers,
+    cogs: inp.cogsMode === "pct" ? inp.cogs : scale(inp.cogs),
+    shippingPaid: scale(inp.shippingPaid),
+    packaging: scale(inp.packaging),
+    fees: inp.feesMode === "pct" ? inp.fees : scale(inp.fees),
+    returnCosts: scale(inp.returnCosts),
+    ads: [
+      ...inp.ads,
+      // Las ventas atribuidas se meten en la misma base que las ventas (con o sin IVA)
+      { id: "scenario", name: "Publicidad (escenario)", spend, attributed: extraRevenue / base.vatFactor },
+    ],
+  }
+  return computeCore(next)
+}
+
 /** Cuánto cambia el beneficio neto (del periodo) al mejorar cada palanca un `step` %. */
 export function leverRanking(inp: Inputs, base: Results, step = 10) {
   return LEVER_KEYS.filter((k) => (k !== "ads" || base.adSpend > 0) && (k !== "repeat" || (base.recurrentOrders ?? 0) > 0))

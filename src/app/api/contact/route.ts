@@ -10,7 +10,7 @@ import {
 
 // Solicitud de "Revisemos tus números juntos" desde la calculadora de beneficios.
 // Solo admite el email y el origen: .strict() rechaza cualquier otro campo, así
-// que los números de la calculadora no pueden llegar aquí. De momento sin reCAPTCHA:
+// que los números de la calculadora no pueden llegar aquí. Sin reCAPTCHA:
 // el antispam es un campo trampa ("website") que las personas no ven.
 const reviewRequestSchema = z.object({
   type: z.literal('review-request'),
@@ -43,8 +43,8 @@ const contactFormSchema = z.object({
   message: z.string()
     .min(1, 'Message is required')
     .max(2000, 'Message must be less than 2000 characters'),
-  recaptchaToken: z.string()
-    .min(1, 'reCAPTCHA token is required')
+  // Campo trampa (antispam): oculto para las personas; solo lo rellenan los bots.
+  website: z.string().max(500).optional()
 })
 
 type ContactFormData = z.infer<typeof contactFormSchema>
@@ -141,32 +141,10 @@ export async function POST(request: NextRequest) {
 
     console.log(`🌍 Using language: ${language} from referer: ${referer}`)
 
-    // Verificar reCAPTCHA (solo si está configurado y no es modo desarrollo)
-    const isDevMode = sanitizedData.recaptchaToken === 'dev-mode'
-    const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY
-    
-    if (!isDevMode && recaptchaSecretKey) {
-      const recaptchaResponse = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `secret=${recaptchaSecretKey}&response=${sanitizedData.recaptchaToken}`
-      })
-
-      const recaptchaData = await recaptchaResponse.json()
-      
-      if (!recaptchaData.success) {
-        console.error('reCAPTCHA verification failed:', recaptchaData)
-        return NextResponse.json(
-          { error: 'Verificación reCAPTCHA fallida. Por favor, inténtalo de nuevo.' },
-          { status: 400 }
-        )
-      }
-    }
-
     // Configurar el email para la empresa (SellifyWorks) usando template
-    const companyEmailTemplate = getContactCompanyEmailTemplate(sanitizedData, language)
+    // Campo trampa relleno = posible bot. Te llega igual, pero marcado.
+    const possibleBot = Boolean(validatedData.website && validatedData.website.trim() !== '')
+    const companyEmailTemplate = getContactCompanyEmailTemplate(sanitizedData, language, possibleBot)
     const companyEmailData = {
       sender: {
         name: "SellifyWorks Contact Form",
@@ -239,36 +217,24 @@ export async function POST(request: NextRequest) {
     const companyResponseData = await companyResponse.json()
     console.log('Company email sent successfully:', companyResponseData)
 
-    // Enviar email de confirmación al cliente
-    const clientResponse = await fetch('https://api.sendinblue.com/v3/smtp/email', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'api-key': process.env.BREVO_API_KEY || ''
-      },
-      body: JSON.stringify(clientEmailData)
-    })
-
-    console.log('Client email response status:', clientResponse.status)
-    
-    if (!clientResponse.ok) {
-      const errorText = await clientResponse.text()
-      console.error('Error sending client email (raw):', errorText)
-      
-      let errorData
-      try {
-        errorData = JSON.parse(errorText)
-      } catch {
-        errorData = { message: errorText }
+    // Enviar email de confirmación al cliente (no a posibles bots: no mandamos
+    // correos a direcciones que puede haber escrito un bot)
+    let clientEmailSent = false
+    if (!possibleBot) {
+      const clientResponse = await fetch('https://api.sendinblue.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'api-key': process.env.BREVO_API_KEY || ''
+        },
+        body: JSON.stringify(clientEmailData)
+      })
+      clientEmailSent = clientResponse.ok
+      if (!clientResponse.ok) {
+        // No retornamos error: el email a SellifyWorks ya se envió
+        console.error('Error sending client email:', clientResponse.status, await clientResponse.text())
       }
-      
-      console.error('Error sending client email (parsed):', errorData)
-      // No retornamos error aquí porque el email de la empresa ya se envió
-      console.log('Company email was sent, but client confirmation failed')
-    } else {
-      const clientResponseData = await clientResponse.json()
-      console.log('Client confirmation email sent successfully:', clientResponseData)
     }
 
     // Success messages based on language
@@ -283,7 +249,7 @@ export async function POST(request: NextRequest) {
         success: true,
         language: language,
         companyEmail: companyResponseData,
-        clientEmailSent: clientResponse.ok
+        clientEmailSent
       },
       { status: 200 }
     )

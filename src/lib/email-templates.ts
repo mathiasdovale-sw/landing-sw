@@ -224,7 +224,8 @@ export interface ContactFormData {
 // Get company email template for contact form
 export function getContactCompanyEmailTemplate(
   data: ContactFormData,
-  language: 'es' | 'en' = 'es'
+  language: 'es' | 'en' = 'es',
+  possibleBot = false
 ): EmailTemplate {
   
   const templates = {
@@ -290,7 +291,17 @@ This message was sent from the SellifyWorks contact form
     }
   };
 
-  return templates[language];
+  const tpl = templates[language];
+  if (!possibleBot) return tpl;
+  // Se rellenó el campo trampa del formulario: probablemente es un bot.
+  const note = 'Posible bot: se rellenó el campo oculto antispam, que una persona no ve. Revisa el mensaje antes de responder.';
+  return {
+    subject: `[Posible bot] ${tpl.subject}`,
+    htmlContent: `<p style="color:#b45309"><strong>⚠️ ${note}</strong></p>${tpl.htmlContent}`,
+    textContent: `⚠️ ${note}
+
+${tpl.textContent}`,
+  };
 }
 
 // Get client confirmation email template for contact form

@@ -329,7 +329,7 @@ function LeverCard({
             </span>
           </div>
           <p className="text-xs text-sw-fg-4">
-            {disabled ? (def.key === "repeat" ? "Rellena pedidos y clientes nuevos (bloque 2) para usarla" : "No has metido inversión en publicidad") : def.hint}
+            {disabled ? (def.key === "repeat" ? "Rellena pedidos y clientes nuevos (bloque 2) para usarla" : "No has metido inversión en publicidad: prueba el escenario de la sección Marketing") : def.hint}
           </p>
         </div>
       </div>
