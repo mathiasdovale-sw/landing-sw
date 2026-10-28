@@ -16,7 +16,7 @@ interface HowIWorkStep {
   description: string
 }
 
-interface HowIWorkCopy {
+export interface HowIWorkCopy {
   eyebrow: string
   titleLine1: string
   titleLine2: string
@@ -45,7 +45,7 @@ const COPY: Record<"es" | "en", HowIWorkCopy> = {
       {
         n: "01",
         title: "Diagnóstico",
-        tag: "Auditoría · 140€ + IVA",
+        tag: "Auditoría · 140 € + IVA",
         description:
           "Reviso tu tienda como la vería un cliente y te entrego qué frena las ventas, ordenado por impacto. No necesito acceso a tus métricas.",
       },
@@ -59,15 +59,15 @@ const COPY: Record<"es" | "en", HowIWorkCopy> = {
       {
         n: "03",
         title: "Acompañamiento",
-        tag: "Mejora continua · mensual",
+        tag: "Mejora continua · 290 € + IVA al mes",
         description:
-          "Cuando la tienda ya está bien, analizo grabaciones de sesiones reales e implemento 4 mejoras al mes. Sin permanencia: lo dejas cuando quieras.",
+          "Si prefieres que lo implemente yo, analizo grabaciones de sesiones reales e implemento al menos 4 mejoras al mes. Sin permanencia: lo dejas cuando quieras.",
       },
     ],
     note: "¿Tu tienda ya está bien? Puedes empezar directamente en el paso 03.",
     priceCard: {
       eyebrow: "Auditoría · pago único",
-      amount: "140€",
+      amount: "140 €",
       vat: "+ IVA",
       amountNote:
         "Es el precio de la auditoría. Si quieres que implemente las mejoras, se presupuesta aparte.",
@@ -129,12 +129,73 @@ const COPY: Record<"es" | "en", HowIWorkCopy> = {
   },
 }
 
+/** Home en español: los pasos de la mejora continua. */
+export const HOME_ES_COPY: HowIWorkCopy = {
+  ...COPY.es,
+  titleLine1: "Mes a mes.",
+  titleLine2: "Sin permanencia.",
+  intro: "Para tiendas que ya están en Shopify. Empezamos con una reunión gratis para entender qué le pasa a tu tienda. Después, pagas mes a mes y cancelas cuando quieras.",
+  steps: [
+    {
+      n: "01",
+      title: "Miro tu tienda y te digo qué la frena",
+      tag: "Mes 1",
+      description: "Veo cuánto tráfico tiene tu tienda para elegir el método, reviso grabaciones de sesiones reales con Microsoft Clarity y detecto dónde abandonan tus clientes.",
+    },
+    {
+      n: "02",
+      title: "Lo implemento el primer mes",
+      tag: "Mes 1",
+      description: "Empiezo por lo que más frena las ventas de tu tienda.",
+    },
+    {
+      n: "03",
+      title: "Cada mes, al menos 4 mejoras nuevas y el informe",
+      tag: "Desde el mes 2 · 290 € + IVA al mes",
+      description: "Al menos 4 mejoras implementadas, el informe de facturación por visita y una reunión para ver qué se hizo y qué viene.",
+    },
+  ],
+  note: "¿Aún no estás en Shopify? Migro tu tienda a Shopify con las mejoras ya hechas y después seguimos mes a mes.",
+  compactCtaLabel: "Ver la mejora continua",
+}
+
+/** English home: the continuous improvement steps. */
+export const HOME_EN_COPY: HowIWorkCopy = {
+  ...COPY.en,
+  titleLine1: "Month by month.",
+  titleLine2: "No lock-in.",
+  intro: "For stores already on Shopify. We start with a free meeting to understand what's holding your store back. Then you pay month to month and cancel whenever you want.",
+  steps: [
+    {
+      n: "01",
+      title: "I look at your store and tell you what's holding it back",
+      tag: "Month 1",
+      description: "I check how much traffic your store gets to pick the method, review real session recordings with Microsoft Clarity and find where your customers drop off.",
+    },
+    {
+      n: "02",
+      title: "I implement it in the first month",
+      tag: "Month 1",
+      description: "I start with what's holding your store's sales back the most.",
+    },
+    {
+      n: "03",
+      title: "Every month, at least 4 new improvements and the report",
+      tag: "From month 2 · €290 + VAT per month",
+      description: "At least 4 improvements implemented, the revenue-per-visit report and a meeting to go over what was done and what's next.",
+    },
+  ],
+  note: "Not on Shopify yet? I migrate your store to Shopify with the improvements already done, and then we continue month by month.",
+  compactCtaLabel: "See continuous improvement",
+}
+
 export default function HowIWorkSection({
   locale,
   variant,
   ctaHref,
   sectionNumber,
   className = "",
+  copyOverride,
 }: {
   locale: "es" | "en"
   variant: HowIWorkVariant
@@ -142,8 +203,10 @@ export default function HowIWorkSection({
   /** Número de sección que se muestra a la derecha del eyebrow (ej. "02"). */
   sectionNumber?: string
   className?: string
+  /** Textos propios (p. ej. la home en español). */
+  copyOverride?: HowIWorkCopy
 }) {
-  const copy = COPY[locale]
+  const copy = copyOverride ?? COPY[locale]
   const isExpanded = variant === "expanded"
 
   return (

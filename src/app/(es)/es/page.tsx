@@ -1,14 +1,12 @@
-import Link from "next/link";
-import HeaderHome from "@/app/_components/header-home";
 import Reveal from "@/app/_components/reveal";
 import Marquee from "@/app/_components/marquee";
-import ProblemSection from "@/app/_components/problem-section";
 import FunnelLeakSection from "@/app/_components/funnel-leak-section";
-import ServicesSection from "@/app/_components/services-section";
-import HowIWorkSection from "@/app/_components/how-i-work-section";
+import HowIWorkSection, { HOME_ES_COPY } from "@/app/_components/how-i-work-section";
 import CaseStudySection from "@/app/_components/case-study-section";
-import CloseSection from "@/app/_components/close-section";
 import ContactSection from "@/app/_components/contact-section";
+import Hero from "@/app/_components/home/hero";
+import Problem from "@/app/_components/home/problem";
+import HowIDoIt from "@/app/_components/home/how-i-do-it";
 import type { Metadata } from 'next'
 import { HomeFAQsEs } from "@/lib/faqs";
 import FAQAccordion from "@/app/_components/faq-accordion";
@@ -17,36 +15,28 @@ import { generatePageMetadata } from "@/lib/seo-utils";
 export const metadata: Metadata = generatePageMetadata(
   'home',
   'es',
-  '¿Tu tienda Shopify no despega? — SellifyWorks'
+  'Más beneficio con el mismo tráfico que ya pagas — SellifyWorks'
 )
 
+const MARQUEE_ES = ["Mejora continua", "Migración a Shopify", "Facturación por visita", "Sin permanencia"]
+
+// Home en español. CTA principal: la calculadora de beneficios.
 export default function HomePage() {
   return (
     <main>
-      <HeaderHome />
-      <Marquee />
+      <Hero locale="es" />
+      <Marquee items={MARQUEE_ES} />
 
-      <Reveal><ProblemSection /></Reveal>
+      <Reveal><Problem locale="es" /></Reveal>
       <Reveal><FunnelLeakSection /></Reveal>
-      <Reveal><ServicesSection /></Reveal>
+      <Reveal><HowIDoIt locale="es" contactHref="#contacto" /></Reveal>
       <Reveal>
-        <HowIWorkSection locale="es" variant="compact" ctaHref="/es/auditoria-conversion" />
+        <HowIWorkSection locale="es" variant="compact" ctaHref="/es/mejora-continua" copyOverride={HOME_ES_COPY} />
       </Reveal>
-      <Reveal><CaseStudySection /></Reveal>
-      <Marquee />
-      <Reveal><CloseSection /></Reveal>
+      <Reveal><CaseStudySection variant="brief" /></Reveal>
+      <Marquee items={MARQUEE_ES} />
       <Reveal><ContactSection /></Reveal>
-      <Reveal>
-        <div className="bg-sw-bg-1 px-5 pt-16 text-center sm:pt-20">
-          <Link
-            href="/es/auditoria-conversion"
-            className="font-mono-label text-sw-secondary transition-colors hover:text-sw-fg-1"
-          >
-            ¿Tu tienda no vende y no sabes por qué? Mira cómo funciona la auditoría →
-          </Link>
-        </div>
-      </Reveal>
-      <Reveal><FAQAccordion faqs={HomeFAQsEs} className="bg-sw-bg-1" /></Reveal>
+      <Reveal><FAQAccordion faqs={HomeFAQsEs} title="Preguntas frecuentes" className="bg-sw-bg-1" /></Reveal>
     </main>
   );
 }

@@ -25,7 +25,6 @@ export const useLocalizedLinks = () => {
     // Service pages
     migration: currentLocale === 'es' ? '/es/migracion-shopify' : '/en/shopify-migration',
     customDev: currentLocale === 'es' ? '/es/desarrollos-a-medida' : '/en/custom-shopify-development',
-    conversionAudit: currentLocale === 'es' ? '/es/auditoria-conversion' : '/en/conversion-audit',
     monthly: currentLocale === 'es' ? '/es/mejora-continua' : '/en/continuous-improvement',
     emailAutomation: currentLocale === 'es' ? '/es/email-marketing-automation' : '/en/email-marketing-automation',
   }

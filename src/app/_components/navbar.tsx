@@ -58,9 +58,10 @@ const Navbar = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
   const closeMenu = () => setIsMenuOpen(false)
 
+  // Los dos servicios principales. La calculadora solo existe en español.
   const navItems = [
-    { href: links.services, label: t('nav.services') },
-    // La calculadora solo existe en español: no se muestra en la versión EN
+    { href: links.monthly, label: t('nav.monthly') },
+    { href: links.migration, label: t('nav.migration') },
     ...(currentLocale === 'es' ? [{ href: links.calculator, label: t('nav.calculator') }] : []),
     { href: links.about, label: t('nav.about') },
     { href: links.blog, label: t('nav.blog') },

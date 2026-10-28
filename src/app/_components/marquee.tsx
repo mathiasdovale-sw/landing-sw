@@ -2,9 +2,9 @@
 import { useLanguage } from "@/contexts/LanguageContext"
 import { SERVICES } from "@/lib/services-config"
 
-export default function Marquee() {
+export default function Marquee({ items }: { items?: string[] }) {
   const { t } = useLanguage()
-  const content = SERVICES.map((s) => t(`services.${s.key}.name`)).join(' ✦ ') + ' ✦ '
+  const content = (items ?? SERVICES.map((s) => t(`services.${s.key}.name`))).join(' ✦ ') + ' ✦ '
 
   return (
     <div className="overflow-hidden whitespace-nowrap border-y border-sw-line bg-sw-secondary py-3">

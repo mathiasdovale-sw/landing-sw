@@ -15,6 +15,7 @@ import { ArrowRight } from "lucide-react"
 // Para reactivarla, poner a true.
 const SHOW_NEWSLETTER = false
 
+
 export default function Footer() {
   const { t } = useLanguage()
   const { links, currentLocale } = useLocalizedLinks()

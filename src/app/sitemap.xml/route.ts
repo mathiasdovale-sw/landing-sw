@@ -52,7 +52,6 @@ export async function GET(request: NextRequest) {
   const servicePages: Array<keyof typeof seoUrls> = [
     'migration',
     'customDev',
-    'conversionAudit',
     'monthly',
     'emailAutomation'
   ]

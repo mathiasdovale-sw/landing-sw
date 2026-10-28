@@ -115,4 +115,4 @@ Once a month, using the full month. Over shorter periods, especially with little
 
 Calculate last month's revenue per visit and write it down. A month from now, calculate it again. That's the number that should have gone up.
 
-If you calculate it and don't know where to start improving it, at SellifyWorks we run [heuristic audits of Shopify stores](/en/conversion-audit): we review your store and give you a list of specific improvements.
+If you calculate it and don't know where to start improving it, [book a free meeting](/en/contact) and we'll look at what's holding your store back together. It's exactly what I work on every month in [continuous improvement](/en/continuous-improvement).

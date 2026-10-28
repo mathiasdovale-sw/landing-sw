@@ -107,13 +107,13 @@ const ContactStructuredData = ({
       {
         "@type": "Question", 
         "name": language === 'es' ? 
-          "¿Ofrecen consultas gratuitas?" :
-          "Do you offer free consultations?",
+          "¿Qué pasa después de escribirte?" :
+          "What happens after I get in touch?",
         "acceptedAnswer": {
           "@type": "Answer",
           "text": language === 'es' ? 
-            "Sí, ofrecemos una consulta inicial gratuita para discutir tu proyecto." :
-            "Yes, we offer a free initial consultation to discuss your project."
+            "Te respondo yo para buscar un hueco para una reunión gratis en la que entendemos qué le pasa a tu tienda. Si encaja, te envío precio y plazos antes de empezar." :
+            "I reply myself to find a time for a free meeting where we look at what's holding your store back. If it's a fit, you get price and timing before we start."
         }
       },
       {

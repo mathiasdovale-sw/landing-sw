@@ -215,6 +215,8 @@ export interface ContactFormData {
   name: string;
   email: string;
   company?: string;
+  storeUrl?: string;
+  onShopify?: 'si' | 'no';
   service?: string;
   message: string;
 }
@@ -233,6 +235,8 @@ export function getContactCompanyEmailTemplate(
         <p><strong>Nombre:</strong> ${data.name}</p>
         <p><strong>Email:</strong> ${data.email}</p>
         ${data.company ? `<p><strong>Empresa:</strong> ${data.company}</p>` : ''}
+        ${data.storeUrl ? `<p><strong>Tienda:</strong> ${data.storeUrl}</p>` : ''}
+        ${data.onShopify ? `<p><strong>¿Está en Shopify?:</strong> ${data.onShopify === 'si' ? 'Sí' : 'No'}</p>` : ''}
         ${data.service ? `<p><strong>Servicio de interés:</strong> ${data.service}</p>` : ''}
         <p><strong>Mensaje:</strong></p>
         <p>${data.message.replace(/\n/g, '<br>')}</p>
@@ -246,6 +250,8 @@ Nuevo mensaje de contacto
 Nombre: ${data.name}
 Email: ${data.email}
 ${data.company ? `Empresa: ${data.company}` : ''}
+${data.storeUrl ? `Tienda: ${data.storeUrl}` : ''}
+${data.onShopify ? `¿Está en Shopify?: ${data.onShopify === 'si' ? 'Sí' : 'No'}` : ''}
 ${data.service ? `Servicio de interés: ${data.service}` : ''}
 
 Mensaje:

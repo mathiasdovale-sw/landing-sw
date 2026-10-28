@@ -3,86 +3,66 @@ import { FAQ } from '@/interfaces/faq';
 export const HomeFAQsEs: FAQ[] = [
   {
     id: 'home-1',
-    question: '¿Cuánto cuesta una auditoría de mi tienda actual?',
-    answer: '140€ + IVA, precio cerrado — sin sorpresas después. Es solo la auditoría: la implementación de las mejoras se presupuesta aparte.'
+    question: '¿Cuánto cuesta?',
+    answer: 'La mejora continua cuesta 290 € + IVA al mes. La migración a Shopify tiene precio cerrado, que te doy antes de empezar, cuando he visto tu tienda.'
   },
   {
     id: 'home-2',
-    question: '¿Pueden ayudarme a mejorar las ventas de mi tienda Shopify actual?',
-    answer: 'Sí. Si no sabes qué falla, empezamos con la auditoría (140€ + IVA, sin necesidad de métricas). Si tu tienda ya funciona, la mejora continua te da 4 mejoras al mes basadas en grabaciones de sesiones reales, sin permanencia.'
+    question: '¿Tiene permanencia?',
+    answer: 'No. La mejora continua se paga mes a mes y la cancelas cuando quieras.'
+  },
+  {
+    id: 'home-3',
+    question: '¿Me garantizas resultados?',
+    answer: 'No, y desconfía de quien te los garantice. Lo que hago es medir cada mes cuánto factura tu tienda por visita y mirar la tendencia durante varios meses. Un mes suelto puede subir o bajar por la temporada, los anuncios o el stock.'
   },
   {
     id: 'home-4',
-    question: '¿Por qué elegir una agencia Shopify en España en lugar de hacerlo por mi cuenta?',
-    answer: 'Una agencia especializada te ahorra tiempo y evita errores costosos. Tenemos la experiencia técnica, conocimiento de mejores prácticas y experiencia con integraciones complejas que aseguran que tu tienda esté optimizada desde el primer día.'
+    question: '¿Qué necesito para empezar?',
+    answer: 'Empezamos con una reunión gratis para entender qué le pasa a tu tienda. Si encaja, necesito acceso a tu Shopify e instalo Microsoft Clarity, que es gratis para ti, para ver grabaciones de sesiones reales. El primer mes empiezo por lo que más frena tus ventas.'
   },
   {
     id: 'home-5',
-    question: '¿Qué diferencia hay entre Shopify y otras plataformas como WooCommerce o PrestaShop?',
-    answer: 'Shopify es una plataforma alojada en la nube (SaaS) que gestiona automáticamente el hosting, la seguridad y las actualizaciones. Esto significa que no tienes que preocuparte por servidores ni mantenimiento técnico, y tu tienda puede escalar fácilmente según crezca tu negocio. Además, ofrece un ecosistema amplio de aplicaciones y soporte oficial 24/7. En cambio, WooCommerce y PrestaShop son soluciones open-source que requieren contratar un hosting y encargarse de la instalación, actualizaciones y seguridad.'
+    question: '¿Y si no estoy en Shopify?',
+    answer: 'Migro tu tienda a Shopify desde WooCommerce, PrestaShop, Wix, Magento u otra plataforma, con las mejoras ya hechas y sin cerrar ni un día. Tarda aproximadamente 3 semanas y el precio queda cerrado antes de empezar.'
   },
   {
     id: 'home-6',
-    question: '¿Ofrecen migración desde otras plataformas a Shopify?',
-    answer: 'Sí, realizamos migraciones desde WooCommerce, PrestaShop, Magento y otras plataformas, cuidando la estructura SEO y minimizando riesgos de pérdida de tráfico.'
-  },
-  {
-    id: 'home-8',
-    question: '¿Dan soporte técnico en español?',
-    answer: 'Claro, ofrecemos soporte en español (también inglés) para resolver incidencias, optimizar tu tienda y acompañarte en todo momento.'
-  },
-  {
-    id: 'home-9',
-    question: '¿Necesito conocimientos técnicos para gestionar mi tienda en Shopify?',
-    answer: 'No, Shopify está pensado para que cualquier persona pueda administrarlo sin saber programar. Y si quieres personalizaciones avanzadas, nosotros nos encargamos de la parte técnica para que tú te centres en vender.'
-  },
-  {
-    id: 'home-10',
-    question: '¿Cómo puedo empezar a trabajar con ustedes?',
-    answer: 'Muy fácil: completa nuestro formulario de contacto, cuéntanos tu proyecto y uno de nuestros expertos te contactará para una primera sesión gratuita.'
+    question: '¿Haces trabajos puntuales?',
+    answer: 'Sí: desarrollos a medida y emails automáticos, con presupuesto cerrado antes de empezar. Escríbeme y te digo cómo encaja.'
   }
 ];
 
 export const HomeFAQsEn: FAQ[] = [
   {
     id: 'home-1',
-    question: 'How much does an audit of my current store cost?',
-    answer: '€140 + VAT, fixed price — no surprises afterwards. That is the audit alone: implementing the improvements is quoted separately.'
+    question: 'How much does it cost?',
+    answer: 'Continuous improvement costs €290 + VAT per month. The Shopify migration has a fixed price, which I give you before we start, once I\'ve seen your store.'
   },
   {
     id: 'home-2',
-    question: 'Can you help me improve sales on my current Shopify store?',
-    answer: 'Yes. If you don\'t know what\'s wrong, we start with the audit (€140 + VAT, no metrics needed). If your store already works, continuous improvement gives you 4 improvements a month based on real session recordings, with no lock-in.'
+    question: 'Is there a lock-in?',
+    answer: 'No. Continuous improvement is paid month to month and you can cancel whenever you want.'
+  },
+  {
+    id: 'home-3',
+    question: 'Do you guarantee results?',
+    answer: 'No, and be wary of anyone who does. What I do is measure how much revenue each visit brings in every month and look at the trend over several months. A single month can go up or down because of the season, ads or stock.'
   },
   {
     id: 'home-4',
-    question: 'Why choose a Shopify agency in Spain instead of doing it myself?',
-    answer: 'A specialized agency saves you time and avoids costly mistakes. We have the technical expertise, knowledge of best practices, and experience with complex integrations that ensure your store is optimized from day one.'
+    question: 'What do I need to get started?',
+    answer: 'We start with a free meeting to understand what\'s holding your store back. If it\'s a fit, I need access to your Shopify and I install Microsoft Clarity, which is free for you, to watch real session recordings. In the first month I start with what\'s holding your sales back the most.'
   },
   {
     id: 'home-5',
-    question: 'What\'s the difference between Shopify and other platforms like WooCommerce or PrestaShop?',
-    answer: 'Shopify is a cloud-based SaaS platform that automatically manages hosting, security, and updates. This means you don\'t have to worry about servers or technical maintenance, and your store can easily scale as your business grows. It also offers a broad ecosystem of apps and 24/7 official support. WooCommerce and PrestaShop, on the other hand, are open-source solutions that require a hosting contract and the responsibility for installation, updates, and security.'
+    question: 'What if I\'m not on Shopify?',
+    answer: 'I migrate your store to Shopify from WooCommerce, PrestaShop, Wix, Magento or another platform, with the improvements already done and without closing for a single day. It takes about 3 weeks and the price is fixed before we start.'
   },
   {
     id: 'home-6',
-    question: 'Do you offer migration from other platforms to Shopify?',
-    answer: 'Yes, we perform migrations from WooCommerce, PrestaShop, Magento and other platforms, taking care of SEO structure and minimizing risks of traffic loss.'
-  },
-  {
-    id: 'home-8',
-    question: 'Do you offer technical support in Spanish?',
-    answer: 'Of course, we offer support in Spanish (also English) to resolve incidents, optimize your store and accompany you at all times.'
-  },
-  {
-    id: 'home-9',
-    question: 'Do I need technical knowledge to manage my Shopify store?',
-    answer: 'No, Shopify is designed so anyone can manage it without knowing how to code. And if you want advanced customizations, we take care of the technical part so you can focus on selling.'
-  },
-  {
-    id: 'home-10',
-    question: 'How can I start working with you?',
-    answer: 'Very easy: fill out our contact form, tell us about your project and one of our experts will contact you for a free first session.'
+    question: 'Do you take on one-off projects?',
+    answer: 'Yes: custom development and automated emails, with a fixed quote before we start. Get in touch and I\'ll tell you how it fits.'
   }
 ];
 
@@ -92,33 +72,33 @@ export const HomeFAQsEn: FAQ[] = [
 export const servicesPageFAQsEs: FAQ[] = [
   {
     id: 'services-page-1',
-    question: '¿Puedo contratar solo un servicio específico o necesito un paquete completo?',
-    answer: 'Puedes contratar servicios individuales según tus necesidades específicas. Ofrecemos tanto servicios independientes como paquetes integrales para mayor eficiencia y ahorro.'
+    question: '¿Cuál me conviene?',
+    answer: 'Si ya estás en Shopify, la mejora continua. Si estás en otra plataforma, la migración: migro tu tienda a Shopify con las mejoras ya hechas y después puedes seguir con la mejora continua.'
   },
   {
     id: 'services-page-2',
-    question: '¿Cómo determinan qué servicios necesita mi negocio?',
-    answer: 'Realizamos una consultoría inicial gratuita donde analizamos tu situación actual, objetivos de negocio, presupuesto y cronograma para recomendarte la combinación óptima de servicios.'
+    question: '¿Cuánto cuesta?',
+    answer: 'La mejora continua, 290 € + IVA al mes, sin permanencia. La migración, precio cerrado antes de empezar, tras ver tu tienda. La primera reunión, para entender qué le pasa a tu tienda, es gratis.'
   },
   {
     id: 'services-page-3',
-    question: '¿Cuánto tiempo toma implementar los servicios?',
-    answer: 'Los tiempos varían según el servicio: una auditoría de conversión toma 1-2 semanas, una migración completa 2-4 semanas. Proporcionamos cronogramas detallados en cada propuesta.'
+    question: '¿Cuánto tarda cada uno?',
+    answer: 'La migración, aproximadamente 3 semanas. La mejora continua es mensual: cada mes, al menos 4 mejoras nuevas.'
   },
   {
     id: 'services-page-4',
-    question: '¿Trabajan con empresas de todos los tamaños?',
-    answer: 'Sí, trabajamos desde startups y pequeños emprendimientos hasta empresas enterprise. Adaptamos nuestros servicios y metodología según el tamaño y necesidades específicas de cada cliente.'
+    question: '¿Hay permanencia?',
+    answer: 'No. La mejora continua se paga mes a mes y la cancelas cuando quieras.'
   },
   {
     id: 'services-page-5',
-    question: '¿Pueden trabajar con mi equipo interno?',
-    answer: 'Absolutamente. Colaboramos estrechamente con equipos internos de desarrollo, marketing y ventas para una integración fluida.'
+    question: '¿Haces trabajos puntuales?',
+    answer: 'Sí: desarrollos a medida y emails automáticos. También pueden entrar como mejoras dentro de la mejora continua.'
   },
   {
     id: 'services-page-6',
-    question: '¿Qué pasa si necesito cambios durante el desarrollo?',
-    answer: 'Entendemos que los requisitos pueden evolucionar. Incluimos un número determinado de revisiones en cada servicio y manejamos cambios adicionales de forma transparente según el scope acordado.'
+    question: '¿Con quién hablo?',
+    answer: 'Conmigo, Mathias. Soy quien mira tu tienda y quien implementa las mejoras.'
   }
 ];
 
@@ -126,33 +106,33 @@ export const servicesPageFAQsEs: FAQ[] = [
 export const servicesPageFAQsEn: FAQ[] = [
   {
     id: 'services-page-en-1',
-    question: 'Can I hire just a specific service or do I need a complete package?',
-    answer: 'You can hire individual services according to your specific needs. We offer both independent services and comprehensive packages for greater efficiency and savings.'
+    question: 'Which one is right for me?',
+    answer: 'If you\'re already on Shopify, continuous improvement. If you\'re on another platform, the migration: I migrate your store to Shopify with the improvements already done, and then you can continue with continuous improvement.'
   },
   {
     id: 'services-page-en-2',
-    question: 'How do you determine what services my business needs?',
-    answer: 'We conduct a free initial consultation where we analyze your current situation, business objectives, budget, and timeline to recommend the optimal combination of services.'
+    question: 'How much does it cost?',
+    answer: 'Continuous improvement, €290 + VAT per month, no lock-in. The migration, a fixed price before we start, after seeing your store. The first meeting, to understand what\'s holding your store back, is free.'
   },
   {
     id: 'services-page-en-3',
-    question: 'How long does it take to implement services?',
-    answer: 'Timeframes vary by service: a conversion audit takes 1-2 weeks, a full migration 2-4 weeks. We provide detailed timelines in each proposal.'
+    question: 'How long does each one take?',
+    answer: 'The migration, about 3 weeks. Continuous improvement is monthly: every month, at least 4 new improvements.'
   },
   {
     id: 'services-page-en-4',
-    question: 'Do you work with companies of all sizes?',
-    answer: 'Yes, we work from startups and small businesses to enterprise companies. We adapt our services and methodology according to the size and specific needs of each client.'
+    question: 'Is there a lock-in?',
+    answer: 'No. Continuous improvement is paid month to month and you can cancel whenever you want.'
   },
   {
     id: 'services-page-en-5',
-    question: 'Can you work with my internal team?',
-    answer: 'Absolutely. We collaborate closely with internal development, marketing, and sales teams for seamless integration.'
+    question: 'Do you take on one-off projects?',
+    answer: 'Yes: custom development and automated emails. They can also be included as improvements within continuous improvement.'
   },
   {
     id: 'services-page-en-6',
-    question: 'What if I need changes during development?',
-    answer: 'We understand that requirements can evolve. We include a set number of revisions in each service and handle additional changes transparently according to the agreed scope.'
+    question: 'Who will I be talking to?',
+    answer: 'Me, Mathias. I\'m the one who looks at your store and implements the improvements.'
   }
 ];
 
@@ -160,56 +140,66 @@ export const servicesPageFAQsEn: FAQ[] = [
 export const migrationFAQsEs: FAQ[] = [
   {
     id: 'migration-1',
-    question: '¿La migración corta las ventas de mi tienda actual?',
-    answer: 'No. Trabajamos en un entorno de staging y solo pasamos a producción cuando todo está verificado. Tu tienda actual sigue vendiendo hasta el cambio final.'
+    question: '¿Tengo que cerrar la tienda durante la migración?',
+    answer: 'No. Tu tienda actual sigue vendiendo mientras preparo la nueva. Solo hacemos el cambio cuando todo está revisado.'
   },
   {
     id: 'migration-2',
-    question: '¿Qué pasa con mi posicionamiento SEO al migrar?',
-    answer: 'Mantenemos las URLs cuando es posible y configuramos redirects 301 para conservar el posicionamiento que ya tienes.'
+    question: '¿Qué pasa con mi posicionamiento en Google?',
+    answer: 'Mantengo las URLs cuando es posible y configuro redirecciones 301 para conservar el posicionamiento que ya tienes.'
   },
   {
     id: 'migration-3',
-    question: '¿La migración incluye el copy de todos mis productos?',
-    answer: 'Sí, la carga y copy de producto están incluidos dentro del alcance acordado. Catálogos muy grandes o con necesidades especiales de copywriting se cotizan aparte.'
+    question: '¿Cuánto tarda?',
+    answer: 'Aproximadamente 3 semanas. Depende sobre todo del tamaño del catálogo; te doy la fecha exacta antes de empezar.'
   },
   {
     id: 'migration-4',
-    question: '¿Cuánto tarda una migración completa?',
-    answer: 'Depende del tamaño de tu catálogo, pero la mayoría de migraciones de este alcance se completan en pocas semanas.'
+    question: '¿Cuánto cuesta?',
+    answer: 'Depende de tu tienda, por eso no publico una cifra. Empezamos con una reunión gratis en la que veo tu tienda, y te doy un precio cerrado antes de empezar. Incluye dos revisiones de diseño.'
   },
   {
     id: 'migration-5',
-    question: '¿Qué mejoras incluye la migración?',
-    answer: 'Mejoras heurísticas de conversión: aplico criterios de experiencia de usuario en portada, navegación, fichas de producto y checkout para que la tienda nueva no solo cambie de plataforma, sino que venda mejor desde el primer día.'
+    question: '¿Desde qué plataformas migras?',
+    answer: 'WooCommerce/WordPress, PrestaShop, Wix, Magento y otras. Si la tuya no está en la lista, escríbeme.'
+  },
+  {
+    id: 'migration-6',
+    question: '¿Qué pasa cuando termina la migración?',
+    answer: 'Tu tienda ya está en Shopify y con las mejoras hechas. Si quieres seguir subiendo lo que vende por cada visita, el siguiente paso es la mejora continua.'
   }
 ];
 
 export const migrationFAQsEn: FAQ[] = [
   {
     id: 'migration-en-1',
-    question: 'Does the migration interrupt sales on my current store?',
-    answer: 'No. We work in a staging environment and only go live once everything is verified. Your current store keeps selling until the final switch.'
+    question: 'Do I have to close my store during the migration?',
+    answer: 'No. Your current store keeps selling while I build the new one. We only switch once everything has been checked.'
   },
   {
     id: 'migration-en-2',
-    question: 'What happens to my SEO ranking during migration?',
-    answer: 'We keep existing URLs whenever possible and set up 301 redirects to preserve the ranking you already have.'
+    question: 'What happens to my Google rankings?',
+    answer: 'I keep URLs whenever possible and set up 301 redirects to preserve the rankings you already have.'
   },
   {
     id: 'migration-en-3',
-    question: 'Does the migration include copy for all my products?',
-    answer: 'Yes, product upload and copy are included within the agreed scope. Very large catalogs or special copywriting needs are quoted separately.'
+    question: 'How long does it take?',
+    answer: 'About 3 weeks. It mostly depends on the size of the catalogue; I give you the exact date before we start.'
   },
   {
     id: 'migration-en-4',
-    question: 'How long does a full migration take?',
-    answer: 'It depends on your catalog size, but most migrations of this scope are completed within a few weeks.'
+    question: 'How much does it cost?',
+    answer: 'It depends on your store, which is why I don\'t publish a figure. We start with a free meeting where I look at your store, and I give you a fixed price before we start. It includes two design revisions.'
   },
   {
     id: 'migration-en-5',
-    question: 'What improvements does the migration include?',
-    answer: 'Heuristic conversion improvements: I apply user-experience criteria to the homepage, navigation, product pages and checkout so the new store doesn\'t just switch platforms — it sells better from day one.'
+    question: 'Which platforms do you migrate from?',
+    answer: 'WooCommerce/WordPress, PrestaShop, Wix, Magento and others. If yours isn\'t on the list, get in touch.'
+  },
+  {
+    id: 'migration-en-6',
+    question: 'What happens when the migration is done?',
+    answer: 'Your store is on Shopify with the improvements done. If you want to keep raising what each visit sells, the next step is continuous improvement.'
   }
 ];
 
@@ -218,22 +208,32 @@ export const monthlyFAQsEs: FAQ[] = [
   {
     id: 'monthly-1',
     question: '¿Tiene permanencia?',
-    answer: 'No. Es una mensualidad sin permanencia: si un mes decides parar, paras.'
+    answer: 'No. Pagas mes a mes y cancelas cuando quieras.'
   },
   {
     id: 'monthly-2',
     question: '¿De dónde salen las mejoras?',
-    answer: 'De grabaciones de sesiones reales de tu tienda. Veo cómo navegan tus clientes, dónde dudan y dónde abandonan, y de ahí salen las 4 mejoras del mes.'
+    answer: 'Depende de tu tráfico. Con poco tráfico, de mejoras heurísticas (buenas prácticas de experiencia de compra) y datos cualitativos: grabaciones de sesiones reales con Microsoft Clarity, que es gratis para ti. Con mucho tráfico, priorizo los tests A/B.'
   },
   {
     id: 'monthly-3',
-    question: '¿Qué necesito para empezar?',
-    answer: 'Una tienda que ya esté en un punto aceptable. Si está muy abandonada o no sabes qué falla, te recomiendo empezar por la auditoría.'
+    question: '¿Me garantizas resultados?',
+    answer: 'No. Lo que te garantizo es el trabajo: al menos 4 mejoras implementadas al mes y un informe de cómo evoluciona tu facturación por visita. El resultado se mira en tendencia, durante varios meses.'
   },
   {
     id: 'monthly-4',
+    question: '¿Qué necesito para empezar?',
+    answer: 'Empezamos con una reunión gratis para entender qué le pasa a tu tienda. Si encaja, necesito acceso a tu Shopify y el primer mes empiezo por lo que más frena tus ventas.'
+  },
+  {
+    id: 'monthly-5',
     question: '¿Quién implementa las mejoras?',
-    answer: 'Yo. Las 4 mejoras del mes están incluidas en la mensualidad, junto con el seguimiento y una revisión mensual contigo.'
+    answer: 'Yo. Las mejoras del mes, al menos 4, están incluidas en la mensualidad.'
+  },
+  {
+    id: 'monthly-6',
+    question: '¿Y si no estoy en Shopify?',
+    answer: 'Primero migro tu tienda a Shopify, con las mejoras ya hechas. Después seguimos con la mejora continua.'
   }
 ];
 
@@ -241,22 +241,32 @@ export const monthlyFAQsEn: FAQ[] = [
   {
     id: 'monthly-en-1',
     question: 'Is there a lock-in?',
-    answer: 'No. It\'s a monthly plan with no minimum term: if you decide to stop one month, you stop.'
+    answer: 'No. You pay month to month and cancel whenever you want.'
   },
   {
     id: 'monthly-en-2',
     question: 'Where do the improvements come from?',
-    answer: 'From real session recordings of your store. I see how your customers browse, where they hesitate and where they drop off, and that\'s where the month\'s 4 improvements come from.'
+    answer: 'It depends on your traffic. With low traffic, from conversion best practices and qualitative data: real session recordings with Microsoft Clarity, which is free for you. With high traffic, I prioritise A/B tests.'
   },
   {
     id: 'monthly-en-3',
-    question: 'What do I need to get started?',
-    answer: 'A store that\'s already in reasonable shape. If it\'s very neglected or you don\'t know what\'s wrong, I recommend starting with the audit.'
+    question: 'Do you guarantee results?',
+    answer: 'No. What I guarantee is the work: at least 4 improvements implemented every month and a report on how your revenue per visit is evolving. The result is read as a trend, over several months.'
   },
   {
     id: 'monthly-en-4',
+    question: 'What do I need to get started?',
+    answer: 'We start with a free meeting to understand what\'s holding your store back. If it\'s a fit, I need access to your Shopify, and in the first month I start with what\'s holding your sales back the most.'
+  },
+  {
+    id: 'monthly-en-5',
     question: 'Who implements the improvements?',
-    answer: 'I do. The month\'s 4 improvements are included in the plan, along with follow-up and a monthly review with you.'
+    answer: 'I do. The month\'s improvements, at least 4, are included in the monthly fee.'
+  },
+  {
+    id: 'monthly-en-6',
+    question: 'What if I\'m not on Shopify?',
+    answer: 'First I migrate your store to Shopify, with the improvements already done. Then we continue with continuous improvement.'
   }
 ];
 
@@ -294,53 +304,6 @@ export const customDevFAQsEn: FAQ[] = [
     id: 'custom-dev-en-3',
     question: 'What happens if the scope changes during the project?',
     answer: 'We talk it through before touching anything: minor changes are absorbed, significant ones get the quote adjusted before we continue.'
-  }
-];
-
-// FAQ — Auditoría de conversión
-export const conversionAuditFAQsEs: FAQ[] = [
-  {
-    id: 'conv-audit-1',
-    question: '¿Necesitas acceso a mis métricas o a mi Shopify?',
-    answer: 'No. Es una auditoría heurística: reviso tu tienda como la vería un cliente, con criterios de experiencia de usuario y conversión. Por eso funciona incluso si tu tienda tiene pocas visitas o nunca miraste los datos.'
-  },
-  {
-    id: 'conv-audit-3',
-    question: '¿Cuánto cuesta la auditoría de conversión?',
-    answer: '140€ + IVA, precio cerrado. Es el precio de la auditoría: si después quieres que implemente las mejoras, eso va con presupuesto aparte.'
-  },
-  {
-    id: 'conv-audit-5',
-    question: '¿Cuánto tarda en llegarme el resultado?',
-    answer: 'La auditoría te llega en 7-10 días. Si después me encargas las mejoras, las fechas quedan cerradas en el presupuesto antes de empezar.'
-  },
-  {
-    id: 'conv-audit-6',
-    question: '¿Garantizan que van a subir mis ventas?',
-    answer: 'No. Nadie puede garantizarte una tasa de conversión exacta — si alguien te lo promete, no está siendo honesto. Lo que te doy es método: un diagnóstico claro y un listado de tareas para que sepas exactamente qué se va a hacer.'
-  }
-];
-
-export const conversionAuditFAQsEn: FAQ[] = [
-  {
-    id: 'conv-audit-en-1',
-    question: 'Do you need access to my metrics or my Shopify admin?',
-    answer: "No. It's a heuristic audit: I go through your store the way a customer would, using user-experience and conversion criteria. That's why it works even if your store gets few visits or you've never looked at the data."
-  },
-  {
-    id: 'conv-audit-en-3',
-    question: 'How much does the conversion audit cost?',
-    answer: '€140 + VAT, fixed price. That is the price of the audit: if you then want me to implement the improvements, that is quoted separately.'
-  },
-  {
-    id: 'conv-audit-en-5',
-    question: 'How long until I get the results?',
-    answer: 'The audit reaches you in 7-10 days. If you then hand me the improvements, the dates are agreed in the quote before starting.'
-  },
-  {
-    id: 'conv-audit-en-6',
-    question: 'Do you guarantee my sales will go up?',
-    answer: "No. No one can guarantee you an exact conversion rate — if someone promises that, they're not being honest. What I give you is a method: a clear diagnosis and a task list so you know exactly what to do next."
   }
 ];
 

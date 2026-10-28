@@ -8,13 +8,15 @@ import { useLanguage } from "@/contexts/LanguageContext"
 // Assets por caso: `logo` es opcional (favicon/isotipo del cliente, junto al nombre).
 // `image` apunta a una captura vertical (mobile) de la home de la tienda. Subí el
 // archivo a esa ruta exacta en /public y aparece solo; si falta, se ve un placeholder.
-const CASE_ASSETS: Record<string, { logo?: string; image?: string }> = {
+const CASE_ASSETS: Record<string, { logo?: string; image?: string; logoSize?: { w: number; h: number } }> = {
   card1: {
     logo: "/assets/img/canramos-logo.jpg",
+    logoSize: { w: 750, h: 340 }, // logotipo horizontal
     image: "/assets/img/case-canramos-home.jpg",
   },
   card2: {
     logo: "/assets/img/termolar-logo.jpg",
+    logoSize: { w: 1024, h: 1024 }, // símbolo cuadrado
     image: "/assets/img/case-termolar-home.jpg",
   },
 }
@@ -61,8 +63,86 @@ function CaseLogo({ src, alt }: { src?: string; alt: string }) {
   )
 }
 
-export default function CaseStudySection() {
+/** Captura en un marco de móvil, recortada por abajo para que "asome" del escenario. */
+function PhoneShot({ src, alt }: { src?: string; alt: string }) {
+  const [failed, setFailed] = useState(false)
+  return (
+    <div className="absolute left-1/2 top-8 w-[170px] -translate-x-1/2 transition-transform duration-500 ease-out group-hover:-translate-y-2 sm:w-[190px]">
+      <div className="relative aspect-[9/17] overflow-hidden rounded-[26px] border-[6px] border-[#1c1c1c] bg-sw-bg-0 shadow-[0_20px_50px_rgba(0,0,0,0.55)]">
+        {src && !failed ? (
+          <Image src={src} alt={alt} fill className="object-cover object-top" sizes="190px" onError={() => setFailed(true)} />
+        ) : (
+          <div className="flex h-full items-center justify-center">
+            <Smartphone className="h-6 w-6 text-sw-fg-4" aria-hidden="true" />
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/** Logo completo (sin recortar) sobre placa blanca, que es el fondo de los archivos. */
+function BrandLogo({ src, alt, size }: { src?: string; alt: string; size?: { w: number; h: number } }) {
+  const [failed, setFailed] = useState(false)
+  if (!src || failed) return null
+  const wide = size ? size.w / size.h > 1.3 : false
+  return (
+    <div className={`flex h-14 shrink-0 items-center justify-center rounded-sm bg-white ${wide ? "px-3" : "w-14 p-1.5"}`}>
+      <Image
+        src={src}
+        alt={alt}
+        width={size?.w ?? 120}
+        height={size?.h ?? 120}
+        className={`object-contain ${wide ? "h-10 w-auto max-w-[140px]" : "h-full w-full"}`}
+        onError={() => setFailed(true)}
+      />
+    </div>
+  )
+}
+
+export default function CaseStudySection({ variant = "full" }: { variant?: "full" | "brief" }) {
   const { t } = useLanguage()
+
+  // Breve: logo, nombre y el resultado clave de cada caso. Sin botones.
+  if (variant === "brief") {
+    const brief = ["card1", "card2"].map((key) => ({
+      key,
+      title: t(`casestudy.${key}.title`),
+      tag: t(`casestudy.${key}.tag`),
+      result: t(`casestudy.${key}.key`),
+    }))
+    return (
+      <section id="casos-reales" className="bg-sw-bg-1 py-16 sm:py-20">
+        <div className="mx-auto max-w-5xl px-5">
+          <h2 className="mb-10 font-display text-3xl text-sw-fg-1 sm:text-4xl">{t('casestudy.title.brief')}</h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            {brief.map((c) => (
+              <article
+                key={c.key}
+                className="group overflow-hidden rounded-sm border border-sw-line bg-sw-bg-2 transition-colors hover:border-sw-line-strong"
+              >
+                {/* Escenario: la captura dentro de un marco de móvil que asoma desde abajo */}
+                <div className="relative h-64 overflow-hidden border-b border-sw-line bg-[radial-gradient(120%_90%_at_50%_100%,rgba(124,179,224,0.18),transparent_70%)] sm:h-72">
+                  <PhoneShot src={CASE_ASSETS[c.key].image} alt={`${c.title} — ${t('casestudy.screenshotAlt')}`} />
+                  <span className="absolute left-4 top-4 rounded-full border border-sw-line-strong bg-sw-bg-0/80 px-3 py-1 font-mono-label text-sw-fg-2 backdrop-blur">
+                    {c.tag}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-5 p-6 sm:p-7">
+                  <BrandLogo src={CASE_ASSETS[c.key].logo} alt={`Logo de ${c.title}`} size={CASE_ASSETS[c.key].logoSize} />
+                  <div className="min-w-0">
+                    <h3 className="font-display text-xl text-sw-fg-1 sm:text-2xl">{c.title}</h3>
+                    <p className="mt-1 leading-snug text-sw-fg-2">{c.result}</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   const cards = [
     {

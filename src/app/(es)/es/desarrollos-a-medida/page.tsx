@@ -29,8 +29,9 @@ export default function DesarrollosAMedida() {
           { title: 'Funcionalidad a medida', description: 'Construimos lo que tu modelo de negocio necesita y Shopify no trae de fábrica.' },
           { title: 'Presupuesto cerrado', description: 'Evaluamos el alcance y te damos un precio fijo antes de empezar.' },
         ],
+        includesNote: 'También puede entrar como mejora dentro de la mejora continua (290 € + IVA al mes).',
         closingTitle: '¿Tienes algo específico en mente?',
-        closingLede: 'Cuéntanos qué necesitas y te decimos si es viable, cuánto cuesta y cuánto tarda.',
+        closingLede: 'Cuéntame qué necesitas y te digo si es viable, cuánto cuesta y cuánto tarda.',
         faqTitle: 'Preguntas sobre desarrollos a medida',
         faqs: customDevFAQsEs,
         structuredData: {

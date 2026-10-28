@@ -29,6 +29,7 @@ export default function EmailMarketingAutomation() {
           { title: 'Post-compra y reseñas', description: 'Construye confianza y consigue prueba social, automáticamente.' },
           { title: 'Configurado y probado', description: 'Cada flujo queda activo y testeado antes de entregarlo.' },
         ],
+        includesNote: 'También puede entrar como mejora dentro de la mejora continua (290 € + IVA al mes).',
         closingTitle: 'Pon tu email marketing en automático.',
         closingLede: 'Elige los flujos que tu tienda necesita ahora, suma más cuando tenga sentido.',
         faqTitle: 'Preguntas sobre email marketing automation',

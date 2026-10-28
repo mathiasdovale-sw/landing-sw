@@ -115,4 +115,4 @@ Una vez al mes, con el mes completo. En periodos más cortos, sobre todo con poc
 
 Calcula la facturación por visita del último mes y apúntala. Dentro de un mes, vuelve a calcularla. Ese es el número que tiene que haber subido.
 
-Si lo calculas y no sabes por dónde empezar a mejorarlo, en SellifyWorks hacemos [auditorías heurísticas de tiendas Shopify](/es/auditoria-conversion): revisamos tu tienda y te entregamos una lista de mejoras concretas.
+Si lo calculas y no sabes por dónde empezar a mejorarlo, [pide una reunión gratis](/es/contacto) y vemos juntos qué le pasa a tu tienda. Es justo lo que trabajo cada mes en la [mejora continua](/es/mejora-continua).

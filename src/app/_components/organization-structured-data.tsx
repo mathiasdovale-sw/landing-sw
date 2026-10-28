@@ -28,13 +28,13 @@ const OrganizationStructuredData = ({
   const defaultSpecialties = {
     es: [
       "Migración a Shopify",
-      "Auditoría de conversión",
+      "Mejora continua",
       "Email marketing automation",
       "Desarrollos a medida"
     ],
     en: [
       "Shopify Migration",
-      "Conversion Audit",
+      "Continuous Improvement",
       "Email Marketing Automation",
       "Custom Development"
     ]
@@ -116,8 +116,8 @@ const OrganizationStructuredData = ({
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": language === 'es' ? "Auditoría de conversión" : "Conversion Audit",
-            "url": `${baseUrl}/${language}/${language === 'es' ? 'auditoria-conversion' : 'conversion-audit'}`
+            "name": language === 'es' ? "Mejora continua" : "Continuous Improvement",
+            "url": `${baseUrl}/${language}/${language === 'es' ? 'mejora-continua' : 'continuous-improvement'}`
           }
         },
         {

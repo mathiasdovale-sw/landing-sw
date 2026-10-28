@@ -1,8 +1,9 @@
 "use client"
-import { Mail, MapPin, ArrowRight } from "lucide-react"
+import { Mail, MapPin, ArrowRight, MessageCircle } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { motion } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { whatsappHref } from "@/lib/contact-config"
 
 declare global {
   interface Window {
@@ -11,13 +12,17 @@ declare global {
   }
 }
 
-type FieldName = 'name' | 'email' | 'company' | 'message'
+type FieldName = 'name' | 'email' | 'company' | 'url' | 'message'
 type FieldStatus = 'idle' | 'valid' | 'invalid'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+// URL de la tienda: basta con un dominio ("mitienda.com"), con o sin https://
+const URL_RE = /^(https?:\/\/)?[^\s/.]+(\.[^\s/.]+)+(\/\S*)?$/i
 
 export default function ContactSection() {
   const { t } = useLanguage()
+  // Se pide la URL de la tienda (en lugar de "Empresa").
+  const waHref = whatsappHref()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<{
     type: 'success' | 'error' | null
@@ -29,12 +34,13 @@ export default function ContactSection() {
   const [showLoadingMessage, setShowLoadingMessage] = useState(false)
 
   const [values, setValues] = useState<Record<FieldName, string>>({
-    name: '', email: '', company: '', message: '',
+    name: '', email: '', company: '', url: '', message: '',
   })
   const [fieldStatus, setFieldStatus] = useState<Record<FieldName, { status: FieldStatus; message: string }>>({
     name: { status: 'idle', message: '' },
     email: { status: 'idle', message: '' },
     company: { status: 'idle', message: '' },
+    url: { status: 'idle', message: '' },
     message: { status: 'idle', message: '' },
   })
 
@@ -60,6 +66,19 @@ export default function ContactSection() {
         return false
       }
       setFieldStatus((s) => ({ ...s, email: { status: 'valid', message: t('contact.form.email.ok') } }))
+      return true
+    }
+
+    if (field === 'url') {
+      if (!val) {
+        setFieldStatus((s) => ({ ...s, url: live ? { status: 'idle', message: '' } : { status: 'invalid', message: t('contact.form.url.req') } }))
+        return false
+      }
+      if (!URL_RE.test(val)) {
+        setFieldStatus((s) => ({ ...s, url: live ? { status: 'idle', message: '' } : { status: 'invalid', message: t('contact.form.url.bad') } }))
+        return false
+      }
+      setFieldStatus((s) => ({ ...s, url: { status: 'valid', message: t('contact.form.url.ok') } }))
       return true
     }
 
@@ -178,8 +197,9 @@ export default function ContactSection() {
     const nameOk = validateField('name', values.name, false)
     const emailOk = validateField('email', values.email, false)
     const messageOk = validateField('message', values.message, false)
+    const urlOk = validateField('url', values.url, false)
 
-    if (!nameOk || !emailOk || !messageOk) {
+    if (!nameOk || !emailOk || !messageOk || !urlOk) {
       setSubmitStatus({ type: 'error', message: t('contact.form.err') })
       return
     }
@@ -231,6 +251,7 @@ export default function ContactSection() {
       email: values.email,
       company: values.company,
       message: values.message,
+      storeUrl: values.url.trim(),
       recaptchaToken: recaptchaToken || 'dev-mode',
     }
 
@@ -282,11 +303,12 @@ export default function ContactSection() {
         } catch (error) {
           // Silencioso
         }
-        setValues({ name: '', email: '', company: '', message: '' })
+        setValues({ name: '', email: '', company: '', url: '', message: '' })
         setFieldStatus({
           name: { status: 'idle', message: '' },
           email: { status: 'idle', message: '' },
           company: { status: 'idle', message: '' },
+          url: { status: 'idle', message: '' },
           message: { status: 'idle', message: '' },
         })
         resetRecaptcha()
@@ -357,6 +379,18 @@ export default function ContactSection() {
                 </div>
               </div>
             </div>
+
+            {waHref && (
+              <a
+                href={waHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-10 inline-flex items-center gap-2 rounded-sm border border-sw-success/60 px-6 py-3 font-semibold text-sw-fg-1 transition-colors hover:bg-sw-success/10"
+              >
+                <MessageCircle size={18} className="text-sw-success" aria-hidden="true" />
+                {t('contact.whatsapp')}
+              </a>
+            )}
           </div>
 
           {/* Right Side - Contact Form */}
@@ -406,21 +440,23 @@ export default function ContactSection() {
               </div>
 
               <div>
-                <label htmlFor="company" className="mb-2 block font-mono-label text-sw-fg-3">
-                  {t('contact.form.company.label')}
+                <label htmlFor="store-url" className="mb-2 block font-mono-label text-sw-fg-3">
+                  {t('contact.form.url.label')}
                 </label>
                 <input
                   type="text"
-                  id="company"
-                  name="company"
-                  value={values.company}
-                  onChange={handleChange('company')}
-                  onBlur={handleBlur('company')}
-                  className={`w-full rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors focus:border-sw-secondary ${fieldBorderClass('company')}`}
-                  placeholder={t('contact.form.company')}
+                  id="store-url"
+                  name="url"
+                  inputMode="url"
+                  autoComplete="url"
+                  value={values.url}
+                  onChange={handleChange('url')}
+                  onBlur={handleBlur('url')}
+                  className={`w-full rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors focus:border-sw-secondary ${fieldBorderClass('url')}`}
+                  placeholder={t('contact.form.url')}
                 />
-                <span className={`mt-1.5 block min-h-[14px] font-mono-label text-[12px] normal-case tracking-normal ${fieldMessageClass('company')}`}>
-                  {fieldStatus.company.message}
+                <span className={`mt-1.5 block min-h-[14px] font-mono-label text-[12px] normal-case tracking-normal ${fieldMessageClass('url')}`}>
+                  {fieldStatus.url.message}
                 </span>
               </div>
 

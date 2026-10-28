@@ -61,8 +61,6 @@ const LanguageSelector = () => {
         '/es/desarrollos-a-medida': { es: '/es/desarrollos-a-medida', en: '/en/custom-shopify-development' },
         '/en/custom-shopify-development': { es: '/es/desarrollos-a-medida', en: '/en/custom-shopify-development' },
 
-        '/es/auditoria-conversion': { es: '/es/auditoria-conversion', en: '/en/conversion-audit' },
-        '/en/conversion-audit': { es: '/es/auditoria-conversion', en: '/en/conversion-audit' },
 
         '/es/email-marketing-automation': { es: '/es/email-marketing-automation', en: '/en/email-marketing-automation' },
         '/en/email-marketing-automation': { es: '/es/email-marketing-automation', en: '/en/email-marketing-automation' },

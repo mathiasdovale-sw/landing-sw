@@ -33,6 +33,10 @@ const contactFormSchema = z.object({
   company: z.string()
     .max(100, 'Company name too long')
     .optional(),
+  storeUrl: z.string()
+    .max(300, 'Store URL too long')
+    .optional(),
+  onShopify: z.enum(['si', 'no']).optional(),
   service: z.string()
     .max(100, 'Service name too long')
     .optional(),
@@ -130,6 +134,7 @@ export async function POST(request: NextRequest) {
       ...validatedData,
       name: DOMPurify.sanitize(validatedData.name, { ALLOWED_TAGS: [] }),
       company: validatedData.company ? DOMPurify.sanitize(validatedData.company, { ALLOWED_TAGS: [] }) : undefined,
+      storeUrl: validatedData.storeUrl ? DOMPurify.sanitize(validatedData.storeUrl, { ALLOWED_TAGS: [] }) : undefined,
       service: validatedData.service ? DOMPurify.sanitize(validatedData.service, { ALLOWED_TAGS: [] }) : undefined,
       message: DOMPurify.sanitize(validatedData.message, { ALLOWED_TAGS: [] })
     }
