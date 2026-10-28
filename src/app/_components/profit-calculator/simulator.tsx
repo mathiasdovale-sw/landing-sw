@@ -2,7 +2,6 @@
 // Simulador de palancas: el usuario mueve indicadores y ve al instante cómo
 // cambiaría su beneficio. Toda la lógica está en simulate() (calc.ts).
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react"
-import Link from "next/link"
 import {
   ArrowDownRight,
   ArrowRight,
@@ -39,11 +38,10 @@ interface LeverDef {
 
 const share = (a: number, b: number) => (b > 0 ? a / b : null)
 
-/** Pedidos de clientes recurrentes, estimados en proporción a cuántos clientes son. */
-const recurrentOrders = (r: Results) => {
-  const c = r.newCustomers + r.returningCustomers
-  return c > 0 ? (r.orders * r.returningCustomers) / c : 0
-}
+/** Pedidos de clientes recurrentes = pedidos − clientes nuevos (mín. 0). */
+const recurrentOrders = (r: Results) => r.recurrentOrders ?? 0
+/** La recompra solo se puede simular si sabemos cuántos pedidos son de recurrentes. */
+const canRepeat = (r: Results) => (r.recurrentOrders ?? 0) > 0
 
 const LEVERS: LeverDef[] = [
   { key: "traffic", label: "Visitas", hint: "Más tráfico con la misma conversión", icon: Users, min: -50, max: 100, step: 5, show: (r) => fmt.num(r.sessions) },
@@ -65,7 +63,7 @@ const LEVERS: LeverDef[] = [
   { key: "cogs", label: "Coste de producto", hint: "Negociar con proveedores, cambiar de fabricante…", icon: Package, min: -30, max: 30, step: 1, show: (r) => fmt.pct(share(r.cogs, r.netProductSales)) },
   { key: "shipping", label: "Coste de envío por pedido", hint: "Mejores tarifas de transporte", icon: Truck, min: -50, max: 50, step: 5, show: (r) => fmt.eur2(share(r.shippingPaid, r.orders)) },
   { key: "ads", label: "Inversión en publicidad", hint: "Cada euro extra rinde algo menos que el anterior", icon: Megaphone, min: -100, max: 100, step: 5, show: (r) => fmt.eur(r.adSpend) },
-  { key: "fixed", label: "Gastos fijos", hint: "Plataforma, sueldos, alquiler…", icon: Building2, min: -50, max: 50, step: 5, show: (r) => fmt.eur(r.fixed) },
+  { key: "fixed", label: "Gastos fijos", hint: "Plataforma, alquiler, gestoría… (sin tu sueldo)", icon: Building2, min: -50, max: 50, step: 5, show: (r) => fmt.eur(r.fixed) },
 ]
 
 const PRESETS: { label: string; levers: Partial<Levers> }[] = [
@@ -105,10 +103,9 @@ interface Props {
   inputs: Inputs
   base: Results
   per: string
-  contactHref: string
 }
 
-export default function Simulator({ inputs, base, per, contactHref }: Props) {
+export default function Simulator({ inputs, base, per }: Props) {
   const [levers, setLevers] = useState<Levers>(ZERO_LEVERS)
   const sim = useMemo(() => simulate(inputs, base, levers), [inputs, base, levers])
   const ranking = useMemo(() => leverRanking(inputs, base, 10), [inputs, base])
@@ -159,7 +156,7 @@ export default function Simulator({ inputs, base, per, contactHref }: Props) {
             key={p.label}
             type="button"
             onClick={() => setLevers({ ...ZERO_LEVERS, ...p.levers })}
-            disabled={(p.levers.ads !== undefined && base.adSpend === 0) || (p.levers.repeat !== undefined && base.returningCustomers === 0)}
+            disabled={(p.levers.ads !== undefined && base.adSpend === 0) || (p.levers.repeat !== undefined && !canRepeat(base))}
             className="rounded-full border border-sw-line-strong bg-sw-bg-0 px-3.5 py-1.5 text-sm text-sw-fg-2 transition-colors hover:border-sw-secondary hover:text-sw-fg-1 disabled:opacity-40"
           >
             {p.label}
@@ -188,7 +185,7 @@ export default function Simulator({ inputs, base, per, contactHref }: Props) {
               effect={isolated[l.key]}
               base={base}
               sim={sim}
-              disabled={(l.key === "ads" && base.adSpend === 0) || (l.key === "repeat" && base.returningCustomers === 0)}
+              disabled={(l.key === "ads" && base.adSpend === 0) || (l.key === "repeat" && !canRepeat(base))}
               onChange={(v) => set(l.key, v)}
             />
           ))}
@@ -270,15 +267,6 @@ export default function Simulator({ inputs, base, per, contactHref }: Props) {
               {base.ltvMargin !== null && <MiniDelta label="LTV (margen)" a={base.ltvMargin} b={sim.ltvMargin} format={fmt.eur} better="up" />}
             </div>
 
-            {touched && delta > 0.5 && (
-              <Link
-                href={contactHref}
-                className="mt-6 flex items-center justify-center gap-2 rounded-sm bg-sw-brand px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-sw-brand-hover"
-              >
-                Quiero conseguir esos {fmt.eur(delta)}
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
-            )}
           </div>
         </div>
       </div>
@@ -288,7 +276,7 @@ export default function Simulator({ inputs, base, per, contactHref }: Props) {
 
       <p className="mt-6 text-xs leading-relaxed text-sw-fg-4">
         Supuestos del simulador: visitas y conversión cambian el número de pedidos y el ticket medio su importe; descuentos y devoluciones mantienen su peso salvo que
-        muevas su palanca; envíos, packaging y comisiones crecen con los pedidos; la recompra suma pedidos de tus clientes recurrentes (estimados en proporción a cuántos son) sin coste de marketing; la publicidad tiene rendimientos decrecientes (al invertir más, el ROAS baja; al recortar, sube), un supuesto orientativo; el resto de marketing no cambia. En la realidad
+        muevas su palanca; envíos, packaging y comisiones crecen con los pedidos; la recompra suma pedidos de tus clientes recurrentes (sus pedidos son tus pedidos menos tus clientes nuevos, porque cada cliente nuevo hace su primer pedido) sin coste de marketing; la palanca de gastos fijos no toca tu sueldo; el coste de devoluciones crece con las devoluciones; la publicidad tiene rendimientos decrecientes (al invertir más, el ROAS baja; al recortar, sube), un supuesto orientativo; el resto de marketing no cambia. En la realidad
         las palancas no son independientes (por ejemplo, menos descuentos puede bajar la conversión).
       </p>
     </div>
@@ -341,7 +329,7 @@ function LeverCard({
             </span>
           </div>
           <p className="text-xs text-sw-fg-4">
-            {disabled ? (def.key === "repeat" ? "Rellena tus clientes recurrentes (bloque 2) para usarla" : "No has metido inversión en publicidad") : def.hint}
+            {disabled ? (def.key === "repeat" ? "Rellena pedidos y clientes nuevos (bloque 2) para usarla" : "No has metido inversión en publicidad") : def.hint}
           </p>
         </div>
       </div>

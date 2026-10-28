@@ -11,6 +11,10 @@ import { CHROMELESS_ROUTES } from "@/lib/chromeless-routes"
 
 import { ArrowRight } from "lucide-react"
 
+// Suscripción al newsletter oculta temporalmente en toda la web.
+// Para reactivarla, poner a true.
+const SHOW_NEWSLETTER = false
+
 export default function Footer() {
   const { t } = useLanguage()
   const { links, currentLocale } = useLocalizedLinks()
@@ -84,6 +88,7 @@ export default function Footer() {
   return (
     <footer className="bg-sw-bg-0 text-sw-fg-1">
       {/* Newsletter Section */}
+      {SHOW_NEWSLETTER && (
       <div className="border-b border-sw-line">
         <div className="mx-auto max-w-7xl px-5 py-16 md:py-20">
           <div className="grid items-center gap-12 lg:grid-cols-2">
@@ -132,6 +137,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Main Footer */}
       <div className="mx-auto max-w-7xl px-5 py-12 md:py-16">

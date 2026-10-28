@@ -14,12 +14,13 @@ export const LEVEL_STYLES: Record<Level, { text: string; border: string; bg: str
   warn: { text: "text-amber-400", border: "border-amber-400/40", bg: "bg-amber-400/10", label: "Atención" },
   bad: { text: "text-sw-danger", border: "border-sw-danger/50", bg: "bg-sw-danger/10", label: "Problema" },
   neutral: { text: "text-sw-fg-1", border: "border-sw-line-strong", bg: "bg-sw-bg-2", label: "" },
+  review: { text: "text-amber-400", border: "border-amber-400/40", bg: "bg-amber-400/10", label: "Revisar datos" },
 }
 
 export function LevelIcon({ level, className = "h-4 w-4" }: { level: Level; className?: string }) {
   const s = LEVEL_STYLES[level].text
   if (level === "good") return <CheckCircle2 className={`${className} ${s}`} aria-hidden="true" />
-  if (level === "warn") return <AlertTriangle className={`${className} ${s}`} aria-hidden="true" />
+  if (level === "warn" || level === "review") return <AlertTriangle className={`${className} ${s}`} aria-hidden="true" />
   if (level === "bad") return <XCircle className={`${className} ${s}`} aria-hidden="true" />
   return <Info className={`${className} text-sw-fg-3`} aria-hidden="true" />
 }
@@ -93,9 +94,11 @@ interface NumFieldProps {
   hint?: string
   integer?: boolean
   ariaLabel?: string
+  /** Dato clave sin rellenar: se marca para que no pase desapercibido. */
+  missing?: boolean | string
 }
 
-export function NumField({ label, concept, value, onChange, suffix, placeholder, hint, integer, ariaLabel }: NumFieldProps) {
+export function NumField({ label, concept, value, onChange, suffix, placeholder, hint, integer, ariaLabel, missing }: NumFieldProps) {
   const id = useId()
   const { button, panel, concept: c } = useConcept(concept)
   const text = label ?? c?.label ?? ""
@@ -109,15 +112,20 @@ export function NumField({ label, concept, value, onChange, suffix, placeholder,
           {button}
         </div>
       )}
-      <div className="flex items-stretch overflow-hidden rounded-sm border border-sw-line-strong bg-sw-bg-2 transition-colors focus-within:border-sw-secondary">
+      <div
+        className={`flex items-stretch overflow-hidden rounded-sm border bg-sw-bg-2 transition-colors focus-within:border-sw-secondary ${
+          missing ? "border-amber-400/60" : "border-sw-line-strong"
+        }`}
+      >
         <input
           id={id}
           type="text"
           inputMode={integer ? "numeric" : "decimal"}
           autoComplete="off"
           value={value}
-          placeholder={placeholder ?? "0"}
+          placeholder={placeholder ?? ""}
           aria-label={ariaLabel}
+          aria-invalid={missing ? true : undefined}
           onChange={(e) => onChange(e.target.value.replace(/[^\d.,\-]/g, ""))}
           className="w-full min-w-0 bg-transparent px-3 py-2.5 text-base text-sw-fg-1 placeholder:text-sw-fg-4 outline-none"
         />
@@ -125,6 +133,7 @@ export function NumField({ label, concept, value, onChange, suffix, placeholder,
           <span className="flex items-center border-l border-sw-line px-3 font-mono text-sm text-sw-fg-3">{suffix}</span>
         )}
       </div>
+      {missing && <p className="mt-1 text-xs text-amber-400">{typeof missing === "string" ? missing : "Dato clave. Si no tienes este gasto, pon 0."}</p>}
       {hint && <p className="mt-1 text-xs text-sw-fg-4">{hint}</p>}
       {panel}
     </div>

@@ -181,6 +181,35 @@ export function detectLanguageFromReferer(referer: string | null): 'es' | 'en' {
   }
 }
 
+// Solicitud de revisión de números desde la calculadora: solo email y origen.
+export function getReviewRequestCompanyEmailTemplate(email: string, source: string, possibleBot = false): EmailTemplate {
+  const isHelp = source.includes('ayuda');
+  const title = isHelp
+    ? 'Nueva solicitud: ayuda para rellenar la calculadora'
+    : 'Nueva solicitud: revisemos tus números juntos (15 min)';
+  // Se rellenó el campo trampa del formulario: probablemente es un bot.
+  const botNote = 'Posible bot: se rellenó el campo oculto antispam, que una persona no ve. Revisa el email antes de responder.';
+  return {
+    subject: `${possibleBot ? '[Posible bot] ' : ''}${isHelp ? 'Ayuda con la calculadora' : 'Revisión de números'}: ${email}`,
+    htmlContent: `
+        ${possibleBot ? `<p style="color:#b45309"><strong>⚠️ ${botNote}</strong></p>` : ''}
+        <h2>${title}</h2>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Origen:</strong> ${source}</p>
+        <hr>
+        <p><small>No se envían los números de la calculadora, solo el email. Responde a este correo para proponer un hueco.</small></p>
+      `,
+    textContent: `${possibleBot ? `⚠️ ${botNote}
+
+` : ''}${title}
+
+Email: ${email}
+Origen: ${source}
+
+No se envían los números de la calculadora, solo el email. Responde a este correo para proponer un hueco.`
+  };
+}
+
 // Contact form data interface
 export interface ContactFormData {
   name: string;

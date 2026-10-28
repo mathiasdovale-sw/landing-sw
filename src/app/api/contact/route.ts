@@ -4,8 +4,22 @@ import DOMPurify from 'isomorphic-dompurify'
 import { 
   detectLanguageFromReferer, 
   getContactCompanyEmailTemplate, 
-  getContactClientEmailTemplate
+  getContactClientEmailTemplate,
+  getReviewRequestCompanyEmailTemplate
 } from '@/lib/email-templates'
+
+// Solicitud de "Revisemos tus números juntos" desde la calculadora de beneficios.
+// Solo admite el email y el origen: .strict() rechaza cualquier otro campo, así
+// que los números de la calculadora no pueden llegar aquí. De momento sin reCAPTCHA:
+// el antispam es un campo trampa ("website") que las personas no ven.
+const reviewRequestSchema = z.object({
+  type: z.literal('review-request'),
+  email: z.string()
+    .email('Invalid email format')
+    .max(254, 'Email too long'),
+  source: z.enum(['calculadora de beneficios', 'calculadora de beneficios (ayuda para rellenarla)']),
+  website: z.string().max(500).optional()
+}).strict()
 
 // Validation schema
 const contactFormSchema = z.object({
@@ -31,6 +45,47 @@ const contactFormSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactFormSchema>
 
+/** Solicitud de revisión: un solo email a SellifyWorks con el email y el origen. */
+async function handleReviewRequest(body: unknown) {
+  const parsed = reviewRequestSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json(
+      {
+        error: 'Validation failed',
+        details: parsed.error.issues.map(e => ({ field: e.path.join('.'), message: e.message }))
+      },
+      { status: 400 }
+    )
+  }
+  // Campo trampa relleno = posible bot. Se envía igual, pero marcado.
+  const possibleBot = Boolean(parsed.data.website && parsed.data.website.trim() !== '')
+  const email = DOMPurify.sanitize(parsed.data.email, { ALLOWED_TAGS: [] })
+
+  const template = getReviewRequestCompanyEmailTemplate(email, parsed.data.source, possibleBot)
+  const response = await fetch('https://api.sendinblue.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'api-key': process.env.BREVO_API_KEY || ''
+    },
+    body: JSON.stringify({
+      sender: { name: 'SellifyWorks Contact Form', email: 'contact@sellifyworks.com' },
+      to: [{ email: 'contact@sellifyworks.com', name: 'SellifyWorks' }],
+      subject: template.subject,
+      htmlContent: template.htmlContent,
+      textContent: template.textContent,
+      replyTo: { email }
+    })
+  })
+
+  if (!response.ok) {
+    console.error('Error sending review request email:', response.status, await response.text())
+    return NextResponse.json({ error: 'Error al enviar la solicitud' }, { status: 500 })
+  }
+  return NextResponse.json({ success: true }, { status: 200 })
+}
+
 export async function POST(request: NextRequest) {
   // Detect language from referer header early
   const referer = request.headers.get('referer')
@@ -46,6 +101,11 @@ export async function POST(request: NextRequest) {
         { error: 'Invalid JSON format' },
         { status: 400 }
       )
+    }
+
+    // Solicitud de revisión desde la calculadora (solo email + origen)
+    if (body && typeof body === 'object' && (body as { type?: unknown }).type === 'review-request') {
+      return await handleReviewRequest(body)
     }
 
     // Validate using Zod schema

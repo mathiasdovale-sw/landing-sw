@@ -1,14 +1,12 @@
 "use client"
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
-import Link from "next/link"
 import { ArrowDown, ArrowRight, Plus, RotateCcw, Trash2, X } from "lucide-react"
-import { compute, dataWarnings, fmt, levelOf, ordinal, MONTHS_LONG, MONTHS_SHORT, SEASON_PROFILES, type Inputs, type Level, type Results, type SeasonProfile } from "./calc"
-import { emptyForm, exampleForm, toInputs, type FormState } from "./form"
+import { applyMode, capGood, compute, dataWarnings, fmt, levelOf, ordinal, MONTHS_LONG, MONTHS_SHORT, type Inputs, type Level, type Results, type SeasonProfile } from "./calc"
+import { emptyForm, exampleForm, loadSaved, serializeSaved, STORAGE_KEY, toFullMode, toInputs, toQuickMode, type FormState } from "./form"
 import { buildFormulas } from "./formulas"
+import ReviewRequest, { HelpRequest } from "./review-request"
 import Simulator from "./simulator"
 import { FormulaContext, Kpi, LEVEL_STYLES, LevelIcon, NumField, Section, Segmented, StatusPill, Toggle, useConcept } from "./ui"
-
-const STORAGE_KEY = "sw-profit-calculator-v1"
 
 const PROFILE_OPTIONS: { value: SeasonProfile; label: string }[] = [
   { value: "flat", label: "Estable todo el año" },
@@ -17,27 +15,26 @@ const PROFILE_OPTIONS: { value: SeasonProfile; label: string }[] = [
   { value: "custom", label: "Personalizado" },
 ]
 
-interface Props {
-  auditHref: string
-  contactHref: string
-}
+/** Mensajes para los datos clave sin rellenar. */
+const MISSING_SALES = "Dato clave: sin él no hay veredicto."
+const MISSING_FIXED = "Dato clave: rellena al menos uno de los dos (pon 0 si no tienes)."
 
-export default function ProfitCalculator({ auditHref, contactHref }: Props) {
+export default function ProfitCalculator() {
   const [form, setForm] = useState<FormState>(exampleForm)
   const [isExample, setIsExample] = useState(true)
   const [open, setOpen] = useState<Set<number>>(new Set([1, 2]))
+  // Acaba de pasar de modo rápido a completo (para avisar dónde quedaron sus fijos).
+  const [refined, setRefined] = useState(false)
   const loaded = useRef(false)
 
   // Recuperar lo que el usuario metió la última vez (solo en su navegador).
+  // Lee también la clave antigua (v1) y la migra al formato actual.
   useEffect(() => {
     try {
-      const raw = window.localStorage.getItem(STORAGE_KEY)
-      if (raw) {
-        const saved = JSON.parse(raw)
-        if (saved?.form) {
-          setForm({ ...emptyForm(), ...saved.form })
-          setIsExample(Boolean(saved.isExample))
-        }
+      const saved = loadSaved(window.localStorage)
+      if (saved) {
+        setForm(saved.form)
+        setIsExample(saved.isExample)
       }
     } catch {
       /* sin almacenamiento disponible: seguimos con el ejemplo */
@@ -49,7 +46,7 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
     if (!loaded.current) return
     const t = setTimeout(() => {
       try {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ form, isExample }))
+        window.localStorage.setItem(STORAGE_KEY, serializeSaved({ form, isExample }))
       } catch {
         /* ignorar */
       }
@@ -57,14 +54,13 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
     return () => clearTimeout(t)
   }, [form, isExample])
 
-  const inputs = useMemo(() => toInputs(form), [form])
+  // En modo rápido solo cuentan los campos del modo rápido (applyMode).
+  const inputs = useMemo(() => applyMode(toInputs(form)), [form])
   const r = useMemo(() => compute(inputs), [inputs])
   const formulas = useMemo(() => buildFormulas(r, inputs), [r, inputs])
-  const warnings = useMemo(() => {
-    const w = r.hasData ? dataWarnings(inputs, r) : []
-    if (r.hasData && form.salesIncludeVat === null) w.push("Indica si tus cifras de ventas incluyen IVA (bloque 2).")
-    return w
-  }, [inputs, r, form.salesIncludeVat])
+  const warnings = useMemo(() => (r.hasData ? dataWarnings(inputs, r) : []), [inputs, r])
+  /** Dato clave sin rellenar (solo se marca cuando ya hay algo metido). */
+  const miss = (label: string) => r.completeness.status === "incomplete" && r.completeness.missing.includes(label)
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K], keepExample = false) => {
     setForm((f) => ({ ...f, [key]: value }))
@@ -80,9 +76,20 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
     })
 
   const reset = () => {
-    setForm(emptyForm())
+    setForm({ ...emptyForm(), quickMode: form.quickMode })
     setIsExample(false)
+    setRefined(false)
     setOpen(new Set([1, 2]))
+  }
+  // "Afinar mi cálculo": abre el formulario completo conservando lo ya metido.
+  const refine = () => {
+    setForm((f) => toFullMode(f))
+    setRefined(form.otherFixed.trim() !== "" && form.ownerSalary.trim() === "")
+    setOpen(new Set([2, 3, 4, 5]))
+  }
+  const toQuick = () => {
+    setForm((f) => toQuickMode(f))
+    setRefined(false)
   }
   const loadExample = () => {
     setForm(exampleForm())
@@ -110,7 +117,7 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
               <p className="text-sm text-sw-fg-2">
                 {isExample
                   ? "Estás viendo una tienda de ejemplo. Vacía los datos y mete los tuyos: el resultado se actualiza al instante."
-                  : "Tus datos se guardan solo en este navegador. No se envían a ningún sitio."}
+                  : "Tus números se guardan solo en este navegador y no se envían a ningún sitio. Si pides la revisión, solo nos llega tu email."}
               </p>
               <div className="flex shrink-0 gap-2">
                 <button
@@ -134,6 +141,23 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
                   </button>
                 )}
               </div>
+            </div>
+
+            {/* Modo rápido / completo */}
+            <div className="flex flex-col gap-2 rounded-sm border border-sw-line bg-sw-bg-1 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-sw-fg-2">
+                {form.quickMode ? "Modo rápido: 8 datos para una primera estimación." : "Modo completo: el cálculo más fiable."}
+              </p>
+              <Segmented
+                size="sm"
+                ariaLabel="Modo de la calculadora"
+                value={form.quickMode ? "quick" : "full"}
+                onChange={(v) => (v === "quick" ? toQuick() : refine())}
+                options={[
+                  { value: "quick", label: "Modo rápido" },
+                  { value: "full", label: "Modo completo" },
+                ]}
+              />
             </div>
 
             {/* 1. Periodo */}
@@ -209,6 +233,10 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
               </div>
             </Section>
 
+            {form.quickMode ? (
+              <QuickForm form={form} set={set} miss={miss} periodLabel={periodLabel} onRefine={refine} />
+            ) : (
+              <>
             {/* 2. Ventas y tráfico */}
             <Section
               step={2}
@@ -219,36 +247,14 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
               onToggle={() => toggleStep(2)}
             >
               <div className="space-y-5">
-                <div className="grid gap-4 sm:grid-cols-[1fr_120px] sm:items-end">
-                  <FieldBlock concept="vat" label="¿Tus cifras de ventas incluyen IVA?">
-                    <Segmented
-                      ariaLabel="Las ventas incluyen IVA"
-                      value={form.salesIncludeVat === null ? "" : form.salesIncludeVat ? "si" : "no"}
-                      onChange={(v) => set("salesIncludeVat", v === "si")}
-                      options={[
-                        { value: "no", label: "No, sin IVA" },
-                        { value: "si", label: "Sí, con IVA" },
-                      ]}
-                    />
-                  </FieldBlock>
-                  <NumField label="Tipo de IVA" value={form.vatPct} onChange={(v) => set("vatPct", v)} suffix="%" placeholder="21" />
-                </div>
-                {form.salesIncludeVat === null && (
-                  <p className="-mt-2 flex items-start gap-1.5 text-xs text-amber-400">
-                    <LevelIcon level="warn" className="mt-px h-3.5 w-3.5 shrink-0" />
-                    Revisa tu informe de ventas y elige una opción. Mientras tanto calculamos como si fueran sin IVA.
-                  </p>
-                )}
-                <p className="-mt-2 text-xs text-sw-fg-4">
-                  Se aplica a ventas, descuentos, devoluciones, envíos cobrados y ventas atribuidas. Los costes, siempre sin IVA.
-                </p>
+                <VatField form={form} set={set} />
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <NumField concept="grossSales" value={form.grossSales} onChange={(v) => set("grossSales", v)} suffix="€" />
+                  <NumField concept="grossSales" value={form.grossSales} onChange={(v) => set("grossSales", v)} suffix="€" missing={miss("Ventas brutas") && MISSING_SALES} />
                   <NumField concept="discounts" value={form.discounts} onChange={(v) => set("discounts", v)} suffix="€" />
                   <NumField concept="returns" value={form.returns} onChange={(v) => set("returns", v)} suffix="€" />
                   <NumField concept="shippingCharged" value={form.shippingCharged} onChange={(v) => set("shippingCharged", v)} suffix="€" />
-                  <NumField concept="orders" value={form.orders} onChange={(v) => set("orders", v)} integer />
+                  <NumField concept="orders" value={form.orders} onChange={(v) => set("orders", v)} integer missing={miss("Pedidos") && MISSING_SALES} />
                   <NumField concept="sessions" value={form.sessions} onChange={(v) => set("sessions", v)} integer />
                   <NumField concept="newCustomers" value={form.newCustomers} onChange={(v) => set("newCustomers", v)} integer />
                   <NumField concept="returningCustomers" value={form.returningCustomers} onChange={(v) => set("returningCustomers", v)} integer />
@@ -263,7 +269,7 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
               summary={
                 r.variableCosts > 0
                   ? `Costes variables ${fmt.eur(r.variableCosts)} · ${fmt.pct(r.netRevenue > 0 ? r.variableCosts / r.netRevenue : null)} de tus ingresos`
-                  : "Producto, envíos, packaging y pasarela de pago"
+                  : "Producto, envíos, packaging, pasarela y devoluciones"
               }
               done={!!form.cogs}
               open={open.has(3)}
@@ -277,6 +283,7 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
                     onChange={(v) => set("cogs", v)}
                     suffix={form.cogsMode === "pct" ? "%" : "€"}
                     hint={form.cogsMode === "pct" ? `% sobre ventas netas sin IVA → ${fmt.eur(r.cogs)}` : "Total del periodo, sin IVA"}
+                    missing={miss("Coste de producto") && MISSING_SALES}
                   />
                   <Segmented
                     size="sm"
@@ -289,16 +296,16 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
                     ]}
                   />
                 </div>
-                <NumField concept="shippingPaid" value={form.shippingPaid} onChange={(v) => set("shippingPaid", v)} suffix="€" />
+                <NumField concept="shippingPaid" value={form.shippingPaid} onChange={(v) => set("shippingPaid", v)} suffix="€" missing={miss("Envíos pagados")} />
                 <NumField concept="packaging" value={form.packaging} onChange={(v) => set("packaging", v)} suffix="€" />
                 <div className="space-y-2">
                   {form.feesMode === "pct" ? (
                     <div className="grid grid-cols-2 gap-2">
-                      <NumField concept="fees" label="Pasarela de pago" value={form.fees} onChange={(v) => set("fees", v)} suffix="%" placeholder="1,5" />
-                      <NumField label="+ fijo/pedido" value={form.feesFixedPerOrder} onChange={(v) => set("feesFixedPerOrder", v)} suffix="€" placeholder="0,25" />
+                      <NumField concept="fees" label="Pasarela de pago" value={form.fees} onChange={(v) => set("fees", v)} suffix="%" missing={miss("Pasarela de pago")} />
+                      <NumField label="+ fijo/pedido" value={form.feesFixedPerOrder} onChange={(v) => set("feesFixedPerOrder", v)} suffix="€" />
                     </div>
                   ) : (
-                    <NumField concept="fees" label="Pasarela de pago" value={form.fees} onChange={(v) => set("fees", v)} suffix="€" />
+                    <NumField concept="fees" label="Pasarela de pago" value={form.fees} onChange={(v) => set("fees", v)} suffix="€" missing={miss("Pasarela de pago")} />
                   )}
                   <p className="text-xs text-sw-fg-4">{form.feesMode === "pct" ? `→ ${fmt.eur(r.fees)} en comisiones` : "Total del periodo"}</p>
                   <Segmented
@@ -312,6 +319,14 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
                     ]}
                   />
                 </div>
+                <NumField
+                  concept="returnCosts"
+                  label="Coste de devoluciones (envíos de vuelta y producto que ya no puedes revender)"
+                  value={form.returnCosts}
+                  onChange={(v) => set("returnCosts", v)}
+                  suffix="€"
+                  hint="Opcional. Total del periodo, sin IVA."
+                />
               </div>
             </Section>
 
@@ -400,14 +415,23 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
             <Section
               step={5}
               title="Gastos fijos e impuestos"
-              summary={r.fixed > 0 ? `Fijos ${fmt.eur(r.fixed)} · impuesto ${form.profitTaxPct || 0}%` : "Plataforma, apps, sueldos, alquiler…"}
-              done={r.fixed > 0}
+              summary={r.completeness.fixedKnown ? `Fijos ${fmt.eur(r.fixed)} · impuesto ${form.profitTaxPct || 0}%` : "Plataforma, apps, tu sueldo, alquiler…"}
+              done={r.completeness.fixedKnown}
               open={open.has(5)}
               onToggle={() => toggleStep(5)}
             >
               <div className="grid gap-4 sm:grid-cols-2">
-                <NumField concept="platformCost" value={form.platformCost} onChange={(v) => set("platformCost", v)} suffix="€" />
-                <NumField concept="otherFixed" value={form.otherFixed} onChange={(v) => set("otherFixed", v)} suffix="€" />
+                <NumField concept="platformCost" value={form.platformCost} onChange={(v) => set("platformCost", v)} suffix="€" missing={miss("Gastos fijos") && MISSING_FIXED} />
+                <NumField
+                  concept="otherFixed"
+                  value={form.otherFixed}
+                  onChange={(v) => set("otherFixed", v)}
+                  suffix="€"
+                  missing={miss("Gastos fijos") && MISSING_FIXED}
+                  hint={refined ? "Aquí están los gastos fijos del modo rápido. Si incluían tu sueldo, pásalo a «Tu sueldo»." : undefined}
+                />
+                <NumField concept="ownerSalary" value={form.ownerSalary} onChange={(v) => set("ownerSalary", v)} suffix="€" hint="Opcional. Total del periodo." />
+                <NumField concept="ownerHours" value={form.ownerHours} onChange={(v) => set("ownerHours", v)} suffix="h/mes" integer hint="Opcional." />
                 <NumField concept="profitTax" value={form.profitTaxPct} onChange={(v) => set("profitTaxPct", v)} suffix="%" />
               </div>
             </Section>
@@ -463,17 +487,22 @@ export default function ProfitCalculator({ auditHref, contactHref }: Props) {
                 {form.ltvEnabled && <LtvResult r={r} />}
               </div>
             </Section>
+              </>
+            )}
+
+            {/* Ayuda para rellenar la calculadora: solo se envía el email */}
+            <HelpRequest />
           </div>
 
           {/* Resumen siempre visible en escritorio */}
           <aside className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto lg:[scrollbar-width:thin]">
-            <SummaryCard r={r} per={per} months={form.months} periodLabel={periodLabel} warnings={warnings} />
+            <SummaryCard r={r} per={per} months={form.months} periodLabel={periodLabel} warnings={warnings} onRefine={refine} />
           </aside>
         </div>
       </section>
 
       {/* Análisis completo */}
-      <Analysis r={r} inputs={inputs} form={form} per={per} set={set} auditHref={auditHref} contactHref={contactHref} />
+      <Analysis r={r} inputs={inputs} form={form} per={per} set={set} />
 
       <MobileBar r={r} per={per} />
       </div>
@@ -493,6 +522,121 @@ function FieldBlock({ concept, label, children }: { concept: string; label: stri
       </div>
       {children}
       {panel}
+    </div>
+  )
+}
+
+type SetField = <K extends keyof FormState>(key: K, value: FormState[K], keepExample?: boolean) => void
+
+function VatField({ form, set }: { form: FormState; set: SetField }) {
+  return (
+    <>
+      <div className="grid gap-4 sm:grid-cols-[1fr_120px] sm:items-end">
+        <FieldBlock concept="vat" label="¿Tus cifras de ventas incluyen IVA?">
+          <Segmented
+            ariaLabel="Las ventas incluyen IVA"
+            value={form.salesIncludeVat === null ? "" : form.salesIncludeVat ? "si" : "no"}
+            onChange={(v) => set("salesIncludeVat", v === "si")}
+            options={[
+              { value: "no", label: "No, sin IVA" },
+              { value: "si", label: "Sí, con IVA" },
+            ]}
+          />
+        </FieldBlock>
+        <NumField label="Tipo de IVA" value={form.vatPct} onChange={(v) => set("vatPct", v)} suffix="%" placeholder="21" />
+      </div>
+      {form.salesIncludeVat === null && (
+        <p className="-mt-2 flex items-start gap-1.5 text-xs text-amber-400">
+          <LevelIcon level="warn" className="mt-px h-3.5 w-3.5 shrink-0" />
+          Dato clave. Revisa tu informe de ventas y elige una opción. Mientras tanto calculamos como si fueran sin IVA.
+        </p>
+      )}
+      <p className="-mt-2 text-xs text-sw-fg-4">
+        {form.quickMode
+          ? "Se aplica a las ventas. Los costes, siempre sin IVA."
+          : "Se aplica a ventas, descuentos, devoluciones, envíos cobrados y ventas atribuidas. Los costes, siempre sin IVA."}
+      </p>
+    </>
+  )
+}
+
+/** Modo rápido: lo mínimo para una primera estimación. */
+function QuickForm({
+  form,
+  set,
+  miss,
+  periodLabel,
+  onRefine,
+}: {
+  form: FormState
+  set: SetField
+  miss: (label: string) => boolean
+  periodLabel: string
+  onRefine: () => void
+}) {
+  return (
+    <div className="rounded-sm border border-sw-line-strong bg-sw-bg-1">
+      <div className="px-4 py-4 sm:px-5">
+        <p className="font-semibold text-sw-fg-1">Lo mínimo para una estimación</p>
+        <p className="mt-0.5 text-xs text-sw-fg-3">
+          Mete el total de {periodLabel}. No incluye pasarela de pago, packaging, descuentos ni devoluciones: el resultado será una estimación rápida.
+        </p>
+      </div>
+      <div className="space-y-5 border-t border-sw-line px-4 pb-5 pt-4 sm:px-5">
+        <VatField form={form} set={set} />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <NumField concept="grossSales" value={form.grossSales} onChange={(v) => set("grossSales", v)} suffix="€" missing={miss("Ventas brutas") && MISSING_SALES} />
+          <NumField concept="orders" value={form.orders} onChange={(v) => set("orders", v)} integer missing={miss("Pedidos") && MISSING_SALES} />
+          <div className="space-y-2">
+            <NumField
+              concept="cogs"
+              label={form.cogsMode === "pct" ? "Coste de producto (%)" : "Coste de producto (€)"}
+              value={form.cogs}
+              onChange={(v) => set("cogs", v)}
+              suffix={form.cogsMode === "pct" ? "%" : "€"}
+              hint={form.cogsMode === "pct" ? "% sobre tus ventas sin IVA" : "Total del periodo, sin IVA"}
+              missing={miss("Coste de producto") && MISSING_SALES}
+            />
+            {form.cogsMode === "eur" && (
+              <Segmented
+                size="sm"
+                ariaLabel="Unidad del coste de producto"
+                value={form.cogsMode}
+                onChange={(v) => set("cogsMode", v)}
+                options={[
+                  { value: "pct", label: "En %" },
+                  { value: "eur", label: "En €" },
+                ]}
+              />
+            )}
+          </div>
+          <NumField concept="shippingPaid" value={form.shippingPaid} onChange={(v) => set("shippingPaid", v)} suffix="€" missing={miss("Envíos pagados")} />
+          <NumField
+            label="Gasto total en publicidad"
+            value={form.adSpendTotal}
+            onChange={(v) => set("adSpendTotal", v)}
+            suffix="€"
+            hint="Todas las plataformas juntas, sin IVA. Si no haces publicidad, pon 0."
+          />
+          <NumField
+            label="Gastos fijos del periodo"
+            value={form.otherFixed}
+            onChange={(v) => set("otherFixed", v)}
+            suffix="€"
+            hint="Plataforma, apps, alquiler, gestoría, tu sueldo… todo lo que pagas vendas o no."
+            missing={miss("Gastos fijos")}
+          />
+          <NumField concept="sessions" label="Sesiones (opcional)" value={form.sessions} onChange={(v) => set("sessions", v)} integer />
+        </div>
+        <button
+          type="button"
+          onClick={onRefine}
+          className="inline-flex items-center gap-1.5 rounded-sm border border-sw-line-strong px-4 py-2.5 text-sm font-semibold text-sw-fg-1 transition-colors hover:border-sw-fg-1"
+        >
+          Afinar mi cálculo
+          <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        </button>
+      </div>
     </div>
   )
 }
@@ -535,10 +679,40 @@ function SeasonMini({ weights, highlight }: { weights: number[]; highlight: numb
 // Resumen
 // ---------------------------------------------------------------------------
 
-function SummaryCard({ r, per, months, periodLabel, warnings }: { r: Results; per: string; months: number; periodLabel: string; warnings: string[] }) {
-  const level = levelOf.profit(r.netProfit)
+/** Frase sobre el resultado según lo fiable que sea. */
+function resultHeadline(r: Results) {
+  const gains = r.netProfit >= 0
+  switch (r.completeness.status) {
+    case "complete":
+      return gains ? "Tu tienda gana" : "Tu tienda pierde"
+    case "quick":
+      return gains ? "Tu tienda ganaría unos" : "Tu tienda perdería unos"
+    default:
+      return gains ? "Con lo que has metido, como mucho ganaría" : "Con lo que has metido, pierde al menos"
+  }
+}
+
+function SummaryCard({
+  r,
+  per,
+  months,
+  periodLabel,
+  warnings,
+  onRefine,
+}: {
+  r: Results
+  per: string
+  months: number
+  periodLabel: string
+  warnings: string[]
+  onRefine: () => void
+}) {
+  const comp = r.completeness
+  const level = levelOf.result(r.netProfit, r)
   const s = LEVEL_STYLES[level]
   const { button, panel } = useConcept("netProfit")
+  // Sin ventas brutas no hay cifra que enseñar.
+  const noSales = comp.missing.includes("Ventas brutas")
   return (
     <div className="rounded-sm border border-sw-line-strong bg-sw-bg-1">
       <div className={`border-b border-sw-line p-5 ${r.hasData ? s.bg : ""}`}>
@@ -546,20 +720,73 @@ function SummaryCard({ r, per, months, periodLabel, warnings }: { r: Results; pe
           <span className="font-mono-label text-[11px] text-sw-fg-3">Resultado · {periodLabel}</span>
           {button}
         </div>
-        {r.hasData ? (
+        {r.hasData && comp.status !== "complete" && (
+          <span className="mt-3 inline-flex items-center gap-1 rounded-sm border border-amber-400/40 bg-amber-400/10 px-2 py-0.5 text-xs font-medium text-amber-400">
+            <LevelIcon level="warn" className="h-3.5 w-3.5" />
+            {comp.status === "quick" ? "Estimación rápida" : "Estimación incompleta"}
+          </span>
+        )}
+        {r.hasData && !noSales ? (
           <>
-            <p className="mt-3 text-sm text-sw-fg-2">{r.netProfit >= 0 ? "Tu tienda gana" : "Tu tienda pierde"}</p>
+            <p className="mt-3 text-sm text-sw-fg-2">{resultHeadline(r)}</p>
             <p className={`font-display text-5xl tabular-nums ${s.text}`}>{fmt.eur(Math.abs(r.netProfit))}</p>
             <p className="mt-1 text-sm text-sw-fg-3">
               de beneficio neto {per}
               {months > 1 && <> · {fmt.eur(r.netProfit / months)} al mes</>}
             </p>
           </>
+        ) : r.hasData ? (
+          <p className="mt-3 text-sm text-sw-fg-3">Mete tus ventas brutas para ver si tu tienda gana o pierde dinero.</p>
         ) : (
           <p className="mt-3 text-sm text-sw-fg-3">Mete tus ventas y costes para ver si tu tienda gana o pierde dinero.</p>
         )}
         {panel}
       </div>
+
+      {r.hasData && comp.status === "incomplete" && (
+        <div className="border-b border-sw-line bg-amber-400/10 px-5 py-3" role="status">
+          <p className="flex items-center gap-1.5 text-sm font-semibold text-amber-400">
+            <LevelIcon level="warn" className="h-4 w-4" />
+            Faltan datos clave
+          </p>
+          <ul className="mt-1 list-disc space-y-0.5 pl-5 text-xs leading-relaxed text-sw-fg-2">
+            {comp.missing.map((m) => (
+              <li key={m}>{m}</li>
+            ))}
+          </ul>
+          <p className="mt-2 text-xs leading-relaxed text-sw-fg-2">
+            Mientras falten, cuentan como 0. Cuando los completes, el beneficio bajará: el real es menor que esta cifra.
+          </p>
+        </div>
+      )}
+
+      {r.hasData && comp.status === "quick" && (
+        <div className="border-b border-sw-line bg-amber-400/10 px-5 py-3" role="status">
+          <p className="text-sm font-semibold text-amber-400">No incluye</p>
+          <ul className="mt-1 list-disc space-y-0.5 pl-5 text-xs leading-relaxed text-sw-fg-2">
+            {comp.notIncluded.map((m) => (
+              <li key={m}>{m}</li>
+            ))}
+          </ul>
+          <p className="mt-2 text-xs leading-relaxed text-sw-fg-2">
+            Casi todo lo que falta son costes, así que lo normal es que el beneficio real sea menor (la excepción son los envíos que cobras a tus clientes).
+          </p>
+          <button
+            type="button"
+            onClick={onRefine}
+            className="mt-3 inline-flex items-center gap-1.5 rounded-sm border border-sw-line-strong bg-sw-bg-1 px-3 py-2 text-sm font-semibold text-sw-fg-1 transition-colors hover:border-sw-fg-1"
+          >
+            Afinar mi cálculo
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+      )}
+
+      {r.hasData && comp.status === "complete" && comp.optionalEmpty.length > 0 && (
+        <p className="border-b border-sw-line px-5 py-3 text-xs leading-relaxed text-sw-fg-4">
+          Sin rellenar (cuentan como 0; no bloquean el resultado): {comp.optionalEmpty.join(", ").toLowerCase()}.
+        </p>
+      )}
 
       {warnings.length > 0 && (
         <div className="border-b border-sw-line bg-amber-400/10 px-5 py-3" role="status">
@@ -582,33 +809,62 @@ function SummaryCard({ r, per, months, periodLabel, warnings }: { r: Results; pe
             <Row
               label="Lo que queda por cada € vendido"
               value={fmt.eur2(r.cm1PerEuro)}
-              level={levelOf.cm1PerEuro(r.cm1PerEuro)}
+              level={capGood(levelOf.cm1PerEuro(r.cm1PerEuro), r)}
               hint="antes de marketing y fijos"
             />
             <Row
               label="Margen de contribución"
               value={`${fmt.eur(r.contribution)} · ${fmt.pct(r.contributionPct)}`}
-              level={levelOf.contributionPct(r.contributionPct)}
+              level={capGood(levelOf.contribution(r), r)}
+              hint={
+                !comp.fixedKnown
+                  ? "falta el dato de gastos fijos para valorarlo"
+                  : r.contribution >= r.fixed
+                    ? `cubre tus gastos fijos (${fmt.eur(r.fixed)})`
+                    : `no cubre tus gastos fijos (${fmt.eur(r.fixed)})`
+              }
             />
-            <Row label="ROAS breakeven" value={fmt.x(r.roasBreakeven)} hint="ROAS mínimo para no perder" />
+            <Row label="ROAS breakeven" value={fmt.x(r.roasBreakeven)} hint="MER mínimo para cubrir costes variables" />
+            {comp.fixedKnown && (
+              <Row
+                label="MER para beneficio 0"
+                value={r.merProfitImpossible ? "Imposible" : fmt.x(r.merProfit)}
+                level={r.merProfitImpossible ? "bad" : "neutral"}
+                hint={r.merProfitImpossible ? "con tus fijos, ningún nivel de marketing da beneficio" : "contando también los gastos fijos"}
+              />
+            )}
             {r.firstOrderProfit !== null && (
               <Row
                 label="Primera compra"
                 value={signedEur(r.firstOrderProfit)}
-                level={levelOf.firstOrder(r.firstOrderProfit, r.ordersToRecoverCac, r.ltvFrequency)}
+                level={capGood(levelOf.firstOrder(r.firstOrderProfit, r.ordersToRecoverCac, r.ltvFrequency), r)}
                 hint="lo que ganas o pierdes con el primer pedido de un cliente nuevo"
               />
             )}
             {r.ltvCac !== null && (
-              <Row label="LTV:CAC" value={fmt.dec(r.ltvCac)} level={levelOf.ltvCac(r.ltvCac)} hint="lo que te deja un cliente en un año ÷ lo que cuesta captarlo" />
+              <Row label="LTV:CAC" value={fmt.dec(r.ltvCac)} level={capGood(levelOf.ltvCac(r.ltvCac), r)} hint="lo que te deja un cliente en un año ÷ lo que cuesta captarlo" />
+            )}
+            {comp.status !== "quick" && !noSales && (
+              <>
+                <Row
+                  label="Lo que te llevas tú"
+                  value={fmt.eur(r.ownerTake)}
+                  level={r.ownerTake < 0 ? "bad" : "neutral"}
+                  hint="tu sueldo + beneficio neto"
+                />
+                {r.ownerPerHour !== null && <Row label="Por hora trabajada" value={fmt.eur2(r.ownerPerHour)} level={r.ownerPerHour < 0 ? "bad" : "neutral"} />}
+              </>
             )}
           </dl>
+          {comp.status !== "quick" && !noSales && r.ownerSalaryEmpty && (
+            <p className="-mt-2 text-xs leading-relaxed text-sw-fg-3">Este beneficio también es tu sueldo: no te estás pagando nada aparte.</p>
+          )}
 
           <Per100 r={r} />
 
           <div className="rounded-sm border border-sw-line bg-sw-bg-0 p-3">
             <p className="text-xs text-sw-fg-3">Próximos 12 meses, si todo sigue igual</p>
-            <p className={`mt-1 text-lg font-semibold tabular-nums ${LEVEL_STYLES[levelOf.profit(r.projNetProfit)].text}`}>
+            <p className={`mt-1 text-lg font-semibold tabular-nums ${LEVEL_STYLES[capGood(levelOf.profit(r.projNetProfit), r)].text}`}>
               {r.projNetProfit >= 0 ? "Ganarías " : "Perderías "}
               {fmt.eur(Math.abs(r.projNetProfit))}
             </p>
@@ -646,7 +902,7 @@ function Row({ label, value, level = "neutral", hint }: { label: string; value: 
 }
 
 // Grises escalonados para costes; el verde/rojo queda para el resultado.
-const COST_SHADES = ["#4A4A4A", "#636363", "#7C7C7C", "#959595", "#AEAEAE", "#C7C7C7", "#E0E0E0"]
+const COST_SHADES = ["#4A4A4A", "#5E5E5E", "#727272", "#868686", "#9A9A9A", "#AEAEAE", "#C2C2C2", "#D6D6D6"]
 
 function Per100({ r }: { r: Results }) {
   const { button, panel } = useConcept("per100")
@@ -656,6 +912,7 @@ function Per100({ r }: { r: Results }) {
     { label: "Envíos", v: r.shippingPaid },
     { label: "Packaging", v: r.packaging },
     { label: "Pasarela", v: r.fees },
+    { label: "Devoluciones", v: r.returnCosts },
     { label: "Marketing", v: r.marketing },
     { label: "Gastos fijos", v: r.fixed },
     { label: "Impuestos", v: r.tax },
@@ -665,6 +922,7 @@ function Per100({ r }: { r: Results }) {
   const costs = items.reduce((a, b) => a + b.v, 0)
   const scale = Math.max(r.netRevenue, costs)
   const profit = r.netProfit
+  const resLevel = levelOf.result(profit, r)
   const per100 = (v: number) => (v / r.netRevenue) * 100
   const fmt100 = (v: number) => `${fmt.dec(per100(v)).replace(/,00$/, "")} €`
 
@@ -679,7 +937,9 @@ function Per100({ r }: { r: Results }) {
           {items.map((it) => (
             <div key={it.label} style={{ width: `${(it.v / scale) * 100}%`, background: it.color }} title={`${it.label}: ${fmt100(it.v)}`} />
           ))}
-          {profit > 0 && <div className="bg-sw-success" style={{ width: `${(profit / scale) * 100}%` }} title={`Te queda: ${fmt100(profit)}`} />}
+          {profit > 0 && (
+            <div className={resLevel === "good" ? "bg-sw-success" : "bg-sw-fg-2"} style={{ width: `${(profit / scale) * 100}%` }} title={`Te queda: ${fmt100(profit)}`} />
+          )}
         </div>
         {costs > r.netRevenue && (
           <div className="absolute -top-1 bottom-[-4px] w-[2px] bg-sw-danger" style={{ left: `${(r.netRevenue / scale) * 100}%` }} aria-hidden="true" />
@@ -696,11 +956,11 @@ function Per100({ r }: { r: Results }) {
           </li>
         ))}
         <li className="col-span-2 mt-1 flex items-center justify-between gap-2 border-t border-sw-line pt-1.5 text-sm">
-          <span className={`flex items-center gap-1.5 font-semibold ${profit >= 0 ? "text-sw-success" : "text-sw-danger"}`}>
-            <LevelIcon level={profit >= 0 ? "good" : "bad"} className="h-3.5 w-3.5" />
+          <span className={`flex items-center gap-1.5 font-semibold ${LEVEL_STYLES[resLevel].text}`}>
+            <LevelIcon level={resLevel} className="h-3.5 w-3.5" />
             {profit >= 0 ? "Te queda" : "Pierdes"}
           </span>
-          <span className={`font-semibold tabular-nums ${profit >= 0 ? "text-sw-success" : "text-sw-danger"}`}>{fmt100(Math.abs(profit))}</span>
+          <span className={`font-semibold tabular-nums ${LEVEL_STYLES[resLevel].text}`}>{fmt100(Math.abs(profit))}</span>
         </li>
       </ul>
       {panel}
@@ -717,12 +977,18 @@ interface AnalysisProps {
   inputs: Inputs
   form: FormState
   per: string
-  set: <K extends keyof FormState>(key: K, value: FormState[K], keepExample?: boolean) => void
-  auditHref: string
-  contactHref: string
+  set: SetField
 }
 
-function Analysis({ r, inputs, form, per, set, auditHref, contactHref }: AnalysisProps) {
+/** Nota para una métrica que sería "Bien" pero el resultado global no lo respalda. */
+function cappedNote(raw: Level, r: Results): string | null {
+  if (raw !== "good" || r.trusted) return null
+  if (r.netProfit < 0) return "Ojo: la tienda pierde dinero por otra parte"
+  return r.completeness.status === "quick" ? "Pendiente de afinar el cálculo" : "Pendiente de completar los datos clave"
+}
+const withNote = (sub: string | undefined, note: string | null) => (note ? (sub ? `${sub} · ${note}` : note) : sub)
+
+function Analysis({ r, inputs, form, per, set }: AnalysisProps) {
   if (!r.hasData) {
     return (
       <section id="analisis" className="bg-sw-bg-1 py-16">
@@ -733,12 +999,27 @@ function Analysis({ r, inputs, form, per, set, auditHref, contactHref }: Analysi
     )
   }
 
+  const contributionSub = !r.completeness.fixedKnown
+    ? "Falta el dato de gastos fijos para valorarlo"
+    : r.contribution >= r.fixed
+      ? `Cubre tus gastos fijos (${fmt.eur(r.fixed)})`
+      : `No cubre tus gastos fijos (${fmt.eur(r.fixed)}): faltan ${fmt.eur(r.fixed - r.contribution)}`
+  const recoverLevel: Level =
+    r.firstOrderProfit === null
+      ? "neutral"
+      : r.ordersToRecoverCac === null
+        ? "bad"
+        : r.ordersToRecoverCac <= 1
+          ? "good"
+          : levelOf.firstOrder(r.firstOrderProfit, r.ordersToRecoverCac, r.ltvFrequency)
+
   return (
     <section id="analisis" className="scroll-mt-20 border-t border-sw-line bg-sw-bg-1 py-16 sm:py-20">
       <div className="mx-auto max-w-7xl space-y-16 px-4 sm:px-6 lg:px-8">
         {/* Qué hacer */}
         <div>
           <SectionTitle eyebrow="Conclusiones" title="Qué está pasando y qué hacer" />
+          <p className="-mt-4 mb-6 text-sm text-sw-fg-4">Ordenadas por su impacto en euros sobre tu beneficio.</p>
           <div className="grid gap-3 lg:grid-cols-2">
             {r.insights.map((ins, i) => {
               const s = LEVEL_STYLES[ins.level]
@@ -748,11 +1029,6 @@ function Analysis({ r, inputs, form, per, set, auditHref, contactHref }: Analysi
                   <div className="min-w-0">
                     <p className="font-semibold text-sw-fg-1">{ins.title}</p>
                     <p className="mt-1 text-sm leading-relaxed text-sw-fg-2">{ins.text}</p>
-                    {ins.cta === "audit" && (
-                      <Link href={auditHref} className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-sw-secondary hover:text-sw-fg-1">
-                        Auditar mi web <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                      </Link>
-                    )}
                   </div>
                 </div>
               )
@@ -779,41 +1055,113 @@ function Analysis({ r, inputs, form, per, set, auditHref, contactHref }: Analysi
             <Kpi concept="rpv" value={fmt.eur2(r.rpv)} />
           </KpiGroup>
           <KpiGroup title="Márgenes">
-            <Kpi concept="cm1PerEuro" value={fmt.eur2(r.cm1PerEuro)} level={levelOf.cm1PerEuro(r.cm1PerEuro)} sub={`Margen antes de marketing: ${fmt.eur(r.cm1)}`} />
+            <Kpi
+              concept="cm1PerEuro"
+              value={fmt.eur2(r.cm1PerEuro)}
+              level={capGood(levelOf.cm1PerEuro(r.cm1PerEuro), r)}
+              sub={withNote(`Margen antes de marketing: ${fmt.eur(r.cm1)}`, cappedNote(levelOf.cm1PerEuro(r.cm1PerEuro), r))}
+            />
             <Kpi concept="cm1PerOrder" value={fmt.eur2(r.cm1PerOrder)} />
-            <Kpi concept="contribution" value={fmt.eur(r.contribution)} level={levelOf.profit(r.contribution)} />
-            <Kpi concept="contributionPct" value={fmt.pct(r.contributionPct)} level={levelOf.contributionPct(r.contributionPct)} />
-            <Kpi concept="breakevenRevenue" value={fmt.eur(r.breakevenRevenue)} sub={r.breakevenRevenue !== null ? `Ingresos netos ${per} para beneficio 0` : "Con margen negativo no hay punto de equilibrio"} level={r.breakevenRevenue === null ? "bad" : r.netRevenue >= r.breakevenRevenue ? "good" : "bad"} />
-            <Kpi concept="netProfit" value={fmt.eur(r.netProfit)} level={levelOf.profit(r.netProfit)} sub={`${fmt.pct(r.netMarginPct)} de tus ingresos`} />
+            <Kpi concept="contribution" value={fmt.eur(r.contribution)} level={capGood(levelOf.contribution(r), r)} sub={contributionSub} />
+            <Kpi concept="contributionPct" value={fmt.pct(r.contributionPct)} level={capGood(levelOf.contribution(r), r)} sub={contributionSub} />
+            <Kpi
+              concept="breakevenRevenue"
+              value={fmt.eur(r.breakevenRevenue)}
+              sub={
+                r.breakevenRevenue !== null
+                  ? `Ingresos netos ${per} para beneficio 0, suponiendo que mantienes el mismo gasto en marketing`
+                  : !r.completeness.fixedKnown
+                    ? "Falta el dato de gastos fijos: sin él no se puede calcular"
+                    : "Con margen negativo no hay punto de equilibrio"
+              }
+              level={
+                r.breakevenRevenue === null
+                  ? r.completeness.fixedKnown
+                    ? "bad"
+                    : "neutral"
+                  : r.netRevenue >= r.breakevenRevenue
+                    ? capGood("good", r)
+                    : "bad"
+              }
+            />
+            <Kpi concept="netProfit" value={fmt.eur(r.netProfit)} level={levelOf.result(r.netProfit, r)} sub={`${fmt.pct(r.netMarginPct)} de tus ingresos`} />
           </KpiGroup>
+          {r.completeness.status !== "quick" && (
+            <KpiGroup title="Tú y tu tiempo">
+              <Kpi
+                concept="ownerTake"
+                value={fmt.eur(r.ownerTake)}
+                level={r.ownerTake < 0 ? "bad" : "neutral"}
+                sub={r.ownerSalaryEmpty ? "Este beneficio también es tu sueldo: no te estás pagando nada aparte" : `${fmt.eur(r.ownerSalary)} de sueldo + ${fmt.eur(r.netProfit)} de beneficio`}
+              />
+              <Kpi
+                concept="ownerPerHour"
+                value={fmt.eur2(r.ownerPerHour)}
+                level={r.ownerPerHour !== null && r.ownerPerHour < 0 ? "bad" : "neutral"}
+                sub={r.ownerHoursPeriod !== null ? `${fmt.num(r.ownerHoursPeriod)} horas en el periodo` : "Indica las horas que le dedicas al mes (bloque 5)"}
+              />
+            </KpiGroup>
+          )}
           <KpiGroup title="Marketing y clientes">
-            <Kpi concept="mer" value={fmt.x(r.mer)} level={levelOf.mer(r.mer, r.roasBreakeven)} sub={`Mínimo para no perder: ${fmt.x(r.roasBreakeven)}`} />
-            <Kpi concept="roasBreakeven" value={fmt.x(r.roasBreakeven)} level={r.roasBreakeven === null ? "bad" : "neutral"} />
-            <Kpi concept="cac" value={fmt.eur2(r.cac)} level={levelOf.cacVsOrder(r.cac, r.cm1PerOrder)} sub={`Cada pedido deja ${fmt.eur2(r.cm1PerOrder)} antes de marketing`} />
+            <Kpi
+              concept="mer"
+              value={fmt.x(r.mer)}
+              level={capGood(levelOf.mer(r), r)}
+              sub={
+                r.mer === null
+                  ? undefined
+                  : r.merProfitImpossible
+                    ? `Con tus gastos fijos, ningún nivel de marketing da beneficio. Para cubrir costes variables: ${fmt.x(r.roasBreakeven)}`
+                    : withNote(`Para beneficio 0: ${fmt.x(r.merProfit)} · para cubrir costes variables: ${fmt.x(r.roasBreakeven)}`, cappedNote(levelOf.mer(r), r))
+              }
+            />
+            <Kpi
+              concept="merProfit"
+              value={r.merProfitImpossible ? "Imposible" : fmt.x(r.merProfit)}
+              level={r.merProfitImpossible ? "bad" : "neutral"}
+              sub={
+                r.merProfitImpossible
+                  ? `Margen antes de marketing ${fmt.eur(r.cm1)} ≤ gastos fijos ${fmt.eur(r.fixed)}: aunque no gastaras nada en marketing, perderías`
+                  : r.completeness.fixedKnown
+                    ? "Contando también los gastos fijos"
+                    : "Falta el dato de gastos fijos: ahora solo cubre los costes variables"
+              }
+            />
+            <Kpi concept="roasBreakeven" value={fmt.x(r.roasBreakeven)} level={r.roasBreakeven === null ? "bad" : "neutral"} sub="MER mínimo para cubrir los costes variables" />
+            <Kpi
+              concept="cac"
+              value={fmt.eur2(r.cac)}
+              level={capGood(levelOf.cacVsOrder(r.cac, r.cm1PerOrder), r)}
+              sub={withNote(`Cada pedido deja ${fmt.eur2(r.cm1PerOrder)} antes de marketing`, cappedNote(levelOf.cacVsOrder(r.cac, r.cm1PerOrder), r))}
+            />
             <Kpi
               concept="firstOrderProfit"
               value={r.firstOrderProfit !== null ? signedEur(r.firstOrderProfit) : "—"}
-              level={levelOf.firstOrder(r.firstOrderProfit, r.ordersToRecoverCac, r.ltvFrequency)}
-              sub={r.firstOrderMargin !== null ? `El primer pedido deja ${fmt.eur2(r.firstOrderMargin)} · captarlo cuesta ${fmt.eur2(r.cac)}` : undefined}
+              level={capGood(levelOf.firstOrder(r.firstOrderProfit, r.ordersToRecoverCac, r.ltvFrequency), r)}
+              sub={withNote(
+                r.firstOrderMargin !== null ? `El primer pedido deja ${fmt.eur2(r.firstOrderMargin)} · captarlo cuesta ${fmt.eur2(r.cac)}` : undefined,
+                cappedNote(levelOf.firstOrder(r.firstOrderProfit, r.ordersToRecoverCac, r.ltvFrequency), r),
+              )}
             />
             <Kpi
               concept="ordersToRecoverCac"
               value={r.ordersToRecoverCac !== null ? fmt.dec(r.ordersToRecoverCac) : r.firstOrderProfit !== null ? "Nunca" : "—"}
-              level={r.firstOrderProfit === null ? "neutral" : r.ordersToRecoverCac === null ? "bad" : r.ordersToRecoverCac <= 1 ? "good" : levelOf.firstOrder(r.firstOrderProfit, r.ordersToRecoverCac, r.ltvFrequency)}
-              sub={
+              level={capGood(recoverLevel, r)}
+              sub={withNote(
                 r.ordersToRecoverCac !== null
                   ? r.ordersToRecoverCac <= 1
                     ? "Lo recuperas con el primer pedido"
                     : `Lo recuperas en su ${ordinal(Math.ceil(r.ordersToRecoverCac - 1e-9))} pedido`
-                  : undefined
-              }
+                  : undefined,
+                cappedNote(recoverLevel, r),
+              )}
             />
             <Kpi concept="returningShare" value={fmt.pct(r.returningShare)} sub={`${fmt.num(r.newCustomers)} nuevos · ${fmt.num(r.returningCustomers)} recurrentes`} />
             {form.ltvEnabled && r.ltvFrequency !== null && (
               <>
                 <Kpi concept="ltvRevenue" value={fmt.eur(r.ltvRevenue)} sub={`${fmt.dec(r.ltvFrequency)} pedidos por cliente al año`} />
                 <Kpi concept="ltvMargin" value={fmt.eur(r.ltvMargin)} />
-                <Kpi concept="ltvCac" value={fmt.dec(r.ltvCac)} level={levelOf.ltvCac(r.ltvCac)} />
+                <Kpi concept="ltvCac" value={fmt.dec(r.ltvCac)} level={capGood(levelOf.ltvCac(r.ltvCac), r)} sub={cappedNote(levelOf.ltvCac(r.ltvCac), r) ?? undefined} />
               </>
             )}
             {form.ltvEnabled && r.ltvFrequency === null && (
@@ -846,28 +1194,15 @@ function Analysis({ r, inputs, form, per, set, auditHref, contactHref }: Analysi
           <p className="-mt-4 mb-6 max-w-3xl text-sw-fg-2">
             Desliza cada indicador para ver cuánto ganarías si mejoras tu tienda, tus costes o tu publicidad. Los cambios son sobre tus números actuales.
           </p>
-          <Simulator inputs={inputs} base={r} per={per} contactHref={contactHref} />
+          <Simulator inputs={inputs} base={r} per={per} />
         </div>
 
-        {/* CTA */}
-        <div className="rounded-sm border border-sw-line-strong bg-sw-bg-0 p-6 text-center sm:p-10">
-          <h2 className="font-display text-2xl text-sw-fg-1 sm:text-4xl">¿Quieres saber qué frena las ventas de tu tienda?</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-sw-fg-2">
-            Los números te dicen <em>cuánto</em> ganas o pierdes. Auditar tu web te dice <em>por qué</em>: la reviso como la vería un cliente y te entrego qué arreglar y en qué orden.
-          </p>
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-            <Link href={auditHref} className="rounded-sm bg-sw-brand px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-sw-brand-hover">
-              Auditar mi web
-            </Link>
-            <Link href={contactHref} className="rounded-sm border border-sw-line-strong px-7 py-4 text-base font-semibold text-sw-fg-1 transition-colors hover:border-sw-fg-1">
-              Hablar con Mathias
-            </Link>
-          </div>
-        </div>
+        {/* Revisión de números: solo se envía el email */}
+        <ReviewRequest />
 
         <div className="mx-auto max-w-3xl text-center">
           <Disclaimer />
-          <p className="mt-2 text-xs leading-relaxed text-sw-fg-4">Tus datos no salen de tu navegador.</p>
+          <p className="mt-2 text-xs leading-relaxed text-sw-fg-4">Tus números no salen de tu navegador. Si pides la revisión, solo nos llega tu email.</p>
         </div>
       </div>
     </section>
@@ -1062,44 +1397,67 @@ function Channels({ r }: { r: Results }) {
   }
   return (
     <div>
-      <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-sw-fg-3">
-        <span className="flex items-center gap-2">ROAS de cada canal {roasHelp.button}</span>
-        <span>
-          Para no perder dinero necesitas un ROAS de al menos <strong className="text-sw-fg-1">{fmt.x(r.roasBreakeven)}</strong>
-        </span>
-      </div>
-      {roasHelp.panel}
-      <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {rows.map((c) => (
-          <div key={c.id} className={`rounded-sm border bg-sw-bg-0 p-4 ${LEVEL_STYLES[c.level].border}`}>
-            <div className="flex items-center justify-between gap-2">
-              <span className="font-semibold text-sw-fg-1">{c.name}</span>
-              <StatusPill level={c.level} />
-            </div>
-            <p className={`mt-2 text-2xl font-semibold tabular-nums ${LEVEL_STYLES[c.level].text}`}>{fmt.x(c.roas)}</p>
-            <p className="mt-1 text-xs text-sw-fg-4">
-              {fmt.eur(c.spend)} invertidos → {fmt.eur(c.attributed)} atribuidos
-            </p>
-            <RoasBar roas={c.roas} be={r.roasBreakeven} level={c.level} />
+      {rows.length > 0 && (
+        <>
+          <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-sw-fg-3">
+            <span className="flex items-center gap-2">ROAS de cada plataforma de publicidad {roasHelp.button}</span>
+            <span>
+              Para cubrir sus costes variables, cada una necesita un ROAS de al menos <strong className="text-sw-fg-1">{fmt.x(r.roasBreakeven)}</strong>
+            </span>
           </div>
-        ))}
-        {r.emailToolCost > 0 && (
-          <div className="rounded-sm border border-sw-line bg-sw-bg-0 p-4">
+          {roasHelp.panel}
+          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {rows.map((c) => {
+              const level = capGood(c.level, r)
+              const note = cappedNote(c.level, r)
+              return (
+                <div key={c.id} className={`rounded-sm border bg-sw-bg-0 p-4 ${LEVEL_STYLES[level].border}`}>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-semibold text-sw-fg-1">{c.name}</span>
+                    <StatusPill level={level} />
+                  </div>
+                  <p className={`mt-2 text-2xl font-semibold tabular-nums ${LEVEL_STYLES[level].text}`}>{fmt.x(c.roas)}</p>
+                  <p className="mt-1 text-xs text-sw-fg-4">
+                    {fmt.eur(c.spend)} invertidos → {c.roas === null && c.attributed === 0 ? "sin ventas atribuidas" : `${fmt.eur(c.attributed)} atribuidos`}
+                  </p>
+                  {c.level === "review" ? (
+                    <p className="mt-2 text-xs leading-relaxed text-amber-400">
+                      Se atribuye más de lo que vendiste en total ({fmt.eur(r.netRevenue)}). Revisa el dato: mismo periodo y con o sin IVA igual que tus ventas. Este ROAS no es fiable.
+                    </p>
+                  ) : (
+                    <>
+                      <RoasBar roas={c.roas} be={r.roasBreakeven} level={level} />
+                      {note && <p className="mt-2 text-xs leading-relaxed text-sw-fg-3">Cubre sus costes variables. {note}.</p>}
+                    </>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+          <p className="mt-3 text-xs text-sw-fg-4">
+            Ventas atribuidas según cada plataforma (sin IVA). Suelen ser optimistas: si una plataforma está justo en el límite, probablemente no se paga.
+          </p>
+        </>
+      )}
+
+      {r.emailToolCost > 0 && (
+        <div className={`${rows.length > 0 ? "mt-6 border-t border-sw-line pt-6" : ""}`}>
+          <div className="max-w-md rounded-sm border border-dashed border-sw-line-strong bg-sw-bg-0 p-4">
             <div className="flex items-center justify-between gap-2">
-              <span className="font-semibold text-sw-fg-1">Email marketing</span>
+              <span className="font-semibold text-sw-fg-1">Retorno de la herramienta de email</span>
               {emailHelp.button}
             </div>
             <p className="mt-2 text-2xl font-semibold tabular-nums text-sw-fg-1">{fmt.x(r.emailRoas)}</p>
             <p className="mt-1 text-xs text-sw-fg-4">
               {fmt.eur(r.emailToolCost)} de herramienta → {fmt.eur(r.emailAttributed)} atribuidos
             </p>
+            <p className="mt-2 text-xs leading-relaxed text-sw-fg-3">
+              No es comparable con el ROAS de la publicidad: solo cuenta el coste de la herramienta y son sobre todo ventas a clientes que ya tienes.
+            </p>
             {emailHelp.panel}
           </div>
-        )}
-      </div>
-      <p className="mt-3 text-xs text-sw-fg-4">
-        Ventas atribuidas según cada plataforma (sin IVA). Suelen ser optimistas: si un canal está justo en el límite, probablemente no se paga.
-      </p>
+        </div>
+      )}
     </div>
   )
 }
@@ -1107,7 +1465,7 @@ function Channels({ r }: { r: Results }) {
 function RoasBar({ roas, be, level }: { roas: number | null; be: number | null; level: Level }) {
   if (roas === null || be === null) return null
   const max = Math.max(roas, be) * 1.25
-  const color = level === "good" ? "bg-sw-success" : level === "warn" ? "bg-amber-400" : "bg-sw-danger"
+  const color = level === "good" ? "bg-sw-success" : level === "warn" || level === "review" ? "bg-amber-400" : level === "neutral" ? "bg-sw-fg-3" : "bg-sw-danger"
   return (
     <div className="relative mt-3 h-2 rounded-[3px] bg-sw-bg-2" aria-hidden="true">
       <div className={`h-full rounded-[3px] ${color}`} style={{ width: `${(roas / max) * 100}%` }} />
@@ -1129,6 +1487,8 @@ function Attribution({ r }: { r: Results }) {
     { key: "rest", label: "Orgánico, directo y otros", v: r.restRevenue, color: ATTR_COLORS.rest },
   ].filter((p) => p.v > 0)
   const total = parts.reduce((a, b) => a + b.v, 0) || 1
+  // Fuentes que se atribuyen ventas (para el aviso de sobreatribución).
+  const sources = [...r.channels.filter((c) => c.attributed > 0).map((c) => c.name), ...(r.emailAttributed > 0 ? ["El email marketing"] : [])]
   return (
     <div className="rounded-sm border border-sw-line bg-sw-bg-0 p-4 sm:p-5">
       <div className="mb-3 flex items-center justify-between gap-2">
@@ -1156,7 +1516,9 @@ function Attribution({ r }: { r: Results }) {
       {r.overAttribution > 0 && (
         <p className="mt-3 flex items-start gap-2 text-xs text-amber-400">
           <LevelIcon level="warn" className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-          Las plataformas se atribuyen {fmt.eur(r.overAttribution)} más de lo que vendiste: se están pisando entre ellas.
+          {sources.length >= 2
+            ? `Las plataformas se atribuyen ${fmt.eur(r.overAttribution)} más de lo que vendiste: se están pisando entre ellas.`
+            : `${sources[0] ?? "La plataforma"} se atribuye ${fmt.eur(r.overAttribution)} más de lo que vendiste en total. Una sola fuente no puede vender más que toda la tienda: revisa el dato.`}
         </p>
       )}
       {panel}
@@ -1164,7 +1526,7 @@ function Attribution({ r }: { r: Results }) {
   )
 }
 
-function Projection({ r, form, set }: { r: Results; form: FormState; set: AnalysisProps["set"] }) {
+function Projection({ r, form, set }: { r: Results; form: FormState; set: SetField }) {
   const formulas = useContext(FormulaContext)
   const [active, setActive] = useState<number | null>(null)
   const { button, panel } = useConcept("projection")
@@ -1185,8 +1547,8 @@ function Projection({ r, form, set }: { r: Results; form: FormState; set: Analys
       )}
       <div className="grid gap-3 sm:grid-cols-3">
         <Kpi concept="projection" label="Ingresos netos (12 meses)" value={fmt.eur(r.projRevenue)} />
-        <Kpi concept="contribution" calc={formulas.projContribution} label="Margen de contribución (12 meses)" value={fmt.eur(r.projContribution)} level={levelOf.profit(r.projContribution)} />
-        <Kpi concept="netProfit" calc={formulas.projNetProfit} label="Beneficio neto (12 meses)" value={fmt.eur(r.projNetProfit)} level={levelOf.profit(r.projNetProfit)} sub={r.projTax > 0 ? `Después de ${fmt.eur(r.projTax)} de impuestos` : undefined} />
+        <Kpi concept="contribution" calc={formulas.projContribution} label="Margen de contribución (12 meses)" value={fmt.eur(r.projContribution)} level={capGood(levelOf.profit(r.projContribution), r)} />
+        <Kpi concept="netProfit" calc={formulas.projNetProfit} label="Beneficio neto (12 meses)" value={fmt.eur(r.projNetProfit)} level={capGood(levelOf.profit(r.projNetProfit), r)} sub={r.projTax > 0 ? `Después de ${fmt.eur(r.projTax)} de impuestos` : undefined} />
       </div>
 
       <div className="rounded-sm border border-sw-line bg-sw-bg-0 p-4 sm:p-5">
@@ -1298,7 +1660,9 @@ function MobileBar({ r, per }: { r: Results; per: string }) {
     return () => io.disconnect()
   }, [r.hasData])
   if (!r.hasData) return null
-  const level = levelOf.profit(r.netProfit)
+  const level = levelOf.result(r.netProfit, r)
+  const status = r.completeness.status
+  const noSales = r.completeness.missing.includes("Ventas brutas")
   return (
     <div
       className={`fixed inset-x-0 bottom-0 z-40 border-t border-sw-line-strong bg-sw-bg-0/95 backdrop-blur transition-transform lg:hidden ${
@@ -1307,8 +1671,12 @@ function MobileBar({ r, per }: { r: Results; per: string }) {
     >
       <div className="flex items-center justify-between gap-3 px-4 py-3">
         <div className="min-w-0">
-          <p className="text-xs text-sw-fg-3">{r.netProfit >= 0 ? "Ganas" : "Pierdes"} {per}</p>
-          <p className={`text-xl font-semibold tabular-nums ${LEVEL_STYLES[level].text}`}>{fmt.eur(Math.abs(r.netProfit))}</p>
+          <p className="text-xs text-sw-fg-3">
+            {status === "complete"
+              ? `${r.netProfit >= 0 ? "Ganas" : "Pierdes"} ${per}`
+              : `${status === "quick" ? "Estimación rápida" : "Estimación incompleta"} · ${r.netProfit >= 0 ? "ganaría" : "pierde"} ${per}`}
+          </p>
+          <p className={`text-xl font-semibold tabular-nums ${LEVEL_STYLES[level].text}`}>{noSales ? "—" : fmt.eur(Math.abs(r.netProfit))}</p>
         </div>
         <a href="#analisis" className="flex shrink-0 items-center gap-1.5 rounded-sm bg-sw-secondary-strong px-4 py-2.5 text-sm font-semibold text-white">
           Ver análisis

@@ -10,7 +10,16 @@
 //   recta (no dependen de la estacionalidad).
 
 export type Mode = "eur" | "pct"
-export type Level = "good" | "warn" | "bad" | "neutral"
+/** "review" = el dato parece mal metido (p. ej. una plataforma se atribuye más de lo vendido). */
+export type Level = "good" | "warn" | "bad" | "neutral" | "review"
+/**
+ * Fiabilidad del resultado:
+ * - empty: aún no hay datos.
+ * - incomplete: falta algún dato clave (ver KEY_FIELDS); no se da veredicto.
+ * - quick: modo rápido con los datos clave del modo rápido; faltan partidas de coste.
+ * - complete: todos los datos clave del modo completo.
+ */
+export type Status = "empty" | "incomplete" | "quick" | "complete"
 export type SeasonProfile = "flat" | "xmas" | "summer" | "custom"
 
 export const MONTHS_SHORT = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
@@ -37,13 +46,15 @@ export interface AdChannel {
 }
 
 export interface Inputs {
+  /** Modo rápido: solo cuentan los campos del modo rápido (ver applyMode). */
+  quickMode: boolean
   months: 1 | 3 | 6 | 12
   endMonth: number // 0-11, último mes incluido en los datos
   profile: SeasonProfile
   customWeights: number[] // 12 valores
   growthPct: number | null
 
-  salesIncludeVat: boolean
+  salesIncludeVat: boolean | null // null = sin contestar (se calcula como "sin IVA")
   vatPct: number | null
 
   grossSales: number | null
@@ -62,14 +73,18 @@ export interface Inputs {
   feesMode: Mode
   fees: number | null // € total, o % sobre lo cobrado (con IVA y envío)
   feesFixedPerOrder: number | null // solo en modo %
+  returnCosts: number | null // envíos de vuelta y producto que ya no se puede revender (€)
 
   ads: AdChannel[]
+  adSpendTotal: number | null // solo modo rápido: gasto total en publicidad
   emailToolCost: number | null
   emailAttributed: number | null
   otherMarketing: number | null
 
   platformCost: number | null
   otherFixed: number | null
+  ownerSalary: number | null // lo que se paga el dueño en el periodo
+  ownerHours: number | null // horas al mes que le dedica
   profitTaxPct: number | null
 
   ltvEnabled: boolean
@@ -122,11 +137,28 @@ export interface Insight {
   level: Level
   title: string
   text: string
-  cta?: "audit" | "contact"
+  /** Impacto estimado en € sobre el beneficio del periodo (para ordenar). */
+  impact: number
+  /** summary = pérdida o rentabilidad global (va primero); data = calidad de los datos (va después). */
+  kind?: "summary" | "data"
+}
+
+export interface Completeness {
+  status: Status
+  /** Datos clave sin rellenar: mientras falte alguno no hay veredicto. */
+  missing: string[]
+  /** Opcionales vacíos que cuentan como 0 (no bloquean el veredicto). */
+  optionalEmpty: string[]
+  /** Partidas que el modo rápido no tiene en cuenta. */
+  notIncluded: string[]
+  fixedKnown: boolean
 }
 
 export interface Results {
   hasData: boolean
+  completeness: Completeness
+  /** Solo si el resultado es completo y no hay pérdidas se permite el verde en las métricas de rentabilidad. */
+  trusted: boolean
   vatRate: number
   vatFactor: number
 
@@ -145,6 +177,7 @@ export interface Results {
   shippingPaid: number
   packaging: number
   fees: number
+  returnCosts: number
   variableCosts: number
   shippingSubsidy: number // envíos pagados - cobrados (si > 0, lo pones tú)
 
@@ -166,11 +199,16 @@ export interface Results {
   contribution: number
   contributionPct: number | null
 
-  fixed: number
+  fixed: number // plataforma + otros fijos + sueldo del dueño
+  ownerSalary: number
+  ownerSalaryEmpty: boolean // vacío o 0
   ebit: number
   tax: number
   netProfit: number
   netMarginPct: number | null
+  ownerTake: number // sueldo del dueño + beneficio neto
+  ownerHoursPeriod: number | null
+  ownerPerHour: number | null
 
   // KPIs
   orders: number
@@ -181,8 +219,11 @@ export interface Results {
   newCustomers: number
   returningCustomers: number
   returningShare: number | null
-  roasBreakeven: number | null
+  roasBreakeven: number | null // = MER mínimo para cubrir costes variables
+  merProfit: number | null // MER mínimo para beneficio 0, contando los fijos (null si es imposible)
+  merProfitImpossible: boolean // margen antes de marketing ≤ fijos: ningún nivel de marketing da beneficio
   mer: number | null
+  recurrentOrders: number | null // pedidos − clientes nuevos (mín. 0)
   cac: number | null
   cm1PerOrder: number | null
   breakevenRevenue: number | null // ingresos netos necesarios para beneficio 0
@@ -221,9 +262,95 @@ export interface Results {
   insights: Insight[]
 }
 
+// ---------------------------------------------------------------------------
+// Modo rápido y datos que faltan
+// ---------------------------------------------------------------------------
+
+/**
+ * En modo rápido solo cuentan: IVA, ventas brutas, pedidos, % de producto,
+ * envíos pagados, gasto total en publicidad, gastos fijos (en "otros fijos") y
+ * sesiones. El resto se ignora (no se borra del formulario).
+ */
+export function applyMode(inp: Inputs): Inputs {
+  if (!inp.quickMode) return { ...inp, adSpendTotal: null }
+  return {
+    ...inp,
+    discounts: null,
+    returns: null,
+    shippingCharged: null,
+    newCustomers: null,
+    returningCustomers: null,
+    packaging: null,
+    fees: null,
+    feesFixedPerOrder: null,
+    returnCosts: null,
+    ads: has(inp.adSpendTotal) ? [{ id: "total", name: "Publicidad (total)", spend: inp.adSpendTotal, attributed: null }] : [],
+    emailToolCost: null,
+    emailAttributed: null,
+    otherMarketing: null,
+    platformCost: null,
+    ownerSalary: null,
+    ownerHours: null,
+    ltvEnabled: false,
+    firstOrderAov: null,
+    welcomeDiscountPct: null,
+  }
+}
+
+export function completeness(inp: Inputs, hasData: boolean): Completeness {
+  const missing: string[] = []
+  if (inp.salesIncludeVat === null) missing.push("Si tus ventas incluyen IVA o no")
+  if (!has(inp.grossSales)) missing.push("Ventas brutas")
+  if (!has(inp.orders)) missing.push("Pedidos")
+  if (!has(inp.cogs)) missing.push("Coste de producto")
+  if (!has(inp.shippingPaid)) missing.push("Envíos pagados")
+  if (!inp.quickMode && !has(inp.fees)) missing.push("Pasarela de pago")
+  // Gastos fijos: basta con uno de los dos campos (si no tienes uno de ellos, pon 0).
+  const fixedKnown = has(inp.platformCost) || has(inp.otherFixed)
+  if (!fixedKnown) missing.push("Gastos fijos")
+
+  const optionalEmpty: string[] = []
+  const notIncluded: string[] = []
+  if (inp.quickMode) {
+    notIncluded.push(
+      "Pasarela de pago",
+      "Packaging",
+      "Descuentos",
+      "Devoluciones y su coste",
+      "Envíos cobrados a clientes",
+      "Email y otros gastos de marketing",
+      "Desglose de publicidad por canal (ROAS)",
+      "Clientes nuevos y recurrentes (CAC, primera compra)",
+      "Tu sueldo por separado",
+    )
+  } else {
+    if (!has(inp.discounts)) optionalEmpty.push("Descuentos")
+    if (!has(inp.returns)) optionalEmpty.push("Devoluciones")
+    if (!has(inp.shippingCharged)) optionalEmpty.push("Envíos cobrados a clientes")
+    if (!has(inp.packaging)) optionalEmpty.push("Packaging")
+    if (!has(inp.returnCosts)) optionalEmpty.push("Coste de devoluciones")
+    const anyMarketing =
+      inp.ads.some((c) => has(c.spend)) || has(inp.emailToolCost) || has(inp.otherMarketing)
+    if (!anyMarketing) optionalEmpty.push("Marketing (publicidad, email y otros)")
+    if (!has(inp.ownerSalary)) optionalEmpty.push("Tu sueldo")
+    if (!has(inp.ownerHours)) optionalEmpty.push("Horas que le dedicas")
+  }
+
+  const status: Status = !hasData ? "empty" : missing.length > 0 ? "incomplete" : inp.quickMode ? "quick" : "complete"
+  return { status, missing, optionalEmpty, notIncluded, fixedKnown }
+}
+
+/** Cálculo + conclusiones. Recibe las entradas ya pasadas por applyMode. */
 export function compute(inp: Inputs): Results {
+  const r = computeCore(inp)
+  r.insights = buildInsights(r, inp)
+  return r
+}
+
+/** Cálculo sin conclusiones (lo usa también el simulador). */
+export function computeCore(inp: Inputs): Results {
   const vatRate = Math.max(0, n(inp.vatPct)) / 100
-  const vatFactor = inp.salesIncludeVat ? 1 / (1 + vatRate) : 1
+  const vatFactor = inp.salesIncludeVat === true ? 1 / (1 + vatRate) : 1
 
   const gross = Math.abs(n(inp.grossSales)) * vatFactor
   const discounts = Math.abs(n(inp.discounts)) * vatFactor
@@ -246,7 +373,8 @@ export function compute(inp: Inputs): Results {
     inp.feesMode === "pct"
       ? Math.max(0, totalCharged) * (a(inp.fees) / 100) + orders * a(inp.feesFixedPerOrder)
       : a(inp.fees)
-  const variableCosts = cogs + shippingPaid + packaging + fees
+  const returnCosts = a(inp.returnCosts)
+  const variableCosts = cogs + shippingPaid + packaging + fees + returnCosts
   const shippingSubsidy = shippingPaid - shippingRevenue
 
   const cm1 = netRevenue - variableCosts
@@ -267,8 +395,11 @@ export function compute(inp: Inputs): Results {
     .map((c) => {
       const spend = a(c.spend)
       const attributed = a(c.attributed) * vatFactor
-      const roas = div(attributed, spend)
-      return { id: c.id, name: c.name || "Otra plataforma", spend, attributed, roas, level: levelVsBreakeven(roas) }
+      // Sin ventas atribuidas no hay ROAS (no es 0x: es un dato que falta).
+      const roas = has(c.attributed) ? div(attributed, spend) : null
+      // Una sola plataforma no puede haber vendido más que la tienda entera.
+      const level: Level = netRevenue > 0 && attributed > netRevenue ? "review" : levelVsBreakeven(roas)
+      return { id: c.id, name: c.name || "Otra plataforma", spend, attributed, roas, level }
     })
   const adSpend = channels.reduce((a, c) => a + c.spend, 0)
   const adAttributed = channels.reduce((a, c) => a + c.attributed, 0)
@@ -284,12 +415,18 @@ export function compute(inp: Inputs): Results {
   const contribution = cm1 - marketing
   const contributionPct = div(contribution, netRevenue)
 
-  const fixed = a(inp.platformCost) + a(inp.otherFixed)
+  const ownerSalary = a(inp.ownerSalary)
+  const fixed = a(inp.platformCost) + a(inp.otherFixed) + ownerSalary
   const ebit = contribution - fixed
   const taxRate = Math.max(0, n(inp.profitTaxPct)) / 100
   const tax = ebit > 0 ? ebit * taxRate : 0
   const netProfit = ebit - tax
   const netMarginPct = div(netProfit, netRevenue)
+
+  // Lo que se lleva el dueño: su sueldo + el beneficio (o menos la pérdida).
+  const ownerTake = ownerSalary + netProfit
+  const ownerHoursPeriod = has(inp.ownerHours) && a(inp.ownerHours) > 0 ? a(inp.ownerHours) * inp.months : null
+  const ownerPerHour = ownerHoursPeriod !== null ? ownerTake / ownerHoursPeriod : null
 
   const aov = div(gross - discounts, orders)
   const conversionRate = div(orders, sessions)
@@ -297,6 +434,10 @@ export function compute(inp: Inputs): Results {
   const totalCustomers = newCustomers + returningCustomers
   const returningShare = div(returningCustomers, totalCustomers)
   const mer = div(netRevenue, marketing)
+  // MER con el que el beneficio sería 0 a estos ingresos: marketing = margen antes de marketing − fijos.
+  const merProfitImpossible = cm1 - fixed <= 0
+  const merProfit = !merProfitImpossible && netRevenue > 0 ? netRevenue / (cm1 - fixed) : null
+  const recurrentOrders = has(inp.newCustomers) && orders > 0 ? Math.max(0, orders - newCustomers) : null
   const cac = div(marketing, newCustomers)
   const cm1PerOrder = div(cm1, orders)
   const breakevenRevenue = cm1PerEuro !== null && cm1PerEuro > 0 ? (marketing + fixed) / cm1PerEuro : null
@@ -376,16 +517,22 @@ export function compute(inp: Inputs): Results {
     cm1PerEuro !== null && netRevenue > 0 ? netRevenue * uplift * cm1PerEuro * seasonFactor * growth : null
 
   const hasData = netRevenue !== 0 || orders > 0
+  const comp = completeness(inp, hasData)
+  const trusted = comp.status === "complete" && netProfit >= 0
 
   const r: Results = {
-    hasData, vatRate, vatFactor,
+    hasData, completeness: comp, trusted, vatRate, vatFactor,
     gross, discounts, returns, netProductSales, shippingRevenue, netRevenue, totalCharged, vatCollected,
-    cogs, shippingPaid, packaging, fees, variableCosts, shippingSubsidy, cm1, cm1PerEuro,
+    cogs, shippingPaid, packaging, fees, returnCosts, variableCosts, shippingSubsidy, cm1, cm1PerEuro,
     channels, adSpend, adAttributed, emailToolCost, emailAttributed, emailRoas, otherMarketing, marketing,
     restRevenue, overAttribution, contribution, contributionPct,
-    fixed, ebit, tax, netProfit, netMarginPct,
+    fixed, ownerSalary, ownerSalaryEmpty: ownerSalary === 0, ebit, tax, netProfit, netMarginPct,
+    ownerTake, ownerHoursPeriod, ownerPerHour,
     orders, sessions, aov, conversionRate, rpv, newCustomers, returningCustomers, returningShare,
-    roasBreakeven, mer, cac, cm1PerOrder, breakevenRevenue, discountPct, returnPct,
+    roasBreakeven, merProfit, merProfitImpossible, mer, recurrentOrders, cac, cm1PerOrder,
+    // Sin gastos fijos no hay punto de equilibrio que dar.
+    breakevenRevenue: comp.fixedKnown ? breakevenRevenue : null,
+    discountPct, returnPct,
     ltvFrequency, ltvFrequencyIsEstimate, ltvRevenue, ltvMargin, ltvCac,
     firstOrderCustom, firstOrderTicket, firstOrderMargin, firstOrderProfit, ordersToRecoverCac,
     seasonFactor, weights, periodMonths, projection,
@@ -393,7 +540,6 @@ export function compute(inp: Inputs): Results {
     croExtraProfitYear,
     insights: [],
   }
-  r.insights = buildInsights(r, inp)
   return r
 }
 
@@ -401,12 +547,35 @@ export function compute(inp: Inputs): Results {
 // Semáforos (umbrales ORIENTATIVOS; en la página se indica así)
 // ---------------------------------------------------------------------------
 
+// Regla general: ninguna métrica de rentabilidad sale en verde si el resultado
+// global no lo respalda (pérdidas, datos clave sin rellenar o modo rápido).
+// En esos casos el "Bien" pasa a neutro y la interfaz añade una nota.
+export function capGood(level: Level, r: Pick<Results, "trusted">): Level {
+  return level === "good" && !r.trusted ? "neutral" : level
+}
+
 export const levelOf = {
   profit: (v: number): Level => (v > 0 ? "good" : v < 0 ? "bad" : "warn"),
+  /** Resultado global: sin datos completos no hay verde. */
+  result: (v: number, r: Pick<Results, "completeness">): Level =>
+    v < 0 ? "bad" : r.completeness.status === "complete" ? (v > 0 ? "good" : "warn") : "neutral",
   cm1PerEuro: (v: number | null): Level => (v === null ? "neutral" : v <= 0 ? "bad" : v < 0.3 ? "warn" : "good"),
   contributionPct: (v: number | null): Level => (v === null ? "neutral" : v <= 0 ? "bad" : v < 0.1 ? "warn" : "good"),
-  mer: (mer: number | null, be: number | null): Level =>
-    mer === null ? "neutral" : be === null || mer < be ? "bad" : mer < be * 1.2 ? "warn" : "good",
+  /**
+   * Margen de contribución: solo "Bien" si cubre los gastos fijos. Si no los
+   * cubre, "Problema". Sin dato de fijos no se puede juzgar (neutro).
+   * El umbral del 10 % es el que ya usaba la calculadora.
+   */
+  contribution: (r: Pick<Results, "contribution" | "contributionPct" | "fixed" | "completeness">): Level => {
+    if (r.contributionPct === null) return "neutral"
+    if (r.contribution <= 0) return "bad"
+    if (!r.completeness.fixedKnown) return "neutral"
+    if (r.contribution < r.fixed) return "bad"
+    return r.contributionPct < 0.1 ? "warn" : "good"
+  },
+  /** MER frente al mínimo para beneficio 0 (contando fijos). Mismo margen del 20 % que ya se usaba frente al breakeven. */
+  mer: (r: Pick<Results, "mer" | "merProfit" | "merProfitImpossible">): Level =>
+    r.mer === null ? "neutral" : r.merProfitImpossible || r.merProfit === null || r.mer < r.merProfit ? "bad" : r.mer < r.merProfit * 1.2 ? "warn" : "good",
   conversion: (v: number | null): Level => (v === null ? "neutral" : v < 0.005 ? "bad" : v < 0.01 ? "warn" : v >= 0.02 ? "good" : "neutral"),
   ltvCac: (v: number | null): Level => (v === null ? "neutral" : v < 1 ? "bad" : v < 3 ? "warn" : "good"),
   /** ≥ 0 bien; < 0 atención si se recupera dentro del año (según LTV), problema si no */
@@ -431,6 +600,12 @@ const pct1 = new Intl.NumberFormat("es-ES", { style: "percent", minimumFractionD
 // Evita "-0,00 €" / "-0,0 %": si el valor redondeado a la precisión mostrada es 0, se muestra 0
 const z0 = (v: number, decimals: number) => (Math.round(v * 10 ** decimals) === 0 ? 0 : v)
 
+/** "Meta Ads", "Meta Ads y Google Ads", "Meta Ads, Google Ads y email" */
+export function joinEs(items: string[]) {
+  if (items.length <= 1) return items.join("")
+  return `${items.slice(0, -1).join(", ")} y ${items[items.length - 1]}`
+}
+
 export const fmt = {
   eur: (v: number | null) => (v === null ? "—" : eur0.format(z0(v, 0))),
   eur2: (v: number | null) => (v === null ? "—" : eur2.format(z0(v, 2))),
@@ -441,78 +616,182 @@ export const fmt = {
 }
 
 // ---------------------------------------------------------------------------
-// Conclusiones: reglas simples, ordenadas por gravedad
+// Conclusiones: lo primero, de dónde viene la pérdida (o que la tienda es
+// rentable); después, avisos sobre la calidad de los datos; el resto, ordenado
+// por su impacto estimado en € sobre el beneficio del periodo.
 // ---------------------------------------------------------------------------
+
+/** Frase de cada palanca al mejorarla un 10 % (conclusiones). */
+export const LEVER_PHRASE: Record<LeverKey, string> = {
+  traffic: "Subir un 10 % las visitas",
+  conversion: "Subir un 10 % la conversión",
+  aov: "Subir un 10 % el ticket medio",
+  repeat: "Subir un 10 % la recompra",
+  discounts: "Bajar un 10 % los descuentos",
+  returns: "Bajar un 10 % las devoluciones",
+  cogs: "Bajar un 10 % el coste de producto",
+  shipping: "Bajar un 10 % el coste de envío",
+  ads: "Subir un 10 % la inversión en publicidad",
+  fixed: "Bajar un 10 % los gastos fijos",
+}
 
 function buildInsights(r: Results, inp: Inputs): Insight[] {
   if (!r.hasData || r.netRevenue <= 0) return []
   const out: Insight[] = []
   const per = inp.months === 1 ? "al mes" : `en ${inp.months} meses`
+  const comp = r.completeness
+  const sure = comp.status === "complete"
+  const atLeast = sure ? "" : "al menos "
+  const cm1PerEuro = Math.max(0, r.cm1PerEuro ?? 0)
 
-  if (r.cm1 <= 0) {
+  // 1. Si pierde dinero: de dónde viene la pérdida.
+  if (r.netProfit < 0) {
+    const loss = -r.netProfit
+    if (r.cm1 <= 0) {
+      out.push({
+        level: "bad",
+        kind: "summary",
+        impact: loss,
+        title: "Pierdes dinero en cada venta, antes incluso de hacer marketing",
+        text: `Producto, envíos, packaging, pasarela y devoluciones (${fmt.eur(r.variableCosts)}) se comen más de lo que ingresas (${fmt.eur(r.netRevenue)}). Más ventas o más publicidad no lo arreglan: agrandan la pérdida. Revisa precios, coste de producto y política de envíos antes de invertir un euro más.`,
+      })
+    } else if (r.contribution <= 0) {
+      out.push({
+        level: "bad",
+        kind: "summary",
+        impact: loss,
+        title: `Pierdes ${atLeast}${fmt.eur(loss)} ${per}: el marketing se come todo el margen`,
+        text: `Después de producto, envíos y pasarela tus ventas dejan ${fmt.eur(r.cm1)}, y gastas ${fmt.eur(r.marketing)} en marketing: ya antes de los gastos fijos (${fmt.eur(r.fixed)}) estás en negativo. Tu MER es ${fmt.x(r.mer)} y solo para cubrir los costes variables necesitas ${fmt.x(r.roasBreakeven)}. Esta métrica no depende de lo que diga cada plataforma: es ventas totales entre gasto total.`,
+      })
+    } else {
+      const parts: string[] = [
+        `Después de producto, envíos, pasarela y marketing te quedan ${fmt.eur(r.contribution)}, y tus gastos fijos son ${fmt.eur(r.fixed)}${
+          r.ownerSalary > 0 ? ` (incluido tu sueldo, ${fmt.eur(r.ownerSalary)})` : ""
+        }.`,
+      ]
+      if (r.breakevenRevenue !== null) {
+        parts.push(
+          `Con tu margen actual (${fmt.eur2(r.cm1PerEuro)} por cada euro vendido) necesitarías ${fmt.eur(r.breakevenRevenue)} de ingresos netos ${per}, ${fmt.eur(r.breakevenRevenue - r.netRevenue)} más que ahora, suponiendo que mantienes el mismo gasto en marketing. O vendes más, o subes el margen, o recortas gasto.`,
+        )
+      }
+      if (r.merProfitImpossible) {
+        parts.push("Con estos gastos fijos, a este volumen de ventas ningún nivel de marketing da beneficio: aunque no gastaras nada en marketing, seguirías perdiendo.")
+      } else if (r.mer !== null && r.merProfit !== null) {
+        parts.push(`A este volumen de ventas, tu marketing tendría que rendir un MER de al menos ${fmt.x(r.merProfit)} para no perder; ahora es ${fmt.x(r.mer)}.`)
+      }
+      out.push({
+        level: "bad",
+        kind: "summary",
+        impact: loss,
+        title: `Pierdes ${atLeast}${fmt.eur(loss)} ${per}: lo que dejan tus ventas no cubre los gastos fijos`,
+        text: parts.join(" "),
+      })
+    }
+  }
+
+  // 2. Calidad de los datos.
+  if (comp.status === "incomplete") {
     out.push({
-      level: "bad",
-      title: "Pierdes dinero en cada venta, antes incluso de hacer marketing",
-      text: `Producto, envíos, packaging y pasarela se comen más de lo que ingresas. Más ventas o más publicidad no lo arreglan: agrandan la pérdida. Revisa precios, coste de producto y política de envíos antes de invertir un euro más.`,
+      level: "warn",
+      kind: "data",
+      impact: 0,
+      title: "Estimación incompleta: faltan datos clave",
+      text: `Falta: ${joinEs(comp.missing.map(lcFirst))}. Mientras falten, cuentan como 0${
+        inp.salesIncludeVat === null ? " (y las ventas, como si fueran sin IVA)" : ""
+      }. Cuando los completes, el beneficio bajará: el real es menor que el que ves aquí.`,
+    })
+  } else if (comp.status === "quick") {
+    out.push({
+      level: "warn",
+      kind: "data",
+      impact: 0,
+      title: "Estimación rápida: faltan partidas de coste",
+      text: `No incluye ${joinEs(comp.notIncluded.slice(0, 4).map(lcFirst))}, entre otras partidas. Casi todo lo que falta son costes, así que lo normal es que el beneficio real sea menor (la excepción son los envíos que cobras a tus clientes, que lo subirían). Usa «Afinar mi cálculo» para completarlo.`,
     })
   }
 
-  if (r.netProfit < 0 && r.cm1 > 0 && r.breakevenRevenue !== null) {
-    const gap = r.breakevenRevenue - r.netRevenue
-    out.push({
-      level: "bad",
-      title: `Te faltan ${fmt.eur(gap)} de ventas netas ${per} para no perder dinero`,
-      text: `Con tu margen actual (${fmt.eur2(r.cm1PerEuro)} por cada euro vendido) y tus gastos de marketing y fijos, el punto de equilibrio está en ${fmt.eur(r.breakevenRevenue)} de ingresos netos ${per}. O vendes más con el mismo gasto, o subes el margen, o recortas gasto.`,
-    })
+  const sources = [
+    ...r.channels.filter((c) => c.attributed > 0).map((c) => ({ name: c.name, attributed: c.attributed })),
+    ...(r.emailAttributed > 0 ? [{ name: "email marketing", attributed: r.emailAttributed }] : []),
+  ]
+  const overOne = r.channels.filter((c) => c.level === "review")
+  if (r.overAttribution > 0) {
+    if (sources.length >= 2) {
+      out.push({
+        level: overOne.length > 0 ? "review" : "warn",
+        kind: "data",
+        impact: 0,
+        title: "Las plataformas se atribuyen más ventas de las que tuviste",
+        text: `Suman ${fmt.eur(r.overAttribution)} más que tus ingresos reales. Es habitual: varias plataformas se adjudican la misma venta. Por eso conviene decidir con el MER, no solo con el ROAS de cada una.${
+          overOne.length > 0
+            ? ` Además, ${joinEs(overOne.map((c) => c.name))} por sí sola se atribuye más de lo que vendiste en total: revisa ese dato (mismo periodo, con o sin IVA igual que tus ventas).`
+            : ""
+        }`,
+      })
+    } else if (sources.length === 1) {
+      const s = sources[0]
+      out.push({
+        level: "review",
+        kind: "data",
+        impact: 0,
+        title: `${capitalize(s.name)} se atribuye más ventas de las que tuviste`,
+        text: `Dice haber generado ${fmt.eur(s.attributed)} y tus ingresos netos totales son ${fmt.eur(r.netRevenue)}. Una sola fuente no puede vender más que toda la tienda: revisa que la cifra sea del mismo periodo y que esté con o sin IVA igual que tus ventas. Hasta entonces, su ROAS no es fiable: decide con el MER.`,
+      })
+    }
   }
 
+  // 3. El resto, con su impacto en €.
   const losing = r.channels.filter((c) => c.level === "bad" && c.spend > 0)
   for (const c of losing) {
     out.push({
       level: "bad",
+      impact: Math.max(0, c.spend - c.attributed * cm1PerEuro),
       title: `${c.name} no se paga ni con sus propios datos`,
       text: `ROAS de ${fmt.x(c.roas)} cuando necesitas al menos ${fmt.x(r.roasBreakeven)} para cubrir costes. Y las plataformas tienden a atribuirse de más, así que la realidad suele ser peor. Revisa campañas, público y creatividades, o baja el presupuesto.`,
     })
   }
 
-  if (r.mer !== null && r.roasBreakeven !== null && r.mer < r.roasBreakeven) {
-    out.push({
-      level: "bad",
-      title: "En conjunto, tu marketing cuesta más de lo que deja",
-      text: `Tu MER es ${fmt.x(r.mer)} y el mínimo para cubrir costes es ${fmt.x(r.roasBreakeven)}. Esta métrica no depende de lo que diga cada plataforma: es ventas totales entre gasto total.`,
-    })
-  }
-
-  if (r.overAttribution > 0) {
+  // En modo rápido no sabemos lo que cobras de envío: no se puede calcular.
+  if (!inp.quickMode && r.shippingSubsidy > 0 && r.netRevenue > 0 && !has(inp.shippingCharged)) {
+    // Sin el dato de envíos cobrados no afirmamos que los pague de su bolsillo.
     out.push({
       level: "warn",
-      title: "Las plataformas se atribuyen más ventas de las que tuviste",
-      text: `Suman ${fmt.eur(r.overAttribution)} más que tus ingresos reales. Es normal: varias plataformas se adjudican la misma venta. Por eso conviene decidir con el MER, no solo con el ROAS de cada una.`,
+      kind: "data",
+      impact: 0,
+      title: `Pagas ${fmt.eur(r.shippingPaid)} en envíos y no has indicado cuánto cobras por ellos`,
+      text: "Ahora cuenta como 0, así que el cálculo supone que todos los envíos los pagas tú. Si ofreces envío gratis, pon 0 en «Envíos cobrados a clientes»; si cobras algo, mételo.",
     })
-  }
-
-  if (r.shippingSubsidy > 0 && r.netRevenue > 0) {
+  } else if (!inp.quickMode && r.shippingSubsidy > 0 && r.netRevenue > 0) {
     out.push({
       level: r.shippingSubsidy / r.netRevenue > 0.05 ? "bad" : "warn",
+      impact: r.shippingSubsidy,
       title: `Pagas de tu bolsillo ${fmt.eur(r.shippingSubsidy)} en envíos ${per}`,
       text: `Es lo que te cuestan los envíos menos lo que cobras por ellos (${fmt.pct(r.shippingSubsidy / r.netRevenue)} de tus ingresos). Prueba un umbral de envío gratis por encima de tu ticket medio (${fmt.eur(r.aov)}) o ajusta tarifas.`,
     })
   }
 
-  if (levelOf.discount(r.discountPct) !== "good") {
+  // Descuentos y devoluciones: el impacto es lo que pasa del umbral orientativo
+  // que ya usa el semáforo (12 % y 8 % de las ventas brutas).
+  const discLevel = levelOf.discount(r.discountPct)
+  if (discLevel === "warn" || discLevel === "bad") {
     out.push({
-      level: levelOf.discount(r.discountPct),
+      level: discLevel,
+      impact: Math.max(0, r.discounts - 0.12 * r.gross),
       title: `Los descuentos se llevan el ${fmt.pct(r.discountPct)} de tus ventas brutas`,
       text: "Cada euro de descuento sale directo de tu margen. Revisa si los códigos están generando ventas nuevas o solo regalando margen a quien iba a comprar igual.",
     })
   }
 
-  if (levelOf.returns(r.returnPct) !== "good") {
+  const retLevel = levelOf.returns(r.returnPct)
+  if (retLevel === "warn" || retLevel === "bad") {
+    const excess = Math.max(0, r.returns - 0.08 * r.gross)
     out.push({
-      level: levelOf.returns(r.returnPct),
+      level: retLevel,
+      impact: excess * cm1PerEuro + (r.returns > 0 ? r.returnCosts * (excess / r.returns) : 0),
       title: `Devoluciones del ${fmt.pct(r.returnPct)}`,
-      text: "Suele indicar que la ficha de producto no deja claro lo que el cliente va a recibir: tallas, medidas, fotos reales, materiales. Mejorar la ficha reduce devoluciones y sube conversión a la vez.",
-      cta: "audit",
+      text: `${
+        r.returnCosts > 0 ? `Además del importe devuelto, te cuestan ${fmt.eur(r.returnCosts)} en envíos de vuelta y producto que no puedes revender. ` : ""
+      }Suele indicar que el cliente no recibe lo que esperaba: tallas, medidas, fotos, materiales. Mira qué productos concentran las devoluciones y por qué.`,
     })
   }
 
@@ -521,14 +800,16 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
     if (l !== "good") {
       out.push({
         level: l,
+        impact: r.cac !== null && r.ltvMargin !== null ? r.newCustomers * Math.max(0, r.cac - r.ltvMargin) : 0,
         title: l === "bad" ? "Un cliente nuevo te cuesta más de lo que te deja en un año" : "Captar clientes te sale justo",
-        text: `Cada cliente deja ${fmt.eur(r.ltvMargin)} de margen en 12 meses y captarlo cuesta ${fmt.eur(r.cac)} (LTV:CAC ${fmt.dec(r.ltvCac)}). Sube la recompra con email (post-compra, recordatorios) o baja el coste de captación.`,
+        text: `Cada cliente deja ${fmt.eur(r.ltvMargin)} de margen en 12 meses y captarlo cuesta ${fmt.eur(r.cac)} (LTV:CAC ${fmt.dec(r.ltvCac)}). Sube la recompra o baja el coste de captación.`,
       })
-    } else {
+    } else if (r.trusted) {
       out.push({
         level: "good",
+        impact: 0,
         title: "Tus clientes son rentables a 12 meses",
-        text: `LTV:CAC de ${fmt.dec(r.ltvCac)}: cada euro que inviertes en captar un cliente vuelve multiplicado en el año. Hay margen para invertir más en captación.`,
+        text: `LTV:CAC de ${fmt.dec(r.ltvCac)}: cada euro que inviertes en captar un cliente vuelve multiplicado en el año.`,
       })
     }
   }
@@ -547,24 +828,31 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
           }`
     out.push({
       level: l,
+      // Si se recupera dentro del año no es una pérdida: no compite por arriba.
+      impact: l === "bad" ? r.newCustomers * -r.firstOrderProfit : 0,
       title: `Pierdes ${fmt.eur2(-r.firstOrderProfit)} en la primera compra de cada cliente nuevo`,
-      text: `Captarlo te cuesta ${fmt.eur2(r.cac)} y su primer pedido te deja ${fmt.eur2(r.firstOrderMargin)} antes de marketing. ${recover} Sube el ticket del primer pedido (packs, envío gratis desde un importe), revisa el descuento de bienvenida o activa emails para la segunda compra.`,
+      text: `Captarlo te cuesta ${fmt.eur2(r.cac)} y su primer pedido te deja ${fmt.eur2(r.firstOrderMargin)} antes de marketing. ${recover} Sube el ticket del primer pedido (packs, envío gratis desde un importe), revisa el descuento de bienvenida o trabaja la segunda compra.`,
     })
   }
+
+  const ranking = leverRanking(inp, r, 10)
+  const leverDelta = (k: LeverKey) => ranking.find((x) => x.key === k)?.delta ?? 0
 
   const cr = levelOf.conversion(r.conversionRate)
   if (cr === "bad" || cr === "warn") {
     out.push({
       level: cr,
+      impact: Math.max(0, leverDelta("conversion")),
       title: `Solo compra el ${fmt.pct(r.conversionRate)} de las visitas`,
-      text: "Tu tráfico llega pero no convierte. Antes de pagar más publicidad, conviene encontrar qué frena la compra dentro de la tienda: cada mejora de conversión abarata todo tu marketing.",
-      cta: "audit",
+      text: "Tu tráfico llega pero no convierte. Antes de pagar más publicidad, conviene entender qué frena la compra dentro de la tienda: cada mejora de conversión abarata todo tu marketing.",
     })
   }
 
   if (r.lossMonths.length > 0 && r.lossMonths.length < 12) {
+    const lossYear = r.projection.filter((p) => p.profitBeforeTax < 0).reduce((acc, p) => acc - p.profitBeforeTax, 0)
     out.push({
       level: "warn",
+      impact: (lossYear * inp.months) / 12,
       title: `Con tu estacionalidad, perderías dinero en ${r.lossMonths.length === 1 ? "1 mes" : `${r.lossMonths.length} meses`} del próximo año`,
       text: `${
         r.lossMonths.length > 6
@@ -576,23 +864,44 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
 
   if (r.emailToolCost > 0 && r.emailRoas !== null && r.emailRoas >= 10) {
     out.push({
-      level: "good",
-      title: "El email marketing es tu canal más rentable",
-      text: `Cada euro de la herramienta devuelve ${fmt.x(r.emailRoas)} en ventas. Más flujos automáticos (bienvenida, carrito abandonado, post-compra) suelen ser la palanca más barata.`,
+      level: capGood("good", r),
+      impact: 0,
+      title: "Tu herramienta de email se paga sola",
+      text: `Las ventas atribuidas al email multiplican por ${fmt.dec(r.emailRoas)} lo que cuesta la herramienta. No es comparable con el ROAS de la publicidad: solo cuenta el coste de la herramienta (no el tiempo de preparar los emails) y son sobre todo ventas a clientes que ya tienes.`,
     })
   }
 
-  if (r.netProfit > 0 && out.every((i) => i.level !== "bad")) {
+  // Las 1–2 palancas de más impacto del simulador, sea cual sea. Con datos clave
+  // sin rellenar las cifras saldrían infladas, así que no se dan.
+  if (comp.status !== "incomplete") ranking
+    .filter((x) => x.delta >= 1)
+    .slice(0, 2)
+    .forEach((x, i) => {
+      out.push({
+        level: "neutral",
+        impact: x.delta,
+        title: `${LEVER_PHRASE[x.key]} sumaría ${fmt.eur(x.delta)} ${per}`,
+        text: `Es la ${i === 0 ? "palanca con más impacto" : "segunda palanca con más impacto"} en tu caso según el simulador${
+          sure ? "" : ", con los datos que has metido"
+        }${x.key === "ads" ? " (suponiendo que cada euro extra de publicidad rinde algo menos que el anterior)" : ""}. Más abajo puedes moverla y combinarla con otras.`,
+      })
+    })
+
+  if (r.trusted && r.netProfit > 0 && out.every((i) => i.level !== "bad")) {
     out.push({
       level: "good",
+      kind: "summary",
+      impact: r.netProfit,
       title: `Tu tienda es rentable: te quedan ${fmt.eur(r.netProfit)} ${per}`,
-      text: `Un ${fmt.pct(r.netMarginPct)} de lo que ingresas. El siguiente paso es crecer sin romper el margen: subir conversión y ticket medio sobre el tráfico que ya tienes.`,
-      cta: "audit",
+      text: `Un ${fmt.pct(r.netMarginPct)} de lo que ingresas.${
+        r.ownerSalaryEmpty ? " Ojo: no has metido un sueldo para ti, así que este beneficio también es tu sueldo." : ""
+      }`,
     })
   }
 
-  const order: Record<Level, number> = { bad: 0, warn: 1, neutral: 2, good: 3 }
-  return out.sort((a, b) => order[a.level] - order[b.level])
+  const rank = (i: Insight) => (i.kind === "summary" ? 0 : i.kind === "data" ? 1 : 2)
+  const severity: Record<Level, number> = { bad: 0, review: 1, warn: 2, neutral: 3, good: 4 }
+  return out.sort((a, b) => rank(a) - rank(b) || b.impact - a.impact || severity[a.level] - severity[b.level])
 }
 
 /** 1 → "1.er", 2 → "2.º"… */
@@ -600,9 +909,8 @@ export function ordinal(k: number) {
   return k === 1 ? "1.er" : `${k}.º`
 }
 
-function joinEs(items: string[]) {
-  if (items.length <= 1) return items.join("")
-  return `${items.slice(0, -1).join(", ")} y ${items[items.length - 1]}`
+function lcFirst(s: string) {
+  return s.charAt(0).toLowerCase() + s.slice(1)
 }
 function capitalize(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1)
@@ -646,11 +954,9 @@ export function simulate(inp: Inputs, base: Results, lv: Levers): Results {
   const adShare = base.netRevenue > 0 ? Math.min(1, base.adAttributed / base.netRevenue) : 0
   const adFactor = adReturnFactor(lv.ads) // ventas de ads, con rendimientos decrecientes
   const adDemand = 1 + (adFactor - 1) * adShare
-  // Recompra: los clientes recurrentes hacen un X % más de pedidos. Como no sabemos
-  // cuántos pedidos son de recurrentes, los estimamos en proporción a sus clientes.
-  const nc0 = Math.max(0, n(inp.newCustomers))
-  const rc0 = Math.max(0, n(inp.returningCustomers))
-  const repeatShare = nc0 + rc0 > 0 ? rc0 / (nc0 + rc0) : 0
+  // Recompra: los clientes recurrentes hacen un X % más de pedidos. Pedidos de
+  // recurrentes = pedidos − clientes nuevos (cada cliente nuevo hace su primer pedido).
+  const repeatShare = base.recurrentOrders !== null && base.orders > 0 ? base.recurrentOrders / base.orders : 0
   const repeat = 1 + repeatShare * (lv.repeat / 100)
   const customers = f(lv.traffic) * adDemand * f(lv.conversion) // factor sobre nº de clientes
   const visits = f(lv.traffic) * adDemand * repeat
@@ -689,6 +995,7 @@ export function simulate(inp: Inputs, base: Results, lv: Levers): Results {
     cogs: inp.cogsMode === "pct" ? n(inp.cogs) * f(lv.cogs) : n(inp.cogs) * nsRatio * f(lv.cogs),
     shippingPaid: n(inp.shippingPaid) * volume * f(lv.shipping),
     packaging: n(inp.packaging) * volume,
+    returnCosts: ret0 > 0 ? n(inp.returnCosts) * (returns / ret0) : n(inp.returnCosts) * volume,
     fees: inp.feesMode === "pct" ? inp.fees : n(inp.fees) * revRatio,
     ads: inp.ads.map((a) => ({
       ...a,
@@ -698,13 +1005,14 @@ export function simulate(inp: Inputs, base: Results, lv: Levers): Results {
     emailAttributed: has(inp.emailAttributed) ? n(inp.emailAttributed) * salesFactor : inp.emailAttributed,
     platformCost: has(inp.platformCost) ? n(inp.platformCost) * f(lv.fixed) : inp.platformCost,
     otherFixed: has(inp.otherFixed) ? n(inp.otherFixed) * f(lv.fixed) : inp.otherFixed,
+    // El sueldo del dueño no entra en la palanca de fijos: bajarte el sueldo no mejora el negocio.
   }
-  return compute(next)
+  return computeCore(next)
 }
 
 /** Cuánto cambia el beneficio neto (del periodo) al mejorar cada palanca un `step` %. */
 export function leverRanking(inp: Inputs, base: Results, step = 10) {
-  return LEVER_KEYS.filter((k) => (k !== "ads" || base.adSpend > 0) && (k !== "repeat" || base.returningCustomers > 0))
+  return LEVER_KEYS.filter((k) => (k !== "ads" || base.adSpend > 0) && (k !== "repeat" || (base.recurrentOrders ?? 0) > 0))
     .map((k) => {
       const lv = { ...ZERO_LEVERS, [k]: step * LEVER_GOOD_DIRECTION[k] }
       return { key: k, delta: simulate(inp, base, lv).netProfit - base.netProfit }
@@ -718,8 +1026,7 @@ export function leverRanking(inp: Inputs, base: Results, step = 10) {
 export function dataWarnings(inp: Inputs, r: Results): string[] {
   const w: string[] = []
   const gross = Math.abs(n(inp.grossSales))
-  if (!has(inp.grossSales) && (has(inp.discounts) || has(inp.returns) || has(inp.shippingCharged) || has(inp.orders)))
-    w.push("Falta el dato de ventas brutas: sin él, casi todo el cálculo sale mal.")
+  if (has(inp.ownerHours) && a(inp.ownerHours) > 744) w.push("Las horas que le dedicas son al mes: un mes tiene como mucho 744 horas.")
   if (gross > 0 && Math.abs(n(inp.discounts)) + Math.abs(n(inp.returns)) > gross)
     w.push("Descuentos y devoluciones suman más que tus ventas brutas. Revisa que sean del mismo periodo.")
   if (r.sessions > 0 && r.orders > r.sessions) w.push("Tienes más pedidos que sesiones: ¿puede que falte una cifra en las sesiones?")

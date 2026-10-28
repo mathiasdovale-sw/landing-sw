@@ -10,6 +10,7 @@ export interface AdRow {
 }
 
 export interface FormState {
+  quickMode: boolean
   months: 1 | 3 | 6 | 12
   endMonth: number
   profile: SeasonProfile
@@ -35,14 +36,18 @@ export interface FormState {
   feesMode: Mode
   fees: string
   feesFixedPerOrder: string
+  returnCosts: string
 
   ads: AdRow[]
+  adSpendTotal: string // modo rápido
   emailToolCost: string
   emailAttributed: string
   otherMarketing: string
 
   platformCost: string
   otherFixed: string
+  ownerSalary: string
+  ownerHours: string
   profitTaxPct: string
 
   ltvEnabled: boolean
@@ -79,12 +84,13 @@ export function parseNum(raw: string): number | null {
 
 export function toInputs(f: FormState): Inputs {
   return {
+    quickMode: f.quickMode,
     months: f.months,
     endMonth: f.endMonth,
     profile: f.profile,
     customWeights: f.customWeights.map((w) => parseNum(w) ?? 0),
     growthPct: parseNum(f.growthPct),
-    salesIncludeVat: f.salesIncludeVat ?? false,
+    salesIncludeVat: f.salesIncludeVat,
     vatPct: parseNum(f.vatPct),
     grossSales: parseNum(f.grossSales),
     discounts: parseNum(f.discounts),
@@ -101,12 +107,16 @@ export function toInputs(f: FormState): Inputs {
     feesMode: f.feesMode,
     fees: parseNum(f.fees),
     feesFixedPerOrder: parseNum(f.feesFixedPerOrder),
+    returnCosts: parseNum(f.returnCosts),
     ads: f.ads.map((a) => ({ id: a.id, name: a.name, spend: parseNum(a.spend), attributed: parseNum(a.attributed) })),
+    adSpendTotal: parseNum(f.adSpendTotal),
     emailToolCost: parseNum(f.emailToolCost),
     emailAttributed: parseNum(f.emailAttributed),
     otherMarketing: parseNum(f.otherMarketing),
     platformCost: parseNum(f.platformCost),
     otherFixed: parseNum(f.otherFixed),
+    ownerSalary: parseNum(f.ownerSalary),
+    ownerHours: parseNum(f.ownerHours),
     profitTaxPct: parseNum(f.profitTaxPct),
     ltvEnabled: f.ltvEnabled,
     ltvFrequency: parseNum(f.ltvFrequency),
@@ -129,6 +139,7 @@ const DEFAULT_ADS: AdRow[] = [
 
 export function emptyForm(): FormState {
   return {
+    quickMode: false,
     months: 3,
     endMonth: lastFullMonth(),
     profile: "flat",
@@ -151,12 +162,16 @@ export function emptyForm(): FormState {
     feesMode: "pct",
     fees: "",
     feesFixedPerOrder: "",
+    returnCosts: "",
     ads: DEFAULT_ADS.map((a) => ({ ...a })),
+    adSpendTotal: "",
     emailToolCost: "",
     emailAttributed: "",
     otherMarketing: "",
     platformCost: "",
     otherFixed: "",
+    ownerSalary: "",
+    ownerHours: "",
     profitTaxPct: "0",
     ltvEnabled: false,
     ltvFrequency: "",
@@ -170,6 +185,7 @@ export function emptyForm(): FormState {
 export function exampleForm(): FormState {
   return {
     ...emptyForm(),
+    quickMode: false,
     months: 3,
     endMonth: 8, // septiembre
     profile: "xmas",
@@ -201,4 +217,78 @@ export function exampleForm(): FormState {
     otherFixed: "4500",
     profitTaxPct: "20",
   }
+}
+
+// ---------------------------------------------------------------------------
+// Guardado en el navegador (localStorage)
+// ---------------------------------------------------------------------------
+// v1: { form, isExample } con el formulario antiguo (sin modo rápido, sueldo,
+//     horas, coste de devoluciones ni gasto total en publicidad).
+// v2: { version: 2, form, isExample }.
+export const STORAGE_KEY = "sw-profit-calculator-v2"
+export const LEGACY_STORAGE_KEYS = ["sw-profit-calculator-v1"]
+
+export interface Saved {
+  form: FormState
+  isExample: boolean
+}
+
+/** Convierte lo guardado (de cualquier versión) al formulario actual. Null si no sirve. */
+export function migrateSaved(raw: unknown): Saved | null {
+  if (!raw || typeof raw !== "object") return null
+  const o = raw as { version?: number; form?: Partial<FormState>; isExample?: unknown }
+  if (!o.form || typeof o.form !== "object") return null
+  const base = emptyForm()
+  const form: FormState = { ...base, ...o.form }
+  // Campos que no existían en v1: se quedan vacíos (no inventamos valores).
+  if (!o.version || o.version < 2) {
+    form.quickMode = false
+    form.returnCosts = ""
+    form.adSpendTotal = ""
+    form.ownerSalary = ""
+    form.ownerHours = ""
+  }
+  if (!Array.isArray(form.ads)) form.ads = base.ads
+  if (!Array.isArray(form.customWeights) || form.customWeights.length !== 12) form.customWeights = base.customWeights
+  return { form, isExample: Boolean(o.isExample) }
+}
+
+/** Lee lo guardado: primero la versión actual y, si no hay, las anteriores. */
+export function loadSaved(storage: Pick<Storage, "getItem">): Saved | null {
+  for (const key of [STORAGE_KEY, ...LEGACY_STORAGE_KEYS]) {
+    const raw = storage.getItem(key)
+    if (!raw) continue
+    try {
+      const saved = migrateSaved(JSON.parse(raw))
+      if (saved) return saved
+    } catch {
+      /* dato corrupto: probamos la siguiente versión */
+    }
+  }
+  return null
+}
+
+export function serializeSaved(s: Saved): string {
+  return JSON.stringify({ version: 2, form: s.form, isExample: s.isExample })
+}
+
+/**
+ * Pasar de modo rápido a completo ("Afinar mi cálculo") sin perder nada: si el
+ * gasto total en publicidad no está repartido por plataformas, se mete como una
+ * fila propia.
+ */
+export function toFullMode(f: FormState): FormState {
+  const anySpend = f.ads.some((a) => a.spend.trim() !== "")
+  const ads =
+    !anySpend && f.adSpendTotal.trim() !== ""
+      ? [{ id: "ad-total", name: "Publicidad (total)", spend: f.adSpendTotal, attributed: "" }, ...f.ads]
+      : f.ads
+  return { ...f, quickMode: false, ads }
+}
+
+/** Pasar a modo rápido: el gasto en publicidad por plataformas se suma en el total. */
+export function toQuickMode(f: FormState): FormState {
+  const spends = f.ads.map((a) => parseNum(a.spend)).filter((v): v is number => v !== null)
+  const adSpendTotal = spends.length > 0 ? String(spends.reduce((a, b) => a + Math.abs(b), 0)).replace(".", ",") : f.adSpendTotal
+  return { ...f, quickMode: true, adSpendTotal }
 }

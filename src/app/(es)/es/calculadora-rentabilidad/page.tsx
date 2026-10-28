@@ -53,13 +53,13 @@ export default function CalculadoraBeneficiosPage() {
             ¿Tu tienda online gana o pierde dinero?
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-relaxed text-sw-fg-2">
-            Mete tus números y descubre en unos minutos cuánto te queda de verdad, qué canal se paga y qué no, y qué hacer después. Sin registro: tus datos no salen
-            de tu navegador.
+            Mete tus números y descubre en unos minutos cuánto te queda de verdad, qué canal se paga y qué no, y qué hacer después. Sin registro. Tus números no
+            salen de tu navegador; si pides la revisión, solo nos llega tu email.
           </p>
         </div>
       </section>
 
-      <ProfitCalculator auditHref="/es/contacto" contactHref="/es/contacto" />
+      <ProfitCalculator />
     </main>
   )
 }

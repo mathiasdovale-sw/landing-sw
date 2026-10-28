@@ -35,9 +35,10 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
       `${e(r.totalCharged)} × ${pctIn(inp.fees)} + ${n(r.orders)} pedidos × ${e2(num(inp.feesFixedPerOrder))} = ${e(r.fees)}`,
     ]
   }
-  f.variableCosts = [`${e(r.cogs)} + ${e(r.shippingPaid)} + ${e(r.packaging)} + ${e(r.fees)} = ${e(r.variableCosts)}`]
+  const varLine = `${e(r.cogs)} + ${e(r.shippingPaid)} + ${e(r.packaging)} + ${e(r.fees)}${r.returnCosts > 0 ? ` + ${e(r.returnCosts)}` : ""} = ${e(r.variableCosts)}`
+  f.variableCosts = [varLine]
   f.cm1 = [
-    `Costes variables: ${e(r.cogs)} + ${e(r.shippingPaid)} + ${e(r.packaging)} + ${e(r.fees)} = ${e(r.variableCosts)}`,
+    `Costes variables: ${varLine}`,
     `${e(r.netRevenue)} − ${e(r.variableCosts)} = ${e(r.cm1)}`,
   ]
   f.cm1PerEuro = [`${e(r.cm1)} ÷ ${e(r.netRevenue)} = ${e2(r.cm1PerEuro)}`]
@@ -47,7 +48,16 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
   const mktLine = `Marketing: ${e(r.adSpend)} ads + ${e(r.emailToolCost)} email + ${e(r.otherMarketing)} otros = ${e(r.marketing)}`
   f.contribution = [mktLine, `${e(r.netRevenue)} − ${e(r.variableCosts)} − ${e(r.marketing)} = ${e(r.contribution)}`]
   f.contributionPct = [`${e(r.contribution)} ÷ ${e(r.netRevenue)} = ${p(r.contributionPct)}`]
-  f.fixed = [`${e(num(inp.platformCost))} + ${e(num(inp.otherFixed))} = ${e(r.fixed)}`]
+  f.fixed = r.completeness.fixedKnown
+    ? [`${e(Math.abs(num(inp.platformCost)))} + ${e(Math.abs(num(inp.otherFixed)))}${r.ownerSalary > 0 ? ` + ${e(r.ownerSalary)} (tu sueldo)` : ""} = ${e(r.fixed)}`]
+    : ["Falta el dato de gastos fijos: cuenta como 0"]
+  f.ownerTake = [`${e(r.ownerSalary)} (tu sueldo) + ${e(r.netProfit)} (beneficio neto) = ${e(r.ownerTake)}`]
+  if (r.ownerHoursPeriod !== null) {
+    f.ownerPerHour = [
+      `Horas del periodo: ${n(Math.abs(num(inp.ownerHours)))} h al mes × ${inp.months} = ${n(r.ownerHoursPeriod)} h`,
+      `${e(r.ownerTake)} ÷ ${n(r.ownerHoursPeriod)} h = ${e2(r.ownerPerHour)}`,
+    ]
+  }
   f.ebit = [`${e(r.contribution)} − ${e(r.fixed)} = ${e(r.ebit)}`]
   f.profitTax =
     r.ebit > 0
@@ -76,6 +86,9 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
   if (inp.salesIncludeVat && f.roas.length) f.roas.unshift(`Ventas atribuidas pasadas a sin IVA (÷ ${d(1 + r.vatRate)})`)
   f.emailRoas = [`${e(r.emailAttributed)} ÷ ${e(r.emailToolCost)} = ${x(r.emailRoas)}`]
   f.mer = [mktLine, `${e(r.netRevenue)} ÷ ${e(r.marketing)} = ${x(r.mer)}`]
+  f.merProfit = r.merProfitImpossible
+    ? [`Margen antes de marketing ${e(r.cm1)} − fijos ${e(r.fixed)} = ${e(r.cm1 - r.fixed)}: no queda nada para marketing, ningún MER da beneficio`]
+    : [`${e(r.netRevenue)} ÷ (${e(r.cm1)} margen antes de marketing − ${e(r.fixed)} fijos) = ${x(r.merProfit)}`]
   f.cac = [mktLine, `${e(r.marketing)} ÷ ${n(r.newCustomers)} clientes nuevos = ${e2(r.cac)}`]
   f.attribution = [
     `${e(r.netRevenue)} − ${e(r.adAttributed)} (ads) − ${e(r.emailAttributed)} (email) = ${e(r.netRevenue - r.adAttributed - r.emailAttributed)}`,
@@ -83,8 +96,13 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
   ]
   f.breakevenRevenue =
     r.breakevenRevenue !== null
-      ? [`(${e(r.marketing)} marketing + ${e(r.fixed)} fijos) ÷ ${d4(r.cm1PerEuro)} € = ${e(r.breakevenRevenue)}`]
-      : ["Con margen antes de marketing negativo no hay punto de equilibrio"]
+      ? [
+          `(${e(r.marketing)} marketing + ${e(r.fixed)} fijos) ÷ ${d4(r.cm1PerEuro)} € = ${e(r.breakevenRevenue)}`,
+          "Suponiendo que mantienes el mismo gasto en marketing",
+        ]
+      : !r.completeness.fixedKnown
+        ? ["Falta el dato de gastos fijos: sin él no se puede calcular"]
+        : ["Con margen antes de marketing negativo no hay punto de equilibrio"]
 
   // Primera compra
   if (r.firstOrderMargin !== null && r.firstOrderTicket !== null) {

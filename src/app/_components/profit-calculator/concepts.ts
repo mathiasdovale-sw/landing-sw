@@ -76,6 +76,11 @@ export const CONCEPTS: Record<string, Concept> = {
     what: "Lo que te cobra tu pasarela o TPV virtual (Stripe, PayPal, Redsys, el sistema de pagos de tu plataforma…) por cada cobro.",
     how: "En euros (total del periodo) o como % + importe fijo por pedido. El % se aplica sobre lo que paga el cliente (con IVA y envío), que es sobre lo que cobran las pasarelas.",
   },
+  returnCosts: {
+    label: "Coste de devoluciones",
+    what: "Lo que te cuestan las devoluciones además del dinero que devuelves: envíos de vuelta que pagas tú y producto que ya no puedes revender (dañado, usado, sin embalaje). Opcional. Total del periodo, sin IVA.",
+    how: "Si lo dejas vacío, calculamos como si todo lo devuelto volviera a stock sin coste, que suele ser optimista.",
+  },
   ads: {
     label: "Publicidad (Ads)",
     what: "Lo que invertiste en cada plataforma y las ventas que esa plataforma dice haber generado.",
@@ -95,7 +100,17 @@ export const CONCEPTS: Record<string, Concept> = {
   },
   otherFixed: {
     label: "Otros gastos fijos",
-    what: "Lo que pagas vendas o no: sueldos, autónomo, alquiler, gestoría, software, seguros…",
+    what: "Lo que pagas vendas o no: sueldos de empleados, cuota de autónomo, alquiler, gestoría, software, seguros… Tu propio sueldo va aparte, en «Tu sueldo».",
+  },
+  ownerSalary: {
+    label: "Tu sueldo (lo que te pagas tú en el periodo)",
+    what: "Lo que te pagas a ti por trabajar en la tienda en el periodo. Cuenta como gasto fijo: si la tienda no lo cubre, en realidad no te está pagando.",
+    how: "Opcional. Si lo dejas vacío o en 0, el beneficio neto también es tu sueldo.",
+  },
+  ownerHours: {
+    label: "Horas que le dedicas al mes",
+    what: "Las horas que trabajas en la tienda en un mes normal. Sirve para saber cuánto ganas por hora trabajada.",
+    how: "Opcional. Se multiplica por los meses del periodo.",
   },
   profitTax: {
     label: "Impuesto sobre el beneficio",
@@ -147,11 +162,11 @@ export const CONCEPTS: Record<string, Concept> = {
   variableCosts: {
     label: "Costes variables",
     what: "Lo que cuesta servir cada pedido. Si vendes más, suben; si vendes menos, bajan.",
-    how: "Producto + envíos pagados + packaging + comisiones de pasarela.",
+    how: "Producto + envíos pagados + packaging + comisiones de pasarela + coste de devoluciones.",
   },
   cm1: {
     label: "Margen antes de marketing",
-    what: "Lo que te queda de tus ventas después de pagar producto, envío, packaging y pasarela.",
+    what: "Lo que te queda de tus ventas después de pagar producto, envío, packaging, pasarela y devoluciones.",
     how: "Ingresos netos − costes variables.",
   },
   cm1PerEuro: {
@@ -161,7 +176,7 @@ export const CONCEPTS: Record<string, Concept> = {
   },
   contribution: {
     label: "Margen de contribución (€)",
-    what: "Lo que te dejan tus ventas después de pagar todo lo que depende de vender: costes variables y marketing. Con esto pagas los fijos.",
+    what: "Lo que te dejan tus ventas después de pagar todo lo que depende de vender: costes variables y marketing. Con esto pagas los fijos: solo está bien si los cubre.",
     how: "Ingresos netos − costes variables − marketing.",
   },
   contributionPct: {
@@ -172,7 +187,7 @@ export const CONCEPTS: Record<string, Concept> = {
   fixed: {
     label: "Gastos fijos",
     what: "Lo que pagas aunque no vendas nada.",
-    how: "Plataforma, hosting y apps + otros gastos fijos.",
+    how: "Plataforma, hosting y apps + otros gastos fijos + tu sueldo.",
   },
   ebit: {
     label: "Beneficio antes de impuestos",
@@ -222,7 +237,22 @@ export const CONCEPTS: Record<string, Concept> = {
   mer: {
     label: "MER (Marketing Efficiency Ratio)",
     what: "Cuánto vendes en total por cada euro de marketing. No depende de lo que diga cada plataforma, por eso es más fiable que el ROAS.",
-    how: "Ingresos netos ÷ gasto total en marketing (ads + email + otros). Se compara con el ROAS breakeven.",
+    how: "Ingresos netos ÷ gasto total en marketing (ads + email + otros). Se compara con dos mínimos: el que cubre los costes variables (ROAS breakeven) y el que da beneficio 0 contando los gastos fijos. La etiqueta se basa en el segundo.",
+  },
+  merProfit: {
+    label: "MER mínimo para beneficio 0",
+    what: "El MER que necesitas para no perder dinero contando también los gastos fijos, con tus ventas actuales. Por debajo, la tienda pierde.",
+    how: "Ingresos netos ÷ (margen antes de marketing − gastos fijos). Si los fijos son iguales o mayores que el margen antes de marketing, ningún nivel de marketing da beneficio.",
+  },
+  ownerTake: {
+    label: "Lo que te llevas tú",
+    what: "Tu sueldo más el beneficio de la tienda (o menos la pérdida). Es lo que de verdad te deja el negocio a ti en el periodo.",
+    how: "Tu sueldo + beneficio neto.",
+  },
+  ownerPerHour: {
+    label: "Por hora trabajada",
+    what: "Lo que te llevas tú dividido entre las horas que le dedicas. Útil para comparar con lo que ganarías trabajando por cuenta ajena.",
+    how: "Lo que te llevas tú ÷ (horas al mes × meses del periodo).",
   },
   cac: {
     label: "CAC (coste de adquisición)",
@@ -230,8 +260,8 @@ export const CONCEPTS: Record<string, Concept> = {
     how: "Gasto total en marketing ÷ clientes nuevos.",
   },
   emailRoas: {
-    label: "ROAS del email",
-    what: "Cuánto vendes por email por cada euro que pagas por la herramienta.",
+    label: "Retorno de la herramienta de email",
+    what: "Cuánto vendes por email por cada euro que pagas por la herramienta. No es comparable con el ROAS de la publicidad: solo cuenta el coste de la herramienta (no el tiempo de crear los emails) y son sobre todo ventas a clientes que ya tienes.",
     how: "Ventas atribuidas a email (sin IVA) ÷ coste de la herramienta.",
   },
   attribution: {
@@ -256,8 +286,8 @@ export const CONCEPTS: Record<string, Concept> = {
   },
   breakevenRevenue: {
     label: "Punto de equilibrio",
-    what: "Los ingresos netos que necesitas para no ganar ni perder, con tu gasto actual en marketing y fijos.",
-    how: "(Marketing + fijos) ÷ lo que te queda por cada € vendido.",
+    what: "Los ingresos netos que necesitas para no ganar ni perder, suponiendo que mantienes el mismo gasto en marketing y los mismos fijos. Si para vender más tuvieras que gastar más en marketing, el punto de equilibrio sería más alto.",
+    how: "(Marketing + fijos) ÷ lo que te queda por cada € vendido. El marketing se trata como un gasto fijo.",
   },
   projection: {
     label: "Proyección a 12 meses",
