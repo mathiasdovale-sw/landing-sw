@@ -2,7 +2,7 @@
 // Piezas de interfaz reutilizables de la calculadora.
 import { createContext, useContext, useId, useState, type ReactNode } from "react"
 import { AlertTriangle, CheckCircle2, ChevronDown, HelpCircle, Info, XCircle } from "lucide-react"
-import type { Level } from "./calc"
+import { money, type Level } from "./calc"
 import { CONCEPTS } from "./concepts"
 import type { Formulas } from "./formulas"
 
@@ -49,7 +49,7 @@ export function useConcept(conceptKey?: string, calcOverride?: string[] | null) 
       onClick={() => setOpen((o) => !o)}
       aria-expanded={open}
       aria-controls={id}
-      aria-label={`Qué es: ${concept.label}`}
+      aria-label={`Qué es: ${money(concept.label)}`}
       className={`-m-1.5 inline-flex shrink-0 items-center justify-center rounded-full p-1.5 transition-colors ${
         open ? "text-sw-secondary" : "text-sw-fg-4 hover:text-sw-fg-2"
       }`}
@@ -60,11 +60,11 @@ export function useConcept(conceptKey?: string, calcOverride?: string[] | null) 
   const panel =
     concept && open ? (
       <div id={id} className="mt-2 rounded-sm border border-sw-line bg-sw-bg-0 p-3 text-sm leading-relaxed text-sw-fg-2">
-        <p>{concept.what}</p>
+        <p>{money(concept.what)}</p>
         {concept.how && (
           <p className="mt-2 text-sw-fg-3">
             <span className="font-mono-label text-[11px] text-sw-secondary">Cómo se calcula · </span>
-            {concept.how}
+            {money(concept.how)}
           </p>
         )}
         {calc && calc.length > 0 && (
@@ -101,7 +101,7 @@ interface NumFieldProps {
 export function NumField({ label, concept, value, onChange, suffix, placeholder, hint, integer, ariaLabel, missing }: NumFieldProps) {
   const id = useId()
   const { button, panel, concept: c } = useConcept(concept)
-  const text = label ?? c?.label ?? ""
+  const text = label ?? money(c?.label) ?? ""
   return (
     <div className="min-w-0">
       {text && (
@@ -233,7 +233,7 @@ export function Kpi({ concept, value, level = "neutral", sub, label, calc }: Kpi
   return (
     <div className={`rounded-sm border bg-sw-bg-1 p-4 ${level === "neutral" ? "border-sw-line" : s.border}`}>
       <div className="flex items-start justify-between gap-2">
-        <span className="text-sm text-sw-fg-3">{label ?? c?.label}</span>
+        <span className="text-sm text-sw-fg-3">{label ?? money(c?.label)}</span>
         {button}
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">

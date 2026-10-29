@@ -591,11 +591,71 @@ export const levelOf = {
 // Formato
 // ---------------------------------------------------------------------------
 
-const eur0 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0, useGrouping: "always" } as Intl.NumberFormatOptions)
-const eur2 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: "always" } as Intl.NumberFormatOptions)
-const num0 = new Intl.NumberFormat("es-ES", { maximumFractionDigits: 0, useGrouping: "always" } as Intl.NumberFormatOptions)
-const num2 = new Intl.NumberFormat("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: "always" } as Intl.NumberFormatOptions)
-const pct1 = new Intl.NumberFormat("es-ES", { style: "percent", minimumFractionDigits: 1, maximumFractionDigits: 1 })
+// Monedas de España y Latinoamérica. Cada una se formatea con la convención de
+// su país (símbolo, separadores y decimales).
+// vat: tipo general de IVA del país (el que se propone por defecto; en USD, Ecuador).
+// perEur: tipo de cambio aproximado (oct. 2026), solo para adaptar la tienda de ejemplo.
+// tax: organismo al que se paga el IVA.
+export const CURRENCIES = [
+  { code: "EUR", vat: 21, perEur: 1, tax: "Hacienda", locale: "es-ES", one: "euro", many: "euros", label: "Euro (EUR) · España" },
+  { code: "USD", vat: 15, perEur: 1.15, tax: "el SRI", locale: "es-EC", one: "dólar", many: "dólares", label: "Dólar (USD) · Ecuador, El Salvador, Panamá…" },
+  { code: "MXN", vat: 16, perEur: 21.5, tax: "el SAT", locale: "es-MX", one: "peso", many: "pesos", label: "Peso mexicano (MXN)" },
+  { code: "ARS", vat: 21, perEur: 1500, tax: "ARCA", locale: "es-AR", one: "peso", many: "pesos", label: "Peso argentino (ARS)" },
+  { code: "COP", vat: 19, perEur: 4600, tax: "la DIAN", locale: "es-CO", one: "peso", many: "pesos", label: "Peso colombiano (COP)" },
+  { code: "CLP", vat: 19, perEur: 1100, tax: "el SII", locale: "es-CL", one: "peso", many: "pesos", label: "Peso chileno (CLP)" },
+  { code: "PEN", vat: 18, perEur: 4, tax: "la SUNAT", locale: "es-PE", one: "sol", many: "soles", label: "Sol peruano (PEN)" },
+  { code: "UYU", vat: 22, perEur: 46, tax: "la DGI", locale: "es-UY", one: "peso", many: "pesos", label: "Peso uruguayo (UYU)" },
+  { code: "PYG", vat: 10, perEur: 8500, tax: "la DNIT", locale: "es-PY", one: "guaraní", many: "guaraníes", label: "Guaraní paraguayo (PYG)" },
+  { code: "BOB", vat: 13, perEur: 8, tax: "Impuestos Nacionales", locale: "es-BO", one: "boliviano", many: "bolivianos", label: "Boliviano (BOB)" },
+  { code: "VES", vat: 16, perEur: 400, tax: "el SENIAT", locale: "es-VE", one: "bolívar", many: "bolívares", label: "Bolívar venezolano (VES)" },
+  { code: "GTQ", vat: 12, perEur: 8.9, tax: "la SAT", locale: "es-GT", one: "quetzal", many: "quetzales", label: "Quetzal guatemalteco (GTQ)" },
+  { code: "HNL", vat: 15, perEur: 30, tax: "el SAR", locale: "es-HN", one: "lempira", many: "lempiras", label: "Lempira hondureño (HNL)" },
+  { code: "NIO", vat: 15, perEur: 42, tax: "la DGI", locale: "es-NI", one: "córdoba", many: "córdobas", label: "Córdoba nicaragüense (NIO)" },
+  { code: "CRC", vat: 13, perEur: 580, tax: "Hacienda", locale: "es-CR", one: "colón", many: "colones", label: "Colón costarricense (CRC)" },
+  { code: "DOP", vat: 18, perEur: 72, tax: "la DGII", locale: "es-DO", one: "peso", many: "pesos", label: "Peso dominicano (DOP)" },
+  { code: "CUP", vat: 10, perEur: 140, tax: "la ONAT", locale: "es-CU", one: "peso", many: "pesos", label: "Peso cubano (CUP)" },
+  { code: "BRL", vat: 18, perEur: 6.3, tax: "la Receita Federal", locale: "pt-BR", one: "real", many: "reales", label: "Real brasileño (BRL)" },
+] as const
+
+export type CurrencyCode = (typeof CURRENCIES)[number]["code"]
+
+export const isCurrency = (v: unknown): v is CurrencyCode => CURRENCIES.some((c) => c.code === v)
+
+export const currencyInfo = (code: CurrencyCode) => CURRENCIES.find((c) => c.code === code) ?? CURRENCIES[0]
+
+const NF = (locale: string, o: Intl.NumberFormatOptions) =>
+  new Intl.NumberFormat(locale, { useGrouping: "always", ...o } as Intl.NumberFormatOptions)
+
+function buildFormatters(code: CurrencyCode) {
+  const locale = CURRENCIES.find((c) => c.code === code)?.locale ?? "es-ES"
+  const base = NF(locale, { style: "currency", currency: code })
+  // Monedas sin céntimos (CLP, PYG) tampoco muestran decimales en importes por pedido
+  const cents = base.resolvedOptions().maximumFractionDigits ?? 2
+  const num2 = NF(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return {
+    code,
+    cents,
+    one: CURRENCIES.find((c) => c.code === code)?.one ?? "euro",
+    many: CURRENCIES.find((c) => c.code === code)?.many ?? "euros",
+    tax: CURRENCIES.find((c) => c.code === code)?.tax ?? "Hacienda",
+    symbol: base.formatToParts(1).find((p) => p.type === "currency")?.value ?? code,
+    decimal: num2.formatToParts(1.5).find((p) => p.type === "decimal")?.value ?? ",",
+    eur0: NF(locale, { style: "currency", currency: code, minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+    eur2: NF(locale, { style: "currency", currency: code, minimumFractionDigits: cents, maximumFractionDigits: cents }),
+    num0: NF(locale, { maximumFractionDigits: 0 }),
+    num2,
+    num4: NF(locale, { minimumFractionDigits: 4, maximumFractionDigits: 4 }),
+    pct1: NF(locale, { style: "percent", minimumFractionDigits: 1, maximumFractionDigits: 1 }),
+  }
+}
+
+let F = buildFormatters("EUR")
+
+/** Cambia la moneda (y el formato de números) de todo lo que muestra la calculadora. */
+export function setCurrency(code: CurrencyCode) {
+  const next = isCurrency(code) ? code : "EUR"
+  if (F.code !== next) F = buildFormatters(next)
+}
 
 // Evita "-0,00 €" / "-0,0 %": si el valor redondeado a la precisión mostrada es 0, se muestra 0
 const z0 = (v: number, decimals: number) => (Math.round(v * 10 ** decimals) === 0 ? 0 : v)
@@ -607,12 +667,37 @@ export function joinEs(items: string[]) {
 }
 
 export const fmt = {
-  eur: (v: number | null) => (v === null ? "—" : eur0.format(z0(v, 0))),
-  eur2: (v: number | null) => (v === null ? "—" : eur2.format(z0(v, 2))),
-  num: (v: number | null) => (v === null ? "—" : num0.format(z0(v, 0))),
-  x: (v: number | null) => (v === null ? "—" : `${num2.format(z0(v, 2))}x`),
-  dec: (v: number | null) => (v === null ? "—" : num2.format(z0(v, 2))),
-  pct: (v: number | null) => (v === null ? "—" : pct1.format(z0(v, 3))),
+  eur: (v: number | null) => (v === null ? "—" : F.eur0.format(z0(v, 0))),
+  eur2: (v: number | null) => (v === null ? "—" : F.eur2.format(z0(v, F.cents))),
+  num: (v: number | null) => (v === null ? "—" : F.num0.format(z0(v, 0))),
+  x: (v: number | null) => (v === null ? "—" : `${F.num2.format(z0(v, 2))}x`),
+  dec: (v: number | null) => (v === null ? "—" : F.num2.format(z0(v, 2))),
+  dec4: (v: number | null) => (v === null ? "—" : F.num4.format(v)),
+  pct: (v: number | null) => (v === null ? "—" : F.pct1.format(z0(v, 3))),
+  /** Símbolo de la moneda elegida ("€", "$", "S/"…) */
+  sym: () => F.symbol,
+  /** Separador decimal de la moneda elegida ("," o ".") */
+  decimal: () => F.decimal,
+  /** Nombre de la moneda: "euro" / "euros", "peso" / "pesos"… */
+  one: () => F.one,
+  many: () => F.many,
+  tax: () => F.tax,
+}
+
+/**
+ * Adapta a la moneda elegida los textos fijos (conceptos): {euro} y {euros} →
+ * nombre de la moneda, {€} → símbolo, {100} → importe formateado, {hacienda} →
+ * organismo fiscal del país ("Hacienda", "el SAT", "la DIAN"…).
+ */
+export function money(text: string): string
+export function money(text: string | undefined): string | undefined
+export function money(text: string | undefined) {
+  return text
+    ?.replace(/\{euros\}/g, F.many)
+    .replace(/\{hacienda\}/g, F.tax)
+    .replace(/\{euro\}/g, F.one)
+    .replace(/\{€\}/g, F.symbol)
+    .replace(/\{(\d+)\}/g, (_, n: string) => fmt.eur(Number(n)))
 }
 
 // ---------------------------------------------------------------------------
@@ -653,7 +738,7 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
         kind: "summary",
         impact: loss,
         title: "Pierdes dinero en cada venta, antes incluso de hacer marketing",
-        text: `Producto, envíos, packaging, pasarela y devoluciones (${fmt.eur(r.variableCosts)}) se comen más de lo que ingresas (${fmt.eur(r.netRevenue)}). Más ventas o más publicidad no lo arreglan: agrandan la pérdida. Revisa precios, coste de producto y política de envíos antes de invertir un euro más.`,
+        text: `Producto, envíos, packaging, pasarela y devoluciones (${fmt.eur(r.variableCosts)}) se comen más de lo que ingresas (${fmt.eur(r.netRevenue)}). Más ventas o más publicidad no lo arreglan: agrandan la pérdida. Revisa precios, coste de producto y política de envíos antes de invertir un ${fmt.one()} más.`,
       })
     } else if (r.contribution <= 0) {
       out.push({
@@ -671,7 +756,7 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
       ]
       if (r.breakevenRevenue !== null) {
         parts.push(
-          `Con tu margen actual (${fmt.eur2(r.cm1PerEuro)} por cada euro vendido) necesitarías ${fmt.eur(r.breakevenRevenue)} de ingresos netos ${per}, ${fmt.eur(r.breakevenRevenue - r.netRevenue)} más que ahora, suponiendo que mantienes el mismo gasto en marketing. O vendes más, o subes el margen, o recortas gasto.`,
+          `Con tu margen actual (${fmt.eur2(r.cm1PerEuro)} por cada ${fmt.one()} vendido) necesitarías ${fmt.eur(r.breakevenRevenue)} de ingresos netos ${per}, ${fmt.eur(r.breakevenRevenue - r.netRevenue)} más que ahora, suponiendo que mantienes el mismo gasto en marketing. O vendes más, o subes el margen, o recortas gasto.`,
         )
       }
       if (r.merProfitImpossible) {
@@ -778,7 +863,7 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
       level: discLevel,
       impact: Math.max(0, r.discounts - 0.12 * r.gross),
       title: `Los descuentos se llevan el ${fmt.pct(r.discountPct)} de tus ventas brutas`,
-      text: "Cada euro de descuento sale directo de tu margen. Revisa si los códigos están generando ventas nuevas o solo regalando margen a quien iba a comprar igual.",
+      text: `Cada ${fmt.one()} de descuento sale directo de tu margen. Revisa si los códigos están generando ventas nuevas o solo regalando margen a quien iba a comprar igual.`,
     })
   }
 
@@ -809,7 +894,7 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
         level: "good",
         impact: 0,
         title: "Tus clientes son rentables a 12 meses",
-        text: `LTV:CAC de ${fmt.dec(r.ltvCac)}: cada euro que inviertes en captar un cliente vuelve multiplicado en el año.`,
+        text: `LTV:CAC de ${fmt.dec(r.ltvCac)}: cada ${fmt.one()} que inviertes en captar un cliente vuelve multiplicado en el año.`,
       })
     }
   }
@@ -883,7 +968,7 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
         title: `${LEVER_PHRASE[x.key]} sumaría ${fmt.eur(x.delta)} ${per}`,
         text: `Es la ${i === 0 ? "palanca con más impacto" : "segunda palanca con más impacto"} en tu caso según el simulador${
           sure ? "" : ", con los datos que has metido"
-        }${x.key === "ads" ? " (suponiendo que cada euro extra de publicidad rinde algo menos que el anterior)" : ""}. Más abajo puedes moverla y combinarla con otras.`,
+        }${x.key === "ads" ? " (suponiendo que cada ${fmt.one()} extra de publicidad rinde algo menos que el anterior)" : ""}. Más abajo puedes moverla y combinarla con otras.`,
       })
     })
 
@@ -1074,8 +1159,8 @@ export function dataWarnings(inp: Inputs, r: Results): string[] {
   if (r.orders > 0 && r.newCustomers + r.returningCustomers > r.orders)
     w.push("Hay más clientes que pedidos: cada cliente hace al menos un pedido. Revisa clientes nuevos y recurrentes.")
   if (Math.abs(n(inp.welcomeDiscountPct)) > 100) w.push("El descuento de bienvenida no puede superar el 100 %.")
-  if (inp.cogsMode === "pct" && Math.abs(n(inp.cogs)) > 100) w.push("El coste de producto supera el 100 % del precio de venta: ¿querías ponerlo en euros?")
+  if (inp.cogsMode === "pct" && Math.abs(n(inp.cogs)) > 100) w.push(`El coste de producto supera el 100 % del precio de venta: ¿querías ponerlo en ${fmt.many()}?`)
   if (inp.feesMode === "pct" && Math.abs(n(inp.fees)) > 10)
-    w.push(`Una comisión de pasarela del ${n(inp.fees)} % es muy alta: ¿querías poner ${String(n(inp.fees) / 10).replace(".", ",")} %?`)
+    w.push(`Una comisión de pasarela del ${n(inp.fees)} % es muy alta: ¿querías poner ${String(n(inp.fees) / 10).replace(".", fmt.decimal())} %?`)
   return w
 }

@@ -21,7 +21,7 @@ export const CONCEPTS: Record<string, Concept> = {
   },
   vat: {
     label: "IVA en tus cifras de ventas",
-    what: "El IVA que cobras no es tuyo: lo recaudas para Hacienda. Por eso todo el cálculo se hace sin IVA.",
+    what: "El IVA que cobras no es tuyo: lo recaudas para {hacienda}. Por eso todo el cálculo se hace sin IVA.",
     how: "Cada plataforma o programa de facturación lo muestra a su manera: algunos informes dan las ventas con IVA incluido y otros sin él. Revisa el tuyo (suele indicarlo junto a la cifra o en una línea aparte de «impuestos») y elige la opción que corresponda.",
   },
   grossSales: {
@@ -61,7 +61,7 @@ export const CONCEPTS: Record<string, Concept> = {
   cogs: {
     label: "Coste de producto",
     what: "Lo que te cuesta lo que vendes: compra o fabricación del producto, sin IVA.",
-    how: "Puedes meterlo en euros (total del periodo) o como % sobre tus ventas netas sin IVA. Ej.: si un producto se vende a 100 € sin IVA y te cuesta 35 €, son un 35 %.",
+    how: "Puedes meterlo en {euros} (total del periodo) o como % sobre tus ventas netas sin IVA. Ej.: si un producto se vende a {100} sin IVA y te cuesta {35}, son un 35 %.",
   },
   shippingPaid: {
     label: "Envíos pagados",
@@ -74,7 +74,7 @@ export const CONCEPTS: Record<string, Concept> = {
   fees: {
     label: "Comisiones de pasarela de pago",
     what: "Lo que te cobra tu pasarela o TPV virtual (Stripe, PayPal, Redsys, el sistema de pagos de tu plataforma…) por cada cobro.",
-    how: "En euros (total del periodo) o como % + importe fijo por pedido. El % se aplica sobre lo que paga el cliente (con IVA y envío), que es sobre lo que cobran las pasarelas.",
+    how: "En {euros} (total del periodo) o como % + importe fijo por pedido. El % se aplica sobre lo que paga el cliente (con IVA y envío), que es sobre lo que cobran las pasarelas.",
   },
   returnCosts: {
     label: "Coste de devoluciones",
@@ -156,7 +156,7 @@ export const CONCEPTS: Record<string, Concept> = {
   },
   vatCollected: {
     label: "IVA cobrado",
-    what: "Lo que cobraste de IVA a tus clientes. No es tuyo: lo ingresas a Hacienda (menos el IVA de tus compras).",
+    what: "Lo que cobraste de IVA a tus clientes. No es tuyo: lo cobras para {hacienda} (descontando el IVA de tus compras).",
     how: "Ingresos netos × tipo de IVA.",
   },
   variableCosts: {
@@ -170,12 +170,12 @@ export const CONCEPTS: Record<string, Concept> = {
     how: "Ingresos netos − costes variables.",
   },
   cm1PerEuro: {
-    label: "Lo que te queda por cada € vendido",
-    what: "De cada euro de venta neta, cuánto queda para pagar marketing, fijos y, al final, para ti. Cuanto más alto, más margen tienes para invertir en crecer.",
+    label: "Lo que te queda por cada {euro} vendido",
+    what: "De cada {euro} de venta neta, cuánto queda para pagar marketing, fijos y, al final, para ti. Cuanto más alto, más margen tienes para invertir en crecer.",
     how: "Margen antes de marketing ÷ ingresos netos.",
   },
   contribution: {
-    label: "Margen de contribución (€)",
+    label: "Margen de contribución ({€})",
     what: "Lo que te dejan tus ventas después de pagar todo lo que depende de vender: costes variables y marketing. Con esto pagas los fijos: solo está bien si los cubre.",
     how: "Ingresos netos − costes variables − marketing.",
   },
@@ -226,17 +226,17 @@ export const CONCEPTS: Record<string, Concept> = {
   },
   roas: {
     label: "ROAS",
-    what: "Cuántos euros de venta te devuelve cada euro invertido en esa plataforma, según la propia plataforma.",
+    what: "Cuántos {euros} de venta te devuelve cada {euro} invertido en esa plataforma, según la propia plataforma.",
     how: "Ventas atribuidas (sin IVA) ÷ inversión en esa plataforma.",
   },
   roasBreakeven: {
     label: "ROAS breakeven",
-    what: "El ROAS mínimo para no perder dinero con la publicidad: por debajo, cada euro en anuncios te cuesta más de lo que te deja.",
-    how: "1 ÷ (lo que te queda por cada € vendido) = ingresos netos ÷ margen antes de marketing.",
+    what: "El ROAS mínimo para no perder dinero con la publicidad: por debajo, cada {euro} en anuncios te cuesta más de lo que te deja.",
+    how: "1 ÷ (lo que te queda por cada {euro} vendido) = ingresos netos ÷ margen antes de marketing.",
   },
   mer: {
     label: "MER (Marketing Efficiency Ratio)",
-    what: "Cuánto vendes en total por cada euro de marketing. No depende de lo que diga cada plataforma, por eso es más fiable que el ROAS.",
+    what: "Cuánto vendes en total por cada {euro} de marketing. No depende de lo que diga cada plataforma, por eso es más fiable que el ROAS.",
     how: "Ingresos netos ÷ gasto total en marketing (ads + email + otros). Se compara con dos mínimos: el que cubre los costes variables (ROAS breakeven) y el que da beneficio 0 contando los gastos fijos. La etiqueta se basa en el segundo.",
   },
   merProfit: {
@@ -261,7 +261,7 @@ export const CONCEPTS: Record<string, Concept> = {
   },
   emailRoas: {
     label: "Retorno de la herramienta de email",
-    what: "Cuánto vendes por email por cada euro que pagas por la herramienta. No es comparable con el ROAS de la publicidad: solo cuenta el coste de la herramienta (no el tiempo de crear los emails) y son sobre todo ventas a clientes que ya tienes.",
+    what: "Cuánto vendes por email por cada {euro} que pagas por la herramienta. No es comparable con el ROAS de la publicidad: solo cuenta el coste de la herramienta (no el tiempo de crear los emails) y son sobre todo ventas a clientes que ya tienes.",
     how: "Ventas atribuidas a email (sin IVA) ÷ coste de la herramienta.",
   },
   attribution: {
@@ -287,7 +287,7 @@ export const CONCEPTS: Record<string, Concept> = {
   breakevenRevenue: {
     label: "Punto de equilibrio",
     what: "Los ingresos netos que necesitas para no ganar ni perder, suponiendo que mantienes el mismo gasto en marketing y los mismos fijos. Si para vender más tuvieras que gastar más en marketing, el punto de equilibrio sería más alto.",
-    how: "(Marketing + fijos) ÷ lo que te queda por cada € vendido. El marketing se trata como un gasto fijo.",
+    how: "(Marketing + fijos) ÷ lo que te queda por cada {euro} vendido. El marketing se trata como un gasto fijo.",
   },
   projection: {
     label: "Proyección a 12 meses",
@@ -295,7 +295,7 @@ export const CONCEPTS: Record<string, Concept> = {
     how: "Ventas, costes variables y publicidad se anualizan con la estacionalidad (y el crecimiento que indiques); fijos y herramienta de email se reparten igual cada mes. Suponemos que la publicidad crece al mismo ritmo que las ventas.",
   },
   per100: {
-    label: "¿A dónde va cada 100 €?",
-    what: "Por cada 100 € que ingresas (sin IVA), cuánto se va en cada partida y cuánto te queda.",
+    label: "¿A dónde va cada {100}?",
+    what: "Por cada {100} que ingresas (sin IVA), cuánto se va en cada partida y cuánto te queda.",
   },
 }

@@ -10,8 +10,8 @@ const x = fmt.x
 const d = fmt.dec
 const num = (v: number | null | undefined) => (typeof v === "number" && isFinite(v) ? v : 0)
 const d4 = (v: number | null) =>
-  v === null ? "—" : new Intl.NumberFormat("es-ES", { minimumFractionDigits: 4, maximumFractionDigits: 4 }).format(v)
-const pctIn = (v: number | null) => `${fmt.dec(num(v)).replace(/,00$/, "")} %`
+  v === null ? "—" : fmt.dec4(v)
+const pctIn = (v: number | null) => `${fmt.dec(num(v)).replace(/[.,]00$/, "")} %`
 
 export type Formulas = Record<string, string[]>
 
@@ -62,7 +62,7 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
   f.profitTax =
     r.ebit > 0
       ? [`${e(r.ebit)} × ${pctIn(inp.profitTaxPct)} = ${e(r.tax)}`]
-      : ["No hay beneficio, así que no se aplica impuesto: 0 €"]
+      : [`No hay beneficio, así que no se aplica impuesto: ${e(0)}`]
   f.netProfit = [
     `${e(r.netRevenue)} − ${e(r.variableCosts)} − ${e(r.marketing)} − ${e(r.fixed)} = ${e(r.ebit)} antes de impuestos`,
     r.ebit > 0 ? `${e(r.ebit)} − ${e(r.tax)} de impuesto = ${e(r.netProfit)}` : `Sin impuesto (no hay beneficio) = ${e(r.netProfit)}`,
@@ -92,12 +92,12 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
   f.cac = [mktLine, `${e(r.marketing)} ÷ ${n(r.newCustomers)} clientes nuevos = ${e2(r.cac)}`]
   f.attribution = [
     `${e(r.netRevenue)} − ${e(r.adAttributed)} (ads) − ${e(r.emailAttributed)} (email) = ${e(r.netRevenue - r.adAttributed - r.emailAttributed)}`,
-    ...(r.overAttribution > 0 ? ["Sale negativo: las plataformas se atribuyen más de lo vendido, así que el resto se muestra como 0 €"] : []),
+    ...(r.overAttribution > 0 ? [`Sale negativo: las plataformas se atribuyen más de lo vendido, así que el resto se muestra como ${e(0)}`] : []),
   ]
   f.breakevenRevenue =
     r.breakevenRevenue !== null
       ? [
-          `(${e(r.marketing)} marketing + ${e(r.fixed)} fijos) ÷ ${d4(r.cm1PerEuro)} € = ${e(r.breakevenRevenue)}`,
+          `(${e(r.marketing)} marketing + ${e(r.fixed)} fijos) ÷ ${d4(r.cm1PerEuro)} = ${e(r.breakevenRevenue)}`,
           "Suponiendo que mantienes el mismo gasto en marketing",
         ]
       : !r.completeness.fixedKnown
@@ -139,7 +139,7 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
 
   // Cada 100 €
   if (r.netRevenue > 0) {
-    const per100 = (v: number) => `${d((v / r.netRevenue) * 100)} €`
+    const per100 = (v: number) => e2((v / r.netRevenue) * 100)
     f.per100 = [
       `Cada partida ÷ ${e(r.netRevenue)} × 100`,
       `Ej. producto: ${e(r.cogs)} ÷ ${e(r.netRevenue)} × 100 = ${per100(r.cogs)}`,

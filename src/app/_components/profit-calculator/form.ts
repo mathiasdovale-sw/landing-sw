@@ -1,6 +1,6 @@
 // Estado del formulario (strings, para permitir escribir "12," o vacío) y su
 // conversión a números para el motor de cálculo.
-import type { Inputs, Mode, SeasonProfile } from "./calc"
+import { currencyInfo, fmt, isCurrency, setCurrency, type CurrencyCode, type Inputs, type Mode, type SeasonProfile } from "./calc"
 
 export interface AdRow {
   id: string
@@ -10,6 +10,7 @@ export interface AdRow {
 }
 
 export interface FormState {
+  currency: CurrencyCode
   quickMode: boolean
   months: 1 | 3 | 6 | 12
   endMonth: number
@@ -59,24 +60,43 @@ export interface FormState {
   croUpliftPct: string
 }
 
-/** Acepta formato español ("1.234,56") y simple ("1234.56"). */
+/**
+ * Acepta "1.234,56" y "1,234.56". Si solo hay un separador y es ambiguo
+ * ("12,500" / "12.500"), se interpreta según la moneda elegida: en las que usan
+ * coma decimal (EUR, ARS…) "12,5" es decimal; en las de punto (MXN, PEN…) lo es "12.5".
+ */
 export function parseNum(raw: string): number | null {
   if (raw === undefined || raw === null) return null
-  let s = String(raw).trim().replace(/[€%\s]/g, "")
-  if (s === "" || s === "-" || !/^-?[\d.,]*\d[\d.,]*$/.test(s)) return null
+  // Se queda con la cifra; alrededor solo puede haber símbolo de moneda o % ("Gs. -1.234", "S/ 20", "12 %")
+  const str = String(raw).replace(/\s+/g, "").replace(/−/g, "-")
+  const core = str.match(/-?[\d.,]*\d[\d.,]*/)
+  if (!core || core.index === undefined) return null
+  const before = str.slice(0, core.index)
+  const after = str.slice(core.index + core[0].length)
+  if (/\d/.test(before + after) || after.includes("-")) return null
+  const signs = (before.match(/-/g) || []).length
+  if (signs > 1 || (signs === 1 && core[0].startsWith("-"))) return null
+  let s = signs === 1 ? `-${core[0]}` : core[0]
   const lastComma = s.lastIndexOf(",")
   const lastDot = s.lastIndexOf(".")
   const commas = (s.match(/,/g) || []).length
   const dots = (s.match(/\./g) || []).length
+  // dec: separador decimal de la moneda; grp: el otro (miles)
+  const dec = fmt.decimal() === "." ? "." : ","
+  const grp = dec === "," ? "." : ","
+  const nDec = dec === "," ? commas : dots
+  const nGrp = dec === "," ? dots : commas
   if (commas && dots) {
     // Ambos separadores: el último es el decimal ("1.234,56" o "1,234.56")
     s = lastComma > lastDot ? s.replace(/\./g, "").replace(",", ".") : s.replace(/,/g, "")
-  } else if (commas > 1) {
-    s = s.replace(/,/g, "") // "1,234,567" → miles en formato inglés
-  } else if (commas === 1) {
-    s = s.replace(",", ".") // "1234,56" → decimal en formato español
-  } else if (dots > 1 || /^-?\d{1,3}(\.\d{3})+$/.test(s)) {
-    s = s.replace(/\./g, "") // "1.234" o "1.234.567" → miles en formato español
+  } else if (nDec > 1) {
+    s = s.split(dec).join("") // "1,234,567" con coma decimal → miles
+  } else if (nDec === 1) {
+    s = s.replace(dec, ".") // "1234,56" → decimal
+  } else if (nGrp > 1 || (dec === "," ? /^-?\d{1,3}(\.\d{3})+$/ : /^-?\d{1,3}(,\d{3})+$/).test(s)) {
+    s = s.split(grp).join("") // "1.234" o "1.234.567" → miles
+  } else if (nGrp === 1) {
+    s = s.replace(grp, ".") // "12.5" con coma decimal: se entiende como decimal
   }
   const v = Number(s)
   return isFinite(v) ? v : null
@@ -137,8 +157,9 @@ const DEFAULT_ADS: AdRow[] = [
   { id: "tiktok", name: "TikTok Ads", spend: "", attributed: "" },
 ]
 
-export function emptyForm(): FormState {
+export function emptyForm(currency: CurrencyCode = "EUR"): FormState {
   return {
+    currency,
     quickMode: false,
     months: 3,
     endMonth: lastFullMonth(),
@@ -146,7 +167,7 @@ export function emptyForm(): FormState {
     customWeights: Array(12).fill("1"),
     growthPct: "0",
     salesIncludeVat: null,
-    vatPct: "21",
+    vatPct: String(currencyInfo(currency).vat),
     grossSales: "",
     discounts: "",
     returns: "",
@@ -182,39 +203,48 @@ export function emptyForm(): FormState {
 }
 
 /** Tienda ficticia para que la página muestre algo desde el primer segundo. */
-export function exampleForm(): FormState {
+export function exampleForm(currency: CurrencyCode = "EUR"): FormState {
+  const { perEur, locale } = currencyInfo(currency)
+  const dec = new Intl.NumberFormat(locale).formatToParts(1.5).find((p) => p.type === "decimal")?.value ?? ","
+  // Importe en euros → moneda elegida, redondeado a 3 cifras significativas
+  const m = (eur: number) => {
+    const v = eur * perEur
+    const step = 10 ** Math.max(Math.floor(Math.log10(Math.abs(v) || 1)) - 2, -2)
+    const r = Math.round(v / step) * step
+    return String(Number(r.toFixed(2))).replace(".", dec)
+  }
   return {
-    ...emptyForm(),
+    ...emptyForm(currency),
     quickMode: false,
     months: 3,
     endMonth: 8, // septiembre
     profile: "xmas",
     salesIncludeVat: false,
-    grossSales: "48000",
-    discounts: "3600",
-    returns: "1900",
-    shippingCharged: "2100",
+    grossSales: m(48000),
+    discounts: m(3600),
+    returns: m(1900),
+    shippingCharged: m(2100),
     orders: "820",
     sessions: "41000",
     newCustomers: "610",
     returningCustomers: "160",
     cogsMode: "pct",
     cogs: "38",
-    shippingPaid: "4300",
-    packaging: "900",
+    shippingPaid: m(4300),
+    packaging: m(900),
     feesMode: "pct",
-    fees: "1,4",
-    feesFixedPerOrder: "0,25",
+    fees: `1${dec}4`,
+    feesFixedPerOrder: m(0.25),
     ads: [
-      { id: "meta", name: "Meta Ads", spend: "7200", attributed: "21500" },
-      { id: "google", name: "Google Ads", spend: "3100", attributed: "11800" },
-      { id: "tiktok", name: "TikTok Ads", spend: "1200", attributed: "1900" },
+      { id: "meta", name: "Meta Ads", spend: m(7200), attributed: m(21500) },
+      { id: "google", name: "Google Ads", spend: m(3100), attributed: m(11800) },
+      { id: "tiktok", name: "TikTok Ads", spend: m(1200), attributed: m(1900) },
     ],
-    emailToolCost: "180",
-    emailAttributed: "6400",
+    emailToolCost: m(180),
+    emailAttributed: m(6400),
     otherMarketing: "0",
-    platformCost: "420",
-    otherFixed: "4500",
+    platformCost: m(420),
+    otherFixed: m(4500),
     profitTaxPct: "20",
   }
 }
@@ -248,6 +278,7 @@ export function migrateSaved(raw: unknown): Saved | null {
     form.ownerSalary = ""
     form.ownerHours = ""
   }
+  if (!isCurrency(form.currency)) form.currency = base.currency
   if (!Array.isArray(form.ads)) form.ads = base.ads
   if (!Array.isArray(form.customWeights) || form.customWeights.length !== 12) form.customWeights = base.customWeights
   return { form, isExample: Boolean(o.isExample) }
@@ -289,6 +320,39 @@ export function toFullMode(f: FormState): FormState {
 /** Pasar a modo rápido: el gasto en publicidad por plataformas se suma en el total. */
 export function toQuickMode(f: FormState): FormState {
   const spends = f.ads.map((a) => parseNum(a.spend)).filter((v): v is number => v !== null)
-  const adSpendTotal = spends.length > 0 ? String(spends.reduce((a, b) => a + Math.abs(b), 0)).replace(".", ",") : f.adSpendTotal
+  const adSpendTotal = spends.length > 0 ? String(spends.reduce((a, b) => a + Math.abs(b), 0)).replace(".", fmt.decimal()) : f.adSpendTotal
   return { ...f, quickMode: true, adSpendTotal }
+}
+
+/**
+ * Cambiar de moneda con datos propios: no convierte importes, pero
+ * - el IVA pasa al del nuevo país, salvo que el usuario haya puesto uno distinto al propuesto;
+ * - si cambia el separador decimal (EUR "12,5" ↔ MXN "12.5"), reescribe lo ya tecleado
+ *   para que cada cifra conserve su valor ("12,500" en MXN es 12500, no 12,5 en COP).
+ */
+export function switchCurrency(f: FormState, to: CurrencyCode): FormState {
+  const from = f.currency
+  const decOf = (c: CurrencyCode) =>
+    new Intl.NumberFormat(currencyInfo(c).locale).formatToParts(1.5).find((p) => p.type === "decimal")?.value ?? ","
+  const fromDec = decOf(from)
+  const toDec = decOf(to)
+  let next: FormState = { ...f, currency: to }
+  setCurrency(from) // parseNum lee según la moneda activa
+  const prevVat = currencyInfo(from).vat
+  const customVat = f.vatPct.trim() !== "" && parseNum(f.vatPct) !== prevVat
+  if (fromDec !== toDec) {
+    const conv = (s: string) => {
+      const v = parseNum(s)
+      return v === null || !/\d/.test(s) ? s : String(v).replace(".", toDec)
+    }
+    const out: Record<string, unknown> = { ...next }
+    for (const [k, v] of Object.entries(f)) {
+      if (typeof v === "string" && k !== "currency") out[k] = conv(v)
+    }
+    next = out as unknown as FormState
+    next.customWeights = f.customWeights.map(conv)
+    next.ads = f.ads.map((a) => ({ ...a, spend: conv(a.spend), attributed: conv(a.attributed) }))
+  }
+  setCurrency(to)
+  return customVat ? next : { ...next, vatPct: String(currencyInfo(to).vat) }
 }

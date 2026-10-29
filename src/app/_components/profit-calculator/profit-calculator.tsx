@@ -1,8 +1,8 @@
 "use client"
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { ArrowDown, ArrowRight, Plus, RotateCcw, Trash2, X } from "lucide-react"
-import { adsScenario, applyMode, capGood, compute, dataWarnings, fmt, levelOf, ordinal, MONTHS_LONG, MONTHS_SHORT, type Inputs, type Level, type Results, type SeasonProfile } from "./calc"
-import { emptyForm, exampleForm, loadSaved, parseNum, serializeSaved, STORAGE_KEY, toFullMode, toInputs, toQuickMode, type FormState } from "./form"
+import { adsScenario, applyMode, capGood, compute, CURRENCIES, currencyInfo, dataWarnings, fmt, isCurrency, levelOf, setCurrency, ordinal, MONTHS_LONG, MONTHS_SHORT, type CurrencyCode, type Inputs, type Level, type Results, type SeasonProfile } from "./calc"
+import { emptyForm, exampleForm, loadSaved, parseNum, serializeSaved, STORAGE_KEY, switchCurrency, toFullMode, toInputs, toQuickMode, type FormState } from "./form"
 import { buildFormulas } from "./formulas"
 import ReviewRequest, { HelpRequest } from "./review-request"
 import Simulator from "./simulator"
@@ -54,6 +54,9 @@ export default function ProfitCalculator() {
     return () => clearTimeout(t)
   }, [form, isExample])
 
+  // La moneda se fija antes de leer y formatear cualquier número de este render.
+  setCurrency(form.currency)
+
   // En modo rápido solo cuentan los campos del modo rápido (applyMode).
   const inputs = useMemo(() => applyMode(toInputs(form)), [form])
   const r = useMemo(() => compute(inputs), [inputs])
@@ -76,7 +79,7 @@ export default function ProfitCalculator() {
     })
 
   const reset = () => {
-    setForm({ ...emptyForm(), quickMode: form.quickMode })
+    setForm({ ...emptyForm(form.currency), quickMode: form.quickMode })
     setIsExample(false)
     setRefined(false)
     setOpen(new Set([1, 2]))
@@ -91,8 +94,19 @@ export default function ProfitCalculator() {
     setForm((f) => toQuickMode(f))
     setRefined(false)
   }
+  // Cambiar de moneda: el ejemplo se rehace con importes convertidos (aprox.);
+  // con datos propios solo se ajustan IVA y separador decimal (switchCurrency).
+  const changeCurrency = (currency: CurrencyCode) => {
+    setCurrency(currency) // para que los textos que se generen ya usen la nueva moneda
+    if (isExample) {
+      const example = exampleForm(currency)
+      setForm(form.quickMode ? toQuickMode(example) : example)
+      return
+    }
+    setForm((f) => switchCurrency(f, currency))
+  }
   const loadExample = () => {
-    setForm(exampleForm())
+    setForm(exampleForm(form.currency))
     setIsExample(true)
   }
 
@@ -158,6 +172,25 @@ export default function ProfitCalculator() {
                   { value: "full", label: "Modo completo" },
                 ]}
               />
+            </div>
+
+            {/* Moneda: solo cambia cómo se muestran los importes, no convierte nada */}
+            <div className="flex flex-col gap-2 rounded-sm border border-sw-line bg-sw-bg-1 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <label htmlFor="pc-currency" className="text-sm text-sw-fg-2">
+                ¿En qué moneda vendes?
+              </label>
+              <select
+                id="pc-currency"
+                value={form.currency}
+                onChange={(e) => isCurrency(e.target.value) && changeCurrency(e.target.value)}
+                className="w-full rounded-sm border border-sw-line-strong bg-sw-bg-2 px-3 py-2 text-sm text-sw-fg-1 outline-none focus:border-sw-secondary sm:w-auto"
+              >
+                {CURRENCIES.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* 1. Periodo */}
@@ -250,10 +283,10 @@ export default function ProfitCalculator() {
                 <VatField form={form} set={set} />
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <NumField concept="grossSales" value={form.grossSales} onChange={(v) => set("grossSales", v)} suffix="€" missing={miss("Ventas brutas") && MISSING_SALES} />
-                  <NumField concept="discounts" value={form.discounts} onChange={(v) => set("discounts", v)} suffix="€" />
-                  <NumField concept="returns" value={form.returns} onChange={(v) => set("returns", v)} suffix="€" />
-                  <NumField concept="shippingCharged" value={form.shippingCharged} onChange={(v) => set("shippingCharged", v)} suffix="€" />
+                  <NumField concept="grossSales" value={form.grossSales} onChange={(v) => set("grossSales", v)} suffix={fmt.sym()} missing={miss("Ventas brutas") && MISSING_SALES} />
+                  <NumField concept="discounts" value={form.discounts} onChange={(v) => set("discounts", v)} suffix={fmt.sym()} />
+                  <NumField concept="returns" value={form.returns} onChange={(v) => set("returns", v)} suffix={fmt.sym()} />
+                  <NumField concept="shippingCharged" value={form.shippingCharged} onChange={(v) => set("shippingCharged", v)} suffix={fmt.sym()} />
                   <NumField concept="orders" value={form.orders} onChange={(v) => set("orders", v)} integer missing={miss("Pedidos") && MISSING_SALES} />
                   <NumField concept="sessions" value={form.sessions} onChange={(v) => set("sessions", v)} integer />
                   <NumField concept="newCustomers" value={form.newCustomers} onChange={(v) => set("newCustomers", v)} integer />
@@ -281,7 +314,7 @@ export default function ProfitCalculator() {
                     concept="cogs"
                     value={form.cogs}
                     onChange={(v) => set("cogs", v)}
-                    suffix={form.cogsMode === "pct" ? "%" : "€"}
+                    suffix={form.cogsMode === "pct" ? "%" : fmt.sym()}
                     hint={form.cogsMode === "pct" ? `% sobre ventas netas sin IVA → ${fmt.eur(r.cogs)}` : "Total del periodo, sin IVA"}
                     missing={miss("Coste de producto") && MISSING_SALES}
                   />
@@ -292,20 +325,20 @@ export default function ProfitCalculator() {
                     onChange={(v) => set("cogsMode", v)}
                     options={[
                       { value: "pct", label: "En %" },
-                      { value: "eur", label: "En €" },
+                      { value: "eur", label: `En ${fmt.many()}` },
                     ]}
                   />
                 </div>
-                <NumField concept="shippingPaid" value={form.shippingPaid} onChange={(v) => set("shippingPaid", v)} suffix="€" missing={miss("Envíos pagados")} />
-                <NumField concept="packaging" value={form.packaging} onChange={(v) => set("packaging", v)} suffix="€" />
+                <NumField concept="shippingPaid" value={form.shippingPaid} onChange={(v) => set("shippingPaid", v)} suffix={fmt.sym()} missing={miss("Envíos pagados")} />
+                <NumField concept="packaging" value={form.packaging} onChange={(v) => set("packaging", v)} suffix={fmt.sym()} />
                 <div className="space-y-2">
                   {form.feesMode === "pct" ? (
                     <div className="grid grid-cols-2 gap-2">
                       <NumField concept="fees" label="Pasarela de pago" value={form.fees} onChange={(v) => set("fees", v)} suffix="%" missing={miss("Pasarela de pago")} />
-                      <NumField label="+ fijo/pedido" value={form.feesFixedPerOrder} onChange={(v) => set("feesFixedPerOrder", v)} suffix="€" />
+                      <NumField label="+ fijo/pedido" value={form.feesFixedPerOrder} onChange={(v) => set("feesFixedPerOrder", v)} suffix={fmt.sym()} />
                     </div>
                   ) : (
-                    <NumField concept="fees" label="Pasarela de pago" value={form.fees} onChange={(v) => set("fees", v)} suffix="€" missing={miss("Pasarela de pago")} />
+                    <NumField concept="fees" label="Pasarela de pago" value={form.fees} onChange={(v) => set("fees", v)} suffix={fmt.sym()} missing={miss("Pasarela de pago")} />
                   )}
                   <p className="text-xs text-sw-fg-4">{form.feesMode === "pct" ? `→ ${fmt.eur(r.fees)} en comisiones` : "Total del periodo"}</p>
                   <Segmented
@@ -315,7 +348,7 @@ export default function ProfitCalculator() {
                     onChange={(v) => set("feesMode", v)}
                     options={[
                       { value: "pct", label: "% + fijo" },
-                      { value: "eur", label: "Total en €" },
+                      { value: "eur", label: `Total en ${fmt.many()}` },
                     ]}
                   />
                 </div>
@@ -324,7 +357,7 @@ export default function ProfitCalculator() {
                   label="Coste de devoluciones (envíos de vuelta y producto que ya no puedes revender)"
                   value={form.returnCosts}
                   onChange={(v) => set("returnCosts", v)}
-                  suffix="€"
+                  suffix={fmt.sym()}
                   hint="Opcional. Total del periodo, sin IVA."
                 />
               </div>
@@ -370,7 +403,7 @@ export default function ProfitCalculator() {
                           <NumField
                             label="Inversión"
                             value={ad.spend}
-                            suffix="€"
+                            suffix={fmt.sym()}
                             onChange={(v) => {
                               const ads = [...form.ads]
                               ads[i] = { ...ad, spend: v }
@@ -380,7 +413,7 @@ export default function ProfitCalculator() {
                           <NumField
                             label="Ventas atribuidas"
                             value={ad.attributed}
-                            suffix="€"
+                            suffix={fmt.sym()}
                             onChange={(v) => {
                               const ads = [...form.ads]
                               ads[i] = { ...ad, attributed: v }
@@ -404,9 +437,9 @@ export default function ProfitCalculator() {
                 </FieldBlock>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <NumField concept="emailTool" label="Herramienta de email marketing" value={form.emailToolCost} onChange={(v) => set("emailToolCost", v)} suffix="€" />
-                  <NumField label="Ventas atribuidas al email" value={form.emailAttributed} onChange={(v) => set("emailAttributed", v)} suffix="€" />
-                  <NumField concept="otherMarketing" value={form.otherMarketing} onChange={(v) => set("otherMarketing", v)} suffix="€" />
+                  <NumField concept="emailTool" label="Herramienta de email marketing" value={form.emailToolCost} onChange={(v) => set("emailToolCost", v)} suffix={fmt.sym()} />
+                  <NumField label="Ventas atribuidas al email" value={form.emailAttributed} onChange={(v) => set("emailAttributed", v)} suffix={fmt.sym()} />
+                  <NumField concept="otherMarketing" value={form.otherMarketing} onChange={(v) => set("otherMarketing", v)} suffix={fmt.sym()} />
                 </div>
               </div>
             </Section>
@@ -421,16 +454,16 @@ export default function ProfitCalculator() {
               onToggle={() => toggleStep(5)}
             >
               <div className="grid gap-4 sm:grid-cols-2">
-                <NumField concept="platformCost" value={form.platformCost} onChange={(v) => set("platformCost", v)} suffix="€" missing={miss("Gastos fijos") && MISSING_FIXED} />
+                <NumField concept="platformCost" value={form.platformCost} onChange={(v) => set("platformCost", v)} suffix={fmt.sym()} missing={miss("Gastos fijos") && MISSING_FIXED} />
                 <NumField
                   concept="otherFixed"
                   value={form.otherFixed}
                   onChange={(v) => set("otherFixed", v)}
-                  suffix="€"
+                  suffix={fmt.sym()}
                   missing={miss("Gastos fijos") && MISSING_FIXED}
                   hint={refined ? "Aquí están los gastos fijos del modo rápido. Si incluían tu sueldo, pásalo a «Tu sueldo»." : undefined}
                 />
-                <NumField concept="ownerSalary" value={form.ownerSalary} onChange={(v) => set("ownerSalary", v)} suffix="€" hint="Opcional. Total del periodo." />
+                <NumField concept="ownerSalary" value={form.ownerSalary} onChange={(v) => set("ownerSalary", v)} suffix={fmt.sym()} hint="Opcional. Total del periodo." />
                 <NumField concept="ownerHours" value={form.ownerHours} onChange={(v) => set("ownerHours", v)} suffix="h/mes" integer hint="Opcional." />
                 <NumField concept="profitTax" value={form.profitTaxPct} onChange={(v) => set("profitTaxPct", v)} suffix="%" />
               </div>
@@ -458,7 +491,7 @@ export default function ProfitCalculator() {
                     concept="firstOrderAov"
                     value={form.firstOrderAov}
                     onChange={(v) => set("firstOrderAov", v)}
-                    suffix="€"
+                    suffix={fmt.sym()}
                     placeholder={r.aov !== null ? fmt.dec(r.aov / r.vatFactor) : "0"}
                   />
                   <NumField concept="welcomeDiscount" value={form.welcomeDiscountPct} onChange={(v) => set("welcomeDiscountPct", v)} suffix="%" placeholder="0" />
@@ -543,7 +576,7 @@ function VatField({ form, set }: { form: FormState; set: SetField }) {
             ]}
           />
         </FieldBlock>
-        <NumField label="Tipo de IVA" value={form.vatPct} onChange={(v) => set("vatPct", v)} suffix="%" placeholder="21" />
+        <NumField label="Tipo de IVA" value={form.vatPct} onChange={(v) => set("vatPct", v)} suffix="%" placeholder={String(currencyInfo(form.currency).vat)} />
       </div>
       {form.salesIncludeVat === null && (
         <p className="-mt-2 flex items-start gap-1.5 text-xs text-amber-400">
@@ -585,15 +618,15 @@ function QuickForm({
       <div className="space-y-5 border-t border-sw-line px-4 pb-5 pt-4 sm:px-5">
         <VatField form={form} set={set} />
         <div className="grid gap-4 sm:grid-cols-2">
-          <NumField concept="grossSales" value={form.grossSales} onChange={(v) => set("grossSales", v)} suffix="€" missing={miss("Ventas brutas") && MISSING_SALES} />
+          <NumField concept="grossSales" value={form.grossSales} onChange={(v) => set("grossSales", v)} suffix={fmt.sym()} missing={miss("Ventas brutas") && MISSING_SALES} />
           <NumField concept="orders" value={form.orders} onChange={(v) => set("orders", v)} integer missing={miss("Pedidos") && MISSING_SALES} />
           <div className="space-y-2">
             <NumField
               concept="cogs"
-              label={form.cogsMode === "pct" ? "Coste de producto (%)" : "Coste de producto (€)"}
+              label={form.cogsMode === "pct" ? "Coste de producto (%)" : `Coste de producto (${fmt.sym()})`}
               value={form.cogs}
               onChange={(v) => set("cogs", v)}
-              suffix={form.cogsMode === "pct" ? "%" : "€"}
+              suffix={form.cogsMode === "pct" ? "%" : fmt.sym()}
               hint={form.cogsMode === "pct" ? "% sobre tus ventas sin IVA" : "Total del periodo, sin IVA"}
               missing={miss("Coste de producto") && MISSING_SALES}
             />
@@ -605,24 +638,24 @@ function QuickForm({
                 onChange={(v) => set("cogsMode", v)}
                 options={[
                   { value: "pct", label: "En %" },
-                  { value: "eur", label: "En €" },
+                  { value: "eur", label: `En ${fmt.many()}` },
                 ]}
               />
             )}
           </div>
-          <NumField concept="shippingPaid" value={form.shippingPaid} onChange={(v) => set("shippingPaid", v)} suffix="€" missing={miss("Envíos pagados")} />
+          <NumField concept="shippingPaid" value={form.shippingPaid} onChange={(v) => set("shippingPaid", v)} suffix={fmt.sym()} missing={miss("Envíos pagados")} />
           <NumField
             label="Gasto total en publicidad"
             value={form.adSpendTotal}
             onChange={(v) => set("adSpendTotal", v)}
-            suffix="€"
+            suffix={fmt.sym()}
             hint="Todas las plataformas juntas, sin IVA. Si no haces publicidad, pon 0."
           />
           <NumField
             label="Gastos fijos del periodo"
             value={form.otherFixed}
             onChange={(v) => set("otherFixed", v)}
-            suffix="€"
+            suffix={fmt.sym()}
             hint="Plataforma, apps, alquiler, gestoría, tu sueldo… todo lo que pagas vendas o no."
             missing={miss("Gastos fijos")}
           />
@@ -807,7 +840,7 @@ function SummaryCard({
           <dl className="space-y-2.5 text-sm">
             <Row label="Ingresos netos (sin IVA)" value={fmt.eur(r.netRevenue)} />
             <Row
-              label="Lo que queda por cada € vendido"
+              label={`Lo que queda por cada ${fmt.one()} vendido`}
               value={fmt.eur2(r.cm1PerEuro)}
               level={capGood(levelOf.cm1PerEuro(r.cm1PerEuro), r)}
               hint="antes de marketing y fijos"
@@ -924,16 +957,16 @@ function Per100({ r }: { r: Results }) {
   const profit = r.netProfit
   const resLevel = levelOf.result(profit, r)
   const per100 = (v: number) => (v / r.netRevenue) * 100
-  const fmt100 = (v: number) => `${fmt.dec(per100(v)).replace(/,00$/, "")} €`
+  const fmt100 = (v: number) => fmt.eur2(per100(v)).replace(/[.,]00(?!\d)/, "")
 
   return (
     <div>
       <div className="mb-2 flex items-center justify-between gap-2">
-        <span className="text-sm font-semibold text-sw-fg-1">De cada 100 € que ingresas</span>
+        <span className="text-sm font-semibold text-sw-fg-1">De cada {fmt.eur(100)} que ingresas</span>
         {button}
       </div>
       <div className="relative">
-        <div className="flex h-4 w-full gap-[2px] overflow-hidden rounded-[4px]" role="img" aria-label="Reparto de cada 100 € de ingresos">
+        <div className="flex h-4 w-full gap-[2px] overflow-hidden rounded-[4px]" role="img" aria-label={`Reparto de cada ${fmt.eur(100)} de ingresos`}>
           {items.map((it) => (
             <div key={it.label} style={{ width: `${(it.v / scale) * 100}%`, background: it.color }} title={`${it.label}: ${fmt100(it.v)}`} />
           ))}
@@ -1019,7 +1052,7 @@ function Analysis({ r, inputs, form, per, set }: AnalysisProps) {
         {/* Qué hacer */}
         <div>
           <SectionTitle eyebrow="Conclusiones" title="Qué está pasando y qué hacer" />
-          <p className="-mt-4 mb-6 text-sm text-sw-fg-4">Ordenadas por su impacto en euros sobre tu beneficio.</p>
+          <p className="-mt-4 mb-6 text-sm text-sw-fg-4">Ordenadas por su impacto en tu beneficio.</p>
           <div className="grid gap-3 lg:grid-cols-2">
             {r.insights.map((ins, i) => {
               const s = LEVEL_STYLES[ins.level]
@@ -1049,7 +1082,7 @@ function Analysis({ r, inputs, form, per, set }: AnalysisProps) {
           <KpiGroup title="Ventas y tráfico">
             <Kpi concept="netProductSales" value={fmt.eur(r.netProductSales)} sub={`Brutas ${fmt.eur(r.gross)}`} />
             <Kpi concept="netRevenue" value={fmt.eur(r.netRevenue)} sub={`Los clientes pagaron ${fmt.eur(r.totalCharged)} con IVA`} />
-            <Kpi concept="vatCollected" value={fmt.eur(r.vatCollected)} sub="No es tuyo: es de Hacienda" />
+            <Kpi concept="vatCollected" value={fmt.eur(r.vatCollected)} sub={`No es tuyo: es para ${fmt.tax()}`} />
             <Kpi concept="aov" value={fmt.eur2(r.aov)} />
             <Kpi concept="conversionRate" value={fmt.pct(r.conversionRate)} level={levelOf.conversion(r.conversionRate)} sub={`${fmt.num(r.orders)} pedidos de ${fmt.num(r.sessions)} sesiones`} />
             <Kpi concept="rpv" value={fmt.eur2(r.rpv)} />
@@ -1421,7 +1454,7 @@ function AdsScenario({ r, inputs, per }: { r: Results; inputs: Inputs; per: stri
       </p>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
-        <NumField label="Inversión en publicidad al mes" value={spendRaw} onChange={setSpendRaw} suffix="€" hint="Sin IVA." />
+        <NumField label="Inversión en publicidad al mes" value={spendRaw} onChange={setSpendRaw} suffix={fmt.sym()} hint="Sin IVA." />
         <NumField
           label="ROAS que esperas"
           value={roasRaw}
@@ -1429,7 +1462,7 @@ function AdsScenario({ r, inputs, per }: { r: Results; inputs: Inputs; per: stri
           suffix="x"
           hint={
             be !== null
-              ? `Ventas sin IVA por cada euro invertido. Con tu margen necesitas al menos ${fmt.x(be)} para cubrir los costes variables de esas ventas.`
+              ? `Ventas sin IVA por cada ${fmt.one()} invertido. Con tu margen necesitas al menos ${fmt.x(be)} para cubrir los costes variables de esas ventas.`
               : "Con tu margen actual, ningún ROAS cubre los costes variables de esas ventas."
           }
         />
@@ -1459,7 +1492,7 @@ function AdsScenario({ r, inputs, per }: { r: Results; inputs: Inputs; per: stri
           </dl>
           <p className={`mt-4 text-sm leading-relaxed ${belowBreakeven ? "text-sw-danger" : "text-sw-fg-2"}`}>
             {belowBreakeven
-              ? `Con ese ROAS, cada euro en anuncios te cuesta más de lo que te deja: el beneficio bajaría ${fmt.eur(Math.abs(delta))} ${per}.`
+              ? `Con ese ROAS, cada ${fmt.one()} en anuncios te cuesta más de lo que te deja: el beneficio bajaría ${fmt.eur(Math.abs(delta))} ${per}.`
               : delta >= 0
                 ? `Si consigues ese ROAS, el beneficio subiría ${fmt.eur(delta)} ${per}.`
                 : `Con ese ROAS cubres los costes variables, pero no lo suficiente: el beneficio bajaría ${fmt.eur(Math.abs(delta))} ${per}.`}

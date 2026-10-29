@@ -62,7 +62,7 @@ const LEVERS: LeverDef[] = [
   { key: "returns", label: "Devoluciones", hint: "Peso de las devoluciones sobre las ventas", icon: Undo2, min: -100, max: 100, step: 5, show: (r) => fmt.pct(r.returnPct) },
   { key: "cogs", label: "Coste de producto", hint: "Negociar con proveedores, cambiar de fabricante…", icon: Package, min: -30, max: 30, step: 1, show: (r) => fmt.pct(share(r.cogs, r.netProductSales)) },
   { key: "shipping", label: "Coste de envío por pedido", hint: "Mejores tarifas de transporte", icon: Truck, min: -50, max: 50, step: 5, show: (r) => fmt.eur2(share(r.shippingPaid, r.orders)) },
-  { key: "ads", label: "Inversión en publicidad", hint: "Cada euro extra rinde algo menos que el anterior", icon: Megaphone, min: -100, max: 100, step: 5, show: (r) => fmt.eur(r.adSpend) },
+  { key: "ads", label: "Inversión en publicidad", hint: "Cada inversión extra rinde algo menos que la anterior", icon: Megaphone, min: -100, max: 100, step: 5, show: (r) => fmt.eur(r.adSpend) },
   { key: "fixed", label: "Gastos fijos", hint: "Plataforma, alquiler, gestoría… (sin tu sueldo)", icon: Building2, min: -50, max: 50, step: 5, show: (r) => fmt.eur(r.fixed) },
 ]
 
@@ -250,7 +250,7 @@ export default function Simulator({ inputs, base, per }: Props) {
             <div className="mt-6 grid grid-cols-2 gap-2">
               <MiniDelta label="Conversión" a={base.conversionRate} b={sim.conversionRate} format={fmt.pct} better="up" />
               <MiniDelta label="Ticket medio" a={base.aov} b={sim.aov} format={fmt.eur2} better="up" />
-              <MiniDelta label="Te queda por €" a={base.cm1PerEuro} b={sim.cm1PerEuro} format={fmt.eur2} better="up" />
+              <MiniDelta label={`Te queda por ${fmt.one()}`} a={base.cm1PerEuro} b={sim.cm1PerEuro} format={fmt.eur2} better="up" />
               <MiniDelta label="ROAS breakeven" a={base.roasBreakeven} b={sim.roasBreakeven} format={fmt.x} better="down" />
               <MiniDelta label="MER" a={base.mer} b={sim.mer} format={fmt.x} better="up" />
               <MiniDelta label="CAC" a={base.cac} b={sim.cac} format={fmt.eur2} better="down" />
