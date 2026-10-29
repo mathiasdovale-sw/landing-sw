@@ -106,6 +106,46 @@ export const CONCEPTS: Record<string, Concept> = {
     what: "Apps o servicios que se quedan un porcentaje de lo que vendes en tu tienda (y a veces un fijo por pedido). Las que cobran una cuota fija van en gastos fijos.",
     how: "Por cada app: ventas netas de tu tienda × % + pedidos de tu tienda × fijo por pedido.",
   },
+  storeAdsBudget: {
+    label: "Presupuesto de publicidad al día",
+    what: "Lo que invertirías al día en anuncios para llevar ventas a tu tienda propia. Sin publicidad, una tienda nueva casi no vende: no tiene el tráfico del marketplace.",
+    how: "Al mes: presupuesto al día × 30,4 días.",
+  },
+  storeCpa: {
+    label: "Coste por pedido (CPA)",
+    what: "Lo que te cuesta en publicidad conseguir un pedido en tu tienda. Es la cifra que decide si la tienda se paga.",
+    how: "Coste por clic ÷ conversión de tu tienda. Ej.: 0,50 por clic y 1,5 % de conversión = 0,50 ÷ 0,015 = 33,33 por pedido. Si ya lo conoces por tus campañas, mételo directamente.",
+  },
+  storeFixedMonthly: {
+    label: "Cuota mensual de la tienda",
+    what: "Lo que pagarías cada mes por tener la tienda: plataforma, apps de cuota fija, dominio. Sin IVA.",
+    how: "Se suma a la publicidad: los pedidos de la tienda tienen que cubrir las dos cosas. Si ya vendes en tu tienda, esta cuota ya cuenta en tus gastos fijos y aquí no se pide.",
+  },
+  storeMargin: {
+    label: "Te queda por pedido: tienda vs marketplace",
+    what: "Lo que deja cada pedido antes de publicidad y gastos fijos en cada canal. En la tienda no pagas la comisión del marketplace, pero sí pasarela, plataforma y apps.",
+    how: "Ingreso neto por pedido − coste de producto, envío, packaging y devoluciones por pedido − comisiones de ese canal por pedido.",
+  },
+  storeOrdersNeeded: {
+    label: "Pedidos al mes para cubrir la publicidad",
+    what: "Cuántos pedidos tiene que hacer tu tienda al mes para pagar la publicidad (y la cuota mensual) con lo que deja cada pedido.",
+    how: "(Publicidad al mes + cuota mensual) ÷ lo que te queda por pedido en la tienda. Se compara con los pedidos que conseguirías con tu coste por pedido.",
+  },
+  storeCpaMax: {
+    label: "Coste por pedido máximo",
+    what: "Lo máximo que puede costarte un pedido en publicidad para no perder dinero. Por encima, cada venta de la tienda te cuesta más de lo que te deja.",
+    how: "Publicidad × lo que te queda por pedido ÷ (publicidad + cuota mensual). Con recompra (LTV activado), se multiplica por los pedidos que te hace cada cliente al año.",
+  },
+  storeMigrate: {
+    label: "% de tus pedidos del marketplace que podrías llevar a tu tienda",
+    what: "Clientes que ya te compran en el marketplace y podrían repetir en tu tienda: tarjeta en el paquete, una ventaja por comprar directo o email (si el marketplace lo permite: revisa sus normas). No cuestan publicidad.",
+    how: "Pedidos del marketplace al mes × % × (lo que te queda por pedido en la tienda − en el marketplace). Puede salir negativo si la tienda deja menos por pedido.",
+  },
+  storeResult: {
+    label: "Resultado al mes",
+    what: "Lo que ganarías o perderías al mes con la publicidad de tu tienda, contando solo la primera compra de cada cliente. Debajo, si aplican, con recompra y con clientes que pasas del marketplace.",
+    how: "Pedidos que trae la publicidad × lo que te queda por pedido − publicidad − cuota mensual. Con recompra es una aproximación: el margen a 12 meses de los clientes captados en un mes.",
+  },
   channelMargin: {
     label: "Margen por canal",
     what: "Cuánto te queda por cada venta en cada canal antes de marketing y gastos fijos. Sirve para ver qué canal te deja más.",

@@ -1,6 +1,6 @@
 // "Tu cuenta": la operación exacta, con los números del usuario, de cada
 // métrica calculada. Se muestra dentro del panel (?) de cada concepto.
-import { fmt, type Inputs, type Results } from "./calc"
+import { DAYS_PER_MONTH, fmt, storeDecision, type Inputs, type Results } from "./calc"
 
 const e = fmt.eur
 const e2 = fmt.eur2
@@ -11,7 +11,7 @@ const d = fmt.dec
 const num = (v: number | null | undefined) => (typeof v === "number" && isFinite(v) ? v : 0)
 const d4 = (v: number | null) =>
   v === null ? "—" : fmt.dec4(v)
-const pctIn = (v: number | null) => `${fmt.dec(num(v)).replace(/[.,]00$/, "")} %`
+const pctIn = (v: number | null | undefined) => `${fmt.dec(num(v)).replace(/[.,]00$/, "")} %`
 
 export type Formulas = Record<string, string[]>
 
@@ -216,6 +216,64 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
       `Ej. producto: ${e(r.cogs)} ÷ ${e(r.netRevenue)} × 100 = ${per100(r.cogs)}`,
       `Te queda: ${e(r.netProfit)} ÷ ${e(r.netRevenue)} × 100 = ${per100(r.netProfit)}`,
     ]
+  }
+
+  // ¿Te conviene abrir tu tienda propia?
+  const sd = storeDecision(r, inp)
+  if (sd.state === "ready") {
+    const s = sd.d
+    const perOrder = `por pedido`
+    const commonLine = `Coste común: (${e(r.cogs)} + ${e(r.shippingPaid)} + ${e(r.packaging)} + ${e(r.returnCosts)}) ÷ ${n(r.orders)} pedidos = ${e2(s.C)} ${perOrder}`
+    const tLine = `Ingreso neto: ${e(r.netRevenue)} ÷ ${n(r.orders)} pedidos = ${e2(s.T)} ${perOrder}`
+    const fsLine =
+      s.channel === "both"
+        ? `Comisiones de la tienda: (${e(r.fees)} + ${e(r.platformFees)} + ${e(r.appFees)}) ÷ ${n(r.orders * (1 - r.mkShare))} pedidos = ${e2(s.Fs)}`
+        : `Comisiones de la tienda: ${e2(s.T)} × ${d(1 + r.vatRate)} × ${pctIn(inp.storeGatewayPct)} + ${e2(Math.abs(num(inp.storeGatewayFixed)))} + ${e2(s.T)} × ${pctIn(inp.storePlatformPct)} + ${e2(Math.abs(num(inp.storePlatformFixed)))} = ${e2(s.Fs)}`
+    const aLine = `Publicidad al mes: ${e2(Math.abs(num(inp.adsDailyBudget)))} × ${d(DAYS_PER_MONTH)} días = ${e(s.A)}`
+    const cpaLine =
+      (inp.cpaMode ?? "cpc") === "cpa"
+        ? `Coste por pedido: ${e2(s.cpa)}`
+        : `Coste por pedido: ${e2(Math.abs(num(inp.cpc)))} ÷ ${pctIn(inp.storeCr)} = ${e2(s.cpa)}`
+    const fixedPart = s.F > 0 ? ` + ${e(s.F)} cuota` : ""
+    f.storeAdsBudget = [aLine]
+    f.storeCpa = [cpaLine]
+    f.storeFixedMonthly = s.channel === "both" ? ["Ya cuenta en tus gastos fijos: aquí se usa 0"] : [`${e(s.F)} al mes`]
+    f.storeMargin = [
+      tLine,
+      commonLine,
+      `Marketplace: ${e2(s.T)} − ${e2(s.C)} − ${e2(s.mkFeePerOrder)} comisión = ${e2(s.Mm)}`,
+      fsLine,
+      `Tienda: ${e2(s.T)} − ${e2(s.C)} − ${e2(s.Fs)} = ${e2(s.Ms)}`,
+    ]
+    f.storeOrdersNeeded =
+      s.ordersNeeded !== null
+        ? [
+            aLine,
+            `(${e(s.A)}${fixedPart}) ÷ ${e2(s.Ms)} = ${d(s.ordersNeeded)} pedidos al mes`,
+            `Con tu coste por pedido: ${e(s.A)} ÷ ${e2(s.cpa)} = ${d(s.ordersFromAds)} pedidos`,
+            ...(s.roasMin !== null ? [`ROAS mínimo: ${d(s.ordersNeeded)} × ${e2(s.T)} ÷ ${e(s.A)} = ${x(s.roasMin)}`] : []),
+          ]
+        : ["En tu tienda cada pedido deja 0 o menos: ningún número de pedidos cubre la publicidad"]
+    f.storeCpaMax =
+      s.cpaMax !== null
+        ? [
+            `${e(s.A)} × ${e2(s.Ms)} ÷ (${e(s.A)}${fixedPart}) = ${e2(s.cpaMax)}`,
+            ...(s.cpaMaxRepeat !== null && s.repeatFreq !== null ? [`Con recompra: ${e2(s.cpaMax)} × ${d(s.repeatFreq)} pedidos al año = ${e2(s.cpaMaxRepeat)}`] : []),
+          ]
+        : ["En tu tienda cada pedido deja 0 o menos: no hay coste por pedido que salga a cuenta"]
+    f.storeResult = [
+      `${d(s.ordersFromAds)} pedidos × ${e2(s.Ms)} − ${e(s.A)}${fixedPart} = ${e(s.result1)}`,
+      ...(s.resultRepeat !== null && s.repeatFreq !== null
+        ? [`Con recompra (margen a 12 meses de los clientes de un mes): ${d(s.ordersFromAds)} × ${e2(s.Ms)} × ${d(s.repeatFreq)} − ${e(s.A)}${fixedPart} = ${e(s.resultRepeat)}`]
+        : []),
+      ...(s.migrateGain !== null ? [`Clientes que pasas del marketplace: ${e(s.migrateGain)}`, `Total: ${e(s.resultTotal)}`] : []),
+    ]
+    if (s.migrateGain !== null) {
+      f.storeMigrate = [
+        `Pedidos del marketplace al mes: ${n(r.orders)} × ${p(r.mkShare)} ÷ ${inp.months} = ${d(s.mkOrdersMonth)}`,
+        `${d(s.mkOrdersMonth)} × ${pctIn(inp.migratePct)} × (${e2(s.Ms)} − ${e2(s.Mm)}) = ${e(s.migrateGain)}`,
+      ]
+    }
   }
 
   // Proyección

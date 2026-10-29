@@ -1,7 +1,7 @@
 "use client"
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { ArrowDown, ArrowRight, Plus, RotateCcw, Trash2, X } from "lucide-react"
-import { adsScenario, applyMode, capGood, compute, CURRENCIES, currencyInfo, dataWarnings, fmt, isCurrency, levelOf, setCurrency, ordinal, MONTHS_LONG, MONTHS_SHORT, type CurrencyCode, type Inputs, type Level, type Results, type SeasonProfile } from "./calc"
+import { adsScenario, applyMode, capGood, compute, CURRENCIES, currencyInfo, dataWarnings, fmt, isCurrency, levelOf, setCurrency, storeDecision, ordinal, MONTHS_LONG, MONTHS_SHORT, type CurrencyCode, type Inputs, type Level, type Results, type SeasonProfile, type StoreDecision } from "./calc"
 import { emptyForm, exampleForm, loadSaved, parseNum, serializeSaved, STORAGE_KEY, switchCurrency, toFullMode, toInputs, toQuickMode, type FormState } from "./form"
 import { buildFormulas } from "./formulas"
 import ReviewRequest, { HelpRequest } from "./review-request"
@@ -573,7 +573,7 @@ export default function ProfitCalculator() {
       </section>
 
       {/* Análisis completo */}
-      <Analysis r={r} inputs={inputs} form={form} per={per} set={set} />
+      <Analysis r={r} inputs={inputs} form={form} per={per} set={set} onRefine={refine} />
 
       <MobileBar r={r} per={per} />
       </div>
@@ -783,13 +783,14 @@ function CommissionRow({
   pct?: CommissionInput
   fixed?: CommissionInput
   total?: CommissionInput
-  amount: number
+  /** Importe calculado de la fila; sin él, la columna Importe queda vacía. */
+  amount?: number
   missing?: boolean
   onRemove?: () => void
   below?: React.ReactNode
 }) {
   const { button, panel } = useConcept(concept)
-  const amountText = Math.abs(amount) > 0.004 ? fmt.eur(amount) : "—"
+  const amountText = amount === undefined ? "" : Math.abs(amount) > 0.004 ? fmt.eur(amount) : "—"
   const amountCls = `min-w-0 break-words text-right tabular-nums text-sw-fg-3 ${amountSize(amountText, ["text-sm", "text-sm", "text-xs", "text-[11px]"])}`
   const trash = onRemove ? (
     <button
@@ -1353,6 +1354,8 @@ interface AnalysisProps {
   form: FormState
   per: string
   set: SetField
+  /** Pasar a modo completo (para los bloques que solo existen ahí) */
+  onRefine: () => void
 }
 
 /** Nota para una métrica que sería "Bien" pero el resultado global no lo respalda. */
@@ -1363,7 +1366,7 @@ function cappedNote(raw: Level, r: Results): string | null {
 }
 const withNote = (sub: string | undefined, note: string | null) => (note ? (sub ? `${sub} · ${note}` : note) : sub)
 
-function Analysis({ r, inputs, form, per, set }: AnalysisProps) {
+function Analysis({ r, inputs, form, per, set, onRefine }: AnalysisProps) {
   if (!r.hasData) {
     return (
       <section id="analisis" className="bg-sw-bg-1 py-16">
@@ -1572,6 +1575,19 @@ function Analysis({ r, inputs, form, per, set }: AnalysisProps) {
           <Projection r={r} form={form} set={set} />
         </div>
 
+        {/* ¿Te conviene abrir tu tienda propia? (vende en un marketplace) */}
+        {form.salesChannel !== "store" &&
+          (form.quickMode ? (
+            <div id="tienda-propia" className="scroll-mt-24 rounded-sm border border-sw-line bg-sw-bg-0 p-4 text-sm text-sw-fg-3">
+              <span className="text-sw-fg-2">¿Te conviene abrir tu tienda propia?</span> Disponible en el modo completo.{" "}
+              <button type="button" onClick={onRefine} className="text-sw-secondary underline-offset-2 hover:underline">
+                Pasar al modo completo
+              </button>
+            </div>
+          ) : (
+            <StoreDecisionBlock r={r} inputs={inputs} form={form} set={set} />
+          ))}
+
         {/* Simulador de palancas */}
         <div id="simulador" className="scroll-mt-24">
           <SectionTitle eyebrow="Simulador" title="Mueve las palancas y mira tu beneficio" />
@@ -1590,6 +1606,199 @@ function Analysis({ r, inputs, form, per, set }: AnalysisProps) {
         </div>
       </div>
     </section>
+  )
+}
+
+/**
+ * ¿Te conviene abrir tu tienda propia? / ¿Te compensa la publicidad de tu tienda propia?
+ * Para quien vende en un marketplace: una tienda propia solo vende pagando publicidad,
+ * así que cada pedido que traiga tiene que dejar más de lo que cuesta conseguirlo.
+ */
+function StoreDecisionBlock({ r, inputs, form, set }: { r: Results; inputs: Inputs; form: FormState; set: SetField }) {
+  const sd = storeDecision(r, inputs)
+  const marketplace = form.salesChannel === "marketplace"
+  const groupTitle = "font-mono-label text-[11px] text-sw-fg-4"
+  const missing = sd.state === "missing" ? sd.missing : []
+
+  return (
+    <div id="tienda-propia" className="scroll-mt-24">
+      <SectionTitle eyebrow="Tienda propia" title={marketplace ? "¿Te conviene abrir tu tienda propia?" : "¿Te compensa la publicidad de tu tienda propia?"} />
+      <p className="-mt-4 mb-6 max-w-3xl text-sw-fg-2">
+        Para que la publicidad de tu tienda se pague, cada pedido que traiga tiene que dejar más de lo que cuesta conseguirlo.
+      </p>
+
+      <div className="grid items-start gap-6 lg:grid-cols-2">
+        {/* Datos */}
+        <div className="min-w-0 space-y-6 rounded-sm border border-sw-line bg-sw-bg-0 p-4 sm:p-5">
+          <div>
+            <p className={groupTitle}>Publicidad para tu tienda</p>
+            <div className="mt-3 grid items-start gap-3 sm:grid-cols-2">
+              <div className="sm:col-span-2">
+                <NumField
+                  concept="storeAdsBudget"
+                  value={form.adsDailyBudget}
+                  onChange={(v) => set("adsDailyBudget", v)}
+                  suffix={`${fmt.sym()}/día`}
+                  placeholder="0"
+                  missing={missing.includes("Presupuesto de publicidad al día")}
+                  missingNote={false}
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <Segmented
+                  size="sm"
+                  ariaLabel="Cómo sabes lo que te cuesta un pedido"
+                  value={form.cpaMode}
+                  onChange={(v) => set("cpaMode", v)}
+                  options={[
+                    { value: "cpc", label: "Sé mi coste por clic y conversión" },
+                    { value: "cpa", label: "Sé mi coste por pedido (CPA)" },
+                  ]}
+                />
+              </div>
+              {form.cpaMode === "cpc" ? (
+                <>
+                  <NumField concept="storeCpa" label="Coste por clic" value={form.cpc} onChange={(v) => set("cpc", v)} suffix={fmt.sym()} placeholder="0" />
+                  <NumField label="Conversión esperada de tu tienda" value={form.storeCr} onChange={(v) => set("storeCr", v)} suffix="%" placeholder="0" />
+                </>
+              ) : (
+                <div className="sm:col-span-2">
+                  <NumField concept="storeCpa" label="Coste por pedido con publicidad" value={form.cpaDirect} onChange={(v) => set("cpaDirect", v)} suffix={fmt.sym()} placeholder="0" />
+                </div>
+              )}
+            </div>
+            <p className="mt-2 text-xs text-sw-fg-4">Si no lo sabes, la forma fiable de saberlo es una prueba de 30–45 días con presupuesto cerrado.</p>
+          </div>
+
+          {marketplace && (
+            <div>
+              <p className={groupTitle}>Costes de la tienda</p>
+              <div className={`${COMMISSION_COLS} mt-3 border-b border-sw-line pb-1 text-xs text-sw-fg-4`} aria-hidden="true">
+                <span className="hidden sm:block" />
+                <span>%</span>
+                <span>Fijo por pedido</span>
+              </div>
+              <CommissionRow
+                label="Pasarela de pago"
+                concept="fees"
+                pct={{ value: form.storeGatewayPct, onChange: (v) => set("storeGatewayPct", v) }}
+                fixed={{ value: form.storeGatewayFixed, onChange: (v) => set("storeGatewayFixed", v) }}
+                missing={missing.includes("Pasarela de pago de tu tienda")}
+              />
+              <CommissionRow
+                label="Comisión de la plataforma"
+                concept="platformFee"
+                pct={{ value: form.storePlatformPct, onChange: (v) => set("storePlatformPct", v) }}
+                fixed={{ value: form.storePlatformFixed, onChange: (v) => set("storePlatformFixed", v) }}
+              />
+              <div className="mt-3">
+                <NumField
+                  concept="storeFixedMonthly"
+                  label="Cuota mensual de la tienda (plataforma, apps, dominio)"
+                  value={form.storeFixedMonthly}
+                  onChange={(v) => set("storeFixedMonthly", v)}
+                  suffix={`${fmt.sym()}/mes`}
+                  placeholder="0"
+                />
+              </div>
+            </div>
+          )}
+
+          <div>
+            <p className={groupTitle}>Clientes del marketplace que pasan a tu tienda</p>
+            <div className="mt-3">
+              <NumField
+                concept="storeMigrate"
+                value={form.migratePct}
+                onChange={(v) => set("migratePct", v)}
+                suffix="%"
+                placeholder="0"
+                hint="Opcional."
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Resultado */}
+        <div className="min-w-0 space-y-4">
+          {sd.state === "noSales" && (
+            <p className="rounded-sm border border-sw-line bg-sw-bg-0 p-4 text-sm text-sw-fg-3">Rellena tus ventas y pedidos para calcularlo.</p>
+          )}
+          {sd.state === "missing" && (
+            <div className="rounded-sm border border-amber-400/40 bg-amber-400/10 p-4 text-sm">
+              <p className="flex items-center gap-1.5 font-semibold text-amber-400">
+                <LevelIcon level="warn" className="h-4 w-4" />
+                Para calcularlo falta:
+              </p>
+              <ul className="mt-2 list-inside list-disc space-y-0.5 text-sw-fg-2">
+                {sd.missing.map((m) => (
+                  <li key={m}>{m}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {sd.state === "ready" && <StoreDecisionResult r={r} d={sd.d} />}
+
+          <p className="text-xs leading-relaxed text-sw-fg-4">
+            Es una estimación. La forma de confirmarlo es una prueba de 30–45 días con un presupuesto cerrado y medir el coste por pedido real.
+          </p>
+          <a
+            href="/es/contacto"
+            className="inline-flex items-center gap-1.5 rounded-sm border border-sw-line-strong px-4 py-2.5 text-sm font-semibold text-sw-fg-1 transition-colors hover:border-sw-secondary hover:text-sw-secondary"
+          >
+            ¿Quieres que te ayude a montarla?
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </a>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function StoreDecisionResult({ r, d }: { r: Results; d: StoreDecision }) {
+  const s = LEVEL_STYLES[d.level]
+  const marginLevel: Level = d.Ms <= 0 ? "bad" : d.storeBelowMk ? "warn" : "good"
+  const ordersLevel: Level = d.ordersNeeded === null ? "bad" : d.ordersFromAds >= d.ordersNeeded ? "good" : "bad"
+  const cpaLevel: Level =
+    d.cpaMax === null ? "bad" : d.cpa <= d.cpaMax ? "good" : d.cpaMaxRepeat !== null && d.cpa <= d.cpaMaxRepeat ? "warn" : "bad"
+  const resultSub = [
+    ...(d.resultRepeat !== null ? [`con recompra: ${fmt.eur(d.resultRepeat)}`] : []),
+    ...(d.migrateGain !== null ? [`+ clientes que pasas del marketplace: ${fmt.eur(d.migrateGain)}`] : []),
+  ].join(" · ")
+  return (
+    <>
+      <div className={`rounded-sm border p-4 ${s.border} ${s.bg}`}>
+        <p className={`flex items-center gap-2 text-lg font-semibold ${s.text}`}>
+          <LevelIcon level={d.level} className="h-5 w-5 shrink-0" />
+          {d.title}
+        </p>
+        <p className="mt-1 text-sm leading-relaxed text-sw-fg-2">{d.text}</p>
+      </div>
+      {d.storeBelowMk && d.Ms > 0 && (
+        <p className="flex items-start gap-1.5 rounded-sm border border-amber-400/40 bg-amber-400/10 px-3 py-2 text-sm text-sw-fg-2">
+          <LevelIcon level="warn" className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>
+            En tu tienda te queda menos por pedido que en el marketplace ({fmt.eur2(d.Ms)} vs {fmt.eur2(d.Mm)}): revisa pasarela, plataforma y apps.
+          </span>
+        </p>
+      )}
+      <div className="grid items-start gap-3 sm:grid-cols-2">
+        <Kpi concept="storeMargin" value={`${fmt.eur2(d.Ms)} vs ${fmt.eur2(d.Mm)}`} level={capGood(marginLevel, r)} sub="en tu tienda vs en el marketplace" />
+        <Kpi
+          concept="storeOrdersNeeded"
+          value={d.ordersNeeded === null ? "—" : fmt.num(Math.ceil(d.ordersNeeded - 1e-9))}
+          level={capGood(ordersLevel, r)}
+          sub={`con tu coste por pedido conseguirías ${fmt.num(d.ordersFromAds)}`}
+        />
+        <Kpi
+          concept="storeCpaMax"
+          value={fmt.eur2(d.cpaMax)}
+          level={capGood(cpaLevel, r)}
+          sub={`hoy: ${fmt.eur2(d.cpa)}${d.cpaMaxRepeat !== null ? ` · con recompra: ${fmt.eur2(d.cpaMaxRepeat)}` : ""}`}
+        />
+        <Kpi concept="storeResult" value={fmt.eur(d.result1)} level={capGood(levelOf.profit(d.result1), r)} sub={resultSub || "solo primeras compras"} />
+      </div>
+    </>
   )
 }
 

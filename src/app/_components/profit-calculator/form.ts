@@ -1,6 +1,6 @@
 // Estado del formulario (strings, para permitir escribir "12," o vacío) y su
 // conversión a números para el motor de cálculo.
-import { currencyInfo, fmt, isCurrency, setCurrency, type CurrencyCode, type Inputs, type Mode, type SalesChannel, type SeasonProfile } from "./calc"
+import { currencyInfo, fmt, isCurrency, setCurrency, type CpaMode, type CurrencyCode, type Inputs, type Mode, type SalesChannel, type SeasonProfile } from "./calc"
 
 export interface AdRow {
   id: string
@@ -78,6 +78,19 @@ export interface FormState {
   welcomeDiscountPct: string
 
   croUpliftPct: string
+
+  // ¿Te conviene abrir tu tienda propia? (sin IVA, en la moneda elegida)
+  adsDailyBudget: string
+  cpaMode: CpaMode
+  cpc: string
+  storeCr: string
+  cpaDirect: string
+  storeGatewayPct: string // solo "marketplace"
+  storeGatewayFixed: string
+  storePlatformPct: string
+  storePlatformFixed: string
+  storeFixedMonthly: string
+  migratePct: string
 }
 
 /**
@@ -172,6 +185,17 @@ export function toInputs(f: FormState): Inputs {
     firstOrderAov: parseNum(f.firstOrderAov ?? ""),
     welcomeDiscountPct: parseNum(f.welcomeDiscountPct ?? ""),
     croUpliftPct: parseNum(f.croUpliftPct),
+    adsDailyBudget: parseNum(f.adsDailyBudget),
+    cpaMode: f.cpaMode,
+    cpc: parseNum(f.cpc),
+    storeCr: parseNum(f.storeCr),
+    cpaDirect: parseNum(f.cpaDirect),
+    storeGatewayPct: parseNum(f.storeGatewayPct),
+    storeGatewayFixed: parseNum(f.storeGatewayFixed),
+    storePlatformPct: parseNum(f.storePlatformPct),
+    storePlatformFixed: parseNum(f.storePlatformFixed),
+    storeFixedMonthly: parseNum(f.storeFixedMonthly),
+    migratePct: parseNum(f.migratePct),
   }
 }
 
@@ -237,6 +261,17 @@ export function emptyForm(currency: CurrencyCode = "EUR"): FormState {
     firstOrderAov: "",
     welcomeDiscountPct: "",
     croUpliftPct: "20",
+    adsDailyBudget: "",
+    cpaMode: "cpc",
+    cpc: "",
+    storeCr: "",
+    cpaDirect: "",
+    storeGatewayPct: "",
+    storeGatewayFixed: "",
+    storePlatformPct: "",
+    storePlatformFixed: "",
+    storeFixedMonthly: "",
+    migratePct: "",
   }
 }
 
@@ -284,6 +319,19 @@ export function exampleForm(currency: CurrencyCode = "EUR"): FormState {
     platformCost: m(420),
     otherFixed: m(4500),
     profitTaxPct: "20",
+    // Marketplace: solo cuentan si se cambia «¿Dónde vendes?» (la tienda propia los ignora)
+    mkSharePct: "40",
+    mkFeePct: `6${dec}5`,
+    mkFeeFixed: m(0.2),
+    mkFeeOnShipping: true,
+    // Tienda propia (solo se ve si vende en un marketplace)
+    adsDailyBudget: m(17.5),
+    cpc: m(0.5),
+    storeCr: `1${dec}5`,
+    storeGatewayPct: `1${dec}5`,
+    storeGatewayFixed: m(0.25),
+    storeFixedMonthly: m(39),
+    migratePct: "10",
   }
 }
 
@@ -321,6 +369,10 @@ export function migrateSaved(raw: unknown): Saved | null {
   if (!SALES_CHANNELS.includes(form.salesChannel)) form.salesChannel = base.salesChannel
   if (typeof form.mkFeeOnShipping !== "boolean") form.mkFeeOnShipping = base.mkFeeOnShipping
   if (!Array.isArray(form.apps)) form.apps = base.apps
+  if (form.cpaMode !== "cpc" && form.cpaMode !== "cpa") form.cpaMode = base.cpaMode
+  // Campos de texto nuevos o corruptos → vacíos (los antiguos guardados no los tienen)
+  for (const k of ["adsDailyBudget", "cpc", "storeCr", "cpaDirect", "storeGatewayPct", "storeGatewayFixed", "storePlatformPct", "storePlatformFixed", "storeFixedMonthly", "migratePct"] as const)
+    if (typeof form[k] !== "string") form[k] = base[k]
   if (!Array.isArray(form.customWeights) || form.customWeights.length !== 12) form.customWeights = base.customWeights
   return { form, isExample: Boolean(o.isExample) }
 }

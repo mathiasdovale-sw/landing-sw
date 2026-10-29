@@ -23,6 +23,8 @@ export type Status = "empty" | "incomplete" | "quick" | "complete"
 export type SeasonProfile = "flat" | "xmas" | "summer" | "custom"
 /** Dónde vende: tienda propia, un marketplace (Etsy, Amazon…) o las dos cosas. */
 export type SalesChannel = "store" | "marketplace" | "both"
+/** Cómo sabe lo que le cuesta un pedido con publicidad: coste por clic y conversión, o coste por pedido. */
+export type CpaMode = "cpc" | "cpa"
 
 export const MONTHS_SHORT = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
 export const MONTHS_LONG = [
@@ -117,6 +119,19 @@ export interface Inputs {
   welcomeDiscountPct: number | null
 
   croUpliftPct: number | null
+
+  // ¿Te conviene abrir tu tienda propia? (solo marketplace / las dos cosas; no afecta a compute)
+  adsDailyBudget?: number | null // publicidad al día para la tienda
+  cpaMode?: CpaMode
+  cpc?: number | null // coste por clic
+  storeCr?: number | null // conversión esperada de la tienda, en %
+  cpaDirect?: number | null // coste por pedido con publicidad
+  storeGatewayPct?: number | null // solo "marketplace": pasarela de la futura tienda
+  storeGatewayFixed?: number | null
+  storePlatformPct?: number | null
+  storePlatformFixed?: number | null
+  storeFixedMonthly?: number | null // cuota mensual de la tienda (en "both" ya está en fijos)
+  migratePct?: number | null // % de pedidos del marketplace que podría llevar a la tienda
 
   /** Lo pone applyMode: en modo rápido se ignoran unas comisiones que el usuario sí indicó. */
   quickIgnoresSalesFees?: boolean
@@ -1003,6 +1018,19 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
     })
   }
 
+  // ¿Te conviene abrir tu tienda propia? (solo si el bloque tiene todos sus datos)
+  const sd = storeDecision(r, inp)
+  if (sd.state === "ready") {
+    const d = sd.d
+    const what = d.channel === "marketplace" ? "Abrir tu tienda propia con publicidad" : "La publicidad de tu tienda propia"
+    out.push({
+      level: d.level === "good" ? capGood("good", r) : d.level,
+      impact: Math.abs(d.resultTotal),
+      title: `${what}: ${d.title.charAt(0).toLowerCase()}${d.title.slice(1)} (${d.resultTotal >= 0 ? "+" : ""}${fmt.eur(d.resultTotal)} al mes)`,
+      text: `${d.text} Es una estimación con tus datos de publicidad: la forma de confirmarlo es una prueba de 30–45 días con presupuesto cerrado.`,
+    })
+  }
+
   // Descuentos y devoluciones: el impacto es lo que pasa del umbral orientativo
   // que ya usa el semáforo (12 % y 8 % de las ventas brutas).
   const discLevel = levelOf.discount(r.discountPct)
@@ -1298,6 +1326,128 @@ export function leverRanking(inp: Inputs, base: Results, step = 10) {
 }
 
 // ---------------------------------------------------------------------------
+// ¿Te conviene abrir tu tienda propia? (vendedores de marketplace)
+// ---------------------------------------------------------------------------
+// Compara lo que deja un pedido en el marketplace con lo que dejaría en una tienda
+// propia que solo consigue ventas pagando publicidad. Todo por mes y sin IVA.
+// No cambia nada de compute(): solo lee sus resultados.
+
+/** Días de un mes medio (365 ÷ 12), para pasar el presupuesto diario a mensual. */
+export const DAYS_PER_MONTH = 30.4
+
+export type StoreDecisionState =
+  | { state: "hidden" } // vende solo en tienda propia, o modo rápido
+  | { state: "noSales" } // faltan ventas o pedidos en el paso 2
+  | { state: "missing"; missing: string[] }
+  | { state: "ready"; d: StoreDecision }
+
+export interface StoreDecision {
+  channel: "marketplace" | "both"
+  months: number
+  T: number // ingreso neto por pedido
+  C: number // coste común por pedido (producto, envío, packaging, devoluciones)
+  mkFeePerOrder: number
+  Mm: number // margen por pedido en el marketplace
+  Fs: number // comisiones de la tienda por pedido
+  Ms: number // margen por pedido en la tienda
+  A: number // publicidad al mes
+  F: number // cuota mensual de la tienda (0 en "both": ya está en gastos fijos)
+  cpa: number
+  ordersFromAds: number // pedidos al mes que traería la publicidad
+  ordersNeeded: number | null // pedidos al mes para cubrir publicidad + cuota (null si Ms ≤ 0)
+  cpaMax: number | null // coste por pedido para quedar en 0 con la 1.ª compra
+  roasMin: number | null
+  result1: number // al mes, solo primeras compras
+  repeatFreq: number | null // pedidos por cliente al año (LTV), si > 1
+  cpaMaxRepeat: number | null
+  resultRepeat: number | null // margen a 12 meses de los clientes captados en un mes − ads − cuota
+  mkOrdersMonth: number
+  migrateGain: number | null
+  resultTotal: number
+  level: Level
+  title: string
+  text: string
+  storeBelowMk: boolean // en la tienda queda menos por pedido que en el marketplace
+}
+
+export function storeDecision(r: Results, inp: Inputs): StoreDecisionState {
+  const channel = inp.salesChannel
+  if (inp.quickMode || channel === "store") return { state: "hidden" }
+  if (!(r.orders > 0) || !(r.netRevenue > 0)) return { state: "noSales" }
+
+  const missing: string[] = []
+  const budget = a(inp.adsDailyBudget)
+  if (!(budget > 0)) missing.push("Presupuesto de publicidad al día")
+  const cpaMode = inp.cpaMode ?? "cpc"
+  const cr = a(inp.storeCr) / 100
+  const cpa = cpaMode === "cpa" ? a(inp.cpaDirect) : cr > 0 && has(inp.cpc) ? a(inp.cpc) / cr : 0
+  if (!(cpa > 0)) missing.push(cpaMode === "cpa" ? "Coste por pedido con publicidad" : "Coste por clic y conversión de tu tienda")
+  if (channel === "marketplace" && !has(inp.storeGatewayPct)) missing.push("Pasarela de pago de tu tienda")
+  // En "las dos cosas" hace falta el reparto para separar lo de cada canal.
+  if (channel === "both" && !(r.mkShare > 0 && r.mkShare < 1)) missing.push("Qué parte de tus ventas viene del marketplace (paso 2)")
+  if (missing.length > 0) return { state: "missing", missing }
+
+  const m = inp.months
+  const T = r.netRevenue / r.orders
+  const C = (r.cogs + r.shippingPaid + r.packaging + r.returnCosts) / r.orders
+  const mkFeePerOrder = r.marketplaceFees / (r.orders * r.mkShare)
+  const Mm = T - C - mkFeePerOrder
+  const Fs =
+    channel === "both"
+      ? (r.fees + r.platformFees + r.appFees) / (r.orders * (1 - r.mkShare))
+      : // La pasarela cobra sobre lo que paga el cliente (con IVA), igual que en compute
+        T * (1 + r.vatRate) * (a(inp.storeGatewayPct) / 100) + a(inp.storeGatewayFixed) + T * (a(inp.storePlatformPct) / 100) + a(inp.storePlatformFixed)
+  const Ms = T - C - Fs
+  const A = budget * DAYS_PER_MONTH
+  const F = channel === "marketplace" ? a(inp.storeFixedMonthly) : 0
+
+  const ordersFromAds = A / cpa
+  const ordersNeeded = Ms > 0 ? (A + F) / Ms : null
+  const cpaMax = Ms > 0 ? (A * Ms) / (A + F) : null
+  const roasMin = ordersNeeded !== null ? (ordersNeeded * T) / A : null
+  const result1 = ordersFromAds * Ms - A - F
+
+  const repeatFreq = inp.ltvEnabled && r.ltvFrequency !== null && r.ltvFrequency > 1 ? r.ltvFrequency : null
+  const cpaMaxRepeat = repeatFreq !== null && cpaMax !== null ? cpaMax * repeatFreq : null
+  const resultRepeat = repeatFreq !== null ? ordersFromAds * Ms * repeatFreq - A - F : null
+
+  const mkOrdersMonth = (r.orders * r.mkShare) / m
+  const migrateGain = has(inp.migratePct) && n(inp.migratePct) !== 0 ? mkOrdersMonth * (Math.min(100, Math.max(0, n(inp.migratePct))) / 100) * (Ms - Mm) : null
+  const resultTotal = (resultRepeat ?? result1) + (migrateGain ?? 0)
+
+  let level: Level
+  let title: string
+  let text: string
+  if (Ms <= 0) {
+    level = "bad"
+    title = "Hoy no te conviene"
+    text = "Cada pedido en tu tienda pierde dinero antes de pagar publicidad."
+  } else if (result1 + (migrateGain ?? 0) > 0) {
+    level = "good"
+    title = "Te conviene"
+    text = `Con un coste por pedido de ${fmt.eur2(cpa)} la publicidad se paga ya con la primera compra: ${fmt.eur(result1 + (migrateGain ?? 0))} al mes.`
+  } else if (resultTotal > 0) {
+    level = "warn"
+    title = "Solo si te vuelven a comprar"
+    text = "Pierdes en la primera compra; ganas si los clientes repiten como has indicado."
+  } else {
+    level = "bad"
+    title = "Hoy no te conviene"
+    const target = cpaMaxRepeat ?? cpaMax
+    text = `Necesitarías un coste por pedido de ${fmt.eur2(target)} o menos (hoy ${fmt.eur2(cpa)}): mejora la conversión de tu tienda, sube el ticket o baja el presupuesto hasta validar.`
+  }
+
+  return {
+    state: "ready",
+    d: {
+      channel, months: m, T, C, mkFeePerOrder, Mm, Fs, Ms, A, F, cpa, ordersFromAds, ordersNeeded, cpaMax, roasMin, result1,
+      repeatFreq, cpaMaxRepeat, resultRepeat, mkOrdersMonth, migrateGain, resultTotal, level, title, text,
+      storeBelowMk: Ms <= Mm,
+    },
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Avisos de datos incoherentes (probablemente un error al teclear)
 // ---------------------------------------------------------------------------
 export function dataWarnings(inp: Inputs, r: Results): string[] {
@@ -1320,6 +1470,13 @@ export function dataWarnings(inp: Inputs, r: Results): string[] {
     for (const x of inp.apps ?? []) if (a(x.pct) > 50) highFees.push(`de ${x.name || "una app"}`)
   if (highFees.length > 0)
     w.push(`Una comisión ${joinEs(highFees)} de más del 50 % es muy alta: revisa que sea un porcentaje y no un importe.`)
+  // Tienda propia (solo cuando el bloque se muestra)
+  if (inp.salesChannel !== "store" && !inp.quickMode) {
+    if ((inp.cpaMode ?? "cpc") === "cpc" && a(inp.storeCr) > 10)
+      w.push(`Una conversión del ${String(a(inp.storeCr)).replace(".", fmt.decimal())} % es muy alta para una tienda nueva: revisa el dato.`)
+    if (has(inp.migratePct) && (n(inp.migratePct) < 0 || n(inp.migratePct) > 100))
+      w.push("El % de pedidos del marketplace que podrías llevar a tu tienda tiene que estar entre 0 y 100.")
+  }
   // Pasarela en %: entre 10 y 100 suele ser una coma de menos (14 → 1,4); por encima de 100
   // no es un porcentaje posible: probablemente es el total en importe.
   const gw = Math.abs(n(inp.fees))
