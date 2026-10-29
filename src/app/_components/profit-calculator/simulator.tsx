@@ -22,6 +22,7 @@ import {
 } from "lucide-react"
 import { fmt, leverRanking, simulate, ZERO_LEVERS, type Inputs, type LeverKey, type Levers, type Results } from "./calc"
 import styles from "./simulator.module.css"
+import { amountSize } from "./ui"
 
 interface LeverDef {
   key: LeverKey
@@ -130,17 +131,21 @@ export default function Simulator({ inputs, base, per }: Props) {
   const deltaColor = delta > 0.5 ? "text-sw-success" : delta < -0.5 ? "text-sw-danger" : "text-sw-fg-3"
   const halo = delta > 0.5 ? "rgba(0,229,138,0.18)" : delta < -0.5 ? "rgba(255,77,77,0.18)" : "rgba(124,179,224,0.12)"
   const deltaText = `${delta >= 0 ? "+" : "−"}${fmt.eur(Math.abs(delta))}`
+  const nowText = fmt.eur(base.netProfit)
+  const simText = fmt.eur(animated)
+  // Importes largos (PYG, COP, VES…) no caben uno al lado del otro en la columna de 380 px
+  const stacked = Math.max(nowText.length, simText.length) > 10
 
   return (
     <div>
       {/* Tira fija en móvil para no perder de vista el resultado mientras mueves palancas */}
       <div className="sticky top-[68px] z-30 -mx-4 mb-4 border-y border-sw-line bg-sw-bg-0/95 px-4 py-2.5 backdrop-blur lg:hidden">
-        <div className="flex items-center justify-between gap-2 whitespace-nowrap text-xs min-[400px]:text-sm">
-          <span className="text-sw-fg-3">Beneficio</span>
-          <span className="flex items-baseline gap-1.5 tabular-nums">
-            <span className="text-sw-fg-3">{fmt.eur(base.netProfit)} →</span>
-            <span className={`font-semibold ${sim.netProfit >= 0 ? "text-sw-fg-1" : "text-sw-danger"}`}>{fmt.eur(animated)}</span>
-            <span className={`text-xs font-semibold ${deltaColor}`}>{touched ? deltaText : ""}</span>
+        <div className="flex items-center justify-between gap-2 text-xs min-[400px]:text-sm">
+          <span className="shrink-0 text-sw-fg-3">Beneficio</span>
+          <span className="flex min-w-0 flex-wrap items-baseline justify-end gap-x-1.5 tabular-nums">
+            <span className="whitespace-nowrap text-sw-fg-3">{fmt.eur(base.netProfit)} →</span>
+            <span className={`whitespace-nowrap font-semibold ${sim.netProfit >= 0 ? "text-sw-fg-1" : "text-sw-danger"}`}>{fmt.eur(animated)}</span>
+            <span className={`whitespace-nowrap text-xs font-semibold ${deltaColor}`}>{touched ? deltaText : ""}</span>
           </span>
         </div>
       </div>
@@ -174,7 +179,7 @@ export default function Simulator({ inputs, base, per }: Props) {
         )}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
         {/* Palancas */}
         <div className="grid gap-3 sm:grid-cols-2">
           {LEVERS.map((l) => (
@@ -198,16 +203,20 @@ export default function Simulator({ inputs, base, per }: Props) {
             style={{ "--halo": halo } as CSSProperties}
           >
             <p className="font-mono-label text-[11px] text-sw-fg-3">Beneficio neto {per}</p>
-            <div className="mt-3 flex items-end justify-between gap-3">
-              <div>
+            <div className={`mt-3 flex flex-col gap-1 ${stacked ? "" : "sm:flex-row sm:items-end sm:justify-between sm:gap-3"}`}>
+              <div className="min-w-0">
                 <p className="text-xs text-sw-fg-4">Ahora</p>
-                <p className="text-lg font-semibold tabular-nums text-sw-fg-3">{fmt.eur(base.netProfit)}</p>
+                <p className="break-words text-lg font-semibold tabular-nums text-sw-fg-3">{nowText}</p>
               </div>
-              <ArrowRight className="mb-2 h-5 w-5 shrink-0 text-sw-fg-4" aria-hidden="true" />
-              <div className="text-right">
+              <ArrowRight className={`h-5 w-5 shrink-0 rotate-90 text-sw-fg-4 ${stacked ? "" : "sm:mb-2 sm:rotate-0"}`} aria-hidden="true" />
+              <div className={`min-w-0 ${stacked ? "" : "sm:text-right"}`}>
                 <p className="text-xs text-sw-fg-4">Con tus cambios</p>
-                <p className={`font-display text-4xl tabular-nums ${sim.netProfit >= 0 ? "text-sw-fg-1" : "text-sw-danger"}`} aria-live="polite">
-                  {fmt.eur(animated)}
+                {/* !normal-case: .font-display pone mayúsculas ("GS.") y gana a normal-case por orden en globals.css */}
+                <p
+                  className={`break-words font-display !normal-case tabular-nums ${amountSize(simText, ["text-4xl", "text-3xl", "text-2xl", "text-xl"])} ${sim.netProfit >= 0 ? "text-sw-fg-1" : "text-sw-danger"}`}
+                  aria-live="polite"
+                >
+                  {simText}
                 </p>
               </div>
             </div>
@@ -348,8 +357,8 @@ function LeverCard({
         style={{ "--fill": fill, "--thumb": active ? color : "#7CB3E0", "--glow": active ? `${color}66` : "rgba(124,179,224,0.35)" } as CSSProperties}
       />
 
-      <div className="mt-1 flex items-center justify-between gap-2 text-xs">
-        <span className="tabular-nums text-sw-fg-3">
+      <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 text-xs">
+        <span className="min-w-0 tabular-nums text-sw-fg-3">
           {def.show(base)}
           {active && (
             <>
@@ -375,10 +384,11 @@ function CompareBar({ label, a, b }: { label: string; a: number; b: number }) {
   const color = better ? "bg-sw-success" : worse ? "bg-sw-danger" : "bg-sw-secondary"
   return (
     <div>
-      <div className="mb-1 flex items-baseline justify-between gap-2 text-xs">
+      <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-2 text-xs">
         <span className="text-sw-fg-3">{label}</span>
-        <span className="tabular-nums text-sw-fg-2">
-          {fmt.eur(a)} → <span className="font-semibold text-sw-fg-1">{fmt.eur(b)}</span>
+        <span className="flex min-w-0 flex-wrap justify-end gap-x-1 tabular-nums text-sw-fg-2">
+          <span className="whitespace-nowrap">{fmt.eur(a)} →</span>
+          <span className="whitespace-nowrap font-semibold text-sw-fg-1">{fmt.eur(b)}</span>
         </span>
       </div>
       <div className="space-y-1">

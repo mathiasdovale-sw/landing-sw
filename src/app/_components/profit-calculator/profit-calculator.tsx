@@ -6,7 +6,7 @@ import { emptyForm, exampleForm, loadSaved, parseNum, serializeSaved, STORAGE_KE
 import { buildFormulas } from "./formulas"
 import ReviewRequest, { HelpRequest } from "./review-request"
 import Simulator from "./simulator"
-import { FormulaContext, Kpi, LEVEL_STYLES, LevelIcon, NumField, Section, Segmented, StatusPill, Toggle, useConcept } from "./ui"
+import { amountSize, FormulaContext, Kpi, LEVEL_STYLES, LevelIcon, NumField, Section, Segmented, StatusPill, Toggle, useConcept } from "./ui"
 
 const PROFILE_OPTIONS: { value: SeasonProfile; label: string }[] = [
   { value: "flat", label: "Estable todo el año" },
@@ -762,7 +762,10 @@ function SummaryCard({
         {r.hasData && !noSales ? (
           <>
             <p className="mt-3 text-sm text-sw-fg-2">{resultHeadline(r)}</p>
-            <p className={`font-display text-5xl tabular-nums ${s.text}`}>{fmt.eur(Math.abs(r.netProfit))}</p>
+            {/* !normal-case: .font-display pone mayúsculas ("GS.") y, al ir después de las utilidades en globals.css, ganaría a normal-case */}
+            <p className={`min-w-0 break-words font-display !normal-case tabular-nums ${amountSize(fmt.eur(Math.abs(r.netProfit)), ["text-5xl", "text-4xl", "text-3xl", "text-2xl"])} ${s.text}`}>
+              {fmt.eur(Math.abs(r.netProfit))}
+            </p>
             <p className="mt-1 text-sm text-sw-fg-3">
               de beneficio neto {per}
               {months > 1 && <> · {fmt.eur(r.netProfit / months)} al mes</>}
@@ -1797,7 +1800,7 @@ function MobileBar({ r, per }: { r: Results; per: string }) {
               ? `${r.netProfit >= 0 ? "Ganas" : "Pierdes"} ${per}`
               : `${status === "quick" ? "Estimación rápida" : "Estimación incompleta"} · ${r.netProfit >= 0 ? "ganaría" : "pierde"} ${per}`}
           </p>
-          <p className={`text-xl font-semibold tabular-nums ${LEVEL_STYLES[level].text}`}>{noSales ? "—" : fmt.eur(Math.abs(r.netProfit))}</p>
+          <p className={`break-words text-xl font-semibold tabular-nums ${LEVEL_STYLES[level].text}`}>{noSales ? "—" : fmt.eur(Math.abs(r.netProfit))}</p>
         </div>
         <a href="#analisis" className="flex shrink-0 items-center gap-1.5 rounded-sm bg-sw-secondary-strong px-4 py-2.5 text-sm font-semibold text-white">
           Ver análisis

@@ -217,6 +217,16 @@ export function Section({ step, title, summary, done, open, onToggle, children }
   )
 }
 
+/**
+ * Tamaño de letra de un importe grande según su longitud, para que quepa en su
+ * tarjeta en cualquier moneda ("4.552 €" frente a "Gs. 39.047.408").
+ * sizes: clases de mayor a menor (hasta 10, 13, 16 y más caracteres).
+ */
+export function amountSize(text: string, sizes: readonly [string, string, string, string]) {
+  const n = text.length
+  return n <= 10 ? sizes[0] : n <= 13 ? sizes[1] : n <= 16 ? sizes[2] : sizes[3]
+}
+
 interface KpiProps {
   concept: string
   value: string
@@ -237,7 +247,7 @@ export function Kpi({ concept, value, level = "neutral", sub, label, calc }: Kpi
         {button}
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
-        <span className={`text-2xl font-semibold tabular-nums ${s.text}`}>{value}</span>
+        <span className={`min-w-0 break-words font-semibold tabular-nums ${amountSize(value, ["text-2xl", "text-2xl", "text-xl", "text-lg"])} ${s.text}`}>{value}</span>
         <StatusPill level={level} />
       </div>
       {sub && <p className="mt-1 text-xs text-sw-fg-4">{sub}</p>}

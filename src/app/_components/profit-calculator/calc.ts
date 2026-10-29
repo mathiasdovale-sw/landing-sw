@@ -629,19 +629,17 @@ const NF = (locale: string, o: Intl.NumberFormatOptions) =>
 function buildFormatters(code: CurrencyCode) {
   const locale = CURRENCIES.find((c) => c.code === code)?.locale ?? "es-ES"
   const base = NF(locale, { style: "currency", currency: code })
-  // Monedas sin céntimos (CLP, PYG) tampoco muestran decimales en importes por pedido
-  const cents = base.resolvedOptions().maximumFractionDigits ?? 2
   const num2 = NF(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   return {
     code,
-    cents,
     one: CURRENCIES.find((c) => c.code === code)?.one ?? "euro",
     many: CURRENCIES.find((c) => c.code === code)?.many ?? "euros",
     tax: CURRENCIES.find((c) => c.code === code)?.tax ?? "Hacienda",
     symbol: base.formatToParts(1).find((p) => p.type === "currency")?.value ?? code,
     decimal: num2.formatToParts(1.5).find((p) => p.type === "decimal")?.value ?? ",",
     eur0: NF(locale, { style: "currency", currency: code, minimumFractionDigits: 0, maximumFractionDigits: 0 }),
-    eur2: NF(locale, { style: "currency", currency: code, minimumFractionDigits: cents, maximumFractionDigits: cents }),
+    // Importes por unidad (ticket medio, por cada 100…): siempre 2 decimales, también en CLP, COP o PYG
+    eur2: NF(locale, { style: "currency", currency: code, minimumFractionDigits: 2, maximumFractionDigits: 2 }),
     num0: NF(locale, { maximumFractionDigits: 0 }),
     num2,
     num4: NF(locale, { minimumFractionDigits: 4, maximumFractionDigits: 4 }),
@@ -660,6 +658,23 @@ export function setCurrency(code: CurrencyCode) {
 // Evita "-0,00 €" / "-0,0 %": si el valor redondeado a la precisión mostrada es 0, se muestra 0
 const z0 = (v: number, decimals: number) => (Math.round(v * 10 ** decimals) === 0 ? 0 : v)
 
+/**
+ * Importe con el signo siempre delante de todo ("-$177.759", "-Gs. 177.759",
+ * "-177.759 €") y un espacio entre un símbolo con letras ("Gs.", "Bs.S", "S/", "Q")
+ * y la cifra. No se fía del formato regional del signo, que varía por país.
+ */
+function formatMoney(nf: Intl.NumberFormat, v: number, decimals: number) {
+  const x = z0(v, decimals)
+  const parts = nf.formatToParts(Math.abs(x))
+  let out = ""
+  parts.forEach((p, i) => {
+    out += p.value
+    const next = parts[i + 1]
+    if (p.type === "currency" && /[A-Za-z/.]$/.test(p.value) && next && next.type !== "literal") out += " "
+  })
+  return (x < 0 ? "-" : "") + out
+}
+
 /** "Meta Ads", "Meta Ads y Google Ads", "Meta Ads, Google Ads y email" */
 export function joinEs(items: string[]) {
   if (items.length <= 1) return items.join("")
@@ -667,8 +682,8 @@ export function joinEs(items: string[]) {
 }
 
 export const fmt = {
-  eur: (v: number | null) => (v === null ? "—" : F.eur0.format(z0(v, 0))),
-  eur2: (v: number | null) => (v === null ? "—" : F.eur2.format(z0(v, F.cents))),
+  eur: (v: number | null) => (v === null ? "—" : formatMoney(F.eur0, v, 0)),
+  eur2: (v: number | null) => (v === null ? "—" : formatMoney(F.eur2, v, 2)),
   num: (v: number | null) => (v === null ? "—" : F.num0.format(z0(v, 0))),
   x: (v: number | null) => (v === null ? "—" : `${F.num2.format(z0(v, 2))}x`),
   dec: (v: number | null) => (v === null ? "—" : F.num2.format(z0(v, 2))),
