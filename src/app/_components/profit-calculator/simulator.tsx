@@ -181,7 +181,7 @@ export default function Simulator({ inputs, base, per }: Props) {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
         {/* Palancas */}
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid items-start gap-3 sm:grid-cols-2">
           {LEVERS.map((l) => (
             <LeverCard
               key={l.key}

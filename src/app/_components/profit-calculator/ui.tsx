@@ -1,7 +1,7 @@
 "use client"
 // Piezas de interfaz reutilizables de la calculadora.
 import { createContext, useContext, useId, useState, type ReactNode } from "react"
-import { AlertTriangle, CheckCircle2, ChevronDown, HelpCircle, Info, XCircle } from "lucide-react"
+import { AlertTriangle, CheckCircle2, ChevronDown, HelpCircle, Info, X, XCircle } from "lucide-react"
 import { money, type Level } from "./calc"
 import { CONCEPTS } from "./concepts"
 import type { Formulas } from "./formulas"
@@ -36,51 +36,83 @@ export function StatusPill({ level }: { level: Level }) {
   )
 }
 
+/**
+ * Qué ayuda (?) está abierta. Compartido para que abrir una cierre la anterior.
+ * Sin proveedor, cada ayuda funciona por su cuenta.
+ */
+const OpenHelpContext = createContext<[string | null, (id: string | null) => void] | null>(null)
+
+export function HelpProvider({ children }: { children: ReactNode }) {
+  const state = useState<string | null>(null)
+  return <OpenHelpContext.Provider value={state}>{children}</OpenHelpContext.Provider>
+}
+
 /** Botón (?) que despliega qué significa un concepto y cómo se calcula. */
 export function useConcept(conceptKey?: string, calcOverride?: string[] | null) {
-  const [open, setOpen] = useState(false)
+  const shared = useContext(OpenHelpContext)
+  const [localOpen, setLocalOpen] = useState(false)
   const id = useId()
+  const open = shared ? shared[0] === id : localOpen
+  const toggle = () => (shared ? shared[1](open ? null : id) : setLocalOpen((o) => !o))
   const formulas = useContext(FormulaContext)
   const concept = conceptKey ? CONCEPTS[conceptKey] : undefined
   const calc = calcOverride === null ? undefined : calcOverride ?? (conceptKey ? formulas[conceptKey] : undefined)
   const button = concept ? (
     <button
       type="button"
-      onClick={() => setOpen((o) => !o)}
+      onClick={toggle}
       aria-expanded={open}
       aria-controls={id}
       aria-label={`Qué es: ${money(concept.label)}`}
-      className={`-m-1.5 inline-flex shrink-0 items-center justify-center rounded-full p-1.5 transition-colors ${
-        open ? "text-sw-secondary" : "text-sw-fg-4 hover:text-sw-fg-2"
+      // -m-2 + p-2 + icono 16 px = área táctil de 32×32 px sin mover el diseño
+      className={`-m-2 inline-flex shrink-0 items-center justify-center rounded-full p-2 transition-colors ${
+        open ? "bg-sw-secondary/10 text-sw-secondary" : "text-sw-fg-4 hover:text-sw-fg-2"
       }`}
     >
-      <HelpCircle className="h-4 w-4" aria-hidden="true" />
+      {open ? <X className="h-4 w-4" aria-hidden="true" /> : <HelpCircle className="h-4 w-4" aria-hidden="true" />}
     </button>
   ) : null
-  const panel =
-    concept && open ? (
-      <div id={id} className="mt-2 rounded-sm border border-sw-line bg-sw-bg-0 p-3 text-sm leading-relaxed text-sw-fg-2">
-        <p>{money(concept.what)}</p>
-        {concept.how && (
-          <p className="mt-2 text-sw-fg-3">
-            <span className="font-mono-label text-[11px] text-sw-secondary">Cómo se calcula · </span>
-            {money(concept.how)}
-          </p>
-        )}
-        {calc && calc.length > 0 && (
-          <div className="mt-3 rounded-sm border border-sw-line bg-sw-bg-2 px-3 py-2">
-            <p className="font-mono-label text-[11px] text-sw-success">Tu cuenta</p>
-            <ul className="mt-1 space-y-0.5">
-              {calc.map((line, i) => (
-                <li key={i} className="break-words font-mono text-[13px] leading-relaxed text-sw-fg-1">
-                  {line}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+  // Siempre montado (cerrado = altura 0) para poder animar la apertura y el cierre.
+  const panel = concept ? (
+    <div
+      id={id}
+      aria-hidden={!open}
+      // inert: cerrado, su contenido no recibe foco (vía ref: React 18 no pinta bien el atributo)
+      ref={(el) => {
+        el?.toggleAttribute("inert", !open)
+      }}
+      className={`grid transition-[grid-template-rows,opacity] duration-200 ease-out motion-reduce:transition-none ${
+        open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+      }`}
+    >
+      <div className="min-h-0 overflow-hidden">
+        <div className="mt-3 space-y-3 border-l-2 border-sw-secondary/50 pl-4 text-left">
+          <p className="text-sm leading-relaxed text-sw-fg-2">{money(concept.what)}</p>
+          {concept.how && (
+            <div className="border-t border-sw-line pt-3">
+              <p className="font-mono-label text-[11px] text-sw-fg-4">Cómo se calcula</p>
+              <p className="mt-1 text-sm leading-relaxed text-sw-fg-1">{money(concept.how)}</p>
+            </div>
+          )}
+          {calc && calc.length > 0 && (
+            <div className="border-t border-sw-line pt-3">
+              <p className="font-mono-label text-[11px] text-sw-success">Tu cuenta</p>
+              <ul className="mt-1 space-y-0.5">
+                {calc.map((line, i) => (
+                  <li
+                    key={i}
+                    className={`break-words font-mono text-[13px] leading-relaxed ${i === calc.length - 1 ? "font-semibold text-sw-fg-1" : "text-sw-fg-2"}`}
+                  >
+                    {line}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
-    ) : null
+    </div>
+  ) : null
   return { button, panel, concept }
 }
 
@@ -96,9 +128,13 @@ interface NumFieldProps {
   ariaLabel?: string
   /** Dato clave sin rellenar: se marca para que no pase desapercibido. */
   missing?: boolean | string
+  /** false = solo marca el borde; el aviso lo pinta quien lo use (p. ej. una fila de tabla). */
+  missingNote?: boolean
+  /** Más bajo, para filas de tabla (en móvil mantiene 16 px para que iOS no haga zoom). */
+  compact?: boolean
 }
 
-export function NumField({ label, concept, value, onChange, suffix, placeholder, hint, integer, ariaLabel, missing }: NumFieldProps) {
+export function NumField({ label, concept, value, onChange, suffix, placeholder, hint, integer, ariaLabel, missing, missingNote = true, compact }: NumFieldProps) {
   const id = useId()
   const { button, panel, concept: c } = useConcept(concept)
   const text = label ?? money(c?.label) ?? ""
@@ -127,13 +163,15 @@ export function NumField({ label, concept, value, onChange, suffix, placeholder,
           aria-label={ariaLabel}
           aria-invalid={missing ? true : undefined}
           onChange={(e) => onChange(e.target.value.replace(/[^\d.,\-]/g, ""))}
-          className="w-full min-w-0 bg-transparent px-3 py-2.5 text-base text-sw-fg-1 placeholder:text-sw-fg-4 outline-none"
+          className={`w-full min-w-0 bg-transparent text-sw-fg-1 placeholder:text-sw-fg-4 outline-none ${
+            compact ? "px-2.5 py-1.5 text-base sm:py-1 sm:text-sm" : "px-3 py-2.5 text-base"
+          }`}
         />
         {suffix && (
-          <span className="flex items-center border-l border-sw-line px-3 font-mono text-sm text-sw-fg-3">{suffix}</span>
+          <span className={`flex items-center border-l border-sw-line font-mono text-sw-fg-3 ${compact ? "px-2 text-xs" : "px-3 text-sm"}`}>{suffix}</span>
         )}
       </div>
-      {missing && <p className="mt-1 text-xs text-amber-400">{typeof missing === "string" ? missing : "Dato clave. Si no tienes este gasto, pon 0."}</p>}
+      {missing && missingNote && <p className="mt-1 text-xs text-amber-400">{typeof missing === "string" ? missing : "Dato clave. Si no tienes este gasto, pon 0."}</p>}
       {hint && <p className="mt-1 text-xs text-sw-fg-4">{hint}</p>}
       {panel}
     </div>

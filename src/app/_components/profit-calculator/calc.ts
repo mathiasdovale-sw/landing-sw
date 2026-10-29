@@ -21,6 +21,8 @@ export type Level = "good" | "warn" | "bad" | "neutral" | "review"
  */
 export type Status = "empty" | "incomplete" | "quick" | "complete"
 export type SeasonProfile = "flat" | "xmas" | "summer" | "custom"
+/** Dónde vende: tienda propia, un marketplace (Etsy, Amazon…) o las dos cosas. */
+export type SalesChannel = "store" | "marketplace" | "both"
 
 export const MONTHS_SHORT = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
 export const MONTHS_LONG = [
@@ -43,6 +45,14 @@ export interface AdChannel {
   name: string
   spend: number | null
   attributed: number | null
+}
+
+/** App que cobra un % de las ventas de la tienda propia (y opcionalmente un fijo por pedido). */
+export interface AppFee {
+  id: string
+  name: string
+  pct: number | null
+  fixed: number | null
 }
 
 export interface Inputs {
@@ -75,6 +85,18 @@ export interface Inputs {
   feesFixedPerOrder: number | null // solo en modo %
   returnCosts: number | null // envíos de vuelta y producto que ya no se puede revender (€)
 
+  // Comisiones por venta. Las cifras de ventas son siempre el total de todos los canales;
+  // mkSharePct dice qué parte viene del marketplace (solo en "both").
+  salesChannel: SalesChannel
+  mkSharePct: number | null
+  mkFeePct: number | null // % sobre lo vendido en el marketplace (sin IVA)
+  mkFeeFixed: number | null // fijo por pedido del marketplace
+  mkFeeOnShipping: boolean // la comisión se aplica también al envío cobrado
+  mkOtherFees: number | null // otras tarifas del marketplace: total del periodo
+  platformFeePct: number | null // comisión por transacción de la plataforma de la tienda
+  platformFeeFixed: number | null
+  apps: AppFee[]
+
   ads: AdChannel[]
   adSpendTotal: number | null // solo modo rápido: gasto total en publicidad
   emailToolCost: number | null
@@ -95,6 +117,9 @@ export interface Inputs {
   welcomeDiscountPct: number | null
 
   croUpliftPct: number | null
+
+  /** Lo pone applyMode: en modo rápido se ignoran unas comisiones que el usuario sí indicó. */
+  quickIgnoresSalesFees?: boolean
 }
 
 const n = (x: number | null | undefined) => (typeof x === "number" && isFinite(x) ? x : 0)
@@ -176,8 +201,18 @@ export interface Results {
   cogs: number
   shippingPaid: number
   packaging: number
-  fees: number
+  fees: number // pasarela de pago (solo la parte de tienda propia)
   returnCosts: number
+  // Comisiones por venta
+  mkShare: number // fracción de las ventas que viene del marketplace (0-1)
+  marketplaceFees: number
+  platformFees: number
+  appFees: number
+  appBreakdown: { id: string; name: string; amount: number }[]
+  salesFeesTotal: number // marketplace + plataforma + apps (sin la pasarela)
+  /** Solo si vende en los dos canales: lo que queda por cada unidad vendida en cada uno, antes de marketing. */
+  cm1PerEuroStore: number | null
+  cm1PerEuroMarketplace: number | null
   variableCosts: number
   shippingSubsidy: number // envíos pagados - cobrados (si > 0, lo pones tú)
 
@@ -275,6 +310,7 @@ export function applyMode(inp: Inputs): Inputs {
   if (!inp.quickMode) return { ...inp, adSpendTotal: null }
   return {
     ...inp,
+    quickIgnoresSalesFees: hasSalesFees(inp),
     discounts: null,
     returns: null,
     shippingCharged: null,
@@ -284,6 +320,14 @@ export function applyMode(inp: Inputs): Inputs {
     fees: null,
     feesFixedPerOrder: null,
     returnCosts: null,
+    salesChannel: "store",
+    mkSharePct: null,
+    mkFeePct: null,
+    mkFeeFixed: null,
+    mkOtherFees: null,
+    platformFeePct: null,
+    platformFeeFixed: null,
+    apps: [],
     ads: has(inp.adSpendTotal) ? [{ id: "total", name: "Publicidad (total)", spend: inp.adSpendTotal, attributed: null }] : [],
     emailToolCost: null,
     emailAttributed: null,
@@ -297,6 +341,15 @@ export function applyMode(inp: Inputs): Inputs {
   }
 }
 
+/** El usuario ha indicado comisiones por venta (o vende en un marketplace). */
+function hasSalesFees(inp: Inputs) {
+  return (
+    inp.salesChannel !== "store" ||
+    [inp.platformFeePct, inp.platformFeeFixed].some((v) => n(v) !== 0) ||
+    inp.apps.some((x) => n(x.pct) !== 0 || n(x.fixed) !== 0)
+  )
+}
+
 export function completeness(inp: Inputs, hasData: boolean): Completeness {
   const missing: string[] = []
   if (inp.salesIncludeVat === null) missing.push("Si tus ventas incluyen IVA o no")
@@ -304,7 +357,8 @@ export function completeness(inp: Inputs, hasData: boolean): Completeness {
   if (!has(inp.orders)) missing.push("Pedidos")
   if (!has(inp.cogs)) missing.push("Coste de producto")
   if (!has(inp.shippingPaid)) missing.push("Envíos pagados")
-  if (!inp.quickMode && !has(inp.fees)) missing.push("Pasarela de pago")
+  // En un marketplace el cobro va incluido en su comisión: no hay pasarela que pedir.
+  if (!inp.quickMode && inp.salesChannel !== "marketplace" && !has(inp.fees)) missing.push("Pasarela de pago")
   // Gastos fijos: basta con uno de los dos campos (si no tienes uno de ellos, pon 0).
   const fixedKnown = has(inp.platformCost) || has(inp.otherFixed)
   if (!fixedKnown) missing.push("Gastos fijos")
@@ -322,6 +376,7 @@ export function completeness(inp: Inputs, hasData: boolean): Completeness {
       "Desglose de publicidad por canal (ROAS)",
       "Clientes nuevos y recurrentes (CAC, primera compra)",
       "Tu sueldo por separado",
+      ...(inp.quickIgnoresSalesFees ? ["Comisiones por venta (marketplace, plataforma y apps)"] : []),
     )
   } else {
     if (!has(inp.discounts)) optionalEmpty.push("Descuentos")
@@ -369,16 +424,59 @@ export function computeCore(inp: Inputs): Results {
   const cogs = inp.cogsMode === "pct" ? Math.max(0, netProductSales) * (a(inp.cogs) / 100) : a(inp.cogs)
   const shippingPaid = a(inp.shippingPaid)
   const packaging = a(inp.packaging)
+  // Parte de las ventas que viene del marketplace. Las cifras de ventas son el total.
+  const channel = inp.salesChannel ?? "store"
+  const mkShare = channel === "marketplace" ? 1 : channel === "both" ? Math.min(1, Math.max(0, n(inp.mkSharePct) / 100)) : 0
+  const storeShare = 1 - mkShare
+  const productBase = Math.max(0, netProductSales)
+
+  // Pasarela: solo cobra en la tienda propia (en el marketplace el cobro va en su comisión).
+  // En % se aplica a la parte de tienda; en importe total, el usuario mete lo que pagó a su
+  // pasarela, que ya es solo de la tienda, así que se usa tal cual (0 si solo vende en marketplace).
   const fees =
     inp.feesMode === "pct"
-      ? Math.max(0, totalCharged) * (a(inp.fees) / 100) + orders * a(inp.feesFixedPerOrder)
-      : a(inp.fees)
+      ? (Math.max(0, totalCharged) * (a(inp.fees) / 100) + orders * a(inp.feesFixedPerOrder)) * storeShare
+      : channel === "marketplace"
+        ? 0
+        : a(inp.fees)
   const returnCosts = a(inp.returnCosts)
-  const variableCosts = cogs + shippingPaid + packaging + fees + returnCosts
+
+  // Comisiones por venta: escalan con lo vendido en cada canal (sin IVA).
+  const marketplaceFees =
+    channel === "store"
+      ? 0
+      : (productBase + (inp.mkFeeOnShipping ? shippingRevenue : 0)) * mkShare * (a(inp.mkFeePct) / 100) +
+        orders * mkShare * a(inp.mkFeeFixed) +
+        a(inp.mkOtherFees)
+  const platformFees = channel === "marketplace" ? 0 : productBase * storeShare * (a(inp.platformFeePct) / 100) + orders * storeShare * a(inp.platformFeeFixed)
+  const appBreakdown =
+    channel === "marketplace"
+      ? []
+      : (inp.apps ?? [])
+          .filter((x) => has(x.pct) || has(x.fixed))
+          .map((x) => ({
+            id: x.id,
+            name: x.name || "App",
+            amount: productBase * storeShare * (a(x.pct) / 100) + orders * storeShare * a(x.fixed),
+          }))
+  const appFees = appBreakdown.reduce((acc, x) => acc + x.amount, 0)
+  const salesFeesTotal = marketplaceFees + platformFees + appFees
+
+  const variableCosts = cogs + shippingPaid + packaging + fees + returnCosts + salesFeesTotal
   const shippingSubsidy = shippingPaid - shippingRevenue
 
   const cm1 = netRevenue - variableCosts
   const cm1PerEuro = div(cm1, netRevenue)
+
+  // Margen por canal (solo si vende en los dos): mismos % de producto, envíos, packaging y
+  // devoluciones en ambos; cada canal carga solo con sus comisiones y la pasarela, solo la tienda.
+  let cm1PerEuroStore: number | null = null
+  let cm1PerEuroMarketplace: number | null = null
+  if (channel === "both" && netRevenue > 0 && mkShare > 0 && mkShare < 1) {
+    const commonRatio = (cogs + shippingPaid + packaging + returnCosts) / netRevenue
+    cm1PerEuroStore = 1 - commonRatio - (fees + platformFees + appFees) / (netRevenue * storeShare)
+    cm1PerEuroMarketplace = 1 - commonRatio - marketplaceFees / (netRevenue * mkShare)
+  }
 
   // Marketing
   const roasBreakeven = cm1 > 0 ? netRevenue / cm1 : null
@@ -466,7 +564,7 @@ export function computeCore(inp: Inputs): Results {
   const firstOrderTicket = baseTicket !== null ? baseTicket * (1 - welcome) : null
   const returnRate = gross - discounts > 0 ? returns / (gross - discounts) : 0
   const cogsRatio = netProductSales > 0 ? cogs / netProductSales : 0
-  const feesRatio = netRevenue > 0 ? fees / netRevenue : 0
+  const feesRatio = netRevenue > 0 ? (fees + salesFeesTotal) / netRevenue : 0
   const avgNetPerOrder = div(netProductSales, orders)
   const firstOrderMargin =
     cm1PerOrder !== null && avgNetPerOrder !== null && firstOrderTicket !== null
@@ -524,6 +622,7 @@ export function computeCore(inp: Inputs): Results {
     hasData, completeness: comp, trusted, vatRate, vatFactor,
     gross, discounts, returns, netProductSales, shippingRevenue, netRevenue, totalCharged, vatCollected,
     cogs, shippingPaid, packaging, fees, returnCosts, variableCosts, shippingSubsidy, cm1, cm1PerEuro,
+    mkShare, marketplaceFees, platformFees, appFees, appBreakdown, salesFeesTotal, cm1PerEuroStore, cm1PerEuroMarketplace,
     channels, adSpend, adAttributed, emailToolCost, emailAttributed, emailRoas, otherMarketing, marketing,
     restRevenue, overAttribution, contribution, contributionPct,
     fixed, ownerSalary, ownerSalaryEmpty: ownerSalary === 0, ebit, tax, netProfit, netMarginPct,
@@ -753,7 +852,7 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
         kind: "summary",
         impact: loss,
         title: "Pierdes dinero en cada venta, antes incluso de hacer marketing",
-        text: `Producto, envíos, packaging, pasarela y devoluciones (${fmt.eur(r.variableCosts)}) se comen más de lo que ingresas (${fmt.eur(r.netRevenue)}). Más ventas o más publicidad no lo arreglan: agrandan la pérdida. Revisa precios, coste de producto y política de envíos antes de invertir un ${fmt.one()} más.`,
+        text: `Producto, envíos, packaging, pasarela${r.salesFeesTotal > 0 ? ", comisiones" : ""} y devoluciones (${fmt.eur(r.variableCosts)}) se comen más de lo que ingresas (${fmt.eur(r.netRevenue)}). Más ventas o más publicidad no lo arreglan: agrandan la pérdida. Revisa precios, coste de producto y política de envíos antes de invertir un ${fmt.one()} más.`,
       })
     } else if (r.contribution <= 0) {
       out.push({
@@ -761,11 +860,11 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
         kind: "summary",
         impact: loss,
         title: `Pierdes ${atLeast}${fmt.eur(loss)} ${per}: el marketing se come todo el margen`,
-        text: `Después de producto, envíos y pasarela tus ventas dejan ${fmt.eur(r.cm1)}, y gastas ${fmt.eur(r.marketing)} en marketing: ya antes de los gastos fijos (${fmt.eur(r.fixed)}) estás en negativo. Tu MER es ${fmt.x(r.mer)} y solo para cubrir los costes variables necesitas ${fmt.x(r.roasBreakeven)}. Esta métrica no depende de lo que diga cada plataforma: es ventas totales entre gasto total.`,
+        text: `Después de producto, envíos, pasarela${r.salesFeesTotal > 0 ? " y comisiones" : ""} tus ventas dejan ${fmt.eur(r.cm1)}, y gastas ${fmt.eur(r.marketing)} en marketing: ya antes de los gastos fijos (${fmt.eur(r.fixed)}) estás en negativo. Tu MER es ${fmt.x(r.mer)} y solo para cubrir los costes variables necesitas ${fmt.x(r.roasBreakeven)}. Esta métrica no depende de lo que diga cada plataforma: es ventas totales entre gasto total.`,
       })
     } else {
       const parts: string[] = [
-        `Después de producto, envíos, pasarela y marketing te quedan ${fmt.eur(r.contribution)}, y tus gastos fijos son ${fmt.eur(r.fixed)}${
+        `Después de producto, envíos, pasarela${r.salesFeesTotal > 0 ? ", comisiones" : ""} y marketing te quedan ${fmt.eur(r.contribution)}, y tus gastos fijos son ${fmt.eur(r.fixed)}${
           r.ownerSalary > 0 ? ` (incluido tu sueldo, ${fmt.eur(r.ownerSalary)})` : ""
         }.`,
       ]
@@ -867,6 +966,40 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
       impact: r.shippingSubsidy,
       title: `Pagas de tu bolsillo ${fmt.eur(r.shippingSubsidy)} en envíos ${per}`,
       text: `Es lo que te cuestan los envíos menos lo que cobras por ellos (${fmt.pct(r.shippingSubsidy / r.netRevenue)} de tus ingresos). Prueba un umbral de envío gratis por encima de tu ticket medio (${fmt.eur(r.aov)}) o ajusta tarifas.`,
+    })
+  }
+
+  // Comisiones por venta (marketplace, plataforma y apps; la pasarela va aparte).
+  const feesShare = r.salesFeesTotal / r.netRevenue
+  if (feesShare > 0.15) {
+    const channel = inp.salesChannel
+    const advice =
+      channel === "marketplace"
+        ? "Revisa si tu plan del marketplace te compensa, si alguna tarifa depende de la categoría o del volumen y si puedes negociarla. Y valora abrir un canal propio: en tu tienda no pagas comisión por cada venta."
+        : channel === "both"
+          ? "Revisa tu plan en cada canal, negocia lo que se pueda y empuja las ventas hacia el canal que te deja más margen (normalmente, tu tienda propia)."
+          : "Revisa si un plan superior de tu plataforma cobra menos por transacción y qué apps se quedan un % de tus ventas: compara con alternativas de cuota fija."
+    out.push({
+      level: "warn",
+      impact: r.salesFeesTotal - 0.15 * r.netRevenue,
+      title: `Las comisiones se llevan el ${fmt.pct(feesShare)} de cada venta`,
+      text: `Pagas ${fmt.eur(r.salesFeesTotal)} ${per} en comisiones por venta, sin contar la pasarela de pago. ${advice}`,
+    })
+  }
+
+  if (r.cm1PerEuroStore !== null && r.cm1PerEuroMarketplace !== null && Math.abs(r.cm1PerEuroStore - r.cm1PerEuroMarketplace) >= 0.02) {
+    const storeBetter = r.cm1PerEuroStore > r.cm1PerEuroMarketplace
+    const gap = Math.abs(r.cm1PerEuroStore - r.cm1PerEuroMarketplace)
+    out.push({
+      level: "neutral",
+      // Lo que ganarías si un 10 % de las ventas del peor canal pasaran al mejor
+      impact: r.netRevenue * (storeBetter ? r.mkShare : 1 - r.mkShare) * 0.1 * gap,
+      title: `De cada ${fmt.eur(100)} que vendes en el marketplace te quedan ${fmt.eur2(r.cm1PerEuroMarketplace * 100)}; en tu tienda, ${fmt.eur2(r.cm1PerEuroStore * 100)}`,
+      text: `Antes de marketing y gastos fijos. ${
+        storeBetter
+          ? "Tu tienda te deja más por cada venta: cada cliente que compra en ella en lugar de en el marketplace suma margen. Usa el marketplace para que te descubran y trae la recompra a tu tienda (email, inserto en el paquete, ventajas por comprar directo)."
+          : "El marketplace te deja más por cada venta que tu tienda: revisa la pasarela, la comisión de tu plataforma y las apps que cobran un %."
+      } Supone el mismo coste de producto, envíos y packaging en los dos canales.`,
     })
   }
 
@@ -1097,6 +1230,8 @@ export function simulate(inp: Inputs, base: Results, lv: Levers): Results {
     packaging: n(inp.packaging) * volume,
     returnCosts: ret0 > 0 ? n(inp.returnCosts) * (returns / ret0) : n(inp.returnCosts) * volume,
     fees: inp.feesMode === "pct" ? inp.fees : n(inp.fees) * revRatio,
+    // Comisiones en % y fijo por pedido escalan solas; las otras tarifas del marketplace, con las ventas.
+    mkOtherFees: has(inp.mkOtherFees) ? n(inp.mkOtherFees) * revRatio : inp.mkOtherFees,
     ads: inp.ads.map((a) => ({
       ...a,
       spend: has(a.spend) ? n(a.spend) * f(lv.ads) : a.spend,
@@ -1141,6 +1276,7 @@ export function adsScenario(inp: Inputs, base: Results, monthlySpend: number, ro
     shippingPaid: scale(inp.shippingPaid),
     packaging: scale(inp.packaging),
     fees: inp.feesMode === "pct" ? inp.fees : scale(inp.fees),
+    mkOtherFees: scale(inp.mkOtherFees),
     returnCosts: scale(inp.returnCosts),
     ads: [
       ...inp.ads,
@@ -1175,7 +1311,21 @@ export function dataWarnings(inp: Inputs, r: Results): string[] {
     w.push("Hay más clientes que pedidos: cada cliente hace al menos un pedido. Revisa clientes nuevos y recurrentes.")
   if (Math.abs(n(inp.welcomeDiscountPct)) > 100) w.push("El descuento de bienvenida no puede superar el 100 %.")
   if (inp.cogsMode === "pct" && Math.abs(n(inp.cogs)) > 100) w.push(`El coste de producto supera el 100 % del precio de venta: ¿querías ponerlo en ${fmt.many()}?`)
-  if (inp.feesMode === "pct" && Math.abs(n(inp.fees)) > 10)
-    w.push(`Una comisión de pasarela del ${n(inp.fees)} % es muy alta: ¿querías poner ${String(n(inp.fees) / 10).replace(".", fmt.decimal())} %?`)
+  if (inp.salesChannel === "both" && has(inp.mkSharePct) && (n(inp.mkSharePct) < 0 || n(inp.mkSharePct) > 100))
+    w.push("La parte de tus ventas que viene del marketplace tiene que estar entre 0 y 100 %.")
+  const highFees: string[] = []
+  if (inp.salesChannel !== "store" && a(inp.mkFeePct) > 50) highFees.push("del marketplace")
+  if (inp.salesChannel !== "marketplace" && a(inp.platformFeePct) > 50) highFees.push("de la plataforma")
+  if (inp.salesChannel !== "marketplace")
+    for (const x of inp.apps ?? []) if (a(x.pct) > 50) highFees.push(`de ${x.name || "una app"}`)
+  if (highFees.length > 0)
+    w.push(`Una comisión ${joinEs(highFees)} de más del 50 % es muy alta: revisa que sea un porcentaje y no un importe.`)
+  // Pasarela en %: entre 10 y 100 suele ser una coma de menos (14 → 1,4); por encima de 100
+  // no es un porcentaje posible: probablemente es el total en importe.
+  const gw = Math.abs(n(inp.fees))
+  if (inp.salesChannel !== "marketplace" && inp.feesMode === "pct" && gw > 100)
+    w.push(`Una comisión de pasarela del ${fmt.num(gw)} % no es posible: revisa si querías meter el total en ${fmt.many()} (usa «¿Solo sabes el total?»)`)
+  else if (inp.salesChannel !== "marketplace" && inp.feesMode === "pct" && gw > 10)
+    w.push(`Una comisión de pasarela del ${String(gw).replace(".", fmt.decimal())} % es muy alta: ¿querías poner ${String(gw / 10).replace(".", fmt.decimal())} %?`)
   return w
 }

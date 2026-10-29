@@ -1,6 +1,6 @@
 // Estado del formulario (strings, para permitir escribir "12," o vacío) y su
 // conversión a números para el motor de cálculo.
-import { currencyInfo, fmt, isCurrency, setCurrency, type CurrencyCode, type Inputs, type Mode, type SeasonProfile } from "./calc"
+import { currencyInfo, fmt, isCurrency, setCurrency, type CurrencyCode, type Inputs, type Mode, type SalesChannel, type SeasonProfile } from "./calc"
 
 export interface AdRow {
   id: string
@@ -8,6 +8,16 @@ export interface AdRow {
   spend: string
   attributed: string
 }
+
+/** App que cobra un % de las ventas (fila de la lista de apps). */
+export interface AppRow {
+  id: string
+  name: string
+  pct: string
+  fixed: string
+}
+
+export const SALES_CHANNELS: SalesChannel[] = ["store", "marketplace", "both"]
 
 export interface FormState {
   currency: CurrencyCode
@@ -38,6 +48,16 @@ export interface FormState {
   fees: string
   feesFixedPerOrder: string
   returnCosts: string
+
+  salesChannel: SalesChannel
+  mkSharePct: string
+  mkFeePct: string
+  mkFeeFixed: string
+  mkFeeOnShipping: boolean
+  mkOtherFees: string
+  platformFeePct: string
+  platformFeeFixed: string
+  apps: AppRow[]
 
   ads: AdRow[]
   adSpendTotal: string // modo rápido
@@ -128,6 +148,15 @@ export function toInputs(f: FormState): Inputs {
     fees: parseNum(f.fees),
     feesFixedPerOrder: parseNum(f.feesFixedPerOrder),
     returnCosts: parseNum(f.returnCosts),
+    salesChannel: f.salesChannel,
+    mkSharePct: parseNum(f.mkSharePct),
+    mkFeePct: parseNum(f.mkFeePct),
+    mkFeeFixed: parseNum(f.mkFeeFixed),
+    mkFeeOnShipping: f.mkFeeOnShipping,
+    mkOtherFees: parseNum(f.mkOtherFees),
+    platformFeePct: parseNum(f.platformFeePct),
+    platformFeeFixed: parseNum(f.platformFeeFixed),
+    apps: f.apps.map((x) => ({ id: x.id, name: x.name, pct: parseNum(x.pct), fixed: parseNum(x.fixed) })),
     ads: f.ads.map((a) => ({ id: a.id, name: a.name, spend: parseNum(a.spend), attributed: parseNum(a.attributed) })),
     adSpendTotal: parseNum(f.adSpendTotal),
     emailToolCost: parseNum(f.emailToolCost),
@@ -184,6 +213,15 @@ export function emptyForm(currency: CurrencyCode = "EUR"): FormState {
     fees: "",
     feesFixedPerOrder: "",
     returnCosts: "",
+    salesChannel: "store",
+    mkSharePct: "",
+    mkFeePct: "",
+    mkFeeFixed: "",
+    mkFeeOnShipping: true,
+    mkOtherFees: "",
+    platformFeePct: "",
+    platformFeeFixed: "",
+    apps: [],
     ads: DEFAULT_ADS.map((a) => ({ ...a })),
     adSpendTotal: "",
     emailToolCost: "",
@@ -280,6 +318,9 @@ export function migrateSaved(raw: unknown): Saved | null {
   }
   if (!isCurrency(form.currency)) form.currency = base.currency
   if (!Array.isArray(form.ads)) form.ads = base.ads
+  if (!SALES_CHANNELS.includes(form.salesChannel)) form.salesChannel = base.salesChannel
+  if (typeof form.mkFeeOnShipping !== "boolean") form.mkFeeOnShipping = base.mkFeeOnShipping
+  if (!Array.isArray(form.apps)) form.apps = base.apps
   if (!Array.isArray(form.customWeights) || form.customWeights.length !== 12) form.customWeights = base.customWeights
   return { form, isExample: Boolean(o.isExample) }
 }
@@ -352,6 +393,7 @@ export function switchCurrency(f: FormState, to: CurrencyCode): FormState {
     next = out as unknown as FormState
     next.customWeights = f.customWeights.map(conv)
     next.ads = f.ads.map((a) => ({ ...a, spend: conv(a.spend), attributed: conv(a.attributed) }))
+    next.apps = f.apps.map((x) => ({ ...x, pct: conv(x.pct), fixed: conv(x.fixed) }))
   }
   setCurrency(to)
   return customVat ? next : { ...next, vatPct: String(currencyInfo(to).vat) }

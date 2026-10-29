@@ -6,7 +6,7 @@ import { emptyForm, exampleForm, loadSaved, parseNum, serializeSaved, STORAGE_KE
 import { buildFormulas } from "./formulas"
 import ReviewRequest, { HelpRequest } from "./review-request"
 import Simulator from "./simulator"
-import { amountSize, FormulaContext, Kpi, LEVEL_STYLES, LevelIcon, NumField, Section, Segmented, StatusPill, Toggle, useConcept } from "./ui"
+import { amountSize, FormulaContext, HelpProvider, Kpi, LEVEL_STYLES, LevelIcon, NumField, Section, Segmented, StatusPill, Toggle, useConcept } from "./ui"
 
 const PROFILE_OPTIONS: { value: SeasonProfile; label: string }[] = [
   { value: "flat", label: "Estable todo el año" },
@@ -69,6 +69,11 @@ export default function ProfitCalculator() {
     setForm((f) => ({ ...f, [key]: value }))
     if (!keepExample) setIsExample(false)
   }
+  /** Varios campos en una sola actualización. */
+  const setFields = (patch: Partial<FormState>) => {
+    setForm((f) => ({ ...f, ...patch }))
+    setIsExample(false)
+  }
 
   const toggleStep = (n: number) =>
     setOpen((s) => {
@@ -115,6 +120,8 @@ export default function ProfitCalculator() {
 
   return (
     <FormulaContext.Provider value={formulas}>
+    {/* Una sola ayuda (?) abierta a la vez */}
+    <HelpProvider>
       {/* data-clarity-mask: Microsoft Clarity no graba el contenido de la calculadora
           (cifras del usuario), sea cual sea el modo de enmascarado del proyecto. */}
       <div data-clarity-mask="True">
@@ -280,6 +287,34 @@ export default function ProfitCalculator() {
               onToggle={() => toggleStep(2)}
             >
               <div className="space-y-5">
+                <FieldBlock concept="salesChannel" label="¿Dónde vendes?">
+                  <Segmented
+                    ariaLabel="Dónde vendes"
+                    value={form.salesChannel}
+                    onChange={(v) => set("salesChannel", v)}
+                    options={[
+                      { value: "store", label: "Mi tienda online" },
+                      { value: "marketplace", label: "Un marketplace (Etsy, Amazon…)" },
+                      { value: "both", label: "Las dos cosas" },
+                    ]}
+                  />
+                  {form.salesChannel === "both" && (
+                    <div className="mt-4 max-w-xs">
+                      <NumField
+                        concept="mkShare"
+                        label="¿Qué parte de tus ventas viene del marketplace?"
+                        value={form.mkSharePct}
+                        onChange={(v) => set("mkSharePct", v)}
+                        suffix="%"
+                        placeholder="0"
+                      />
+                    </div>
+                  )}
+                  {form.salesChannel !== "store" && (
+                    <p className="mt-2 text-xs text-sw-fg-4">En ventas, pedidos y costes, mete el total de todos tus canales.</p>
+                  )}
+                </FieldBlock>
+
                 <VatField form={form} set={set} />
 
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -288,7 +323,13 @@ export default function ProfitCalculator() {
                   <NumField concept="returns" value={form.returns} onChange={(v) => set("returns", v)} suffix={fmt.sym()} />
                   <NumField concept="shippingCharged" value={form.shippingCharged} onChange={(v) => set("shippingCharged", v)} suffix={fmt.sym()} />
                   <NumField concept="orders" value={form.orders} onChange={(v) => set("orders", v)} integer missing={miss("Pedidos") && MISSING_SALES} />
-                  <NumField concept="sessions" value={form.sessions} onChange={(v) => set("sessions", v)} integer />
+                  <NumField
+                    concept="sessions"
+                    label={form.salesChannel === "marketplace" ? "Visitas (si tu marketplace las muestra)" : undefined}
+                    value={form.sessions}
+                    onChange={(v) => set("sessions", v)}
+                    integer
+                  />
                   <NumField concept="newCustomers" value={form.newCustomers} onChange={(v) => set("newCustomers", v)} integer />
                   <NumField concept="returningCustomers" value={form.returningCustomers} onChange={(v) => set("returningCustomers", v)} integer />
                 </div>
@@ -302,64 +343,56 @@ export default function ProfitCalculator() {
               summary={
                 r.variableCosts > 0
                   ? `Costes variables ${fmt.eur(r.variableCosts)} · ${fmt.pct(r.netRevenue > 0 ? r.variableCosts / r.netRevenue : null)} de tus ingresos`
-                  : "Producto, envíos, packaging, pasarela y devoluciones"
+                  : "Producto, envíos, packaging, devoluciones y comisiones"
               }
               done={!!form.cogs}
               open={open.has(3)}
               onToggle={() => toggleStep(3)}
             >
-              <div className="grid gap-5 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <NumField
-                    concept="cogs"
-                    value={form.cogs}
-                    onChange={(v) => set("cogs", v)}
-                    suffix={form.cogsMode === "pct" ? "%" : fmt.sym()}
-                    hint={form.cogsMode === "pct" ? `% sobre ventas netas sin IVA → ${fmt.eur(r.cogs)}` : "Total del periodo, sin IVA"}
-                    missing={miss("Coste de producto") && MISSING_SALES}
-                  />
-                  <Segmented
-                    size="sm"
-                    ariaLabel="Unidad del coste de producto"
-                    value={form.cogsMode}
-                    onChange={(v) => set("cogsMode", v)}
-                    options={[
-                      { value: "pct", label: "En %" },
-                      { value: "eur", label: `En ${fmt.many()}` },
-                    ]}
-                  />
-                </div>
-                <NumField concept="shippingPaid" value={form.shippingPaid} onChange={(v) => set("shippingPaid", v)} suffix={fmt.sym()} missing={miss("Envíos pagados")} />
-                <NumField concept="packaging" value={form.packaging} onChange={(v) => set("packaging", v)} suffix={fmt.sym()} />
-                <div className="space-y-2">
-                  {form.feesMode === "pct" ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      <NumField concept="fees" label="Pasarela de pago" value={form.fees} onChange={(v) => set("fees", v)} suffix="%" missing={miss("Pasarela de pago")} />
-                      <NumField label="+ fijo/pedido" value={form.feesFixedPerOrder} onChange={(v) => set("feesFixedPerOrder", v)} suffix={fmt.sym()} />
+              <div className="space-y-4">
+                {/* A. Producto y envío */}
+                <div>
+                  <p className="mb-2 text-sm font-semibold text-sw-fg-1">Producto y envío</p>
+                  <div className="grid items-start gap-x-4 gap-y-3 sm:grid-cols-2">
+                    {/* El toggle % / moneda va en la línea de la etiqueta, a la derecha */}
+                    <div className="relative">
+                      <NumField
+                        compact
+                        concept="cogs"
+                        value={form.cogs}
+                        onChange={(v) => set("cogs", v)}
+                        suffix={form.cogsMode === "pct" ? "%" : fmt.sym()}
+                        hint={form.cogsMode === "pct" ? `% sobre ventas netas sin IVA → ${fmt.eur(r.cogs)}` : "Total del periodo, sin IVA"}
+                        missing={miss("Coste de producto") && MISSING_SALES}
+                      />
+                      <div className="absolute -top-1 right-0">
+                      <Segmented
+                        size="sm"
+                        ariaLabel="Unidad del coste de producto"
+                        value={form.cogsMode}
+                        onChange={(v) => set("cogsMode", v)}
+                        options={[
+                          { value: "pct", label: "En %" },
+                          { value: "eur", label: `En ${fmt.many()}` },
+                        ]}
+                      />
+                      </div>
                     </div>
-                  ) : (
-                    <NumField concept="fees" label="Pasarela de pago" value={form.fees} onChange={(v) => set("fees", v)} suffix={fmt.sym()} missing={miss("Pasarela de pago")} />
-                  )}
-                  <p className="text-xs text-sw-fg-4">{form.feesMode === "pct" ? `→ ${fmt.eur(r.fees)} en comisiones` : "Total del periodo"}</p>
-                  <Segmented
-                    size="sm"
-                    ariaLabel="Unidad de la comisión de pasarela"
-                    value={form.feesMode}
-                    onChange={(v) => set("feesMode", v)}
-                    options={[
-                      { value: "pct", label: "% + fijo" },
-                      { value: "eur", label: `Total en ${fmt.many()}` },
-                    ]}
-                  />
+                    <NumField compact concept="shippingPaid" value={form.shippingPaid} onChange={(v) => set("shippingPaid", v)} suffix={fmt.sym()} missing={miss("Envíos pagados")} />
+                    <NumField compact concept="packaging" value={form.packaging} onChange={(v) => set("packaging", v)} suffix={fmt.sym()} />
+                    <NumField
+                      compact
+                      concept="returnCosts"
+                      label="Coste de devoluciones (opcional)"
+                      value={form.returnCosts}
+                      onChange={(v) => set("returnCosts", v)}
+                      suffix={fmt.sym()}
+                    />
+                  </div>
                 </div>
-                <NumField
-                  concept="returnCosts"
-                  label="Coste de devoluciones (envíos de vuelta y producto que ya no puedes revender)"
-                  value={form.returnCosts}
-                  onChange={(v) => set("returnCosts", v)}
-                  suffix={fmt.sym()}
-                  hint="Opcional. Total del periodo, sin IVA."
-                />
+
+                {/* B. Comisiones: pasarela, plataforma, apps y marketplace en una sola tabla */}
+                <CommissionTable form={form} set={set} setFields={setFields} r={r} missingFees={miss("Pasarela de pago")} />
               </div>
             </Section>
 
@@ -373,6 +406,11 @@ export default function ProfitCalculator() {
               onToggle={() => toggleStep(4)}
             >
               <div className="space-y-5">
+                {form.salesChannel !== "store" && (
+                  <p className="rounded-sm border border-sw-secondary/30 bg-sw-secondary/10 px-3 py-2 text-sm text-sw-fg-2">
+                    Si pagas publicidad dentro del marketplace (Etsy Ads, Amazon Ads, Offsite Ads…), añádela como una plataforma más.
+                  </p>
+                )}
                 <FieldBlock concept="ads" label="Publicidad por plataforma">
                   <div className="space-y-3">
                     {form.ads.map((ad, i) => (
@@ -539,6 +577,7 @@ export default function ProfitCalculator() {
 
       <MobileBar r={r} per={per} />
       </div>
+    </HelpProvider>
     </FormulaContext.Provider>
   )
 }
@@ -561,22 +600,285 @@ function FieldBlock({ concept, label, children }: { concept: string; label: stri
 
 type SetField = <K extends keyof FormState>(key: K, value: FormState[K], keepExample?: boolean) => void
 
+// Columnas de la tabla de comisiones (sm+): concepto · % · fijo por pedido · importe · papelera.
+// En móvil: el nombre y el importe en una línea, y debajo % y fijo en dos columnas.
+const COMMISSION_COLS = "grid grid-cols-2 gap-x-2 sm:grid-cols-[minmax(0,1fr)_5.5rem_7rem_7rem_1.75rem]"
+
+type CommissionInput = { value: string; onChange: (v: string) => void }
+
+/**
+ * Todas las comisiones por venta en una tabla: pasarela, plataforma y apps (tienda propia)
+ * y comisión y otras tarifas (marketplace). Cada fila calcula sobre su canal (ver calc.ts).
+ */
+function CommissionTable({
+  form,
+  set,
+  setFields,
+  r,
+  missingFees,
+}: {
+  form: FormState
+  set: SetField
+  setFields: (patch: Partial<FormState>) => void
+  r: Results
+  missingFees: boolean
+}) {
+  const help = useConcept("salesFees")
+  const mk = form.salesChannel !== "store"
+  const store = form.salesChannel !== "marketplace"
+  const both = mk && store
+  // Reparto del paso 2 (si lo ha puesto): "Tu tienda (60 %)" / "Marketplace (40 %)"
+  const shareKnown = form.mkSharePct.trim() !== ""
+  const share = (x: number) => (shareKnown ? ` (${String(Math.round(x * 1000) / 10).replace(".", fmt.decimal())} %)` : "")
+  const setApp = (i: number, patch: Partial<FormState["apps"][number]>) => {
+    const apps = [...form.apps]
+    apps[i] = { ...apps[i], ...patch }
+    set("apps", apps)
+  }
+  const otherFees = mk ? Math.abs(parseNum(form.mkOtherFees) ?? 0) : 0
+  const pctMode = form.feesMode === "pct"
+
+  const storeRows = (
+    <>
+      <CommissionRow
+        label="Pasarela de pago"
+        concept="fees"
+        pct={pctMode ? { value: form.fees, onChange: (v) => set("fees", v) } : undefined}
+        fixed={pctMode ? { value: form.feesFixedPerOrder, onChange: (v) => set("feesFixedPerOrder", v) } : undefined}
+        total={pctMode ? undefined : { value: form.fees, onChange: (v) => set("fees", v) }}
+        amount={r.fees}
+        missing={missingFees}
+        below={
+          <button
+            type="button"
+            // % y total comparten el campo "fees": al cambiar de modo se vacía para que un total
+            // (p. ej. 500.000) no pase a leerse como 500.000 %.
+            onClick={() => setFields({ feesMode: pctMode ? "eur" : "pct", fees: "", feesFixedPerOrder: "" })}
+            className="text-left text-xs text-sw-secondary transition-colors hover:text-sw-fg-1 hover:underline"
+          >
+            {pctMode ? `¿Solo sabes el total? Mételo en ${fmt.many()}` : "Usar % + fijo"}
+          </button>
+        }
+      />
+      <CommissionRow
+        label="Plataforma de tu tienda"
+        concept="platformFee"
+        pct={{ value: form.platformFeePct, onChange: (v) => set("platformFeePct", v) }}
+        fixed={{ value: form.platformFeeFixed, onChange: (v) => set("platformFeeFixed", v) }}
+        amount={r.platformFees}
+      />
+      {form.apps.map((app, i) => (
+        <CommissionRow
+          key={app.id}
+          label={app.name || "App"}
+          concept="appFees"
+          nameInput={{ value: app.name, onChange: (v) => setApp(i, { name: v }) }}
+          pct={{ value: app.pct, onChange: (v) => setApp(i, { pct: v }) }}
+          fixed={{ value: app.fixed, onChange: (v) => setApp(i, { fixed: v }) }}
+          amount={r.appBreakdown.find((x) => x.id === app.id)?.amount ?? 0}
+          onRemove={() => set("apps", form.apps.filter((x) => x.id !== app.id))}
+        />
+      ))}
+      <div>
+        <button
+          type="button"
+          onClick={() => set("apps", [...form.apps, { id: `app-${Date.now()}`, name: "", pct: "", fixed: "" }])}
+          className="inline-flex items-center gap-1.5 py-1 text-sm text-sw-secondary transition-colors hover:text-sw-fg-1"
+        >
+          <Plus className="h-4 w-4" aria-hidden="true" />
+          Añadir app que cobra %
+        </button>
+      </div>
+    </>
+  )
+
+  const mkRows = (
+    <>
+      <CommissionRow
+        label="Comisión del marketplace"
+        concept="marketplaceFee"
+        pct={{ value: form.mkFeePct, onChange: (v) => set("mkFeePct", v) }}
+        fixed={{ value: form.mkFeeFixed, onChange: (v) => set("mkFeeFixed", v) }}
+        amount={r.marketplaceFees - otherFees}
+        below={
+          <label className="mt-0.5 flex cursor-pointer items-center gap-2 pl-3 text-xs text-sw-fg-3">
+            <input
+              type="checkbox"
+              checked={form.mkFeeOnShipping}
+              onChange={(e) => set("mkFeeOnShipping", e.target.checked)}
+              className="h-3.5 w-3.5 shrink-0 accent-sw-secondary"
+            />
+            La comisión también se aplica al envío
+          </label>
+        }
+      />
+      <CommissionRow
+        label="Otras tarifas del marketplace"
+        concept="mkOtherFees"
+        total={{ value: form.mkOtherFees, onChange: (v) => set("mkOtherFees", v) }}
+        amount={otherFees}
+      />
+    </>
+  )
+
+  const groupTitle = "pt-2.5 font-mono-label text-[11px] leading-none text-sw-fg-4"
+  return (
+    <div className="border-t border-sw-line pt-4">
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-semibold text-sw-fg-1">Comisiones</span>
+        {help.button}
+      </div>
+      <p className="mt-0.5 text-xs text-sw-fg-4">Lo que se queda cada servicio por venta, sin IVA.</p>
+      {help.panel}
+
+      {/* Cabecera, una sola vez para toda la tabla (las filas usan aria-label) */}
+      <div className={`${COMMISSION_COLS} mt-2 border-b border-sw-line pb-1 text-xs text-sw-fg-4`} aria-hidden="true">
+        <span className="hidden sm:block">Concepto</span>
+        <span>%</span>
+        <span>Fijo por pedido</span>
+        <span className="hidden text-right sm:block">Importe</span>
+      </div>
+
+      {both ? (
+        <>
+          <p className={groupTitle}>Tu tienda{share(1 - r.mkShare)}</p>
+          {storeRows}
+          <p className={`${groupTitle} border-t border-sw-line`}>Marketplace{share(r.mkShare)}</p>
+          {mkRows}
+        </>
+      ) : store ? (
+        storeRows
+      ) : (
+        mkRows
+      )}
+
+      <div className="flex items-baseline justify-between gap-3 border-t border-sw-line pt-2 text-sm">
+        <span className="font-semibold text-sw-fg-1">Total comisiones</span>
+        <span className="font-semibold tabular-nums text-sw-fg-1">{fmt.eur(r.fees + r.salesFeesTotal)}</span>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Una fila de la tabla de comisiones. Los inputs no llevan label visible (lo dice la
+ * cabecera): su aria-label es "Concepto, %" / "Concepto, fijo por pedido".
+ * `total` = un solo importe que ocupa las columnas de % y fijo.
+ */
+function CommissionRow({
+  label,
+  concept,
+  nameInput,
+  pct,
+  fixed,
+  total,
+  amount,
+  missing,
+  onRemove,
+  below,
+}: {
+  label: string
+  concept: string
+  nameInput?: CommissionInput
+  pct?: CommissionInput
+  fixed?: CommissionInput
+  total?: CommissionInput
+  amount: number
+  missing?: boolean
+  onRemove?: () => void
+  below?: React.ReactNode
+}) {
+  const { button, panel } = useConcept(concept)
+  const amountText = Math.abs(amount) > 0.004 ? fmt.eur(amount) : "—"
+  const amountCls = `min-w-0 break-words text-right tabular-nums text-sw-fg-3 ${amountSize(amountText, ["text-sm", "text-sm", "text-xs", "text-[11px]"])}`
+  const trash = onRemove ? (
+    <button
+      type="button"
+      aria-label={`Quitar ${label}`}
+      onClick={onRemove}
+      className="-m-1 rounded-sm p-1 text-sw-fg-4 transition-colors hover:text-sw-danger"
+    >
+      <Trash2 className="h-4 w-4" aria-hidden="true" />
+    </button>
+  ) : null
+  return (
+    <div className="py-1">
+      <div className={`${COMMISSION_COLS} items-center gap-y-1.5`}>
+        <div className="col-span-2 min-w-0 sm:col-span-1">
+        <div className="flex min-w-0 items-center gap-2">
+          {nameInput ? (
+            <input
+              type="text"
+              value={nameInput.value}
+              aria-label="Nombre de la app"
+              placeholder="Nombre de la app"
+              onChange={(e) => nameInput.onChange(e.target.value)}
+              className="min-w-0 flex-1 border-b border-transparent bg-transparent py-0.5 text-base text-sw-fg-1 outline-none placeholder:text-sw-fg-4 focus:border-sw-secondary sm:text-sm"
+            />
+          ) : (
+            <span className="min-w-0 text-sm text-sw-fg-2">{label}</span>
+          )}
+          {button}
+          {/* Móvil: importe (y papelera) en la línea del nombre */}
+          <span className={`ml-auto shrink-0 sm:hidden ${amountCls}`}>{amountText}</span>
+          {trash && <span className="flex shrink-0 sm:hidden">{trash}</span>}
+        </div>
+        {below}
+        </div>
+        {total ? (
+          <div className="col-span-2">
+            <NumField
+              compact
+              ariaLabel={`${label}, total del periodo`}
+              value={total.value}
+              onChange={total.onChange}
+              suffix={fmt.sym()}
+              placeholder="Total del periodo"
+              missing={missing}
+              missingNote={false}
+            />
+          </div>
+        ) : (
+          <>
+            <NumField compact ariaLabel={`${label}, %`} value={pct?.value ?? ""} onChange={pct?.onChange ?? (() => {})} suffix="%" placeholder="0" missing={missing} missingNote={false} />
+            <NumField compact ariaLabel={`${label}, fijo por pedido`} value={fixed?.value ?? ""} onChange={fixed?.onChange ?? (() => {})} suffix={fmt.sym()} placeholder="0" />
+          </>
+        )}
+        <span className={`hidden sm:block ${amountCls}`}>{amountText}</span>
+        <span className="hidden justify-end sm:flex">{trash}</span>
+      </div>
+      {missing && <p className="mt-1 text-xs text-amber-400">Dato clave. Si no tienes este gasto, pon 0.</p>}
+      {panel}
+    </div>
+  )
+}
+
 function VatField({ form, set }: { form: FormState; set: SetField }) {
+  // La ayuda va debajo de la fila, a todo el ancho: dentro de su celda empujaría
+  // hacia abajo el campo «Tipo de IVA», que está alineado abajo (sm:items-end).
+  const { button, panel } = useConcept("vat")
   return (
     <>
-      <div className="grid gap-4 sm:grid-cols-[1fr_120px] sm:items-end">
-        <FieldBlock concept="vat" label="¿Tus cifras de ventas incluyen IVA?">
-          <Segmented
-            ariaLabel="Las ventas incluyen IVA"
-            value={form.salesIncludeVat === null ? "" : form.salesIncludeVat ? "si" : "no"}
-            onChange={(v) => set("salesIncludeVat", v === "si")}
-            options={[
-              { value: "no", label: "No, sin IVA" },
-              { value: "si", label: "Sí, con IVA" },
-            ]}
-          />
-        </FieldBlock>
-        <NumField label="Tipo de IVA" value={form.vatPct} onChange={(v) => set("vatPct", v)} suffix="%" placeholder={String(currencyInfo(form.currency).vat)} />
+      <div>
+        <div className="grid gap-4 sm:grid-cols-[1fr_120px] sm:items-end">
+          <div>
+            <div className="mb-2 flex items-center gap-2">
+              <span className="text-sm text-sw-fg-2">¿Tus cifras de ventas incluyen IVA?</span>
+              {button}
+            </div>
+            <Segmented
+              ariaLabel="Las ventas incluyen IVA"
+              value={form.salesIncludeVat === null ? "" : form.salesIncludeVat ? "si" : "no"}
+              onChange={(v) => set("salesIncludeVat", v === "si")}
+              options={[
+                { value: "no", label: "No, sin IVA" },
+                { value: "si", label: "Sí, con IVA" },
+              ]}
+            />
+          </div>
+          <NumField label="Tipo de IVA" value={form.vatPct} onChange={(v) => set("vatPct", v)} suffix="%" placeholder={String(currencyInfo(form.currency).vat)} />
+        </div>
+        {panel}
       </div>
       {form.salesIncludeVat === null && (
         <p className="-mt-2 flex items-start gap-1.5 text-xs text-amber-400">
@@ -954,6 +1256,8 @@ function Per100({ r }: { r: Results }) {
     { label: "Impuestos", v: r.tax },
   ]
     .map((it, i) => ({ ...it, color: COST_SHADES[i] }))
+    // Comisiones por venta: justo después de la pasarela, con un gris intermedio
+    .flatMap((it) => (it.label === "Pasarela" ? [it, { label: "Comisiones", v: r.salesFeesTotal, color: "#909090" }] : [it]))
     .filter((it) => it.v > 0)
   const costs = items.reduce((a, b) => a + b.v, 0)
   const scale = Math.max(r.netRevenue, costs)
@@ -998,6 +1302,41 @@ function Per100({ r }: { r: Results }) {
           </span>
           <span className={`font-semibold tabular-nums ${LEVEL_STYLES[resLevel].text}`}>{fmt100(Math.abs(profit))}</span>
         </li>
+      </ul>
+      {panel}
+      <ChannelMargins r={r} />
+    </div>
+  )
+}
+
+/** Si vende en tienda propia y marketplace: lo que le queda de cada 100 en cada canal (el mejor, en verde). */
+function ChannelMargins({ r }: { r: Results }) {
+  const { button, panel } = useConcept("channelMargin")
+  if (r.cm1PerEuroStore === null || r.cm1PerEuroMarketplace === null) return null
+  const rows = [
+    { label: "En tu tienda", v: r.cm1PerEuroStore },
+    { label: "En el marketplace", v: r.cm1PerEuroMarketplace },
+  ]
+  const best = Math.max(...rows.map((x) => x.v))
+  const tie = Math.abs(rows[0].v - rows[1].v) < 0.005
+  return (
+    <div className="mt-4 border-t border-sw-line pt-3">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <span className="text-xs text-sw-fg-3">De cada {fmt.eur(100)} que vendes te quedan, antes de marketing y fijos:</span>
+        {button}
+      </div>
+      <ul className="space-y-1 text-sm">
+        {rows.map((x) => {
+          const isBest = !tie && x.v === best
+          return (
+            <li key={x.label} className="flex items-center justify-between gap-2">
+              <span className={isBest ? "font-semibold text-sw-success" : "text-sw-fg-2"}>{x.label}</span>
+              <span className={`tabular-nums ${isBest ? "font-semibold text-sw-success" : x.v < 0 ? "text-sw-danger" : "text-sw-fg-2"}`}>
+                {fmt.eur2(x.v * 100)}
+              </span>
+            </li>
+          )
+        })}
       </ul>
       {panel}
     </div>
@@ -1087,7 +1426,7 @@ function Analysis({ r, inputs, form, per, set }: AnalysisProps) {
             <Kpi concept="netRevenue" value={fmt.eur(r.netRevenue)} sub={`Los clientes pagaron ${fmt.eur(r.totalCharged)} con IVA`} />
             <Kpi concept="vatCollected" value={fmt.eur(r.vatCollected)} sub={`No es tuyo: es para ${fmt.tax()}`} />
             <Kpi concept="aov" value={fmt.eur2(r.aov)} />
-            <Kpi concept="conversionRate" value={fmt.pct(r.conversionRate)} level={levelOf.conversion(r.conversionRate)} sub={`${fmt.num(r.orders)} pedidos de ${fmt.num(r.sessions)} sesiones`} />
+            <Kpi concept="conversionRate" value={fmt.pct(r.conversionRate)} level={levelOf.conversion(r.conversionRate)} sub={r.sessions > 0 ? `${fmt.num(r.orders)} pedidos de ${fmt.num(r.sessions)} sesiones` : undefined} />
             <Kpi concept="rpv" value={fmt.eur2(r.rpv)} />
           </KpiGroup>
           <KpiGroup title="Márgenes">
@@ -1192,7 +1531,11 @@ function Analysis({ r, inputs, form, per, set }: AnalysisProps) {
                 cappedNote(recoverLevel, r),
               )}
             />
-            <Kpi concept="returningShare" value={fmt.pct(r.returningShare)} sub={`${fmt.num(r.newCustomers)} nuevos · ${fmt.num(r.returningCustomers)} recurrentes`} />
+            <Kpi
+              concept="returningShare"
+              value={fmt.pct(r.returningShare)}
+              sub={r.newCustomers + r.returningCustomers > 0 ? `${fmt.num(r.newCustomers)} nuevos · ${fmt.num(r.returningCustomers)} recurrentes` : undefined}
+            />
             {form.ltvEnabled && r.ltvFrequency !== null && (
               <>
                 <Kpi concept="ltvRevenue" value={fmt.eur(r.ltvRevenue)} sub={`${fmt.dec(r.ltvFrequency)} pedidos por cliente al año`} />
@@ -1356,7 +1699,7 @@ function KpiGroup({ title, children }: { title: string; children: React.ReactNod
   return (
     <div className="mb-8">
       <h3 className="mb-3 text-sm font-semibold text-sw-fg-2">{title}</h3>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">{children}</div>
+      <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2 lg:grid-cols-3">{children}</div>
     </div>
   )
 }
@@ -1373,6 +1716,9 @@ function Waterfall({ r }: { r: Results }) {
     { label: "Envíos pagados", v: -r.shippingPaid, kind: "minus", concept: "shippingPaid" },
     { label: "Packaging", v: -r.packaging, kind: "minus", concept: "packaging" },
     { label: "Pasarela de pago", v: -r.fees, kind: "minus", concept: "fees" },
+    { label: "Comisión del marketplace", v: -r.marketplaceFees, kind: "minus", concept: "marketplaceFee" },
+    { label: "Comisión de la plataforma", v: -r.platformFees, kind: "minus", concept: "platformFee" },
+    { label: "Apps con comisión", v: -r.appFees, kind: "minus", concept: "appFees" },
     { label: "Margen antes de marketing", v: r.cm1, kind: "total", concept: "cm1" },
     ...r.channels.map((c) => ({ label: c.name, v: -c.spend, kind: "minus" as const })),
     { label: "Herramienta de email", v: -r.emailToolCost, kind: "minus", concept: "emailTool" },
@@ -1530,7 +1876,7 @@ function Channels({ r }: { r: Results }) {
             </span>
           </div>
           {roasHelp.panel}
-          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-3 grid items-start gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {rows.map((c) => {
               const level = capGood(c.level, r)
               const note = cappedNote(c.level, r)
@@ -1669,7 +2015,7 @@ function Projection({ r, form, set }: { r: Results; form: FormState; set: SetFie
           <OneMonthNote />
         </div>
       )}
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid items-start gap-3 sm:grid-cols-3">
         <Kpi concept="projection" label="Ingresos netos (12 meses)" value={fmt.eur(r.projRevenue)} />
         <Kpi concept="contribution" calc={formulas.projContribution} label="Margen de contribución (12 meses)" value={fmt.eur(r.projContribution)} level={capGood(levelOf.profit(r.projContribution), r)} />
         <Kpi concept="netProfit" calc={formulas.projNetProfit} label="Beneficio neto (12 meses)" value={fmt.eur(r.projNetProfit)} level={capGood(levelOf.profit(r.projNetProfit), r)} sub={r.projTax > 0 ? `Después de ${fmt.eur(r.projTax)} de impuestos` : undefined} />

@@ -71,6 +71,46 @@ export const CONCEPTS: Record<string, Concept> = {
     label: "Packaging",
     what: "Cajas, bolsas, relleno, etiquetas, tarjetas… todo lo que va en el paquete. Total del periodo, sin IVA.",
   },
+  salesChannel: {
+    label: "Dónde vendes",
+    what: "Si vendes en tu propia tienda online, en un marketplace (Etsy, Amazon, Mercado Libre…) o en los dos. Sirve para aplicar a cada venta las comisiones que le tocan.",
+    how: "Mete siempre en ventas, pedidos y costes el total de todos tus canales. Si vendes en los dos, solo te pedimos qué parte de tus ventas viene del marketplace.",
+  },
+  mkShare: {
+    label: "Parte de tus ventas que viene del marketplace",
+    what: "Qué porcentaje de tus ventas totales hiciste en el marketplace. El resto se cuenta como ventas de tu tienda propia.",
+    how: "Ventas del marketplace ÷ ventas totales × 100. Si no lo sabes exacto, una aproximación sirve.",
+  },
+  salesFees: {
+    label: "Comisiones por venta",
+    what: "Lo que se quedan la pasarela, la plataforma de tu tienda, el marketplace o tus apps por cada venta. Crecen con tus ventas. La pasarela cobra por procesar el pago; la plataforma y el marketplace, por darte el canal de venta.",
+    how: "Cada comisión se aplica solo a las ventas de su canal. Lo que pagas como cuota fija mensual va en gastos fijos; la publicidad, en Marketing.",
+  },
+  marketplaceFee: {
+    label: "Comisión del marketplace",
+    what: "El % que se queda el marketplace de cada venta (y el fijo por pedido, si lo hay). En un marketplace el cobro ya va incluido en su comisión: no hay pasarela aparte.",
+    how: "(Ventas netas del marketplace + envío cobrado, si la comisión también se aplica al envío) × % + pedidos del marketplace × fijo por pedido. Mira el % en las condiciones de tu plan: cambia según el plan, la categoría y el país.",
+  },
+  mkOtherFees: {
+    label: "Otras tarifas del marketplace",
+    what: "Lo que pagas al marketplace aparte de la comisión por venta: tarifas por publicar o renovar anuncios, cuotas de vendedor y similares. Total del periodo, sin IVA.",
+    how: "Se suma tal cual a la comisión del marketplace y, en las proyecciones, crece con tus ventas. La publicidad dentro del marketplace no va aquí: va en Marketing.",
+  },
+  platformFee: {
+    label: "Comisión de la plataforma de tu tienda",
+    what: "Lo que cobra la plataforma de tu tienda por cada venta (comisión por transacción), aparte de la cuota mensual (esa va en gastos fijos).",
+    how: "Ventas netas de tu tienda × % + pedidos de tu tienda × fijo por pedido. Mira el % en las condiciones de tu plan: en algunas plataformas depende también de qué pasarela uses.",
+  },
+  appFees: {
+    label: "Apps que cobran un % de tus ventas",
+    what: "Apps o servicios que se quedan un porcentaje de lo que vendes en tu tienda (y a veces un fijo por pedido). Las que cobran una cuota fija van en gastos fijos.",
+    how: "Por cada app: ventas netas de tu tienda × % + pedidos de tu tienda × fijo por pedido.",
+  },
+  channelMargin: {
+    label: "Margen por canal",
+    what: "Cuánto te queda por cada venta en cada canal antes de marketing y gastos fijos. Sirve para ver qué canal te deja más.",
+    how: "1 − (producto + envíos + packaging + devoluciones) ÷ ingresos − comisiones del canal ÷ ingresos del canal. Supone el mismo coste de producto y envíos en los dos canales; la pasarela solo cuenta en tu tienda.",
+  },
   fees: {
     label: "Comisiones de pasarela de pago",
     what: "Lo que te cobra tu pasarela o TPV virtual (Stripe, PayPal, Redsys, el sistema de pagos de tu plataforma…) por cada cobro.",
@@ -78,7 +118,7 @@ export const CONCEPTS: Record<string, Concept> = {
   },
   returnCosts: {
     label: "Coste de devoluciones",
-    what: "Lo que te cuestan las devoluciones además del dinero que devuelves: envíos de vuelta que pagas tú y producto que ya no puedes revender (dañado, usado, sin embalaje). Opcional. Total del periodo, sin IVA.",
+    what: "Lo que te cuestan las devoluciones además del dinero que devuelves: envíos de vuelta que pagas tú y producto que ya no puedes revender (dañado, usado, sin embalaje). Total del periodo, sin IVA.",
     how: "Si lo dejas vacío, calculamos como si todo lo devuelto volviera a stock sin coste, que suele ser optimista.",
   },
   ads: {
