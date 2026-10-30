@@ -1,6 +1,6 @@
 "use client"
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
-import { ArrowDown, ArrowRight, Plus, RotateCcw, Trash2, X } from "lucide-react"
+import { ArrowDown, ArrowRight, CheckCircle2, Plus, RotateCcw, SlidersHorizontal, Trash2, X, Zap } from "lucide-react"
 import { adsScenario, applyMode, capGood, compute, CURRENCIES, currencyInfo, dataWarnings, fmt, isCurrency, levelOf, setCurrency, storeDecision, ordinal, MONTHS_LONG, MONTHS_SHORT, type CurrencyCode, type Inputs, type Level, type Results, type SeasonProfile, type StoreDecision } from "./calc"
 import { emptyForm, exampleForm, loadSaved, parseNum, serializeSaved, STORAGE_KEY, switchCurrency, toFullMode, toInputs, toQuickMode, type FormState } from "./form"
 import { buildFormulas } from "./formulas"
@@ -717,43 +717,30 @@ export default function ProfitCalculator() {
               </div>
             )}
 
-            {/* Modo + vaciar / ejemplo */}
-            <div className="flex flex-col gap-3 rounded-sm border border-sw-line bg-sw-bg-1 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm text-sw-fg-2">
-                {quick
-                  ? "Modo rápido: 8 datos para una primera estimación (sin pasarela de pago, packaging, descuentos ni devoluciones)."
-                  : "Modo completo: el cálculo más fiable."}
-              </p>
-              <div className="flex shrink-0 flex-wrap gap-2">
-                {quick ? (
-                  <button type="button" onClick={refine} className="inline-flex items-center gap-1.5 rounded-sm border border-sw-line-strong px-3 py-2 text-sm font-semibold text-sw-fg-1 transition-colors hover:border-sw-fg-1">
-                    Afinar mi cálculo (modo completo)
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </button>
-                ) : (
-                  <button type="button" onClick={toQuick} className="inline-flex items-center gap-1.5 rounded-sm border border-sw-line-strong px-3 py-2 text-sm text-sw-fg-2 transition-colors hover:text-sw-fg-1">
-                    Volver al modo rápido
-                  </button>
-                )}
-                {!isExample && (
-                  <>
-                    <button type="button" onClick={reset} className="inline-flex items-center gap-1.5 rounded-sm border border-sw-line-strong px-3 py-2 text-sm text-sw-fg-2 transition-colors hover:text-sw-fg-1">
-                      <X className="h-4 w-4" aria-hidden="true" />
-                      Vaciar
-                    </button>
-                    <button type="button" onClick={loadExample} className="inline-flex items-center gap-1.5 rounded-sm border border-sw-line-strong px-3 py-2 text-sm text-sw-fg-2 transition-colors hover:text-sw-fg-1">
-                      <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                      Ver ejemplo
-                    </button>
-                  </>
-                )}
+            {/* Modo rápido / completo: las dos opciones a la vista, la actual marcada */}
+            <ModeSwitch quick={quick} onQuick={toQuick} onFull={refine} />
+
+            {/* Vaciar / ejemplo (acciones secundarias) */}
+            {!isExample && (
+              <div className="flex flex-wrap justify-end gap-2">
+                <button type="button" onClick={reset} className="inline-flex items-center gap-1.5 rounded-sm px-2 py-1.5 text-sm text-sw-fg-2 transition-colors hover:text-sw-fg-1">
+                  <X className="h-4 w-4" aria-hidden="true" />
+                  Vaciar
+                </button>
+                <button type="button" onClick={loadExample} className="inline-flex items-center gap-1.5 rounded-sm px-2 py-1.5 text-sm text-sw-fg-2 transition-colors hover:text-sw-fg-1">
+                  <RotateCcw className="h-4 w-4" aria-hidden="true" />
+                  Ver ejemplo
+                </button>
               </div>
-            </div>
+            )}
 
             {/* Progreso */}
             <div className="px-1 pt-2">
-              <p id="pc-progress-label" className="text-sm font-semibold text-sw-fg-1">
-                {progressText} · {steps[cur].title}
+              <p id="pc-progress-label" className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold text-sw-fg-1">
+                <ModeBadge quick={quick} />
+                <span>
+                  {progressText} · {steps[cur].title}
+                </span>
               </p>
               <div
                 role="progressbar"
@@ -807,6 +794,7 @@ export default function ProfitCalculator() {
               periodLabel={periodLabel}
               warnings={warnings}
               taxKnown={taxKnown}
+              quick={quick}
               isExample={isExample}
               onStartOwn={startOwn}
               onRefine={refine}
@@ -832,6 +820,87 @@ export default function ProfitCalculator() {
 }
 
 // ---------------------------------------------------------------------------
+
+/** Etiqueta del modo actual (progreso y resultado). */
+function ModeBadge({ quick }: { quick: boolean }) {
+  const Icon = quick ? Zap : SlidersHorizontal
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-sm border px-2 py-0.5 text-xs font-semibold ${
+        quick ? "border-amber-300/50 bg-amber-300/10 text-amber-200" : "border-sw-secondary/60 bg-sw-secondary/15 text-sw-secondary"
+      }`}
+    >
+      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+      {quick ? "Modo rápido" : "Modo completo"}
+    </span>
+  )
+}
+
+/**
+ * Selector de modo con las dos opciones a la vista: qué incluye cada una y cuál estás usando.
+ * Cambiar de modo conserva los datos (toFullMode / toQuickMode).
+ */
+function ModeSwitch({ quick, onQuick, onFull }: { quick: boolean; onQuick: () => void; onFull: () => void }) {
+  const options = [
+    {
+      value: true,
+      icon: Zap,
+      title: "Modo rápido",
+      meta: "8 datos · unos 2 minutos",
+      text: "Una primera estimación. No incluye pasarela de pago, packaging, descuentos ni devoluciones.",
+      onSelect: onQuick,
+    },
+    {
+      value: false,
+      icon: SlidersHorizontal,
+      title: "Modo completo",
+      meta: "6 pasos · más detalle",
+      text: "El cálculo más fiable: todos tus costes, canales de publicidad, tu sueldo y el valor del cliente.",
+      onSelect: onFull,
+    },
+  ]
+  return (
+    <div className="rounded-sm border border-sw-line bg-sw-bg-1 p-3 sm:p-4">
+      <p id="pc-mode-label" className="mb-2 text-sm font-semibold text-sw-fg-1">
+        ¿Cómo quieres calcularlo?
+      </p>
+      <div role="radiogroup" aria-labelledby="pc-mode-label" className="grid gap-2 sm:grid-cols-2">
+        {options.map((o) => {
+          const active = o.value === quick
+          const Icon = o.icon
+          return (
+            <button
+              key={o.title}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={() => !active && o.onSelect()}
+              className={`flex flex-col rounded-sm border p-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-sw-secondary/70 ${
+                active ? "border-sw-secondary bg-sw-secondary/15" : "border-sw-line-strong hover:border-sw-fg-3"
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <Icon className={`h-4 w-4 shrink-0 ${active ? "text-sw-secondary" : "text-sw-fg-3"}`} aria-hidden="true" />
+                <span className={`font-semibold ${active ? "text-sw-fg-1" : "text-sw-fg-2"}`}>{o.title}</span>
+                {active ? (
+                  <span className="ml-auto inline-flex items-center gap-1 text-xs font-semibold text-sw-secondary">
+                    <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+                    Estás aquí
+                  </span>
+                ) : (
+                  <span className="ml-auto text-xs text-sw-fg-3">{o.value ? "Cambiar" : "Afinar"} →</span>
+                )}
+              </span>
+              <span className="mt-1 text-xs font-semibold text-sw-fg-2">{o.meta}</span>
+              <span className="mt-1 text-xs leading-relaxed text-sw-fg-3">{o.text}</span>
+            </button>
+          )
+        })}
+      </div>
+      <p className="mt-2 text-xs text-sw-fg-3">Puedes cambiar de modo cuando quieras: lo que ya has metido se conserva.</p>
+    </div>
+  )
+}
 
 const PRIVACY_NOTE = "Sin registro. Tus números se quedan en tu navegador."
 const PRIMARY_BIG =
@@ -1329,6 +1398,7 @@ function SummaryCard({
   periodLabel,
   warnings,
   taxKnown,
+  quick,
   isExample,
   onStartOwn,
   onRefine,
@@ -1343,6 +1413,8 @@ function SummaryCard({
   warnings: string[]
   /** Impuesto indicado (> 0); si no, el resultado es antes de impuestos. */
   taxKnown: boolean
+  /** Modo de la calculadora (se muestra en la cabecera del resultado). */
+  quick: boolean
   isExample: boolean
   onStartOwn: () => void
   onRefine: () => void
@@ -1378,7 +1450,10 @@ function SummaryCard({
       <div id="pc-resultado" tabIndex={-1} className="scroll-mt-28 rounded-sm border border-sw-line-strong bg-sw-bg-1 outline-none">
         {exampleNote}
         <div className="p-5">
-        <span className="font-mono-label text-[11px] text-sw-fg-3">Resultado · {periodLabel}</span>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="font-mono-label text-[11px] text-sw-fg-3">Resultado · {periodLabel}</span>
+          <ModeBadge quick={quick} />
+        </div>
         {n > 0 ? (
           <>
             <p className="mt-3 text-lg font-semibold text-sw-fg-1">
@@ -1413,7 +1488,10 @@ function SummaryCard({
       <div className={`border-b border-sw-line p-5 ${r.hasData ? s.bg : ""}`}>
         <div className="flex items-center justify-between gap-2">
           <span className="font-mono-label text-[11px] text-sw-fg-3">Resultado · {periodLabel}</span>
-          {button}
+          <span className="flex items-center gap-2">
+            <ModeBadge quick={quick} />
+            {button}
+          </span>
         </div>
         {r.hasData && comp.status !== "complete" && (
           <span className="mt-3 inline-flex items-center gap-1 rounded-sm border border-amber-400/40 bg-amber-400/10 px-2 py-0.5 text-xs font-medium text-amber-400">
