@@ -1,8 +1,9 @@
 "use client"
 // Piezas de interfaz reutilizables de la calculadora.
 import { createContext, useContext, useId, useState, type ReactNode } from "react"
-import { AlertTriangle, CheckCircle2, ChevronDown, HelpCircle, Info, X, XCircle } from "lucide-react"
+import { AlertTriangle, ArrowRight, CheckCircle2, HelpCircle, Info, X, XCircle } from "lucide-react"
 import { money, type Level } from "./calc"
+import { parseNum } from "./form"
 import { CONCEPTS } from "./concepts"
 import type { Formulas } from "./formulas"
 
@@ -126,7 +127,13 @@ interface NumFieldProps {
   hint?: string
   integer?: boolean
   ariaLabel?: string
-  /** Dato clave sin rellenar: se marca para que no pase desapercibido. */
+  /** id del input (para llevar el foco a un dato pendiente). */
+  id?: string
+  /** Al salir del campo (para validar solo lo que el usuario ya ha tocado). */
+  onBlur?: () => void
+  /** Ventas, pedidos, sesiones…: un negativo es imposible (se marca en rojo). */
+  nonNegative?: boolean
+  /** Dato obligatorio sin rellenar: aviso neutro (ámbar suave). Texto = mensaje bajo el campo. */
   missing?: boolean | string
   /** false = solo marca el borde; el aviso lo pinta quien lo use (p. ej. una fila de tabla). */
   missingNote?: boolean
@@ -134,10 +141,41 @@ interface NumFieldProps {
   compact?: boolean
 }
 
-export function NumField({ label, concept, value, onChange, suffix, placeholder, hint, integer, ariaLabel, missing, missingNote = true, compact }: NumFieldProps) {
-  const id = useId()
+/** Valor imposible (rojo): no es un número, o es negativo donde no puede serlo. */
+export function invalidMessage(value: string, nonNegative?: boolean): string | null {
+  if (value.trim() === "") return null
+  const v = parseNum(value)
+  if (v === null) return "Esto no es un número válido."
+  if (nonNegative && v < 0) return "No puede ser negativo."
+  return null
+}
+
+export function NumField({
+  label,
+  concept,
+  value,
+  onChange,
+  suffix,
+  placeholder,
+  hint,
+  integer,
+  ariaLabel,
+  id: idProp,
+  onBlur,
+  nonNegative,
+  missing,
+  missingNote = true,
+  compact,
+}: NumFieldProps) {
+  const autoId = useId()
+  const id = idProp ?? autoId
+  const msgId = `${id}-msg`
+  // Lo imposible (rojo) solo se avisa cuando el usuario sale del campo.
+  const [blurred, setBlurred] = useState(false)
   const { button, panel, concept: c } = useConcept(concept)
   const text = label ?? money(c?.label) ?? ""
+  const invalid = blurred ? invalidMessage(value, nonNegative) : null
+  const missingText = !invalid && missing && missingNote ? (typeof missing === "string" ? missing : "Si no tienes este gasto, pon 0.") : null
   return (
     <div className="min-w-0">
       {text && (
@@ -150,7 +188,7 @@ export function NumField({ label, concept, value, onChange, suffix, placeholder,
       )}
       <div
         className={`flex items-stretch overflow-hidden rounded-sm border bg-sw-bg-2 transition-colors focus-within:border-sw-secondary ${
-          missing ? "border-amber-400/60" : "border-sw-line-strong"
+          invalid ? "border-sw-danger/70" : missing ? "border-amber-300/50" : "border-sw-line-strong"
         }`}
       >
         <input
@@ -160,10 +198,15 @@ export function NumField({ label, concept, value, onChange, suffix, placeholder,
           autoComplete="off"
           value={value}
           placeholder={placeholder ?? ""}
-          aria-label={ariaLabel}
-          aria-invalid={missing ? true : undefined}
+          aria-label={ariaLabel ?? (text || undefined)}
+          aria-invalid={invalid ? true : undefined}
+          aria-describedby={invalid || missingText ? msgId : undefined}
           onChange={(e) => onChange(e.target.value.replace(/[^\d.,\-]/g, ""))}
-          className={`w-full min-w-0 bg-transparent text-sw-fg-1 placeholder:text-sw-fg-4 outline-none ${
+          onBlur={() => {
+            setBlurred(true)
+            onBlur?.()
+          }}
+          className={`w-full min-w-0 bg-transparent text-sw-fg-1 placeholder:text-sw-fg-3 outline-none ${
             compact ? "px-2.5 py-1.5 text-base sm:py-1 sm:text-sm" : "px-3 py-2.5 text-base"
           }`}
         />
@@ -171,8 +214,17 @@ export function NumField({ label, concept, value, onChange, suffix, placeholder,
           <span className={`flex items-center border-l border-sw-line font-mono text-sw-fg-3 ${compact ? "px-2 text-xs" : "px-3 text-sm"}`}>{suffix}</span>
         )}
       </div>
-      {missing && missingNote && <p className="mt-1 text-xs text-amber-400">{typeof missing === "string" ? missing : "Dato clave. Si no tienes este gasto, pon 0."}</p>}
-      {hint && <p className="mt-1 text-xs text-sw-fg-4">{hint}</p>}
+      {invalid && (
+        <p id={msgId} className="mt-1 text-xs text-sw-danger">
+          {invalid}
+        </p>
+      )}
+      {missingText && (
+        <p id={msgId} className="mt-1 text-xs text-amber-200">
+          {missingText}
+        </p>
+      )}
+      {hint && <p className="mt-1 text-xs text-sw-fg-3">{hint}</p>}
       {panel}
     </div>
   )
@@ -184,24 +236,39 @@ interface SegmentedProps<T extends string | number> {
   onChange: (v: T) => void
   ariaLabel: string
   size?: "sm" | "md"
+  /** id del primer botón (para llevarle el foco). */
+  id?: string
+  /** Aviso del grupo (aria-describedby). */
+  describedBy?: string
+  /** Falta elegir una opción obligatoria: se resalta en ámbar. */
+  invalid?: boolean
 }
 
-export function Segmented<T extends string | number>({ options, value, onChange, ariaLabel, size = "md" }: SegmentedProps<T>) {
+export function Segmented<T extends string | number>({ options, value, onChange, ariaLabel, size = "md", id, describedBy, invalid }: SegmentedProps<T>) {
   return (
-    <div role="radiogroup" aria-label={ariaLabel} className="flex flex-wrap gap-2">
-      {options.map((o) => {
+    <div
+      role="radiogroup"
+      aria-label={ariaLabel}
+      aria-describedby={describedBy}
+      aria-invalid={invalid ? true : undefined}
+      className={`flex flex-wrap gap-2 ${invalid ? "rounded-sm p-1 ring-1 ring-amber-300/60" : ""}`}
+    >
+      {options.map((o, i) => {
         const active = o.value === value
         return (
           <button
             key={String(o.value)}
+            id={i === 0 ? id : undefined}
             type="button"
             role="radio"
             aria-checked={active}
             onClick={() => onChange(o.value)}
-            className={`rounded-sm border transition-colors ${size === "sm" ? "px-2.5 py-1 text-xs" : "px-3.5 py-2 text-sm"} ${
+            className={`rounded-sm border outline-none transition-colors focus:ring-2 focus:ring-sw-secondary/70 ${size === "sm" ? "px-2.5 py-1 text-xs" : "px-3.5 py-2 text-sm"} ${
               active
                 ? "border-sw-secondary bg-sw-secondary/15 text-sw-fg-1"
-                : "border-sw-line-strong text-sw-fg-3 hover:border-sw-fg-4 hover:text-sw-fg-1"
+                : invalid
+                  ? "border-amber-300/50 text-sw-fg-2 hover:text-sw-fg-1"
+                  : "border-sw-line-strong text-sw-fg-3 hover:border-sw-fg-4 hover:text-sw-fg-1"
             }`}
           >
             {o.label}
@@ -212,46 +279,94 @@ export function Segmented<T extends string | number>({ options, value, onChange,
   )
 }
 
-interface SectionProps {
-  step: number
+interface StepCardProps {
+  id: string
+  /** 0-based */
+  index: number
   title: string
+  /** Resumen de lo metido (solo con el paso plegado). */
   summary?: string
+  /** Check verde: el usuario ha completado él mismo los datos obligatorios. */
   done?: boolean
-  open: boolean
-  onToggle: () => void
+  current: boolean
+  /** Ya visitado (enlace «Editar») o aún por llegar («Abrir»). */
+  visited: boolean
+  onOpen: () => void
+  /** Frase corta que dice qué hacer en el paso. */
+  intro: string
   children: ReactNode
+  /** Botón principal (Siguiente / Ver mi resultado). */
+  nextLabel: string
+  onNext: () => void
+  onBack?: () => void
 }
 
-export function Section({ step, title, summary, done, open, onToggle, children }: SectionProps) {
-  const id = useId()
+/** Un paso del asistente: abierto (con sus campos) o plegado (con su resumen y «Editar»). */
+export function StepCard({ id, index, title, summary, done, current, visited, onOpen, intro, children, nextLabel, onNext, onBack }: StepCardProps) {
+  const headingId = `pc-step-${id}-title`
   return (
-    <div className={`rounded-sm border bg-sw-bg-1 transition-colors ${open ? "border-sw-line-strong" : "border-sw-line"}`}>
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={open}
-        aria-controls={id}
-        className="flex w-full items-center gap-3 px-4 py-4 text-left sm:px-5"
-      >
+    <section
+      id={`pc-step-${id}`}
+      aria-labelledby={headingId}
+      aria-current={current ? "step" : undefined}
+      className={`scroll-mt-36 rounded-sm border bg-sw-bg-1 transition-colors ${current ? "border-sw-secondary/60" : "border-sw-line"}`}
+    >
+      <div className="flex items-center gap-3 px-4 py-4 sm:px-5">
         <span
           className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border font-mono text-xs ${
-            done ? "border-sw-success/60 text-sw-success" : "border-sw-line-strong text-sw-fg-3"
+            done ? "border-sw-success/60 text-sw-success" : current ? "border-sw-secondary text-sw-fg-1" : "border-sw-line-strong text-sw-fg-3"
           }`}
+          aria-hidden="true"
         >
-          {done ? <CheckCircle2 className="h-4 w-4" aria-hidden="true" /> : step}
+          {done ? <CheckCircle2 className="h-4 w-4" /> : index + 1}
         </span>
-        <span className="min-w-0 flex-1">
-          <span className="block font-semibold text-sw-fg-1">{title}</span>
-          {summary && <span className="mt-0.5 block truncate text-xs text-sw-fg-3">{summary}</span>}
-        </span>
-        <ChevronDown className={`h-5 w-5 shrink-0 text-sw-fg-3 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden="true" />
-      </button>
-      {open && (
-        <div id={id} className="border-t border-sw-line px-4 pb-5 pt-4 sm:px-5">
+        <div className="min-w-0 flex-1">
+          <h2 id={headingId} className={`font-semibold ${current || visited ? "text-sw-fg-1" : "text-sw-fg-2"}`}>
+            <span className="sr-only">Paso {index + 1}: </span>
+            {title}
+            {done && <span className="sr-only"> (completado)</span>}
+          </h2>
+          {!current && summary && <p className="mt-0.5 truncate text-xs text-sw-fg-3">{summary}</p>}
+        </div>
+        {!current && (
+          <button
+            type="button"
+            onClick={onOpen}
+            aria-label={`${visited ? "Editar" : "Abrir"} paso ${index + 1}: ${title}`}
+            className="shrink-0 rounded-sm px-2 py-1 text-sm font-semibold text-sw-secondary underline-offset-4 transition-colors hover:text-sw-fg-1 hover:underline"
+          >
+            {visited ? "Editar" : "Abrir"}
+          </button>
+        )}
+      </div>
+      {current && (
+        <div className="border-t border-sw-line px-4 pb-5 pt-4 sm:px-5">
+          <p className="mb-5 text-sm leading-relaxed text-sw-fg-1">{intro}</p>
           {children}
+          <div className="mt-6 flex flex-col-reverse gap-3 border-t border-sw-line pt-4 sm:flex-row sm:items-center sm:justify-between">
+            {onBack ? (
+              <button
+                type="button"
+                onClick={onBack}
+                className="self-start rounded-sm px-1 py-2 text-sm text-sw-fg-2 underline underline-offset-4 transition-colors hover:text-sw-fg-1"
+              >
+                Atrás
+              </button>
+            ) : (
+              <span className="hidden sm:block" />
+            )}
+            <button
+              type="button"
+              onClick={onNext}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-sm bg-sw-secondary-strong px-5 py-3 text-base font-semibold text-white transition-colors hover:bg-sw-secondary sm:w-auto"
+            >
+              {nextLabel}
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
         </div>
       )}
-    </div>
+    </section>
   )
 }
 

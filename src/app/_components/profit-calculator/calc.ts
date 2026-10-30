@@ -372,8 +372,8 @@ export function completeness(inp: Inputs, hasData: boolean): Completeness {
   if (!has(inp.orders)) missing.push("Pedidos")
   if (!has(inp.cogs)) missing.push("Coste de producto")
   if (!has(inp.shippingPaid)) missing.push("Envíos pagados")
-  // En un marketplace el cobro va incluido en su comisión: no hay pasarela que pedir.
-  if (!inp.quickMode && inp.salesChannel !== "marketplace" && !has(inp.fees)) missing.push("Pasarela de pago")
+  // La pasarela no bloquea el resultado: si falta, cuenta como 0 y se lista en «Sin rellenar»
+  // (así, pasar de modo rápido a completo nunca deja sin resultado).
   // Gastos fijos: basta con uno de los dos campos (si no tienes uno de ellos, pon 0).
   const fixedKnown = has(inp.platformCost) || has(inp.otherFixed)
   if (!fixedKnown) missing.push("Gastos fijos")
@@ -392,8 +392,11 @@ export function completeness(inp: Inputs, hasData: boolean): Completeness {
       "Clientes nuevos y recurrentes (CAC, primera compra)",
       "Tu sueldo por separado",
       ...(inp.quickIgnoresSalesFees ? ["Comisiones por venta (marketplace, plataforma y apps)"] : []),
+      ...(n(inp.profitTaxPct) > 0 ? [] : ["Impuesto sobre el beneficio"]),
     )
   } else {
+    // En un marketplace el cobro va incluido en su comisión: no hay pasarela que pedir.
+    if (inp.salesChannel !== "marketplace" && !has(inp.fees)) optionalEmpty.push("Pasarela de pago")
     if (!has(inp.discounts)) optionalEmpty.push("Descuentos")
     if (!has(inp.returns)) optionalEmpty.push("Devoluciones")
     if (!has(inp.shippingCharged)) optionalEmpty.push("Envíos cobrados a clientes")

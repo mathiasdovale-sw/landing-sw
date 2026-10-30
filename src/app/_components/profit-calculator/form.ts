@@ -213,7 +213,7 @@ const DEFAULT_ADS: AdRow[] = [
 export function emptyForm(currency: CurrencyCode = "EUR"): FormState {
   return {
     currency,
-    quickMode: false,
+    quickMode: true, // el modo rápido es el de entrada
     months: 3,
     endMonth: lastFullMonth(),
     profile: "flat",
@@ -255,7 +255,7 @@ export function emptyForm(currency: CurrencyCode = "EUR"): FormState {
     otherFixed: "",
     ownerSalary: "",
     ownerHours: "",
-    profitTaxPct: "0",
+    profitTaxPct: "", // vacío = resultado antes de impuestos (cuenta como 0)
     ltvEnabled: false,
     ltvFrequency: "",
     firstOrderAov: "",
@@ -344,15 +344,22 @@ export function exampleForm(currency: CurrencyCode = "EUR"): FormState {
 export const STORAGE_KEY = "sw-profit-calculator-v2"
 export const LEGACY_STORAGE_KEYS = ["sw-profit-calculator-v1"]
 
+/** Progreso del asistente: paso abierto y pasos que el usuario ha completado él mismo. */
+export interface WizardSaved {
+  step: number
+  completed: string[]
+}
+
 export interface Saved {
   form: FormState
   isExample: boolean
+  wizard?: WizardSaved
 }
 
 /** Convierte lo guardado (de cualquier versión) al formulario actual. Null si no sirve. */
 export function migrateSaved(raw: unknown): Saved | null {
   if (!raw || typeof raw !== "object") return null
-  const o = raw as { version?: number; form?: Partial<FormState>; isExample?: unknown }
+  const o = raw as { version?: number; form?: Partial<FormState>; isExample?: unknown; wizard?: Partial<WizardSaved> }
   if (!o.form || typeof o.form !== "object") return null
   const base = emptyForm()
   const form: FormState = { ...base, ...o.form }
@@ -374,7 +381,15 @@ export function migrateSaved(raw: unknown): Saved | null {
   for (const k of ["adsDailyBudget", "cpc", "storeCr", "cpaDirect", "storeGatewayPct", "storeGatewayFixed", "storePlatformPct", "storePlatformFixed", "storeFixedMonthly", "migratePct"] as const)
     if (typeof form[k] !== "string") form[k] = base[k]
   if (!Array.isArray(form.customWeights) || form.customWeights.length !== 12) form.customWeights = base.customWeights
-  return { form, isExample: Boolean(o.isExample) }
+  const w = o.wizard
+  const wizard: WizardSaved | undefined =
+    w && typeof w === "object"
+      ? {
+          step: typeof w.step === "number" && w.step >= 0 ? Math.floor(w.step) : 0,
+          completed: Array.isArray(w.completed) ? w.completed.filter((x): x is string => typeof x === "string") : [],
+        }
+      : undefined
+  return { form, isExample: Boolean(o.isExample), wizard }
 }
 
 /** Lee lo guardado: primero la versión actual y, si no hay, las anteriores. */
@@ -393,7 +408,7 @@ export function loadSaved(storage: Pick<Storage, "getItem">): Saved | null {
 }
 
 export function serializeSaved(s: Saved): string {
-  return JSON.stringify({ version: 2, form: s.form, isExample: s.isExample })
+  return JSON.stringify({ version: 2, form: s.form, isExample: s.isExample, wizard: s.wizard })
 }
 
 /**

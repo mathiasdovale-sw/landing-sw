@@ -63,6 +63,12 @@ export const CONCEPTS: Record<string, Concept> = {
     what: "Lo que te cuesta lo que vendes: compra o fabricación del producto, sin IVA.",
     how: "Puedes meterlo en {euros} (total del periodo) o como % sobre tus ventas netas sin IVA. Ej.: si un producto se vende a {100} sin IVA y te cuesta {35}, son un 35 %.",
   },
+  // Modo rápido: no pide descuentos ni devoluciones, así que el % va sobre las ventas sin IVA tal cual.
+  cogsQuick: {
+    label: "Coste de producto",
+    what: "Lo que te cuesta lo que vendes: compra o fabricación del producto, sin IVA.",
+    how: "Mételo como % sobre tus ventas sin IVA. Ej.: si un producto se vende a {100} sin IVA y te cuesta {35}, son un 35 %. En el modo rápido no restamos descuentos ni devoluciones.",
+  },
   shippingPaid: {
     label: "Envíos pagados",
     what: "Lo que pagaste a transportistas (Correos, SEUR, GLS…) por enviar los pedidos, sin IVA.",

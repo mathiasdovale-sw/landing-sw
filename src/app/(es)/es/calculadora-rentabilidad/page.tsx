@@ -42,19 +42,19 @@ export default function CalculadoraBeneficiosPage() {
   }
 
   return (
-    <main>
+    <main className="bg-sw-bg-0">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <VisualBreadcrumbs />
 
-      <section className="bg-sw-bg-0 pb-10 pt-8 sm:pb-12 sm:pt-12">
+      {/* En móvil, más compacto: el botón «Calcular con mis números» tiene que verse sin hacer scroll */}
+      <section className="bg-sw-bg-0 pb-5 pt-4 sm:pb-10 sm:pt-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <span className="font-mono-label text-sw-fg-3">Herramienta gratuita · Calculadora de beneficios</span>
-          <h1 className="mt-4 max-w-4xl font-display text-4xl text-sw-fg-1 sm:text-5xl lg:text-6xl">
+          <span className="hidden font-mono-label text-sw-fg-3 sm:inline">Herramienta gratuita · Calculadora de beneficios</span>
+          <h1 className="max-w-4xl font-display text-3xl text-sw-fg-1 sm:mt-4 sm:text-5xl lg:text-6xl">
             ¿Tu tienda online gana o pierde dinero?
           </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-sw-fg-2">
-            Mete tus números y descubre en unos minutos cuánto te queda de verdad, qué canal se paga y qué no, y qué hacer después. Sin registro. Tus números no
-            salen de tu navegador; si pides la revisión, solo nos llega tu email.
+          <p className="mt-3 max-w-2xl text-base leading-relaxed text-sw-fg-2 sm:mt-5 sm:text-lg">
+            Descubre cuánto te queda de verdad<span className="hidden sm:inline">, qué canal se paga y qué no, y qué hacer después</span>.
           </p>
         </div>
       </section>

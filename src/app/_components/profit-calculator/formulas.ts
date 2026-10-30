@@ -29,6 +29,7 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
 
   // Costes variables
   if (inp.cogsMode === "pct") f.cogs = [`${e(r.netProductSales)} × ${pctIn(inp.cogs)} = ${e(r.cogs)}`]
+  if (inp.cogsMode === "pct") f.cogsQuick = [`${e(r.netProductSales)} × ${pctIn(inp.cogs)} = ${e(r.cogs)}`]
   const share = r.mkShare
   const storeShare = 1 - share
   const partial = share > 0 && share < 1

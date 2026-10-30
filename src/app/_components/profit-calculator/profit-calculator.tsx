@@ -6,7 +6,8 @@ import { emptyForm, exampleForm, loadSaved, parseNum, serializeSaved, STORAGE_KE
 import { buildFormulas } from "./formulas"
 import ReviewRequest, { HelpRequest } from "./review-request"
 import Simulator from "./simulator"
-import { amountSize, FormulaContext, HelpProvider, Kpi, LEVEL_STYLES, LevelIcon, NumField, Section, Segmented, StatusPill, Toggle, useConcept } from "./ui"
+import { amountSize, FormulaContext, HelpProvider, Kpi, LEVEL_STYLES, LevelIcon, NumField, Segmented, StatusPill, StepCard, Toggle, useConcept } from "./ui"
+import { domIdOfField, fieldOfLabel, hasUserData, mapStep, requiredMessage, stepOfField, stepsFor, type FieldKey, type StepId } from "./wizard"
 
 const PROFILE_OPTIONS: { value: SeasonProfile; label: string }[] = [
   { value: "flat", label: "Estable todo el año" },
@@ -15,44 +16,76 @@ const PROFILE_OPTIONS: { value: SeasonProfile; label: string }[] = [
   { value: "custom", label: "Personalizado" },
 ]
 
-/** Mensajes para los datos clave sin rellenar. */
-const MISSING_SALES = "Dato clave: sin él no hay veredicto."
-const MISSING_FIXED = "Dato clave: rellena al menos uno de los dos (pon 0 si no tienes)."
+/** start = tarjeta de inicio · resume = «Tienes un cálculo a medias» · wizard = asistente. */
+type Stage = "start" | "resume" | "wizard"
+
+/** Scroll suave a un elemento y foco en él (o en el primer campo del paso), tras el render. */
+interface FocusRequest {
+  scrollTo: string
+  focus?: string
+  block?: ScrollLogicalPosition
+  n: number
+}
 
 export default function ProfitCalculator() {
-  const [form, setForm] = useState<FormState>(exampleForm)
-  const [isExample, setIsExample] = useState(true)
-  const [open, setOpen] = useState<Set<number>>(new Set([1, 2]))
+  const [form, setForm] = useState<FormState>(() => emptyForm())
+  const [isExample, setIsExample] = useState(false)
+  const [stage, setStage] = useState<Stage>("start")
+  /** Paso abierto (índice en los pasos del modo actual). Solo hay uno abierto. */
+  const [step, setStep] = useState(0)
+  /** Pasos que el usuario ha superado con «Siguiente» con sus propios datos. */
+  const [completed, setCompleted] = useState<Set<StepId>>(() => new Set())
+  /** Datos obligatorios de los que el usuario ya ha salido (se validan). */
+  const [touched, setTouched] = useState<Set<FieldKey>>(() => new Set())
+  /** Pasos en los que ya pulsó «Siguiente» (se valida todo el paso). */
+  const [attempted, setAttempted] = useState<Set<StepId>>(() => new Set())
+  const [focusReq, setFocusReq] = useState<FocusRequest | null>(null)
   // Acaba de pasar de modo rápido a completo (para avisar dónde quedaron sus fijos).
   const [refined, setRefined] = useState(false)
-  const loaded = useRef(false)
 
   // Recuperar lo que el usuario metió la última vez (solo en su navegador).
   // Lee también la clave antigua (v1) y la migra al formato actual.
   useEffect(() => {
     try {
       const saved = loadSaved(window.localStorage)
-      if (saved) {
+      if (saved && !saved.isExample && hasUserData(saved.form)) {
         setForm(saved.form)
-        setIsExample(saved.isExample)
+        setCompleted(new Set((saved.wizard?.completed ?? []) as StepId[]))
+        setStep(saved.wizard?.step ?? 0)
+        setStage("resume")
       }
     } catch {
-      /* sin almacenamiento disponible: seguimos con el ejemplo */
+      /* sin almacenamiento disponible: empezamos de cero */
     }
-    loaded.current = true
   }, [])
 
+  // Solo se guarda lo que pasa dentro del asistente (la tarjeta de inicio no pisa nada).
   useEffect(() => {
-    if (!loaded.current) return
+    if (stage !== "wizard") return
     const t = setTimeout(() => {
       try {
-        window.localStorage.setItem(STORAGE_KEY, serializeSaved({ form, isExample }))
+        window.localStorage.setItem(STORAGE_KEY, serializeSaved({ form, isExample, wizard: { step, completed: [...completed] } }))
       } catch {
         /* ignorar */
       }
     }, 300)
     return () => clearTimeout(t)
-  }, [form, isExample])
+  }, [form, isExample, step, completed, stage])
+
+  useEffect(() => {
+    if (!focusReq) return
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    const target = document.getElementById(focusReq.scrollTo)
+    target?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: focusReq.block ?? "start" })
+    let el = focusReq.focus
+      ? document.getElementById(focusReq.focus)
+      : target?.querySelector<HTMLElement>("input, select, [role=radio]")
+    // En un grupo de opciones, el foco va a la marcada (si no hay ninguna, a la primera).
+    if (!focusReq.focus && el?.getAttribute("role") === "radio") {
+      el = el.closest("[role=radiogroup]")?.querySelector<HTMLElement>("[role=radio][aria-checked=true]") ?? el
+    }
+    el?.focus({ preventScroll: true })
+  }, [focusReq])
 
   // La moneda se fija antes de leer y formatear cualquier número de este render.
   setCurrency(form.currency)
@@ -61,9 +94,22 @@ export default function ProfitCalculator() {
   const inputs = useMemo(() => applyMode(toInputs(form)), [form])
   const r = useMemo(() => compute(inputs), [inputs])
   const formulas = useMemo(() => buildFormulas(r, inputs), [r, inputs])
-  const warnings = useMemo(() => (r.hasData ? dataWarnings(inputs, r) : []), [inputs, r])
-  /** Dato clave sin rellenar (solo se marca cuando ya hay algo metido). */
-  const miss = (label: string) => r.completeness.status === "incomplete" && r.completeness.missing.includes(label)
+  /** Datos mínimos completos: solo entonces se enseña el resultado. */
+  const ready = r.hasData && r.completeness.missing.length === 0
+  /** Sin impuesto indicado (vacío o 0): el resultado es antes de impuestos. */
+  const taxKnown = (parseNum(form.profitTaxPct) ?? 0) > 0
+  const warnings = useMemo(() => (ready ? dataWarnings(inputs, r) : []), [ready, inputs, r])
+
+  const quick = form.quickMode
+  const steps = stepsFor(quick)
+  const cur = Math.min(step, steps.length - 1)
+  const missingFields = r.completeness.missing.map(fieldOfLabel).filter((f): f is FieldKey => f !== null)
+  const stepMissing = (id: StepId) => missingFields.filter((f) => stepOfField(f, quick) === id)
+  const isDone = (id: StepId) => !isExample && completed.has(id) && stepMissing(id).length === 0
+  /** Aviso de un dato obligatorio: solo si ya salió del campo o intentó avanzar. */
+  const fieldMsg = (f: FieldKey) =>
+    missingFields.includes(f) && (touched.has(f) || attempted.has(stepOfField(f, quick))) ? requiredMessage(f) : undefined
+  const touch = (f: FieldKey) => () => setTouched((s) => (s.has(f) ? s : new Set(s).add(f)))
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K], keepExample = false) => {
     setForm((f) => ({ ...f, [key]: value }))
@@ -75,29 +121,99 @@ export default function ProfitCalculator() {
     setIsExample(false)
   }
 
-  const toggleStep = (n: number) =>
-    setOpen((s) => {
-      const next = new Set(s)
-      if (next.has(n)) next.delete(n)
-      else next.add(n)
-      return next
-    })
+  // --- Navegación del asistente -------------------------------------------
+  const request = (scrollTo: string, focus?: string, block?: ScrollLogicalPosition) => setFocusReq({ scrollTo, focus, block, n: Date.now() })
+  const openStepIn = (list: typeof steps, i: number) => {
+    setStep(i)
+    request(`pc-step-${list[i].id}`)
+  }
+  const openStep = (i: number) => openStepIn(steps, i)
+  /** Abre el paso de un dato obligatorio y lleva el foco a su campo. */
+  const goToField = (f: FieldKey) => {
+    const i = steps.findIndex((s) => s.id === stepOfField(f, quick))
+    if (i >= 0) setStep(i)
+    const id = domIdOfField(f, quick)
+    request(id, id, "center")
+  }
+  const next = () => {
+    const s = steps[cur]
+    const miss = stepMissing(s.id)
+    if (miss.length > 0) {
+      setAttempted((a) => new Set(a).add(s.id))
+      goToField(miss[0])
+      return
+    }
+    if (!isExample) setCompleted((c) => new Set(c).add(s.id))
+    if (cur < steps.length - 1) return openStep(cur + 1)
+    // Último paso: al resultado, o al primer dato que falte en otro paso.
+    if (missingFields.length > 0) {
+      setAttempted((a) => new Set(a).add(stepOfField(missingFields[0], quick)))
+      return goToField(missingFields[0])
+    }
+    request("pc-resultado", "pc-resultado")
+  }
+  /** Primer paso sin completar (para «Continuar donde lo dejé»). */
+  const firstIncomplete = () => {
+    const i = steps.findIndex((s) => !completed.has(s.id) || stepMissing(s.id).length > 0)
+    return i >= 0 ? i : steps.length - 1
+  }
+  const clearProgress = () => {
+    setCompleted(new Set())
+    setTouched(new Set())
+    setAttempted(new Set())
+    setRefined(false)
+  }
 
+  // --- Acciones -------------------------------------------------------------
+  /** «Calcular con mis números» / «Empezar de cero» / «Empezar con mis números»: modo rápido vacío, paso 1. */
+  const startOwn = () => {
+    setForm({ ...emptyForm(form.currency), quickMode: true })
+    setIsExample(false)
+    clearProgress()
+    setStage("wizard")
+    openStepIn(stepsFor(true), 0)
+  }
+  const startExample = () => {
+    setForm(toQuickMode(exampleForm(form.currency)))
+    setIsExample(true)
+    clearProgress()
+    setStage("wizard")
+    openStepIn(stepsFor(true), 0)
+  }
+  const resume = () => {
+    setStage("wizard")
+    if (!ready) return openStep(firstIncomplete())
+    // Datos mínimos completos: directamente al resultado.
+    setStep(firstIncomplete())
+    request("pc-resultado", "pc-resultado")
+  }
   const reset = () => {
     setForm({ ...emptyForm(form.currency), quickMode: form.quickMode })
     setIsExample(false)
-    setRefined(false)
-    setOpen(new Set([1, 2]))
+    clearProgress()
+    openStep(0)
   }
-  // "Afinar mi cálculo": abre el formulario completo conservando lo ya metido.
+  const loadExample = () => {
+    const example = exampleForm(form.currency)
+    setForm(form.quickMode ? toQuickMode(example) : example)
+    setIsExample(true)
+    clearProgress()
+  }
+  // "Afinar mi cálculo": modo completo conservando lo ya metido; abre «Ventas y tráfico»,
+  // el primer paso con campos nuevos.
   const refine = () => {
+    if (!form.quickMode) return openStep(steps.findIndex((s) => s.id === "sales"))
     setForm((f) => toFullMode(f))
     setRefined(form.otherFixed.trim() !== "" && form.ownerSalary.trim() === "")
-    setOpen(new Set([2, 3, 4, 5]))
+    const full = stepsFor(false)
+    openStepIn(full, full.findIndex((s) => s.id === "sales"))
   }
   const toQuick = () => {
+    const target = mapStep(steps[cur].id, true)
     setForm((f) => toQuickMode(f))
     setRefined(false)
+    const q = stepsFor(true)
+    openStepIn(q, Math.max(0, q.findIndex((s) => s.id === target)))
   }
   // Cambiar de moneda: el ejemplo se rehace con importes convertidos (aprox.);
   // con datos propios solo se ajustan IVA y separador decimal (switchCurrency).
@@ -110,262 +226,281 @@ export default function ProfitCalculator() {
     }
     setForm((f) => switchCurrency(f, currency))
   }
-  const loadExample = () => {
-    setForm(exampleForm(form.currency))
-    setIsExample(true)
-  }
+  const continueBar = () => (missingFields.length > 0 ? goToField(missingFields[0]) : openStep(cur))
 
   const periodLabel = periodText(r.periodMonths, form.months)
   const per = form.months === 1 ? "al mes" : `en ${form.months} meses`
+  const missingCount = r.completeness.missing.length
+  const progressText = `Paso ${cur + 1} de ${steps.length}`
+  const progressShort = `Paso ${cur + 1}/${steps.length}`
 
-  return (
-    <FormulaContext.Provider value={formulas}>
-    {/* Una sola ayuda (?) abierta a la vez */}
-    <HelpProvider>
-      {/* data-clarity-mask: Microsoft Clarity no graba el contenido de la calculadora
-          (cifras del usuario), sea cual sea el modo de enmascarado del proyecto. */}
-      <div data-clarity-mask="True">
-      {/* Formulario + resumen */}
-      <section className="bg-sw-bg-0 pb-16 sm:pb-20">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:px-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-10">
-          <div className="min-w-0 space-y-3">
-            {/* Barra de datos de ejemplo / vaciar */}
-            <div
-              className={`flex flex-col gap-3 rounded-sm border p-4 sm:flex-row sm:items-center sm:justify-between ${
-                isExample ? "border-sw-secondary/40 bg-sw-secondary/10" : "border-sw-line bg-sw-bg-1"
-              }`}
-            >
-              <p className="text-sm text-sw-fg-2">
-                {isExample
-                  ? "Estás viendo una tienda de ejemplo. Vacía los datos y mete los tuyos: el resultado se actualiza al instante."
-                  : "Tus números se guardan solo en este navegador y no se envían a ningún sitio. Si pides la revisión, solo nos llega tu email."}
-              </p>
-              <div className="flex shrink-0 gap-2">
-                <button
-                  type="button"
-                  onClick={reset}
-                  className={`inline-flex items-center gap-1.5 rounded-sm px-3 py-2 text-sm font-semibold transition-colors ${
-                    isExample ? "bg-sw-secondary-strong text-white hover:bg-sw-secondary" : "border border-sw-line-strong text-sw-fg-2 hover:text-sw-fg-1"
-                  }`}
+  // --- Contenido de cada paso -----------------------------------------------
+  const vatMsg = fieldMsg("salesIncludeVat")
+  const salesFilled = form.grossSales.trim() !== ""
+
+  const stepView = (id: StepId, n: number): { summary: string; intro: string; content: React.ReactNode } => {
+    switch (id) {
+      case "period":
+        return {
+          summary: `${form.currency} · ${form.months === 1 ? "1 mes" : `${form.months} meses`} (${periodLabel}) · ${PROFILE_OPTIONS.find((p) => p.value === form.profile)?.label}`,
+          intro: `Paso ${n} · Elige tu moneda y el periodo de tus datos. Lo más fiable: los últimos 3 meses completos.`,
+          content: (
+            <div className="space-y-5">
+              {/* Moneda: solo cambia cómo se muestran los importes, no convierte nada */}
+              <div>
+                <label htmlFor="pc-currency" className="mb-1.5 block text-sm text-sw-fg-2">
+                  ¿En qué moneda vendes?
+                </label>
+                <select
+                  id="pc-currency"
+                  value={form.currency}
+                  onChange={(e) => isCurrency(e.target.value) && changeCurrency(e.target.value)}
+                  className="w-full rounded-sm border border-sw-line-strong bg-sw-bg-2 px-3 py-2.5 text-base text-sw-fg-1 outline-none focus:border-sw-secondary sm:w-auto"
                 >
-                  <X className="h-4 w-4" aria-hidden="true" />
-                  {isExample ? "Usar mis datos" : "Vaciar"}
-                </button>
-                {!isExample && (
-                  <button
-                    type="button"
-                    onClick={loadExample}
-                    className="inline-flex items-center gap-1.5 rounded-sm border border-sw-line-strong px-3 py-2 text-sm text-sw-fg-2 transition-colors hover:text-sw-fg-1"
-                  >
-                    <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                    Ver ejemplo
-                  </button>
+                  {CURRENCIES.map((c) => (
+                    <option key={c.code} value={c.code}>
+                      {c.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <FieldBlock concept="period" label="¿Cuántos meses de datos vas a meter?">
+                <Segmented
+                  ariaLabel="Meses de datos"
+                  value={form.months}
+                  onChange={(v) => set("months", v)}
+                  options={[
+                    { value: 1, label: "1 mes" },
+                    { value: 3, label: "3 meses" },
+                    { value: 6, label: "6 meses" },
+                    { value: 12, label: "12 meses" },
+                  ]}
+                />
+              </FieldBlock>
+
+              <div>
+                <label htmlFor="pc-end-month" className="mb-1.5 block text-sm text-sw-fg-2">
+                  ¿Cuál es el último mes incluido?
+                </label>
+                <select
+                  id="pc-end-month"
+                  value={form.endMonth}
+                  onChange={(e) => set("endMonth", Number(e.target.value))}
+                  className="w-full rounded-sm border border-sw-line-strong bg-sw-bg-2 px-3 py-2.5 text-base text-sw-fg-1 outline-none focus:border-sw-secondary sm:w-auto"
+                >
+                  {MONTHS_LONG.map((m, i) => (
+                    <option key={m} value={i}>
+                      {m.charAt(0).toUpperCase() + m.slice(1)}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-sw-fg-3">Mete en cada campo el total de {periodLabel}.</p>
+              </div>
+
+              <FieldBlock concept="seasonality" label="¿Cómo se reparten tus ventas en el año?">
+                <Segmented ariaLabel="Perfil de estacionalidad" value={form.profile} onChange={(v) => set("profile", v)} options={PROFILE_OPTIONS} />
+                <SeasonMini weights={r.weights} highlight={r.periodMonths} />
+                {form.profile !== "custom" && <p className="mt-2 text-xs text-sw-fg-3">Perfil orientativo. Si conoces tu curva, usa «Personalizado».</p>}
+                {form.profile === "custom" && (
+                  <div className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-6">
+                    {MONTHS_SHORT.map((m, i) => (
+                      <div key={m}>
+                        <span className="mb-1 block text-center font-mono text-[11px] text-sw-fg-3">{m}</span>
+                        <NumField
+                          ariaLabel={`Peso de ${MONTHS_LONG[i]}`}
+                          value={form.customWeights[i]}
+                          placeholder="1"
+                          nonNegative
+                          onChange={(v) => {
+                            const w = [...form.customWeights]
+                            w[i] = v
+                            set("customWeights", w)
+                          }}
+                        />
+                      </div>
+                    ))}
+                    <p className="col-span-full text-xs text-sw-fg-3">1 = mes normal · 2 = el doble de ventas · 0,5 = la mitad.</p>
+                  </div>
+                )}
+              </FieldBlock>
+            </div>
+          ),
+        }
+
+      case "sales":
+        return {
+          summary: salesFilled ? `Ingresos netos ${fmt.eur(r.netRevenue)} · ${fmt.num(r.orders)} pedidos` : quick ? "Ventas, pedidos y sesiones" : "Ventas, pedidos, visitas y clientes",
+          intro: `Paso ${n} · Copia estas cifras de tu informe de ventas del periodo que elegiste (${periodLabel}).`,
+          content: quick ? (
+            <div className="space-y-5">
+              <VatField form={form} set={set} msg={vatMsg} />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <NumField id="pc-grossSales" concept="grossSales" value={form.grossSales} onChange={(v) => set("grossSales", v)} suffix={fmt.sym()} nonNegative onBlur={touch("grossSales")} missing={fieldMsg("grossSales")} />
+                <NumField id="pc-orders" concept="orders" value={form.orders} onChange={(v) => set("orders", v)} integer nonNegative onBlur={touch("orders")} missing={fieldMsg("orders")} />
+                <NumField concept="sessions" label="Sesiones (opcional)" value={form.sessions} onChange={(v) => set("sessions", v)} integer nonNegative />
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-5">
+              <FieldBlock concept="salesChannel" label="¿Dónde vendes?">
+                <Segmented
+                  ariaLabel="Dónde vendes"
+                  value={form.salesChannel}
+                  onChange={(v) => set("salesChannel", v)}
+                  options={[
+                    { value: "store", label: "Mi tienda online" },
+                    { value: "marketplace", label: "Un marketplace (Etsy, Amazon…)" },
+                    { value: "both", label: "Las dos cosas" },
+                  ]}
+                />
+                {form.salesChannel === "both" && (
+                  <div className="mt-4 max-w-xs">
+                    <NumField
+                      concept="mkShare"
+                      label="¿Qué parte de tus ventas viene del marketplace?"
+                      value={form.mkSharePct}
+                      onChange={(v) => set("mkSharePct", v)}
+                      suffix="%"
+                      placeholder="ej. 40"
+                      nonNegative
+                    />
+                  </div>
+                )}
+                {form.salesChannel !== "store" && <p className="mt-2 text-xs text-sw-fg-3">En ventas, pedidos y costes, mete el total de todos tus canales.</p>}
+              </FieldBlock>
+
+              <VatField form={form} set={set} msg={vatMsg} />
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <NumField id="pc-grossSales" concept="grossSales" value={form.grossSales} onChange={(v) => set("grossSales", v)} suffix={fmt.sym()} nonNegative onBlur={touch("grossSales")} missing={fieldMsg("grossSales")} />
+                <NumField concept="discounts" value={form.discounts} onChange={(v) => set("discounts", v)} suffix={fmt.sym()} />
+                <NumField concept="returns" value={form.returns} onChange={(v) => set("returns", v)} suffix={fmt.sym()} />
+                <NumField concept="shippingCharged" value={form.shippingCharged} onChange={(v) => set("shippingCharged", v)} suffix={fmt.sym()} />
+                <NumField id="pc-orders" concept="orders" value={form.orders} onChange={(v) => set("orders", v)} integer nonNegative onBlur={touch("orders")} missing={fieldMsg("orders")} />
+                <NumField
+                  concept="sessions"
+                  label={form.salesChannel === "marketplace" ? "Visitas (si tu marketplace las muestra)" : undefined}
+                  value={form.sessions}
+                  onChange={(v) => set("sessions", v)}
+                  integer
+                  nonNegative
+                />
+                <NumField concept="newCustomers" value={form.newCustomers} onChange={(v) => set("newCustomers", v)} integer nonNegative />
+                <NumField concept="returningCustomers" value={form.returningCustomers} onChange={(v) => set("returningCustomers", v)} integer nonNegative />
+              </div>
+            </div>
+          ),
+        }
+
+      case "costs":
+        return {
+          summary:
+            form.cogs.trim() !== "" || form.shippingPaid.trim() !== ""
+              ? `Producto ${form.cogs.trim() === "" ? "—" : form.cogsMode === "pct" ? `${form.cogs} %` : fmt.eur(r.cogs)} · envíos ${form.shippingPaid.trim() === "" ? "—" : fmt.eur(r.shippingPaid)}`
+              : "Producto y envíos",
+          intro: `Paso ${n} · Lo que te costó lo que vendiste en ${periodLabel}: el producto y los envíos que pagaste al transportista. Todo sin IVA.`,
+          content: (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <NumField
+                  id="pc-cogs"
+                  concept="cogsQuick"
+                  label={form.cogsMode === "pct" ? "Coste de producto (%)" : `Coste de producto (${fmt.sym()})`}
+                  value={form.cogs}
+                  onChange={(v) => set("cogs", v)}
+                  suffix={form.cogsMode === "pct" ? "%" : fmt.sym()}
+                  placeholder={form.cogsMode === "pct" ? "ej. 35" : undefined}
+                  hint={form.cogsMode === "pct" ? "% sobre tus ventas sin IVA (en el modo rápido no restamos descuentos ni devoluciones)" : "Total del periodo, sin IVA"}
+                  onBlur={touch("cogs")}
+                  missing={fieldMsg("cogs")}
+                />
+                {form.cogsMode === "eur" && (
+                  <Segmented
+                    size="sm"
+                    ariaLabel="Unidad del coste de producto"
+                    value={form.cogsMode}
+                    onChange={(v) => set("cogsMode", v)}
+                    options={[
+                      { value: "pct", label: "En %" },
+                      { value: "eur", label: `En ${fmt.many()}` },
+                    ]}
+                  />
                 )}
               </div>
+              <NumField id="pc-shippingPaid" concept="shippingPaid" value={form.shippingPaid} onChange={(v) => set("shippingPaid", v)} suffix={fmt.sym()} onBlur={touch("shippingPaid")} missing={fieldMsg("shippingPaid")} />
             </div>
+          ),
+        }
 
-            {/* Modo rápido / completo */}
-            <div className="flex flex-col gap-2 rounded-sm border border-sw-line bg-sw-bg-1 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm text-sw-fg-2">
-                {form.quickMode ? "Modo rápido: 8 datos para una primera estimación." : "Modo completo: el cálculo más fiable."}
-              </p>
-              <Segmented
-                size="sm"
-                ariaLabel="Modo de la calculadora"
-                value={form.quickMode ? "quick" : "full"}
-                onChange={(v) => (v === "quick" ? toQuick() : refine())}
-                options={[
-                  { value: "quick", label: "Modo rápido" },
-                  { value: "full", label: "Modo completo" },
-                ]}
+      case "adsFixed":
+        return {
+          summary:
+            form.adSpendTotal.trim() !== "" || form.otherFixed.trim() !== ""
+              ? `Publicidad ${form.adSpendTotal.trim() === "" ? "—" : fmt.eur(Math.abs(parseNum(form.adSpendTotal) ?? 0))} · fijos ${form.otherFixed.trim() === "" ? "—" : fmt.eur(r.fixed)}${taxKnown ? ` · impuesto ${form.profitTaxPct} %` : ""}`
+              : "Publicidad y gastos fijos",
+          intro: `Paso ${n} · Lo que gastaste en publicidad y en gastos fijos en ${periodLabel} (si no tienes alguno de los dos, pon 0) y, si lo sabes, el impuesto que pagas sobre el beneficio.`,
+          content: (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <NumField
+                id="pc-adSpendTotal"
+                label="Gasto total en publicidad"
+                value={form.adSpendTotal}
+                onChange={(v) => set("adSpendTotal", v)}
+                suffix={fmt.sym()}
+                hint="Todas las plataformas juntas, sin IVA. Si no haces publicidad, pon 0."
+              />
+              <NumField
+                id="pc-otherFixed"
+                label="Gastos fijos del periodo"
+                value={form.otherFixed}
+                onChange={(v) => set("otherFixed", v)}
+                suffix={fmt.sym()}
+                hint="Plataforma, apps, alquiler, gestoría, cuota de autónomo… todo lo que pagas vendas o no. Sin tu propio sueldo: si no te pagas nada aparte, el beneficio que veas también es tu sueldo."
+                onBlur={touch("fixed")}
+                missing={fieldMsg("fixed")}
+              />
+              {/* Mismo dato que en el modo completo (profitTaxPct): se conserva al cambiar de modo */}
+              <NumField
+                id="pc-profitTaxQuick"
+                label="Impuesto sobre el beneficio (%)"
+                value={form.profitTaxPct}
+                onChange={(v) => set("profitTaxPct", v)}
+                suffix="%"
+                nonNegative
+                hint="Si eres autónomo, tu tramo aproximado de IRPF; si tienes una SL, el impuesto de sociedades. Si no lo sabes, déjalo vacío."
               />
             </div>
+          ),
+        }
 
-            {/* Moneda: solo cambia cómo se muestran los importes, no convierte nada */}
-            <div className="flex flex-col gap-2 rounded-sm border border-sw-line bg-sw-bg-1 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <label htmlFor="pc-currency" className="text-sm text-sw-fg-2">
-                ¿En qué moneda vendes?
-              </label>
-              <select
-                id="pc-currency"
-                value={form.currency}
-                onChange={(e) => isCurrency(e.target.value) && changeCurrency(e.target.value)}
-                className="w-full rounded-sm border border-sw-line-strong bg-sw-bg-2 px-3 py-2 text-sm text-sw-fg-1 outline-none focus:border-sw-secondary sm:w-auto"
-              >
-                {CURRENCIES.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* 1. Periodo */}
-            <Section
-              step={1}
-              title="Periodo y estacionalidad"
-              summary={`${form.months === 1 ? "1 mes" : `${form.months} meses`} (${periodLabel}) · ${PROFILE_OPTIONS.find((p) => p.value === form.profile)?.label}`}
-              done
-              open={open.has(1)}
-              onToggle={() => toggleStep(1)}
-            >
-              <div className="space-y-5">
-                <FieldBlock concept="period" label="¿Cuántos meses de datos vas a meter?">
-                  <Segmented
-                    ariaLabel="Meses de datos"
-                    value={form.months}
-                    onChange={(v) => set("months", v)}
-                    options={[
-                      { value: 1, label: "1 mes" },
-                      { value: 3, label: "3 meses" },
-                      { value: 6, label: "6 meses" },
-                      { value: 12, label: "12 meses" },
-                    ]}
-                  />
-                </FieldBlock>
-
-                <div>
-                  <label htmlFor="pc-end-month" className="mb-1.5 block text-sm text-sw-fg-2">
-                    ¿Cuál es el último mes incluido?
-                  </label>
-                  <select
-                    id="pc-end-month"
-                    value={form.endMonth}
-                    onChange={(e) => set("endMonth", Number(e.target.value))}
-                    className="w-full rounded-sm border border-sw-line-strong bg-sw-bg-2 px-3 py-2.5 text-base text-sw-fg-1 outline-none focus:border-sw-secondary sm:w-auto"
-                  >
-                    {MONTHS_LONG.map((m, i) => (
-                      <option key={m} value={i}>
-                        {m.charAt(0).toUpperCase() + m.slice(1)}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="mt-1 text-xs text-sw-fg-4">Mete en cada campo el total de {periodLabel}.</p>
-                </div>
-
-                <FieldBlock concept="seasonality" label="¿Cómo se reparten tus ventas en el año?">
-                  <Segmented ariaLabel="Perfil de estacionalidad" value={form.profile} onChange={(v) => set("profile", v)} options={PROFILE_OPTIONS} />
-                  <SeasonMini weights={r.weights} highlight={r.periodMonths} />
-                  {form.profile !== "custom" && (
-                    <p className="mt-2 text-xs text-sw-fg-4">Perfil orientativo. Si conoces tu curva, usa «Personalizado».</p>
-                  )}
-                  {form.profile === "custom" && (
-                    <div className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-6">
-                      {MONTHS_SHORT.map((m, i) => (
-                        <div key={m}>
-                          <span className="mb-1 block text-center font-mono text-[11px] text-sw-fg-3">{m}</span>
-                          <NumField
-                            ariaLabel={`Peso de ${MONTHS_LONG[i]}`}
-                            value={form.customWeights[i]}
-                            placeholder="1"
-                            onChange={(v) => {
-                              const w = [...form.customWeights]
-                              w[i] = v
-                              set("customWeights", w)
-                            }}
-                          />
-                        </div>
-                      ))}
-                      <p className="col-span-full text-xs text-sw-fg-4">1 = mes normal · 2 = el doble de ventas · 0,5 = la mitad.</p>
-                    </div>
-                  )}
-                </FieldBlock>
-              </div>
-            </Section>
-
-            {form.quickMode ? (
-              <QuickForm form={form} set={set} miss={miss} periodLabel={periodLabel} onRefine={refine} />
-            ) : (
-              <>
-            {/* 2. Ventas y tráfico */}
-            <Section
-              step={2}
-              title="Ventas y tráfico"
-              summary={r.hasData ? `Ingresos netos ${fmt.eur(r.netRevenue)} · ${fmt.num(r.orders)} pedidos` : "Ventas, pedidos, visitas y clientes"}
-              done={!!form.grossSales && !!form.orders}
-              open={open.has(2)}
-              onToggle={() => toggleStep(2)}
-            >
-              <div className="space-y-5">
-                <FieldBlock concept="salesChannel" label="¿Dónde vendes?">
-                  <Segmented
-                    ariaLabel="Dónde vendes"
-                    value={form.salesChannel}
-                    onChange={(v) => set("salesChannel", v)}
-                    options={[
-                      { value: "store", label: "Mi tienda online" },
-                      { value: "marketplace", label: "Un marketplace (Etsy, Amazon…)" },
-                      { value: "both", label: "Las dos cosas" },
-                    ]}
-                  />
-                  {form.salesChannel === "both" && (
-                    <div className="mt-4 max-w-xs">
-                      <NumField
-                        concept="mkShare"
-                        label="¿Qué parte de tus ventas viene del marketplace?"
-                        value={form.mkSharePct}
-                        onChange={(v) => set("mkSharePct", v)}
-                        suffix="%"
-                        placeholder="0"
-                      />
-                    </div>
-                  )}
-                  {form.salesChannel !== "store" && (
-                    <p className="mt-2 text-xs text-sw-fg-4">En ventas, pedidos y costes, mete el total de todos tus canales.</p>
-                  )}
-                </FieldBlock>
-
-                <VatField form={form} set={set} />
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <NumField concept="grossSales" value={form.grossSales} onChange={(v) => set("grossSales", v)} suffix={fmt.sym()} missing={miss("Ventas brutas") && MISSING_SALES} />
-                  <NumField concept="discounts" value={form.discounts} onChange={(v) => set("discounts", v)} suffix={fmt.sym()} />
-                  <NumField concept="returns" value={form.returns} onChange={(v) => set("returns", v)} suffix={fmt.sym()} />
-                  <NumField concept="shippingCharged" value={form.shippingCharged} onChange={(v) => set("shippingCharged", v)} suffix={fmt.sym()} />
-                  <NumField concept="orders" value={form.orders} onChange={(v) => set("orders", v)} integer missing={miss("Pedidos") && MISSING_SALES} />
-                  <NumField
-                    concept="sessions"
-                    label={form.salesChannel === "marketplace" ? "Visitas (si tu marketplace las muestra)" : undefined}
-                    value={form.sessions}
-                    onChange={(v) => set("sessions", v)}
-                    integer
-                  />
-                  <NumField concept="newCustomers" value={form.newCustomers} onChange={(v) => set("newCustomers", v)} integer />
-                  <NumField concept="returningCustomers" value={form.returningCustomers} onChange={(v) => set("returningCustomers", v)} integer />
-                </div>
-              </div>
-            </Section>
-
-            {/* 3. Costes de cada pedido */}
-            <Section
-              step={3}
-              title="Lo que te cuesta cada venta"
-              summary={
-                r.variableCosts > 0
-                  ? `Costes variables ${fmt.eur(r.variableCosts)} · ${fmt.pct(r.netRevenue > 0 ? r.variableCosts / r.netRevenue : null)} de tus ingresos`
-                  : "Producto, envíos, packaging, devoluciones y comisiones"
-              }
-              done={!!form.cogs}
-              open={open.has(3)}
-              onToggle={() => toggleStep(3)}
-            >
-              <div className="space-y-4">
-                {/* A. Producto y envío */}
-                <div>
-                  <p className="mb-2 text-sm font-semibold text-sw-fg-1">Producto y envío</p>
-                  <div className="grid items-start gap-x-4 gap-y-3 sm:grid-cols-2">
-                    {/* El toggle % / moneda va en la línea de la etiqueta, a la derecha */}
-                    <div className="relative">
-                      <NumField
-                        compact
-                        concept="cogs"
-                        value={form.cogs}
-                        onChange={(v) => set("cogs", v)}
-                        suffix={form.cogsMode === "pct" ? "%" : fmt.sym()}
-                        hint={form.cogsMode === "pct" ? `% sobre ventas netas sin IVA → ${fmt.eur(r.cogs)}` : "Total del periodo, sin IVA"}
-                        missing={miss("Coste de producto") && MISSING_SALES}
-                      />
-                      <div className="absolute -top-1 right-0">
+      case "variable":
+        return {
+          summary:
+            r.variableCosts > 0
+              ? `Costes variables ${fmt.eur(r.variableCosts)} · ${fmt.pct(r.netRevenue > 0 ? r.variableCosts / r.netRevenue : null)} de tus ingresos`
+              : "Producto, envíos, packaging, devoluciones y comisiones",
+          intro: `Paso ${n} · Lo que te costó cada venta en ${periodLabel}: producto, envíos, packaging y comisiones. Todo sin IVA.`,
+          content: (
+            <div className="space-y-4">
+              {/* A. Producto y envío */}
+              <div>
+                <p className="mb-2 text-sm font-semibold text-sw-fg-1">Producto y envío</p>
+                <div className="grid items-start gap-x-4 gap-y-3 sm:grid-cols-2">
+                  {/* El toggle % / moneda va en la línea de la etiqueta, a la derecha */}
+                  <div className="relative">
+                    <NumField
+                      compact
+                      id="pc-cogs"
+                      concept="cogs"
+                      value={form.cogs}
+                      onChange={(v) => set("cogs", v)}
+                      suffix={form.cogsMode === "pct" ? "%" : fmt.sym()}
+                      hint={form.cogsMode === "pct" ? `% sobre ventas netas sin IVA → ${fmt.eur(r.cogs)}` : "Total del periodo, sin IVA"}
+                      onBlur={touch("cogs")}
+                      missing={fieldMsg("cogs")}
+                    />
+                    <div className="absolute -top-1 right-0">
                       <Segmented
                         size="sm"
                         ariaLabel="Unidad del coste de producto"
@@ -376,190 +511,287 @@ export default function ProfitCalculator() {
                           { value: "eur", label: `En ${fmt.many()}` },
                         ]}
                       />
+                    </div>
+                  </div>
+                  <NumField compact id="pc-shippingPaid" concept="shippingPaid" value={form.shippingPaid} onChange={(v) => set("shippingPaid", v)} suffix={fmt.sym()} onBlur={touch("shippingPaid")} missing={fieldMsg("shippingPaid")} />
+                  <NumField compact concept="packaging" value={form.packaging} onChange={(v) => set("packaging", v)} suffix={fmt.sym()} />
+                  <NumField compact concept="returnCosts" label="Coste de devoluciones (opcional)" value={form.returnCosts} onChange={(v) => set("returnCosts", v)} suffix={fmt.sym()} />
+                </div>
+              </div>
+
+              {/* B. Comisiones: pasarela, plataforma, apps y marketplace en una sola tabla */}
+              <CommissionTable form={form} set={set} setFields={setFields} r={r} />
+            </div>
+          ),
+        }
+
+      case "marketing":
+        return {
+          summary: r.marketing > 0 ? `Inversión ${fmt.eur(r.marketing)}${ready ? ` · MER ${fmt.x(r.mer)}` : ""}` : "Ads, email marketing y otros",
+          intro: `Paso ${n} · Lo que invertiste en publicidad y marketing en ${periodLabel}. Si no haces publicidad, déjalo vacío y sigue.`,
+          content: (
+            <div className="space-y-5">
+              {form.salesChannel !== "store" && (
+                <p className="rounded-sm border border-sw-secondary/30 bg-sw-secondary/10 px-3 py-2 text-sm text-sw-fg-2">
+                  Si pagas publicidad dentro del marketplace (Etsy Ads, Amazon Ads, Offsite Ads…), añádela como una plataforma más.
+                </p>
+              )}
+              <FieldBlock concept="ads" label="Publicidad por plataforma">
+                <div className="space-y-3">
+                  {form.ads.map((ad, i) => (
+                    <div key={ad.id} className="rounded-sm border border-sw-line bg-sw-bg-0 p-3">
+                      <div className="mb-2 flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={ad.name}
+                          aria-label="Nombre de la plataforma"
+                          placeholder="Plataforma"
+                          onChange={(e) => {
+                            const ads = [...form.ads]
+                            ads[i] = { ...ad, name: e.target.value }
+                            set("ads", ads)
+                          }}
+                          className="min-w-0 flex-1 bg-transparent text-base font-semibold text-sw-fg-1 outline-none placeholder:text-sw-fg-3"
+                        />
+                        <button
+                          type="button"
+                          aria-label={`Quitar ${ad.name || "plataforma"}`}
+                          onClick={() => set("ads", form.ads.filter((a) => a.id !== ad.id))}
+                          className="rounded-sm p-1.5 text-sw-fg-4 transition-colors hover:text-sw-danger"
+                        >
+                          <Trash2 className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <NumField
+                          label="Inversión"
+                          value={ad.spend}
+                          suffix={fmt.sym()}
+                          onChange={(v) => {
+                            const ads = [...form.ads]
+                            ads[i] = { ...ad, spend: v }
+                            set("ads", ads)
+                          }}
+                        />
+                        <NumField
+                          label="Ventas atribuidas"
+                          value={ad.attributed}
+                          suffix={fmt.sym()}
+                          nonNegative
+                          onChange={(v) => {
+                            const ads = [...form.ads]
+                            ads[i] = { ...ad, attributed: v }
+                            set("ads", ads)
+                          }}
+                        />
                       </div>
                     </div>
-                    <NumField compact concept="shippingPaid" value={form.shippingPaid} onChange={(v) => set("shippingPaid", v)} suffix={fmt.sym()} missing={miss("Envíos pagados")} />
-                    <NumField compact concept="packaging" value={form.packaging} onChange={(v) => set("packaging", v)} suffix={fmt.sym()} />
-                    <NumField
-                      compact
-                      concept="returnCosts"
-                      label="Coste de devoluciones (opcional)"
-                      value={form.returnCosts}
-                      onChange={(v) => set("returnCosts", v)}
-                      suffix={fmt.sym()}
-                    />
-                  </div>
+                  ))}
+                  <button type="button" onClick={() => set("ads", [...form.ads, { id: `ad-${Date.now()}`, name: "", spend: "", attributed: "" }])} className={ADD_BUTTON}>
+                    <Plus className="h-4 w-4" aria-hidden="true" />
+                    Añadir plataforma (Pinterest, Amazon Ads…)
+                  </button>
                 </div>
+              </FieldBlock>
 
-                {/* B. Comisiones: pasarela, plataforma, apps y marketplace en una sola tabla */}
-                <CommissionTable form={form} set={set} setFields={setFields} r={r} missingFees={miss("Pasarela de pago")} />
-              </div>
-            </Section>
-
-            {/* 4. Marketing */}
-            <Section
-              step={4}
-              title="Marketing"
-              summary={r.marketing > 0 ? `Inversión ${fmt.eur(r.marketing)} · MER ${fmt.x(r.mer)}` : "Ads, email marketing y otros"}
-              done={r.marketing > 0}
-              open={open.has(4)}
-              onToggle={() => toggleStep(4)}
-            >
-              <div className="space-y-5">
-                {form.salesChannel !== "store" && (
-                  <p className="rounded-sm border border-sw-secondary/30 bg-sw-secondary/10 px-3 py-2 text-sm text-sw-fg-2">
-                    Si pagas publicidad dentro del marketplace (Etsy Ads, Amazon Ads, Offsite Ads…), añádela como una plataforma más.
-                  </p>
-                )}
-                <FieldBlock concept="ads" label="Publicidad por plataforma">
-                  <div className="space-y-3">
-                    {form.ads.map((ad, i) => (
-                      <div key={ad.id} className="rounded-sm border border-sw-line bg-sw-bg-0 p-3">
-                        <div className="mb-2 flex items-center gap-2">
-                          <input
-                            type="text"
-                            value={ad.name}
-                            aria-label="Nombre de la plataforma"
-                            placeholder="Plataforma"
-                            onChange={(e) => {
-                              const ads = [...form.ads]
-                              ads[i] = { ...ad, name: e.target.value }
-                              set("ads", ads)
-                            }}
-                            className="min-w-0 flex-1 bg-transparent text-base font-semibold text-sw-fg-1 outline-none placeholder:text-sw-fg-4"
-                          />
-                          <button
-                            type="button"
-                            aria-label={`Quitar ${ad.name || "plataforma"}`}
-                            onClick={() => set("ads", form.ads.filter((a) => a.id !== ad.id))}
-                            className="rounded-sm p-1.5 text-sw-fg-4 transition-colors hover:text-sw-danger"
-                          >
-                            <Trash2 className="h-4 w-4" aria-hidden="true" />
-                          </button>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <NumField
-                            label="Inversión"
-                            value={ad.spend}
-                            suffix={fmt.sym()}
-                            onChange={(v) => {
-                              const ads = [...form.ads]
-                              ads[i] = { ...ad, spend: v }
-                              set("ads", ads)
-                            }}
-                          />
-                          <NumField
-                            label="Ventas atribuidas"
-                            value={ad.attributed}
-                            suffix={fmt.sym()}
-                            onChange={(v) => {
-                              const ads = [...form.ads]
-                              ads[i] = { ...ad, attributed: v }
-                              set("ads", ads)
-                            }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        set("ads", [...form.ads, { id: `ad-${Date.now()}`, name: "", spend: "", attributed: "" }])
-                      }
-                      className="inline-flex items-center gap-1.5 rounded-sm border border-dashed border-sw-line-strong px-3 py-2 text-sm text-sw-fg-2 transition-colors hover:border-sw-secondary hover:text-sw-fg-1"
-                    >
-                      <Plus className="h-4 w-4" aria-hidden="true" />
-                      Añadir plataforma (Pinterest, Amazon Ads…)
-                    </button>
-                  </div>
-                </FieldBlock>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <NumField concept="emailTool" label="Herramienta de email marketing" value={form.emailToolCost} onChange={(v) => set("emailToolCost", v)} suffix={fmt.sym()} />
-                  <NumField label="Ventas atribuidas al email" value={form.emailAttributed} onChange={(v) => set("emailAttributed", v)} suffix={fmt.sym()} />
-                  <NumField concept="otherMarketing" value={form.otherMarketing} onChange={(v) => set("otherMarketing", v)} suffix={fmt.sym()} />
-                </div>
-              </div>
-            </Section>
-
-            {/* 5. Fijos e impuestos */}
-            <Section
-              step={5}
-              title="Gastos fijos e impuestos"
-              summary={r.completeness.fixedKnown ? `Fijos ${fmt.eur(r.fixed)} · impuesto ${form.profitTaxPct || 0}%` : "Plataforma, apps, tu sueldo, alquiler…"}
-              done={r.completeness.fixedKnown}
-              open={open.has(5)}
-              onToggle={() => toggleStep(5)}
-            >
               <div className="grid gap-4 sm:grid-cols-2">
-                <NumField concept="platformCost" value={form.platformCost} onChange={(v) => set("platformCost", v)} suffix={fmt.sym()} missing={miss("Gastos fijos") && MISSING_FIXED} />
-                <NumField
-                  concept="otherFixed"
-                  value={form.otherFixed}
-                  onChange={(v) => set("otherFixed", v)}
-                  suffix={fmt.sym()}
-                  missing={miss("Gastos fijos") && MISSING_FIXED}
-                  hint={refined ? "Aquí están los gastos fijos del modo rápido. Si incluían tu sueldo, pásalo a «Tu sueldo»." : undefined}
-                />
-                <NumField concept="ownerSalary" value={form.ownerSalary} onChange={(v) => set("ownerSalary", v)} suffix={fmt.sym()} hint="Opcional. Total del periodo." />
-                <NumField concept="ownerHours" value={form.ownerHours} onChange={(v) => set("ownerHours", v)} suffix="h/mes" integer hint="Opcional." />
-                <NumField concept="profitTax" value={form.profitTaxPct} onChange={(v) => set("profitTaxPct", v)} suffix="%" />
+                <NumField concept="emailTool" label="Herramienta de email marketing" value={form.emailToolCost} onChange={(v) => set("emailToolCost", v)} suffix={fmt.sym()} />
+                <NumField label="Ventas atribuidas al email" value={form.emailAttributed} onChange={(v) => set("emailAttributed", v)} suffix={fmt.sym()} nonNegative />
+                <NumField concept="otherMarketing" value={form.otherMarketing} onChange={(v) => set("otherMarketing", v)} suffix={fmt.sym()} />
               </div>
-            </Section>
+            </div>
+          ),
+        }
 
-            {/* 6. LTV opcional */}
-            <Section
-              step={6}
-              title="Primera compra y valor del cliente (opcional)"
-              summary={
-                r.firstOrderProfit !== null
-                  ? `1.ª compra ${signedEur(r.firstOrderProfit)}${form.ltvEnabled && r.ltvCac !== null ? ` · LTV:CAC ${fmt.dec(r.ltvCac)}` : ""}`
-                  : "Primer pedido y LTV a 12 meses"
-              }
-              done={r.firstOrderCustom || (form.ltvEnabled && r.ltvFrequency !== null)}
-              open={open.has(6)}
-              onToggle={() => toggleStep(6)}
-            >
-              <div className="space-y-4">
-                <p className="text-sm text-sw-fg-3">
-                  El primer pedido suele dejar menos margen que los siguientes. Si lo conoces, afina el cálculo; si no, usamos tu pedido medio.
-                </p>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <NumField
-                    concept="firstOrderAov"
-                    value={form.firstOrderAov}
-                    onChange={(v) => set("firstOrderAov", v)}
-                    suffix={fmt.sym()}
-                    placeholder={r.aov !== null ? fmt.dec(r.aov / r.vatFactor) : "0"}
-                  />
-                  <NumField concept="welcomeDiscount" value={form.welcomeDiscountPct} onChange={(v) => set("welcomeDiscountPct", v)} suffix="%" placeholder="0" />
-                </div>
-                <FirstOrderResult r={r} />
-                <div className="border-t border-sw-line" />
-                <p className="text-sm text-sw-fg-3">
-                  El LTV es difícil de calcular bien. Actívalo solo si conoces (aunque sea aproximado) cuántos pedidos te hace un cliente en un año.
-                </p>
-                <Toggle checked={form.ltvEnabled} onChange={(v) => set("ltvEnabled", v)} label="Calcular LTV" />
-                {form.ltvEnabled && (
-                  <NumField
-                    concept="ltvFrequency"
-                    value={form.ltvFrequency}
-                    onChange={(v) => set("ltvFrequency", v)}
-                    placeholder={r.ltvFrequencyIsEstimate && r.ltvFrequency ? fmt.dec(r.ltvFrequency) : "ej. 1,4"}
-                    hint={
-                      r.ltvFrequencyIsEstimate
-                        ? `Estimado con tus 12 meses de datos: ${fmt.dec(r.ltvFrequency)} pedidos por cliente. Puedes cambiarlo.`
-                        : form.months < 12 && !form.ltvFrequency
-                          ? "Con menos de 12 meses de datos no podemos estimarlo: mételo tú."
-                          : undefined
-                    }
-                  />
-                )}
-                {form.ltvEnabled && <LtvResult r={r} />}
+      case "fixed":
+        return {
+          summary: r.completeness.fixedKnown ? `Fijos ${fmt.eur(r.fixed)} · impuesto ${form.profitTaxPct || 0} %` : "Plataforma, apps, tu sueldo, alquiler…",
+          intro: `Paso ${n} · Lo que pagas vendas o no, sumado para ${periodLabel}. Si no tienes alguno de estos gastos, pon 0.`,
+          content: (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <NumField id="pc-platformCost" concept="platformCost" value={form.platformCost} onChange={(v) => set("platformCost", v)} suffix={fmt.sym()} onBlur={touch("fixed")} missing={fieldMsg("fixed")} />
+              <NumField
+                id="pc-otherFixed"
+                concept="otherFixed"
+                value={form.otherFixed}
+                onChange={(v) => set("otherFixed", v)}
+                suffix={fmt.sym()}
+                onBlur={touch("fixed")}
+                missing={fieldMsg("fixed")}
+                hint={refined ? "Si en el modo rápido incluiste tu sueldo aquí, pásalo al campo \"Tu sueldo\"." : undefined}
+              />
+              <NumField concept="ownerSalary" value={form.ownerSalary} onChange={(v) => set("ownerSalary", v)} suffix={fmt.sym()} hint="Opcional. Total del periodo." />
+              <NumField concept="ownerHours" value={form.ownerHours} onChange={(v) => set("ownerHours", v)} suffix="h/mes" integer nonNegative hint="Opcional." />
+              <NumField concept="profitTax" value={form.profitTaxPct} onChange={(v) => set("profitTaxPct", v)} suffix="%" nonNegative />
+            </div>
+          ),
+        }
+
+      case "ltv":
+        return {
+          summary:
+            ready && r.firstOrderProfit !== null
+              ? `1.ª compra ${signedEur(r.firstOrderProfit)}${form.ltvEnabled && r.ltvCac !== null ? ` · LTV:CAC ${fmt.dec(r.ltvCac)}` : ""}`
+              : "Primer pedido y LTV a 12 meses",
+          intro: `Paso ${n} · Opcional. Si conoces tu primer pedido o cuántas veces repite un cliente, afina aquí. Si no, pulsa «Ver mi resultado».`,
+          content: (
+            <div className="space-y-4">
+              <p className="text-sm text-sw-fg-3">
+                El primer pedido suele dejar menos margen que los siguientes. Si lo conoces, afina el cálculo; si no, usamos tu pedido medio.
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <NumField
+                  concept="firstOrderAov"
+                  value={form.firstOrderAov}
+                  onChange={(v) => set("firstOrderAov", v)}
+                  suffix={fmt.sym()}
+                  nonNegative
+                  placeholder={r.aov !== null ? fmt.dec(r.aov / r.vatFactor) : "0"}
+                />
+                <NumField concept="welcomeDiscount" value={form.welcomeDiscountPct} onChange={(v) => set("welcomeDiscountPct", v)} suffix="%" placeholder="0" nonNegative />
               </div>
-            </Section>
-              </>
+              {ready && <FirstOrderResult r={r} />}
+              <div className="border-t border-sw-line" />
+              <p className="text-sm text-sw-fg-3">
+                El LTV es difícil de calcular bien. Actívalo solo si conoces (aunque sea aproximado) cuántos pedidos te hace un cliente en un año.
+              </p>
+              <Toggle checked={form.ltvEnabled} onChange={(v) => set("ltvEnabled", v)} label="Calcular LTV" />
+              {form.ltvEnabled && (
+                <NumField
+                  concept="ltvFrequency"
+                  value={form.ltvFrequency}
+                  onChange={(v) => set("ltvFrequency", v)}
+                  nonNegative
+                  placeholder={r.ltvFrequencyIsEstimate && r.ltvFrequency ? fmt.dec(r.ltvFrequency) : "ej. 1,4"}
+                  hint={
+                    r.ltvFrequencyIsEstimate
+                      ? `Estimado con tus 12 meses de datos: ${fmt.dec(r.ltvFrequency)} pedidos por cliente. Puedes cambiarlo.`
+                      : form.months < 12 && !form.ltvFrequency
+                        ? "Con menos de 12 meses de datos no podemos estimarlo: mételo tú."
+                        : undefined
+                  }
+                />
+              )}
+              {form.ltvEnabled && ready && <LtvResult r={r} />}
+            </div>
+          ),
+        }
+    }
+  }
+
+  return (
+    <FormulaContext.Provider value={formulas}>
+    {/* Una sola ayuda (?) abierta a la vez */}
+    <HelpProvider>
+      {/* data-clarity-mask: Microsoft Clarity no graba el contenido de la calculadora
+          (cifras del usuario), sea cual sea el modo de enmascarado del proyecto. */}
+      <div data-clarity-mask="True">
+      {stage !== "wizard" ? (
+        // data-pc-compact: con solo la tarjeta, el pie va justo después (ver globals.css)
+        <section data-pc-compact="" className="bg-sw-bg-0 pb-12">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            {stage === "resume" ? <ResumeCard onResume={resume} onRestart={startOwn} /> : <StartCard onStart={startOwn} onExample={startExample} />}
+          </div>
+        </section>
+      ) : (
+        <>
+      {/* Formulario + resumen */}
+      <section className="bg-sw-bg-0 pb-24 sm:pb-20">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:px-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-10">
+          <div className="min-w-0 space-y-3">
+            {/* Aviso fijo mientras se ven los datos de ejemplo */}
+            {isExample && (
+              <div
+                role="note"
+                className="sticky top-[4.5rem] z-30 flex flex-col gap-2 rounded-sm border border-sw-secondary/50 bg-sw-bg-1 p-3 shadow-lg sm:flex-row sm:items-center sm:justify-between sm:p-4"
+              >
+                <p className="text-sm font-semibold text-sw-fg-1">Estás viendo una tienda de ejemplo. Estos números no son tuyos.</p>
+                <button
+                  type="button"
+                  onClick={startOwn}
+                  className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-sm bg-sw-secondary-strong px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-sw-secondary"
+                >
+                  Empezar con mis números
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
             )}
+
+            {/* Modo + vaciar / ejemplo */}
+            <div className="flex flex-col gap-3 rounded-sm border border-sw-line bg-sw-bg-1 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-sw-fg-2">
+                {quick
+                  ? "Modo rápido: 8 datos para una primera estimación (sin pasarela de pago, packaging, descuentos ni devoluciones)."
+                  : "Modo completo: el cálculo más fiable."}
+              </p>
+              <div className="flex shrink-0 flex-wrap gap-2">
+                {quick ? (
+                  <button type="button" onClick={refine} className="inline-flex items-center gap-1.5 rounded-sm border border-sw-line-strong px-3 py-2 text-sm font-semibold text-sw-fg-1 transition-colors hover:border-sw-fg-1">
+                    Afinar mi cálculo (modo completo)
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                ) : (
+                  <button type="button" onClick={toQuick} className="inline-flex items-center gap-1.5 rounded-sm border border-sw-line-strong px-3 py-2 text-sm text-sw-fg-2 transition-colors hover:text-sw-fg-1">
+                    Volver al modo rápido
+                  </button>
+                )}
+                {!isExample && (
+                  <>
+                    <button type="button" onClick={reset} className="inline-flex items-center gap-1.5 rounded-sm border border-sw-line-strong px-3 py-2 text-sm text-sw-fg-2 transition-colors hover:text-sw-fg-1">
+                      <X className="h-4 w-4" aria-hidden="true" />
+                      Vaciar
+                    </button>
+                    <button type="button" onClick={loadExample} className="inline-flex items-center gap-1.5 rounded-sm border border-sw-line-strong px-3 py-2 text-sm text-sw-fg-2 transition-colors hover:text-sw-fg-1">
+                      <RotateCcw className="h-4 w-4" aria-hidden="true" />
+                      Ver ejemplo
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Progreso */}
+            <div className="px-1 pt-2">
+              <p id="pc-progress-label" className="text-sm font-semibold text-sw-fg-1">
+                {progressText} · {steps[cur].title}
+              </p>
+              <div
+                role="progressbar"
+                aria-labelledby="pc-progress-label"
+                aria-valuemin={1}
+                aria-valuemax={steps.length}
+                aria-valuenow={cur + 1}
+                aria-valuetext={`${progressText}: ${steps[cur].title}`}
+                className="mt-2 h-1.5 overflow-hidden rounded-full bg-sw-line"
+              >
+                <div className="h-full rounded-full bg-sw-secondary transition-[width] duration-300 motion-reduce:transition-none" style={{ width: `${((cur + 1) / steps.length) * 100}%` }} />
+              </div>
+            </div>
+
+            {/* Pasos: solo el actual está abierto */}
+            {steps.map((s, i) => {
+              const v = stepView(s.id, i + 1)
+              const last = i === steps.length - 1
+              return (
+                <StepCard
+                  key={s.id}
+                  id={s.id}
+                  index={i}
+                  title={s.title}
+                  summary={v.summary}
+                  done={isDone(s.id)}
+                  current={i === cur}
+                  visited={i < cur || completed.has(s.id)}
+                  onOpen={() => openStep(i)}
+                  intro={v.intro}
+                  nextLabel={last ? "Ver mi resultado" : `Siguiente: ${steps[i + 1].title}`}
+                  onNext={next}
+                  onBack={i > 0 ? () => openStep(i - 1) : undefined}
+                >
+                  {v.content}
+                </StepCard>
+              )
+            })}
 
             {/* Ayuda para rellenar la calculadora: solo se envía el email */}
             <HelpRequest />
@@ -567,15 +799,32 @@ export default function ProfitCalculator() {
 
           {/* Resumen siempre visible en escritorio */}
           <aside className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto lg:[scrollbar-width:thin]">
-            <SummaryCard r={r} per={per} months={form.months} periodLabel={periodLabel} warnings={warnings} onRefine={refine} />
+            <SummaryCard
+              r={r}
+              ready={ready}
+              per={per}
+              months={form.months}
+              periodLabel={periodLabel}
+              warnings={warnings}
+              taxKnown={taxKnown}
+              isExample={isExample}
+              onStartOwn={startOwn}
+              onRefine={refine}
+              onMissing={(label) => {
+                const f = fieldOfLabel(label)
+                if (f) goToField(f)
+              }}
+            />
           </aside>
         </div>
       </section>
 
       {/* Análisis completo */}
-      <Analysis r={r} inputs={inputs} form={form} per={per} set={set} onRefine={refine} />
+      <Analysis r={r} ready={ready} inputs={inputs} form={form} per={per} set={set} onRefine={refine} />
 
-      <MobileBar r={r} per={per} />
+      <MobileBar r={r} ready={ready} per={per} progress={progressShort} missingCount={missingCount} taxKnown={taxKnown} isExample={isExample} onContinue={continueBar} />
+        </>
+      )}
       </div>
     </HelpProvider>
     </FormulaContext.Provider>
@@ -583,6 +832,56 @@ export default function ProfitCalculator() {
 }
 
 // ---------------------------------------------------------------------------
+
+const PRIVACY_NOTE = "Sin registro. Tus números se quedan en tu navegador."
+const PRIMARY_BIG =
+  "flex w-full flex-col items-center justify-center rounded-sm bg-sw-secondary-strong px-6 py-4 text-white transition-colors hover:bg-sw-secondary sm:w-auto sm:min-w-[20rem]"
+const SECONDARY_BTN =
+  "inline-flex w-full items-center justify-center gap-1.5 rounded-sm border border-sw-line-strong px-5 py-3 text-base font-semibold text-sw-fg-1 transition-colors hover:border-sw-fg-1 sm:w-auto"
+/** Botón secundario para añadir filas (plataformas de publicidad, apps). */
+const ADD_BUTTON =
+  "inline-flex items-center gap-1.5 rounded-sm border border-dashed border-sw-line-strong px-3 py-2 text-sm text-sw-fg-2 transition-colors hover:border-sw-secondary hover:text-sw-fg-1"
+
+/** Pantalla de inicio: una acción principal clara y el ejemplo como alternativa. */
+function StartCard({ onStart, onExample }: { onStart: () => void; onExample: () => void }) {
+  return (
+    <div className="rounded-sm border border-sw-line-strong bg-sw-bg-1 p-4 sm:p-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <button type="button" onClick={onStart} className={PRIMARY_BIG}>
+          <span className="flex items-center gap-2 text-lg font-semibold">
+            Calcular con mis números
+            <ArrowRight className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <span className="mt-0.5 text-sm text-white/80">8 datos · unos 2 minutos</span>
+        </button>
+        <button type="button" onClick={onExample} className={SECONDARY_BTN}>
+          Ver un ejemplo primero
+        </button>
+      </div>
+      <p className="mt-4 text-sm text-sw-fg-3">{PRIVACY_NOTE}</p>
+    </div>
+  )
+}
+
+/** Usuario con datos guardados: seguir o empezar de cero. */
+function ResumeCard({ onResume, onRestart }: { onResume: () => void; onRestart: () => void }) {
+  return (
+    <div className="rounded-sm border border-sw-line-strong bg-sw-bg-1 p-4 sm:p-6">
+      <p className="text-lg font-semibold text-sw-fg-1">Tienes un cálculo a medias</p>
+      <p className="mt-1 text-sm text-sw-fg-2">Lo guardamos en este navegador la última vez que entraste.</p>
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <button type="button" onClick={onResume} className="inline-flex w-full items-center justify-center gap-2 rounded-sm bg-sw-secondary-strong px-6 py-3.5 text-lg font-semibold text-white transition-colors hover:bg-sw-secondary sm:w-auto">
+          Continuar donde lo dejé
+          <ArrowRight className="h-5 w-5" aria-hidden="true" />
+        </button>
+        <button type="button" onClick={onRestart} className={SECONDARY_BTN}>
+          Empezar de cero
+        </button>
+      </div>
+      <p className="mt-4 text-sm text-sw-fg-3">{PRIVACY_NOTE}</p>
+    </div>
+  )
+}
 
 function FieldBlock({ concept, label, children }: { concept: string; label: string; children: React.ReactNode }) {
   const { button, panel } = useConcept(concept)
@@ -600,11 +899,18 @@ function FieldBlock({ concept, label, children }: { concept: string; label: stri
 
 type SetField = <K extends keyof FormState>(key: K, value: FormState[K], keepExample?: boolean) => void
 
-// Columnas de la tabla de comisiones (sm+): concepto · % · fijo por pedido · importe · papelera.
-// En móvil: el nombre y el importe en una línea, y debajo % y fijo en dos columnas.
-const COMMISSION_COLS = "grid grid-cols-2 gap-x-2 sm:grid-cols-[minmax(0,1fr)_5.5rem_7rem_7rem_1.75rem]"
+// Columnas de la tabla de comisiones (sm+): servicio · % por venta · fijos por pedido · total · papelera.
+// En móvil no hay tabla: cada servicio es una tarjeta con sus campos uno por línea.
+const COMMISSION_COLS = "sm:grid sm:grid-cols-[minmax(0,1fr)_7rem_8.5rem_7.5rem_1.75rem] sm:items-start sm:gap-x-3"
 
-type CommissionInput = { value: string; onChange: (v: string) => void }
+type CommissionInput = { value: string; onChange: (v: string) => void; placeholder?: string }
+
+/** Ejemplo de importe fijo (0,25 € en euros), en la moneda elegida y con su formato. */
+function exampleFixed(currency: CurrencyCode) {
+  const { perEur, locale } = currencyInfo(currency)
+  const v = Number((0.25 * perEur).toPrecision(2))
+  return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(v)
+}
 
 /**
  * Todas las comisiones por venta en una tabla: pasarela, plataforma y apps (tienda propia)
@@ -615,21 +921,22 @@ function CommissionTable({
   set,
   setFields,
   r,
-  missingFees,
 }: {
   form: FormState
   set: SetField
   setFields: (patch: Partial<FormState>) => void
   r: Results
-  missingFees: boolean
 }) {
   const help = useConcept("salesFees")
   const mk = form.salesChannel !== "store"
   const store = form.salesChannel !== "marketplace"
   const both = mk && store
+  const dec = fmt.decimal()
+  const sym = fmt.sym()
+  const exFixed = exampleFixed(form.currency)
   // Reparto del paso 2 (si lo ha puesto): "Tu tienda (60 %)" / "Marketplace (40 %)"
   const shareKnown = form.mkSharePct.trim() !== ""
-  const share = (x: number) => (shareKnown ? ` (${String(Math.round(x * 1000) / 10).replace(".", fmt.decimal())} %)` : "")
+  const share = (x: number) => (shareKnown ? ` (${String(Math.round(x * 1000) / 10).replace(".", dec)} %)` : "")
   const setApp = (i: number, patch: Partial<FormState["apps"][number]>) => {
     const apps = [...form.apps]
     apps[i] = { ...apps[i], ...patch }
@@ -643,29 +950,32 @@ function CommissionTable({
       <CommissionRow
         label="Pasarela de pago"
         concept="fees"
-        pct={pctMode ? { value: form.fees, onChange: (v) => set("fees", v) } : undefined}
-        fixed={pctMode ? { value: form.feesFixedPerOrder, onChange: (v) => set("feesFixedPerOrder", v) } : undefined}
+        inputId="pc-fees"
+        pct={pctMode ? { value: form.fees, onChange: (v) => set("fees", v), placeholder: `ej. 1${dec}4` } : undefined}
+        fixed={pctMode ? { value: form.feesFixedPerOrder, onChange: (v) => set("feesFixedPerOrder", v), placeholder: `ej. ${exFixed}` } : undefined}
         total={pctMode ? undefined : { value: form.fees, onChange: (v) => set("fees", v) }}
         amount={r.fees}
-        missing={missingFees}
+        // No bloquea el resultado: vacía cuenta como 0, con un aviso neutro.
+        note={form.fees.trim() === "" ? "Si no lo completas, contamos 0 € de pasarela. Lo normal es que tengas este gasto." : undefined}
         below={
           <button
             type="button"
             // % y total comparten el campo "fees": al cambiar de modo se vacía para que un total
             // (p. ej. 500.000) no pase a leerse como 500.000 %.
             onClick={() => setFields({ feesMode: pctMode ? "eur" : "pct", fees: "", feesFixedPerOrder: "" })}
-            className="text-left text-xs text-sw-secondary transition-colors hover:text-sw-fg-1 hover:underline"
+            className="mt-1.5 text-left text-sm text-sw-secondary underline underline-offset-4 transition-colors hover:text-sw-fg-1"
           >
-            {pctMode ? `¿Solo sabes el total? Mételo en ${fmt.many()}` : "Usar % + fijo"}
+            {pctMode ? `¿Solo sabes el total? Mételo en ${fmt.many()}` : `Volver a % y ${sym} por pedido`}
           </button>
         }
       />
       <CommissionRow
         label="Plataforma de tu tienda"
         concept="platformFee"
-        pct={{ value: form.platformFeePct, onChange: (v) => set("platformFeePct", v) }}
-        fixed={{ value: form.platformFeeFixed, onChange: (v) => set("platformFeeFixed", v) }}
+        pct={{ value: form.platformFeePct, onChange: (v) => set("platformFeePct", v), placeholder: "ej. 0" }}
+        fixed={{ value: form.platformFeeFixed, onChange: (v) => set("platformFeeFixed", v), placeholder: "ej. 0" }}
         amount={r.platformFees}
+        note="Si tu plataforma no te cobra comisión por venta, déjalo vacío o pon 0."
       />
       {form.apps.map((app, i) => (
         <CommissionRow
@@ -673,18 +983,14 @@ function CommissionTable({
           label={app.name || "App"}
           concept="appFees"
           nameInput={{ value: app.name, onChange: (v) => setApp(i, { name: v }) }}
-          pct={{ value: app.pct, onChange: (v) => setApp(i, { pct: v }) }}
+          pct={{ value: app.pct, onChange: (v) => setApp(i, { pct: v }), placeholder: "ej. 1" }}
           fixed={{ value: app.fixed, onChange: (v) => setApp(i, { fixed: v }) }}
           amount={r.appBreakdown.find((x) => x.id === app.id)?.amount ?? 0}
           onRemove={() => set("apps", form.apps.filter((x) => x.id !== app.id))}
         />
       ))}
-      <div>
-        <button
-          type="button"
-          onClick={() => set("apps", [...form.apps, { id: `app-${Date.now()}`, name: "", pct: "", fixed: "" }])}
-          className="inline-flex items-center gap-1.5 py-1 text-sm text-sw-secondary transition-colors hover:text-sw-fg-1"
-        >
+      <div className="pt-1 sm:py-2">
+        <button type="button" onClick={() => set("apps", [...form.apps, { id: `app-${Date.now()}`, name: "", pct: "", fixed: "" }])} className={ADD_BUTTON}>
           <Plus className="h-4 w-4" aria-hidden="true" />
           Añadir app que cobra %
         </button>
@@ -697,16 +1003,16 @@ function CommissionTable({
       <CommissionRow
         label="Comisión del marketplace"
         concept="marketplaceFee"
-        pct={{ value: form.mkFeePct, onChange: (v) => set("mkFeePct", v) }}
+        pct={{ value: form.mkFeePct, onChange: (v) => set("mkFeePct", v), placeholder: `ej. 6${dec}5` }}
         fixed={{ value: form.mkFeeFixed, onChange: (v) => set("mkFeeFixed", v) }}
         amount={r.marketplaceFees - otherFees}
         below={
-          <label className="mt-0.5 flex cursor-pointer items-center gap-2 pl-3 text-xs text-sw-fg-3">
+          <label className="mt-1.5 flex cursor-pointer items-center gap-2 text-sm text-sw-fg-2">
             <input
               type="checkbox"
               checked={form.mkFeeOnShipping}
               onChange={(e) => set("mkFeeOnShipping", e.target.checked)}
-              className="h-3.5 w-3.5 shrink-0 accent-sw-secondary"
+              className="h-4 w-4 shrink-0 accent-sw-secondary"
             />
             La comisión también se aplica al envío
           </label>
@@ -721,38 +1027,43 @@ function CommissionTable({
     </>
   )
 
-  const groupTitle = "pt-2.5 font-mono-label text-[11px] leading-none text-sw-fg-4"
+  const groupTitle = "pt-3 text-sm font-semibold text-sw-fg-2"
   return (
     <div className="border-t border-sw-line pt-4">
       <div className="flex items-center gap-2">
         <span className="text-sm font-semibold text-sw-fg-1">Comisiones</span>
         {help.button}
       </div>
-      <p className="mt-0.5 text-xs text-sw-fg-4">Lo que se queda cada servicio por venta, sin IVA.</p>
+      <p className="mt-1 text-sm leading-relaxed text-sw-fg-2">
+        Ej.: si tu pasarela cobra 1{dec}4 % + {fmt.eur2(Number((0.25 * currencyInfo(form.currency).perEur).toPrecision(2)))} por cobro, pon 1{dec}4 en «% por venta» y {exFixed} en «{sym} fijos por pedido». El total se calcula solo.
+      </p>
+      <p className="mt-1 text-xs text-sw-fg-3">Lo que se queda cada servicio por venta, sin IVA.</p>
       {help.panel}
 
-      {/* Cabecera, una sola vez para toda la tabla (las filas usan aria-label) */}
-      <div className={`${COMMISSION_COLS} mt-2 border-b border-sw-line pb-1 text-xs text-sw-fg-4`} aria-hidden="true">
-        <span className="hidden sm:block">Concepto</span>
-        <span>%</span>
-        <span>Fijo por pedido</span>
-        <span className="hidden text-right sm:block">Importe</span>
+      {/* Cabecera (solo en tabla, sm+). Cada campo lleva además su propia etiqueta accesible. */}
+      <div className={`hidden ${COMMISSION_COLS} mt-3 border-b border-sw-line pb-2 text-sm font-medium text-sw-fg-1`} aria-hidden="true">
+        <span>Servicio</span>
+        <span>% por venta</span>
+        <span>{sym} fijos por pedido</span>
+        <span className="text-right">Total del periodo</span>
       </div>
 
-      {both ? (
-        <>
-          <p className={groupTitle}>Tu tienda{share(1 - r.mkShare)}</p>
-          {storeRows}
-          <p className={`${groupTitle} border-t border-sw-line`}>Marketplace{share(r.mkShare)}</p>
-          {mkRows}
-        </>
-      ) : store ? (
-        storeRows
-      ) : (
-        mkRows
-      )}
+      <div className="mt-3 space-y-3 sm:mt-0 sm:space-y-0">
+        {both ? (
+          <>
+            <p className={groupTitle}>Tu tienda{share(1 - r.mkShare)}</p>
+            {storeRows}
+            <p className={`${groupTitle} border-t border-sw-line`}>Marketplace{share(r.mkShare)}</p>
+            {mkRows}
+          </>
+        ) : store ? (
+          storeRows
+        ) : (
+          mkRows
+        )}
+      </div>
 
-      <div className="flex items-baseline justify-between gap-3 border-t border-sw-line pt-2 text-sm">
+      <div className="mt-3 flex items-baseline justify-between gap-3 border-t border-sw-line pt-2 text-sm">
         <span className="font-semibold text-sw-fg-1">Total comisiones</span>
         <span className="font-semibold tabular-nums text-sw-fg-1">{fmt.eur(r.fees + r.salesFeesTotal)}</span>
       </div>
@@ -760,9 +1071,18 @@ function CommissionTable({
   )
 }
 
+/** Etiqueta visible solo en móvil (en la tabla la da la cabecera; el campo lleva aria-label). */
+function MobileLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="mb-1.5 block text-sm text-sw-fg-2 sm:hidden" aria-hidden="true">
+      {children}
+    </span>
+  )
+}
+
 /**
- * Una fila de la tabla de comisiones. Los inputs no llevan label visible (lo dice la
- * cabecera): su aria-label es "Concepto, %" / "Concepto, fijo por pedido".
+ * Un servicio de la tabla de comisiones. En sm+ es una fila de tabla; en móvil, una tarjeta
+ * con el nombre arriba, los campos uno por línea (con su etiqueta) y el total al final.
  * `total` = un solo importe que ocupa las columnas de % y fijo.
  */
 function CommissionRow({
@@ -774,6 +1094,9 @@ function CommissionRow({
   total,
   amount,
   missing,
+  note,
+  inputId,
+  onBlur,
   onRemove,
   below,
 }: {
@@ -783,78 +1106,126 @@ function CommissionRow({
   pct?: CommissionInput
   fixed?: CommissionInput
   total?: CommissionInput
-  /** Importe calculado de la fila; sin él, la columna Importe queda vacía. */
+  /** Importe calculado de la fila. */
   amount?: number
-  missing?: boolean
+  /** Aviso de dato obligatorio sin rellenar. */
+  missing?: string
+  /** Ayuda neutra bajo la fila. */
+  note?: string
+  /** id del primer campo (para llevarle el foco). */
+  inputId?: string
+  onBlur?: () => void
   onRemove?: () => void
   below?: React.ReactNode
 }) {
   const { button, panel } = useConcept(concept)
-  const amountText = amount === undefined ? "" : Math.abs(amount) > 0.004 ? fmt.eur(amount) : "—"
-  const amountCls = `min-w-0 break-words text-right tabular-nums text-sw-fg-3 ${amountSize(amountText, ["text-sm", "text-sm", "text-xs", "text-[11px]"])}`
+  const sym = fmt.sym()
+  const zero = amount === undefined || Math.abs(amount) <= 0.004
+  const amountText = fmt.eur(zero ? 0 : amount)
+  const amountCls = `min-w-0 break-words tabular-nums ${zero ? "text-sw-fg-3" : "font-semibold text-sw-fg-1"} ${amountSize(amountText, ["text-sm", "text-sm", "text-xs", "text-[11px]"])}`
+  const name = nameInput ? nameInput.value || "App" : label
+  const pctLabel = "% por venta"
+  const fixedLabel = `${sym} fijos por pedido`
+  const totalLabel = `Total del periodo (${sym})`
   const trash = onRemove ? (
     <button
       type="button"
-      aria-label={`Quitar ${label}`}
+      aria-label={`Quitar ${name}`}
       onClick={onRemove}
-      className="-m-1 rounded-sm p-1 text-sw-fg-4 transition-colors hover:text-sw-danger"
+      className="-m-1 rounded-sm p-1 text-sw-fg-3 transition-colors hover:text-sw-danger"
     >
       <Trash2 className="h-4 w-4" aria-hidden="true" />
     </button>
   ) : null
   return (
-    <div className="py-1">
-      <div className={`${COMMISSION_COLS} items-center gap-y-1.5`}>
-        <div className="col-span-2 min-w-0 sm:col-span-1">
-        <div className="flex min-w-0 items-center gap-2">
-          {nameInput ? (
-            <input
-              type="text"
-              value={nameInput.value}
-              aria-label="Nombre de la app"
-              placeholder="Nombre de la app"
-              onChange={(e) => nameInput.onChange(e.target.value)}
-              className="min-w-0 flex-1 border-b border-transparent bg-transparent py-0.5 text-base text-sw-fg-1 outline-none placeholder:text-sw-fg-4 focus:border-sw-secondary sm:text-sm"
-            />
-          ) : (
-            <span className="min-w-0 text-sm text-sw-fg-2">{label}</span>
-          )}
-          {button}
-          {/* Móvil: importe (y papelera) en la línea del nombre */}
-          <span className={`ml-auto shrink-0 sm:hidden ${amountCls}`}>{amountText}</span>
-          {trash && <span className="flex shrink-0 sm:hidden">{trash}</span>}
+    <div className="rounded-sm border border-sw-line bg-sw-bg-0 p-3 sm:rounded-none sm:border-0 sm:border-b sm:bg-transparent sm:px-0 sm:py-3">
+      <div className={COMMISSION_COLS}>
+        {/* Servicio */}
+        <div className="min-w-0 sm:pt-2.5">
+          <div className="flex min-w-0 items-center gap-2">
+            {nameInput ? (
+              <input
+                type="text"
+                value={nameInput.value}
+                aria-label="Nombre de la app"
+                placeholder="Nombre de la app"
+                onChange={(e) => nameInput.onChange(e.target.value)}
+                className="min-w-0 flex-1 border-b border-sw-line-strong bg-transparent py-0.5 text-base font-semibold text-sw-fg-1 outline-none placeholder:text-sw-fg-3 focus:border-sw-secondary sm:text-sm sm:font-normal"
+              />
+            ) : (
+              <span className="min-w-0 text-base font-semibold text-sw-fg-1 sm:text-sm sm:font-normal sm:text-sw-fg-2">{label}</span>
+            )}
+            {button}
+            {trash && <span className="ml-auto flex shrink-0 sm:hidden">{trash}</span>}
+          </div>
+          {below}
         </div>
-        {below}
-        </div>
+
         {total ? (
-          <div className="col-span-2">
+          <div className="mt-3 sm:col-span-2 sm:mt-0">
+            <MobileLabel>{totalLabel}</MobileLabel>
             <NumField
-              compact
-              ariaLabel={`${label}, total del periodo`}
+              id={inputId}
+              ariaLabel={`${name}: total del periodo (${sym})`}
               value={total.value}
               onChange={total.onChange}
-              suffix={fmt.sym()}
-              placeholder="Total del periodo"
+              onBlur={onBlur}
+              suffix={sym}
+              placeholder={total.placeholder ?? totalLabel}
               missing={missing}
               missingNote={false}
             />
           </div>
         ) : (
           <>
-            <NumField compact ariaLabel={`${label}, %`} value={pct?.value ?? ""} onChange={pct?.onChange ?? (() => {})} suffix="%" placeholder="0" missing={missing} missingNote={false} />
-            <NumField compact ariaLabel={`${label}, fijo por pedido`} value={fixed?.value ?? ""} onChange={fixed?.onChange ?? (() => {})} suffix={fmt.sym()} placeholder="0" />
+            <div className="mt-3 sm:mt-0">
+              <MobileLabel>{pctLabel}</MobileLabel>
+              <NumField
+                id={inputId}
+                ariaLabel={`${name}: ${pctLabel}`}
+                value={pct?.value ?? ""}
+                onChange={pct?.onChange ?? (() => {})}
+                onBlur={onBlur}
+                suffix="%"
+                placeholder={pct?.placeholder}
+                missing={missing}
+                missingNote={false}
+              />
+            </div>
+            <div className="mt-3 sm:mt-0">
+              <MobileLabel>{fixedLabel}</MobileLabel>
+              <NumField
+                ariaLabel={`${name}: ${fixedLabel}`}
+                value={fixed?.value ?? ""}
+                onChange={fixed?.onChange ?? (() => {})}
+                onBlur={onBlur}
+                suffix={sym}
+                placeholder={fixed?.placeholder}
+              />
+            </div>
           </>
         )}
-        <span className={`hidden sm:block ${amountCls}`}>{amountText}</span>
-        <span className="hidden justify-end sm:flex">{trash}</span>
+
+        {/* Total de la fila */}
+        <div className="mt-3 flex items-baseline justify-between gap-2 border-t border-sw-line pt-2 sm:mt-0 sm:block sm:border-0 sm:pt-3 sm:text-right">
+          <span className="text-sm text-sw-fg-2 sm:hidden">Total del periodo</span>
+          <span className={amountCls}>{amountText}</span>
+        </div>
+        <span className="hidden justify-end pt-3 sm:flex">{trash}</span>
       </div>
-      {missing && <p className="mt-1 text-xs text-amber-400">Dato clave. Si no tienes este gasto, pon 0.</p>}
+      {missing && <p className="mt-1.5 text-xs text-amber-200">{missing}</p>}
+      {note && (
+        <p className="mt-1.5 flex items-start gap-1.5 text-sm text-sw-fg-2">
+          <LevelIcon level="neutral" className="mt-0.5 h-4 w-4 shrink-0" />
+          {note}
+        </p>
+      )}
       {panel}
     </div>
   )
 }
 
-function VatField({ form, set }: { form: FormState; set: SetField }) {
+function VatField({ form, set, msg }: { form: FormState; set: SetField; msg?: string }) {
   // La ayuda va debajo de la fila, a todo el ancho: dentro de su celda empujaría
   // hacia abajo el campo «Tipo de IVA», que está alineado abajo (sm:items-end).
   const { button, panel } = useConcept("vat")
@@ -867,8 +1238,12 @@ function VatField({ form, set }: { form: FormState; set: SetField }) {
               <span className="text-sm text-sw-fg-2">¿Tus cifras de ventas incluyen IVA?</span>
               {button}
             </div>
+            {/* Sin opción preseleccionada: el usuario tiene que elegir */}
             <Segmented
-              ariaLabel="Las ventas incluyen IVA"
+              id="pc-vat"
+              ariaLabel="¿Tus cifras de ventas incluyen IVA?"
+              describedBy={msg ? "pc-vat-msg" : undefined}
+              invalid={!!msg}
               value={form.salesIncludeVat === null ? "" : form.salesIncludeVat ? "si" : "no"}
               onChange={(v) => set("salesIncludeVat", v === "si")}
               options={[
@@ -877,103 +1252,21 @@ function VatField({ form, set }: { form: FormState; set: SetField }) {
               ]}
             />
           </div>
-          <NumField label="Tipo de IVA" value={form.vatPct} onChange={(v) => set("vatPct", v)} suffix="%" placeholder={String(currencyInfo(form.currency).vat)} />
+          <NumField id="pc-vatPct" label="Tipo de IVA" value={form.vatPct} onChange={(v) => set("vatPct", v)} suffix="%" nonNegative placeholder={String(currencyInfo(form.currency).vat)} />
         </div>
         {panel}
       </div>
-      {form.salesIncludeVat === null && (
-        <p className="-mt-2 flex items-start gap-1.5 text-xs text-amber-400">
-          <LevelIcon level="warn" className="mt-px h-3.5 w-3.5 shrink-0" />
-          Dato clave. Revisa tu informe de ventas y elige una opción. Mientras tanto calculamos como si fueran sin IVA.
+      {msg && (
+        <p id="pc-vat-msg" className="-mt-2 text-xs text-amber-200">
+          {msg}
         </p>
       )}
-      <p className="-mt-2 text-xs text-sw-fg-4">
+      <p className="-mt-2 text-xs text-sw-fg-3">
         {form.quickMode
           ? "Se aplica a las ventas. Los costes, siempre sin IVA."
           : "Se aplica a ventas, descuentos, devoluciones, envíos cobrados y ventas atribuidas. Los costes, siempre sin IVA."}
       </p>
     </>
-  )
-}
-
-/** Modo rápido: lo mínimo para una primera estimación. */
-function QuickForm({
-  form,
-  set,
-  miss,
-  periodLabel,
-  onRefine,
-}: {
-  form: FormState
-  set: SetField
-  miss: (label: string) => boolean
-  periodLabel: string
-  onRefine: () => void
-}) {
-  return (
-    <div className="rounded-sm border border-sw-line-strong bg-sw-bg-1">
-      <div className="px-4 py-4 sm:px-5">
-        <p className="font-semibold text-sw-fg-1">Lo mínimo para una estimación</p>
-        <p className="mt-0.5 text-xs text-sw-fg-3">
-          Mete el total de {periodLabel}. No incluye pasarela de pago, packaging, descuentos ni devoluciones: el resultado será una estimación rápida.
-        </p>
-      </div>
-      <div className="space-y-5 border-t border-sw-line px-4 pb-5 pt-4 sm:px-5">
-        <VatField form={form} set={set} />
-        <div className="grid gap-4 sm:grid-cols-2">
-          <NumField concept="grossSales" value={form.grossSales} onChange={(v) => set("grossSales", v)} suffix={fmt.sym()} missing={miss("Ventas brutas") && MISSING_SALES} />
-          <NumField concept="orders" value={form.orders} onChange={(v) => set("orders", v)} integer missing={miss("Pedidos") && MISSING_SALES} />
-          <div className="space-y-2">
-            <NumField
-              concept="cogs"
-              label={form.cogsMode === "pct" ? "Coste de producto (%)" : `Coste de producto (${fmt.sym()})`}
-              value={form.cogs}
-              onChange={(v) => set("cogs", v)}
-              suffix={form.cogsMode === "pct" ? "%" : fmt.sym()}
-              hint={form.cogsMode === "pct" ? "% sobre tus ventas sin IVA" : "Total del periodo, sin IVA"}
-              missing={miss("Coste de producto") && MISSING_SALES}
-            />
-            {form.cogsMode === "eur" && (
-              <Segmented
-                size="sm"
-                ariaLabel="Unidad del coste de producto"
-                value={form.cogsMode}
-                onChange={(v) => set("cogsMode", v)}
-                options={[
-                  { value: "pct", label: "En %" },
-                  { value: "eur", label: `En ${fmt.many()}` },
-                ]}
-              />
-            )}
-          </div>
-          <NumField concept="shippingPaid" value={form.shippingPaid} onChange={(v) => set("shippingPaid", v)} suffix={fmt.sym()} missing={miss("Envíos pagados")} />
-          <NumField
-            label="Gasto total en publicidad"
-            value={form.adSpendTotal}
-            onChange={(v) => set("adSpendTotal", v)}
-            suffix={fmt.sym()}
-            hint="Todas las plataformas juntas, sin IVA. Si no haces publicidad, pon 0."
-          />
-          <NumField
-            label="Gastos fijos del periodo"
-            value={form.otherFixed}
-            onChange={(v) => set("otherFixed", v)}
-            suffix={fmt.sym()}
-            hint="Plataforma, apps, alquiler, gestoría, tu sueldo… todo lo que pagas vendas o no."
-            missing={miss("Gastos fijos")}
-          />
-          <NumField concept="sessions" label="Sesiones (opcional)" value={form.sessions} onChange={(v) => set("sessions", v)} integer />
-        </div>
-        <button
-          type="button"
-          onClick={onRefine}
-          className="inline-flex items-center gap-1.5 rounded-sm border border-sw-line-strong px-4 py-2.5 text-sm font-semibold text-sw-fg-1 transition-colors hover:border-sw-fg-1"
-        >
-          Afinar mi cálculo
-          <ArrowRight className="h-4 w-4" aria-hidden="true" />
-        </button>
-      </div>
-    </div>
   )
 }
 
@@ -1030,18 +1323,31 @@ function resultHeadline(r: Results) {
 
 function SummaryCard({
   r,
+  ready,
   per,
   months,
   periodLabel,
   warnings,
+  taxKnown,
+  isExample,
+  onStartOwn,
   onRefine,
+  onMissing,
 }: {
   r: Results
+  /** Datos mínimos completos: si no, ninguna cifra. */
+  ready: boolean
   per: string
   months: number
   periodLabel: string
   warnings: string[]
+  /** Impuesto indicado (> 0); si no, el resultado es antes de impuestos. */
+  taxKnown: boolean
+  isExample: boolean
+  onStartOwn: () => void
   onRefine: () => void
+  /** Abre el paso del dato que falta y le pone el foco. */
+  onMissing: (label: string) => void
 }) {
   const comp = r.completeness
   const level = levelOf.result(r.netProfit, r)
@@ -1049,8 +1355,61 @@ function SummaryCard({
   const { button, panel } = useConcept("netProfit")
   // Sin ventas brutas no hay cifra que enseñar.
   const noSales = comp.missing.includes("Ventas brutas")
+
+  // Datos de ejemplo: se identifican también aquí (el aviso del formulario no se ve al bajar).
+  const exampleNote = isExample ? (
+    <div className="flex flex-col gap-2 border-b border-sw-secondary/40 bg-sw-secondary/10 p-4">
+      <p className="text-sm font-semibold text-sw-fg-1">Estás viendo una tienda de ejemplo. Estos números no son tuyos.</p>
+      <button
+        type="button"
+        onClick={onStartOwn}
+        className="inline-flex items-center justify-center gap-1.5 self-start rounded-sm bg-sw-secondary-strong px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-sw-secondary"
+      >
+        Empezar con mis números
+        <ArrowRight className="h-4 w-4" aria-hidden="true" />
+      </button>
+    </div>
+  ) : null
+
+  // Mientras falte un dato mínimo: ni beneficio, ni proyección, ni métricas. Solo lo que falta.
+  if (!ready) {
+    const n = comp.missing.length
+    return (
+      <div id="pc-resultado" tabIndex={-1} className="scroll-mt-28 rounded-sm border border-sw-line-strong bg-sw-bg-1 outline-none">
+        {exampleNote}
+        <div className="p-5">
+        <span className="font-mono-label text-[11px] text-sw-fg-3">Resultado · {periodLabel}</span>
+        {n > 0 ? (
+          <>
+            <p className="mt-3 text-lg font-semibold text-sw-fg-1">
+              {n === 1 ? "Te falta 1 dato para ver tu resultado" : `Te faltan ${n} datos para ver tu resultado`}
+            </p>
+            <ul className="mt-3 space-y-2">
+              {comp.missing.map((m) => (
+                <li key={m}>
+                  <button
+                    type="button"
+                    onClick={() => onMissing(m)}
+                    className="inline-flex items-start gap-1.5 text-left text-sm text-sw-secondary underline underline-offset-4 transition-colors hover:text-sw-fg-1"
+                  >
+                    <ArrowRight className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                    {m}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <p className="mt-3 text-sm text-sw-fg-3">Mete tus ventas y costes para ver si tu tienda gana o pierde dinero.</p>
+        )}
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="rounded-sm border border-sw-line-strong bg-sw-bg-1">
+    <div id="pc-resultado" tabIndex={-1} className="scroll-mt-28 rounded-sm border border-sw-line-strong bg-sw-bg-1 outline-none">
+      {exampleNote}
       <div className={`border-b border-sw-line p-5 ${r.hasData ? s.bg : ""}`}>
         <div className="flex items-center justify-between gap-2">
           <span className="font-mono-label text-[11px] text-sw-fg-3">Resultado · {periodLabel}</span>
@@ -1070,7 +1429,7 @@ function SummaryCard({
               {fmt.eur(Math.abs(r.netProfit))}
             </p>
             <p className="mt-1 text-sm text-sw-fg-3">
-              de beneficio neto {per}
+              {taxKnown ? "de beneficio neto" : "de beneficio antes de impuestos"} {per}
               {months > 1 && <> · {fmt.eur(r.netProfit / months)} al mes</>}
             </p>
           </>
@@ -1356,6 +1715,8 @@ interface AnalysisProps {
   set: SetField
   /** Pasar a modo completo (para los bloques que solo existen ahí) */
   onRefine: () => void
+  /** Datos mínimos completos */
+  ready: boolean
 }
 
 /** Nota para una métrica que sería "Bien" pero el resultado global no lo respalda. */
@@ -1366,12 +1727,12 @@ function cappedNote(raw: Level, r: Results): string | null {
 }
 const withNote = (sub: string | undefined, note: string | null) => (note ? (sub ? `${sub} · ${note}` : note) : sub)
 
-function Analysis({ r, inputs, form, per, set, onRefine }: AnalysisProps) {
-  if (!r.hasData) {
+function Analysis({ r, inputs, form, per, set, onRefine, ready }: AnalysisProps) {
+  if (!ready) {
     return (
       <section id="analisis" className="bg-sw-bg-1 py-16">
         <div className="mx-auto max-w-3xl px-5 text-center text-sw-fg-3">
-          Cuando metas tus ventas y costes, aquí verás el análisis completo y qué hacer.
+          Cuando completes los datos mínimos, aquí verás el análisis completo y qué hacer.
         </div>
       </section>
     )
@@ -1673,19 +2034,19 @@ function StoreDecisionBlock({ r, inputs, form, set }: { r: Results; inputs: Inpu
           {marketplace && (
             <div>
               <p className={groupTitle}>Costes de la tienda</p>
-              <div className={`${COMMISSION_COLS} mt-3 border-b border-sw-line pb-1 text-xs text-sw-fg-4`} aria-hidden="true">
+              <div className={`${STORE_COST_COLS} mt-3 border-b border-sw-line pb-1 text-xs text-sw-fg-4`} aria-hidden="true">
                 <span className="hidden sm:block" />
                 <span>%</span>
                 <span>Fijo por pedido</span>
               </div>
-              <CommissionRow
+              <StoreCostRow
                 label="Pasarela de pago"
                 concept="fees"
                 pct={{ value: form.storeGatewayPct, onChange: (v) => set("storeGatewayPct", v) }}
                 fixed={{ value: form.storeGatewayFixed, onChange: (v) => set("storeGatewayFixed", v) }}
                 missing={missing.includes("Pasarela de pago de tu tienda")}
               />
-              <CommissionRow
+              <StoreCostRow
                 label="Comisión de la plataforma"
                 concept="platformFee"
                 pct={{ value: form.storePlatformPct, onChange: (v) => set("storePlatformPct", v) }}
@@ -1751,6 +2112,107 @@ function StoreDecisionBlock({ r, inputs, form, set }: { r: Results; inputs: Inpu
           </a>
         </div>
       </div>
+    </div>
+  )
+}
+
+
+// Filas de costes de la tienda en «¿Te conviene abrir tu tienda propia?» (análisis): mismo
+// formato de siempre, independiente de la tabla de comisiones del formulario.
+const STORE_COST_COLS = "grid grid-cols-2 gap-x-2 sm:grid-cols-[minmax(0,1fr)_5.5rem_7rem_7rem_1.75rem]"
+
+type StoreCostInput = { value: string; onChange: (v: string) => void }
+
+/**
+ * Una fila de la tabla de comisiones. Los inputs no llevan label visible (lo dice la
+ * cabecera): su aria-label es "Concepto, %" / "Concepto, fijo por pedido".
+ * `total` = un solo importe que ocupa las columnas de % y fijo.
+ */
+function StoreCostRow({
+  label,
+  concept,
+  nameInput,
+  pct,
+  fixed,
+  total,
+  amount,
+  missing,
+  onRemove,
+  below,
+}: {
+  label: string
+  concept: string
+  nameInput?: StoreCostInput
+  pct?: StoreCostInput
+  fixed?: StoreCostInput
+  total?: StoreCostInput
+  /** Importe calculado de la fila; sin él, la columna Importe queda vacía. */
+  amount?: number
+  missing?: boolean
+  onRemove?: () => void
+  below?: React.ReactNode
+}) {
+  const { button, panel } = useConcept(concept)
+  const amountText = amount === undefined ? "" : Math.abs(amount) > 0.004 ? fmt.eur(amount) : "—"
+  const amountCls = `min-w-0 break-words text-right tabular-nums text-sw-fg-3 ${amountSize(amountText, ["text-sm", "text-sm", "text-xs", "text-[11px]"])}`
+  const trash = onRemove ? (
+    <button
+      type="button"
+      aria-label={`Quitar ${label}`}
+      onClick={onRemove}
+      className="-m-1 rounded-sm p-1 text-sw-fg-4 transition-colors hover:text-sw-danger"
+    >
+      <Trash2 className="h-4 w-4" aria-hidden="true" />
+    </button>
+  ) : null
+  return (
+    <div className="py-1">
+      <div className={`${STORE_COST_COLS} items-center gap-y-1.5`}>
+        <div className="col-span-2 min-w-0 sm:col-span-1">
+        <div className="flex min-w-0 items-center gap-2">
+          {nameInput ? (
+            <input
+              type="text"
+              value={nameInput.value}
+              aria-label="Nombre de la app"
+              placeholder="Nombre de la app"
+              onChange={(e) => nameInput.onChange(e.target.value)}
+              className="min-w-0 flex-1 border-b border-transparent bg-transparent py-0.5 text-base text-sw-fg-1 outline-none placeholder:text-sw-fg-4 focus:border-sw-secondary sm:text-sm"
+            />
+          ) : (
+            <span className="min-w-0 text-sm text-sw-fg-2">{label}</span>
+          )}
+          {button}
+          {/* Móvil: importe (y papelera) en la línea del nombre */}
+          <span className={`ml-auto shrink-0 sm:hidden ${amountCls}`}>{amountText}</span>
+          {trash && <span className="flex shrink-0 sm:hidden">{trash}</span>}
+        </div>
+        {below}
+        </div>
+        {total ? (
+          <div className="col-span-2">
+            <NumField
+              compact
+              ariaLabel={`${label}, total del periodo`}
+              value={total.value}
+              onChange={total.onChange}
+              suffix={fmt.sym()}
+              placeholder="Total del periodo"
+              missing={missing}
+              missingNote={false}
+            />
+          </div>
+        ) : (
+          <>
+            <NumField compact ariaLabel={`${label}, %`} value={pct?.value ?? ""} onChange={pct?.onChange ?? (() => {})} suffix="%" placeholder="0" missing={missing} missingNote={false} />
+            <NumField compact ariaLabel={`${label}, fijo por pedido`} value={fixed?.value ?? ""} onChange={fixed?.onChange ?? (() => {})} suffix={fmt.sym()} placeholder="0" />
+          </>
+        )}
+        <span className={`hidden sm:block ${amountCls}`}>{amountText}</span>
+        <span className="hidden justify-end sm:flex">{trash}</span>
+      </div>
+      {missing && <p className="mt-1 text-xs text-amber-400">Dato clave. Si no tienes este gasto, pon 0.</p>}
+      {panel}
     </div>
   )
 }
@@ -2329,7 +2791,27 @@ function Projection({ r, form, set }: { r: Results; form: FormState; set: SetFie
   )
 }
 
-function MobileBar({ r, per }: { r: Results; per: string }) {
+function MobileBar({
+  r,
+  ready,
+  per,
+  progress,
+  missingCount,
+  taxKnown,
+  isExample,
+  onContinue,
+}: {
+  r: Results
+  ready: boolean
+  per: string
+  /** «Paso 2/4» (corto: la barra tiene que caber en una línea a 375 px) */
+  progress: string
+  missingCount: number
+  taxKnown: boolean
+  isExample: boolean
+  /** Lleva al primer dato pendiente. */
+  onContinue: () => void
+}) {
   const [hidden, setHidden] = useState(false)
   useEffect(() => {
     const el = document.getElementById("analisis")
@@ -2337,25 +2819,48 @@ function MobileBar({ r, per }: { r: Results; per: string }) {
     const io = new IntersectionObserver(([e]) => setHidden(e.isIntersecting || e.boundingClientRect.top < 0), { threshold: 0 })
     io.observe(el)
     return () => io.disconnect()
-  }, [r.hasData])
-  if (!r.hasData) return null
+  }, [ready])
   const level = levelOf.result(r.netProfit, r)
   const status = r.completeness.status
-  const noSales = r.completeness.missing.includes("Ventas brutas")
+  const barCls = `fixed inset-x-0 bottom-0 z-40 border-t border-sw-line-strong bg-sw-bg-0/95 backdrop-blur transition-transform lg:hidden ${
+    hidden ? "translate-y-full" : "translate-y-0"
+  }`
+
+  // Sin los datos mínimos: progreso en lugar de cifra, y «Continuar» al primer dato pendiente.
+  if (!ready) {
+    return (
+      <div className={barCls}>
+        <div className="flex items-center justify-between gap-3 px-4 py-3">
+          <p className="min-w-0 truncate whitespace-nowrap text-sm font-semibold text-sw-fg-1">
+            {progress}
+            {missingCount > 0 && ` · ${missingCount === 1 ? "Falta 1 dato" : `Faltan ${missingCount} datos`}`}
+          </p>
+          <button
+            type="button"
+            onClick={onContinue}
+            className="flex shrink-0 items-center gap-1.5 rounded-sm bg-sw-secondary-strong px-4 py-2.5 text-sm font-semibold text-white"
+          >
+            Continuar
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-sw-line-strong bg-sw-bg-0/95 backdrop-blur transition-transform lg:hidden ${
-        hidden ? "translate-y-full" : "translate-y-0"
-      }`}
-    >
+    <div className={barCls}>
       <div className="flex items-center justify-between gap-3 px-4 py-3">
         <div className="min-w-0">
-          <p className="text-xs text-sw-fg-3">
-            {status === "complete"
-              ? `${r.netProfit >= 0 ? "Ganas" : "Pierdes"} ${per}`
-              : `${status === "quick" ? "Estimación rápida" : "Estimación incompleta"} · ${r.netProfit >= 0 ? "ganaría" : "pierde"} ${per}`}
+          <p className="truncate text-xs text-sw-fg-3">
+            {isExample
+              ? `Ejemplo · ${r.netProfit >= 0 ? "ganaría" : "perdería"} ${per}`
+              : status === "complete"
+                ? `${r.netProfit >= 0 ? "Ganas" : "Pierdes"} ${per}`
+                : `Estimación rápida · ${r.netProfit >= 0 ? "ganaría" : "perdería"} ${per}`}
+            {!taxKnown && " · antes de impuestos"}
           </p>
-          <p className={`break-words text-xl font-semibold tabular-nums ${LEVEL_STYLES[level].text}`}>{noSales ? "—" : fmt.eur(Math.abs(r.netProfit))}</p>
+          <p className={`break-words text-xl font-semibold tabular-nums ${LEVEL_STYLES[level].text}`}>{fmt.eur(Math.abs(r.netProfit))}</p>
         </div>
         <a href="#analisis" className="flex shrink-0 items-center gap-1.5 rounded-sm bg-sw-secondary-strong px-4 py-2.5 text-sm font-semibold text-white">
           Ver análisis

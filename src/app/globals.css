@@ -88,3 +88,19 @@ body {
 .animate-marquee {
   animation: marquee 26s linear infinite;
 }
+
+/* Calculadora de beneficios, solo mientras se ve la tarjeta de inicio o «Tienes un
+   cálculo a medias» ([data-pc-compact]): el pie empieza justo después del contenido
+   (se anula el min-height del contenedor de la página) y, si la pantalla es más alta,
+   es el pie el que se estira hasta abajo. El resto de páginas no cambian. */
+body:has([data-pc-compact]) {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+body:has([data-pc-compact]) > div.min-h-screen {
+  min-height: 0;
+}
+body:has([data-pc-compact]) > footer {
+  flex-grow: 1;
+}
