@@ -171,7 +171,10 @@ export default function ProfitCalculator() {
     setIsExample(false)
     clearProgress()
     setStage("wizard")
-    openStepIn(stepsFor(true), 0)
+    setStep(0)
+    // Primero, el selector de modo: el usuario ve que está en el rápido y que puede elegir el completo.
+    // El foco va a la opción marcada (Modo rápido).
+    request("pc-mode")
   }
   const startExample = () => {
     setForm(toQuickMode(exampleForm(form.currency)))
@@ -860,7 +863,7 @@ function ModeSwitch({ quick, onQuick, onFull }: { quick: boolean; onQuick: () =>
     },
   ]
   return (
-    <div className="rounded-sm border border-sw-line bg-sw-bg-1 p-3 sm:p-4">
+    <div id="pc-mode" className="scroll-mt-24 rounded-sm border border-sw-line bg-sw-bg-1 p-3 sm:p-4">
       <p id="pc-mode-label" className="mb-2 text-sm font-semibold text-sw-fg-1">
         ¿Cómo quieres calcularlo?
       </p>
