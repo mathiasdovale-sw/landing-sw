@@ -1935,7 +1935,7 @@ function Analysis({ r, inputs, form, per, set, onRefine, onEditTrafficField, rea
             <Kpi concept="netRevenue" value={fmt.eur(r.netRevenue)} sub={`Los clientes pagaron ${fmt.eur(r.totalCharged)} con IVA`} />
             <Kpi concept="vatCollected" value={fmt.eur(r.vatCollected)} sub={`No es tuyo: es para ${fmt.tax()}`} />
             <Kpi concept="aov" value={fmt.eur2(r.aov)} />
-            <Kpi concept="conversionRate" value={fmt.pct(r.conversionRate)} level={levelOf.conversion(r.conversionRate)} sub={r.sessions > 0 ? `${fmt.num(r.orders)} pedidos de ${fmt.num(r.sessions)} sesiones` : undefined} />
+            <Kpi concept="conversionRate" value={fmt.conv(r.conversionRate)} level={levelOf.conversion(r.conversionRate)} sub={r.sessions > 0 ? `${fmt.num(r.orders)} pedidos de ${fmt.num(r.sessions)} sesiones` : undefined} />
             <Kpi concept="rpv" value={fmt.eur2(r.rpv)} />
           </KpiGroup>
           <KpiGroup title="Márgenes">

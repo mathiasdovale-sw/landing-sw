@@ -757,6 +757,7 @@ function buildFormatters(code: CurrencyCode) {
     num2,
     num4: NF(locale, { minimumFractionDigits: 4, maximumFractionDigits: 4 }),
     pct1: NF(locale, { style: "percent", minimumFractionDigits: 1, maximumFractionDigits: 1 }),
+    pct2: NF(locale, { style: "percent", minimumFractionDigits: 2, maximumFractionDigits: 2 }),
   }
 }
 
@@ -802,6 +803,8 @@ export const fmt = {
   dec: (v: number | null) => (v === null ? "—" : F.num2.format(z0(v, 2))),
   dec4: (v: number | null) => (v === null ? "—" : F.num4.format(v)),
   pct: (v: number | null) => (v === null ? "—" : F.pct1.format(z0(v, 3))),
+  /** Tasa de conversión: siempre 2 decimales (de 1,80 % a 1,89 % se nota; con 1 decimal parecería igual). */
+  conv: (v: number | null) => (v === null ? "—" : F.pct2.format(z0(v, 4))),
   /** Símbolo de la moneda elegida ("€", "$", "S/"…) */
   sym: () => F.symbol,
   /** Separador decimal de la moneda elegida ("," o ".") */
@@ -1103,7 +1106,7 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
     out.push({
       level: cr,
       impact: Math.max(0, leverDelta("conversion")),
-      title: `Solo compra el ${fmt.pct(r.conversionRate)} de las visitas`,
+      title: `Solo compra el ${fmt.conv(r.conversionRate)} de las visitas`,
       text: "Tu tráfico llega pero no convierte. Antes de pagar más publicidad, conviene entender qué frena la compra dentro de la tienda: cada mejora de conversión abarata todo tu marketing.",
     })
   }

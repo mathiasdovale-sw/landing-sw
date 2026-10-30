@@ -139,12 +139,12 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
   // Tráfico y clientes
   f.aov = [`(${e(r.gross)} − ${e(r.discounts)}) ÷ ${n(r.orders)} pedidos = ${e2(r.aov)}`]
   const noVisits = ["Sin el dato de visitas no se puede calcular"]
-  f.conversionRate = r.sessions > 0 ? [`${n(r.orders)} pedidos ÷ ${n(r.sessions)} sesiones = ${p(r.conversionRate)}`] : noVisits
+  f.conversionRate = r.sessions > 0 ? [`${n(r.orders)} pedidos ÷ ${n(r.sessions)} sesiones = ${fmt.conv(r.conversionRate)}`] : noVisits
   f.rpv =
     r.sessions > 0
       ? [
           `(${e(r.gross)} − ${e(r.discounts)}) ÷ ${n(r.sessions)} sesiones = ${e2(r.rpv)}`,
-          `Comprobación: ${p(r.conversionRate)} × ${e2(r.aov)} = ${e2(r.conversionRate !== null && r.aov !== null ? r.conversionRate * r.aov : null)}`,
+          `Comprobación: ${fmt.conv(r.conversionRate)} × ${e2(r.aov)} = ${e2(r.conversionRate !== null && r.aov !== null ? r.conversionRate * r.aov : null)}`,
         ]
       : noVisits
   // Mismo cálculo que la palanca de Recompra (recurrentOrders)

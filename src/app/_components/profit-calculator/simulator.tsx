@@ -54,7 +54,7 @@ const REPEAT_BLOCKED: Partial<Record<NonNullable<LeverBlock>, string>> = {
 
 const LEVERS: LeverDef[] = [
   { key: "traffic", label: "Visitas sin publicidad", hint: "SEO, redes, email, recomendaciones…", icon: Users, min: -50, max: 100, step: 5, show: (r) => fmt.num(r.sessions) },
-  { key: "conversion", label: "Tasa de conversión", hint: "Más visitas que terminan comprando", icon: MousePointerClick, min: -50, max: 100, step: 5, show: (r) => fmt.pct(r.conversionRate) },
+  { key: "conversion", label: "Tasa de conversión", hint: "Más visitas que terminan comprando", icon: MousePointerClick, min: -50, max: 100, step: 5, show: (r) => fmt.conv(r.conversionRate) },
   { key: "aov", label: "Ticket medio", hint: "Cada pedido vale más (packs, upsells…)", icon: ShoppingBag, min: -30, max: 50, step: 1, show: (r) => fmt.eur2(r.aov) },
   {
     key: "repeat",
@@ -343,7 +343,7 @@ export default function Simulator({ inputs, base, per, onRefine, onEditTrafficFi
             <div className="mt-6 grid grid-cols-2 gap-2">
               {base.sessions > 0 && <MiniDelta label="Visitas" a={base.sessions} b={sim.sessions} format={fmt.num} better="up" />}
               <MiniDelta label="Pedidos" a={base.orders} b={sim.orders} format={fmt.num} better="up" />
-              <MiniDelta label="Conversión" a={base.conversionRate} b={sim.conversionRate} format={fmt.pct} better="up" />
+              <MiniDelta label="Conversión" a={base.conversionRate} b={sim.conversionRate} format={fmt.conv} better="up" />
               <MiniDelta label="Ticket medio" a={base.aov} b={sim.aov} format={fmt.eur2} better="up" />
               <MiniDelta label={`Te queda por ${fmt.one()}`} a={base.cm1PerEuro} b={sim.cm1PerEuro} format={fmt.eur2} better="up" />
               <MiniDelta label="ROAS breakeven" a={base.roasBreakeven} b={sim.roasBreakeven} format={fmt.x} better="down" />
