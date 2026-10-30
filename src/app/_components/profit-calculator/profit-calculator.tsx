@@ -1,7 +1,7 @@
 "use client"
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { ArrowDown, ArrowRight, CheckCircle2, Plus, RotateCcw, SlidersHorizontal, Trash2, X, Zap } from "lucide-react"
-import { adsScenario, applyMode, capGood, compute, CURRENCIES, currencyInfo, dataWarnings, fmt, isCurrency, levelOf, setCurrency, storeDecision, ordinal, MONTHS_LONG, MONTHS_SHORT, type CurrencyCode, type Inputs, type Level, type Results, type SeasonProfile, type StoreDecision } from "./calc"
+import { adsScenario, applyMode, capGood, compute, NEW_CUSTOMERS_INVALID, CURRENCIES, currencyInfo, dataWarnings, fmt, isCurrency, levelOf, setCurrency, storeDecision, ordinal, MONTHS_LONG, MONTHS_SHORT, type CurrencyCode, type Inputs, type Level, type Results, type SeasonProfile, type StoreDecision } from "./calc"
 import { emptyForm, exampleForm, loadSaved, parseNum, serializeSaved, STORAGE_KEY, switchCurrency, toFullMode, toInputs, toQuickMode, type FormState } from "./form"
 import { buildFormulas } from "./formulas"
 import ReviewRequest, { HelpRequest } from "./review-request"
@@ -135,6 +135,16 @@ export default function ProfitCalculator() {
     const id = domIdOfField(f, quick)
     request(id, id, "center")
   }
+  /**
+   * Llevar al resultado. En escritorio la tarjeta va fija en la columna derecha y ya está a la
+   * vista (no habría scroll): se baja al análisis completo. En móvil, a la tarjeta del resultado.
+   */
+  const showResult = () => {
+    const aside = document.getElementById("pc-resultado")?.closest("aside")
+    const sticky = !!aside && getComputedStyle(aside).position === "sticky"
+    if (sticky) request("analisis", "analisis")
+    else request("pc-resultado", "pc-resultado")
+  }
   const next = () => {
     const s = steps[cur]
     const miss = stepMissing(s.id)
@@ -150,7 +160,7 @@ export default function ProfitCalculator() {
       setAttempted((a) => new Set(a).add(stepOfField(missingFields[0], quick)))
       return goToField(missingFields[0])
     }
-    request("pc-resultado", "pc-resultado")
+    showResult()
   }
   /** Primer paso sin completar (para «Continuar donde lo dejé»). */
   const firstIncomplete = () => {
@@ -188,7 +198,7 @@ export default function ProfitCalculator() {
     if (!ready) return openStep(firstIncomplete())
     // Datos mínimos completos: directamente al resultado.
     setStep(firstIncomplete())
-    request("pc-resultado", "pc-resultado")
+    showResult()
   }
   const reset = () => {
     setForm({ ...emptyForm(form.currency), quickMode: form.quickMode })
@@ -233,6 +243,12 @@ export default function ProfitCalculator() {
     }
     setForm((f) => switchCurrency(f, currency))
   }
+  /** Desde el simulador: abre «Ventas y tráfico» con el foco en un campo (visitas de anuncios o sesiones). */
+  const editTrafficField = (id: SalesFieldId) => {
+    const i = steps.findIndex((s) => s.id === "sales")
+    if (i >= 0) setStep(i)
+    request(id, id, "center")
+  }
   const continueBar = () => (missingFields.length > 0 ? goToField(missingFields[0]) : openStep(cur))
 
   const periodLabel = periodText(r.periodMonths, form.months)
@@ -243,6 +259,29 @@ export default function ProfitCalculator() {
 
   // --- Contenido de cada paso -----------------------------------------------
   const vatMsg = fieldMsg("salesIncludeVat")
+  // «Visitas que vienen de anuncios»: mismos casos que trafficSplit (calc.ts). Si no es válido,
+  // el simulador usa la estimación por ventas atribuidas.
+  const adRaw = form.adSessions.trim()
+  const adVal = parseNum(form.adSessions)
+  const sessVal = parseNum(form.sessions) ?? 0
+  const adSessionsError =
+    adRaw === ""
+      ? undefined
+      : adVal === null
+        ? "Escribe solo números."
+        : adVal < 0
+          ? "Tiene que ser 0 o más."
+          : sessVal > 0 && adVal > sessVal
+            ? "No puede ser mayor que el total de visitas."
+            : undefined
+  const adSessionsNote =
+    adRaw === "" || adSessionsError
+      ? undefined
+      : !(sessVal > 0)
+        ? "Para usar este dato, indica también el total de visitas (Sesiones)."
+        : adVal === 0 && r.adSpend > 0
+          ? `Gastas ${fmt.eur(r.adSpend)} en anuncios pero indicas 0 visitas que vienen de ellos. Revisa si tus anuncios llevan enlaces etiquetados (UTM): sin ellos, esas visitas aparecen como "directo" o "social".`
+          : undefined
   const salesFilled = form.grossSales.trim() !== ""
 
   const stepView = (id: StepId, n: number): { summary: string; intro: string; content: React.ReactNode } => {
@@ -385,16 +424,38 @@ export default function ProfitCalculator() {
                 <NumField concept="returns" value={form.returns} onChange={(v) => set("returns", v)} suffix={fmt.sym()} />
                 <NumField concept="shippingCharged" value={form.shippingCharged} onChange={(v) => set("shippingCharged", v)} suffix={fmt.sym()} />
                 <NumField id="pc-orders" concept="orders" value={form.orders} onChange={(v) => set("orders", v)} integer nonNegative onBlur={touch("orders")} missing={fieldMsg("orders")} />
+                {/* Sesiones y, justo debajo, las que vienen de anuncios (para el simulador) */}
+                <div className="space-y-4">
+                  <NumField
+                    id="pc-sessions"
+                    concept="sessions"
+                    label={form.salesChannel === "marketplace" ? "Visitas (si tu marketplace las muestra)" : undefined}
+                    value={form.sessions}
+                    onChange={(v) => set("sessions", v)}
+                    integer
+                    nonNegative
+                  />
+                  <NumField
+                    id="pc-adSessions"
+                    concept="adSessions"
+                    label="Visitas que vienen de anuncios (opcional)"
+                    value={form.adSessions}
+                    onChange={(v) => set("adSessions", v)}
+                    integer
+                    error={adSessionsError}
+                    note={adSessionsNote}
+                  />
+                </div>
                 <NumField
-                  concept="sessions"
-                  label={form.salesChannel === "marketplace" ? "Visitas (si tu marketplace las muestra)" : undefined}
-                  value={form.sessions}
-                  onChange={(v) => set("sessions", v)}
+                  id="pc-newCustomers"
+                  concept="newCustomers"
+                  label="Clientes nuevos (opcional)"
+                  value={form.newCustomers}
+                  onChange={(v) => set("newCustomers", v)}
                   integer
                   nonNegative
+                  error={r.newCustomersInvalid ? NEW_CUSTOMERS_INVALID : undefined}
                 />
-                <NumField concept="newCustomers" value={form.newCustomers} onChange={(v) => set("newCustomers", v)} integer nonNegative />
-                <NumField concept="returningCustomers" value={form.returningCustomers} onChange={(v) => set("returningCustomers", v)} integer nonNegative />
               </div>
             </div>
           ),
@@ -572,6 +633,7 @@ export default function ProfitCalculator() {
                       <div className="grid grid-cols-2 gap-2">
                         <NumField
                           label="Inversión"
+                          ariaLabel={`${ad.name.trim() || "Plataforma sin nombre"}: inversión`}
                           value={ad.spend}
                           suffix={fmt.sym()}
                           onChange={(v) => {
@@ -582,6 +644,7 @@ export default function ProfitCalculator() {
                         />
                         <NumField
                           label="Ventas atribuidas"
+                          ariaLabel={`${ad.name.trim() || "Plataforma sin nombre"}: ventas atribuidas`}
                           value={ad.attributed}
                           suffix={fmt.sym()}
                           nonNegative
@@ -669,14 +732,8 @@ export default function ProfitCalculator() {
                   value={form.ltvFrequency}
                   onChange={(v) => set("ltvFrequency", v)}
                   nonNegative
-                  placeholder={r.ltvFrequencyIsEstimate && r.ltvFrequency ? fmt.dec(r.ltvFrequency) : "ej. 1,4"}
-                  hint={
-                    r.ltvFrequencyIsEstimate
-                      ? `Estimado con tus 12 meses de datos: ${fmt.dec(r.ltvFrequency)} pedidos por cliente. Puedes cambiarlo.`
-                      : form.months < 12 && !form.ltvFrequency
-                        ? "Con menos de 12 meses de datos no podemos estimarlo: mételo tú."
-                        : undefined
-                  }
+                  placeholder="ej. 1,4"
+                  hint={!form.ltvFrequency ? "Cuántos pedidos te hace de media un cliente en un año. Si no lo sabes exacto, una aproximación sirve." : undefined}
                 />
               )}
               {form.ltvEnabled && ready && <LtvResult r={r} />}
@@ -815,7 +872,7 @@ export default function ProfitCalculator() {
       </section>
 
       {/* Análisis completo */}
-      <Analysis r={r} ready={ready} inputs={inputs} form={form} per={per} set={set} onRefine={refine} />
+      <Analysis r={r} ready={ready} inputs={inputs} form={form} per={per} set={set} onRefine={refine} onEditTrafficField={editTrafficField} />
 
       <MobileBar r={r} ready={ready} per={per} progress={progressShort} missingCount={missingCount} taxKnown={taxKnown} isExample={isExample} onContinue={continueBar} />
         </>
@@ -970,6 +1027,9 @@ function FieldBlock({ concept, label, children }: { concept: string; label: stri
     </div>
   )
 }
+
+/** Campos del paso «Ventas y tráfico» a los que llevan los enlaces del análisis y el simulador. */
+export type SalesFieldId = "pc-adSessions" | "pc-sessions" | "pc-newCustomers"
 
 type SetField = <K extends keyof FormState>(key: K, value: FormState[K], keepExample?: boolean) => void
 
@@ -1798,6 +1858,8 @@ interface AnalysisProps {
   set: SetField
   /** Pasar a modo completo (para los bloques que solo existen ahí) */
   onRefine: () => void
+  /** Abre el paso 2 con el foco en visitas de anuncios o sesiones (notas del simulador) */
+  onEditTrafficField: (id: SalesFieldId) => void
   /** Datos mínimos completos */
   ready: boolean
 }
@@ -1810,7 +1872,7 @@ function cappedNote(raw: Level, r: Results): string | null {
 }
 const withNote = (sub: string | undefined, note: string | null) => (note ? (sub ? `${sub} · ${note}` : note) : sub)
 
-function Analysis({ r, inputs, form, per, set, onRefine, ready }: AnalysisProps) {
+function Analysis({ r, inputs, form, per, set, onRefine, onEditTrafficField, ready }: AnalysisProps) {
   if (!ready) {
     return (
       <section id="analisis" className="bg-sw-bg-1 py-16">
@@ -1836,7 +1898,7 @@ function Analysis({ r, inputs, form, per, set, onRefine, ready }: AnalysisProps)
           : levelOf.firstOrder(r.firstOrderProfit, r.ordersToRecoverCac, r.ltvFrequency)
 
   return (
-    <section id="analisis" className="scroll-mt-20 border-t border-sw-line bg-sw-bg-1 py-16 sm:py-20">
+    <section id="analisis" tabIndex={-1} className="scroll-mt-20 border-t border-sw-line bg-sw-bg-1 py-16 outline-none sm:py-20">
       <div className="mx-auto max-w-7xl space-y-16 px-4 sm:px-6 lg:px-8">
         {/* Qué hacer */}
         <div>
@@ -1954,13 +2016,13 @@ function Analysis({ r, inputs, form, per, set, onRefine, ready }: AnalysisProps)
               concept="cac"
               value={fmt.eur2(r.cac)}
               level={capGood(levelOf.cacVsOrder(r.cac, r.cm1PerOrder), r)}
-              sub={withNote(`Cada pedido deja ${fmt.eur2(r.cm1PerOrder)} antes de marketing`, cappedNote(levelOf.cacVsOrder(r.cac, r.cm1PerOrder), r))}
+              sub={r.newCustomersInvalid ? NEW_CUSTOMERS_INVALID : withNote(`Cada pedido deja ${fmt.eur2(r.cm1PerOrder)} antes de marketing`, cappedNote(levelOf.cacVsOrder(r.cac, r.cm1PerOrder), r))}
             />
             <Kpi
               concept="firstOrderProfit"
               value={r.firstOrderProfit !== null ? signedEur(r.firstOrderProfit) : "—"}
               level={capGood(levelOf.firstOrder(r.firstOrderProfit, r.ordersToRecoverCac, r.ltvFrequency), r)}
-              sub={withNote(
+              sub={r.newCustomersInvalid ? NEW_CUSTOMERS_INVALID : withNote(
                 r.firstOrderMargin !== null ? `El primer pedido deja ${fmt.eur2(r.firstOrderMargin)} · captarlo cuesta ${fmt.eur2(r.cac)}` : undefined,
                 cappedNote(levelOf.firstOrder(r.firstOrderProfit, r.ordersToRecoverCac, r.ltvFrequency), r),
               )}
@@ -1969,7 +2031,7 @@ function Analysis({ r, inputs, form, per, set, onRefine, ready }: AnalysisProps)
               concept="ordersToRecoverCac"
               value={r.ordersToRecoverCac !== null ? fmt.dec(r.ordersToRecoverCac) : r.firstOrderProfit !== null ? "Nunca" : "—"}
               level={capGood(recoverLevel, r)}
-              sub={withNote(
+              sub={r.newCustomersInvalid ? NEW_CUSTOMERS_INVALID : withNote(
                 r.ordersToRecoverCac !== null
                   ? r.ordersToRecoverCac <= 1
                     ? "Lo recuperas con el primer pedido"
@@ -1978,10 +2040,26 @@ function Analysis({ r, inputs, form, per, set, onRefine, ready }: AnalysisProps)
                 cappedNote(recoverLevel, r),
               )}
             />
+            {/* Mismo cálculo que la palanca de Recompra: pedidos − clientes nuevos */}
             <Kpi
-              concept="returningShare"
-              value={fmt.pct(r.returningShare)}
-              sub={r.newCustomers + r.returningCustomers > 0 ? `${fmt.num(r.newCustomers)} nuevos · ${fmt.num(r.returningCustomers)} recurrentes` : undefined}
+              concept="repeatOrders"
+              value={
+                r.recurrentOrders !== null && r.orders > 0
+                  ? `${fmt.num(r.recurrentOrders)} pedidos · ${fmt.num(Math.round((r.recurrentOrders / r.orders) * 100))} %`
+                  : "—"
+              }
+              sub={r.newCustomersInvalid ? NEW_CUSTOMERS_INVALID : undefined}
+              footer={
+                r.recurrentOrders === null && !r.newCustomersInvalid ? (
+                  <button
+                    type="button"
+                    onClick={() => onEditTrafficField("pc-newCustomers")}
+                    className="mt-1 text-left text-xs text-sw-secondary underline underline-offset-2 hover:text-sw-fg-1"
+                  >
+                    Indica tus clientes nuevos (paso 2) para verlo
+                  </button>
+                ) : undefined
+              }
             />
             {form.ltvEnabled && r.ltvFrequency !== null && (
               <>
@@ -2038,7 +2116,7 @@ function Analysis({ r, inputs, form, per, set, onRefine, ready }: AnalysisProps)
           <p className="-mt-4 mb-6 max-w-3xl text-sw-fg-2">
             Desliza cada indicador para ver cuánto ganarías si mejoras tu tienda, tus costes o tu publicidad. Los cambios son sobre tus números actuales.
           </p>
-          <Simulator inputs={inputs} base={r} per={per} />
+          <Simulator inputs={inputs} base={r} per={per} onRefine={onRefine} onEditTrafficField={onEditTrafficField} />
         </div>
 
         {/* Revisión de números: solo se envía el email */}

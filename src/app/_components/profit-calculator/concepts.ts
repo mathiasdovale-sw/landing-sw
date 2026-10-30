@@ -50,13 +50,13 @@ export const CONCEPTS: Record<string, Concept> = {
     what: "Número de visitas a tu tienda. Una misma persona puede hacer varias sesiones.",
     how: "Lo encuentras en los informes de tu plataforma o en Google Analytics.",
   },
+  adSessions: {
+    label: "Visitas que vienen de anuncios",
+    what: "Las visitas del periodo que llegaron desde campañas de pago (Meta Ads, Google Ads, TikTok Ads…). Lo encuentras en los informes de tráfico de tu plataforma o en Google Analytics, agrupado por canal. Cuenta solo campañas de pago. Si tus anuncios no llevan enlaces etiquetados (UTM), parte de esas visitas puede aparecer como \"directo\" o \"social\".",
+  },
   newCustomers: {
     label: "Clientes nuevos",
-    what: "Personas que compraron por primera vez en el periodo.",
-  },
-  returningCustomers: {
-    label: "Clientes recurrentes",
-    what: "Clientes que ya te habían comprado antes y volvieron a comprar en el periodo.",
+    what: "Personas que te compraron por primera vez en el periodo. Sirve para saber cuánto te cuesta conseguir un cliente y si ganas dinero con su primer pedido. Si no lo sabes, déjalo vacío.",
   },
   cogs: {
     label: "Coste de producto",
@@ -226,7 +226,7 @@ export const CONCEPTS: Record<string, Concept> = {
   ltvFrequency: {
     label: "Pedidos por cliente al año",
     what: "Cuántas veces de media te compra un cliente en 12 meses. Es el dato clave para el LTV y el más difícil de saber.",
-    how: "Pedidos de los últimos 12 meses ÷ clientes únicos de esos 12 meses. Si metes 12 meses de datos lo estimamos con tus pedidos y clientes.",
+    how: "Pedidos de los últimos 12 meses ÷ clientes únicos de esos 12 meses. Si no lo sabes exacto, una aproximación sirve.",
   },
 
   // ---- Resultados --------------------------------------------------------
@@ -300,10 +300,10 @@ export const CONCEPTS: Record<string, Concept> = {
     what: "Cuánto dinero genera de media cada visita. Junta en un solo número conversión y ticket medio.",
     how: "(Ventas brutas − descuentos) ÷ sesiones. También = tasa de conversión × ticket medio.",
   },
-  returningShare: {
-    label: "Clientes recurrentes",
-    what: "Qué parte de tus compradores ya te había comprado antes. Un cliente que repite no cuesta captarlo otra vez.",
-    how: "Clientes recurrentes ÷ (nuevos + recurrentes) × 100.",
+  repeatOrders: {
+    label: "Pedidos de clientes que repiten",
+    what: "Pedidos que hicieron clientes que ya te habían comprado antes. Un cliente que repite no hay que volver a captarlo.",
+    how: "Pedidos − clientes nuevos (cada cliente nuevo hace su primer pedido). El % es sobre el total de pedidos.",
   },
   cm1PerOrder: {
     label: "Margen por pedido",

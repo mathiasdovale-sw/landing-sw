@@ -147,10 +147,13 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
           `Comprobación: ${p(r.conversionRate)} × ${e2(r.aov)} = ${e2(r.conversionRate !== null && r.aov !== null ? r.conversionRate * r.aov : null)}`,
         ]
       : noVisits
-  f.returningShare =
-    r.newCustomers + r.returningCustomers > 0
-      ? [`${n(r.returningCustomers)} ÷ (${n(r.newCustomers)} + ${n(r.returningCustomers)}) = ${p(r.returningShare)}`]
-      : ["Sin el dato de clientes nuevos y recurrentes no se puede calcular"]
+  // Mismo cálculo que la palanca de Recompra (recurrentOrders)
+  f.repeatOrders =
+    r.recurrentOrders !== null
+      ? [`${n(r.orders)} pedidos − ${n(r.newCustomers)} clientes nuevos = ${n(r.recurrentOrders)} · ${n(r.recurrentOrders)} ÷ ${n(r.orders)} = ${p(r.recurrentOrders / r.orders)}`]
+      : r.newCustomersInvalid
+        ? ["Hay más clientes nuevos que pedidos: revisa el dato"]
+        : ["Sin el dato de clientes nuevos no se puede calcular"]
 
   // Publicidad
   f.roasBreakeven = r.cm1 > 0 ? [`${e(r.netRevenue)} ÷ ${e(r.cm1)} = ${x(r.roasBreakeven)}`] : ["El margen antes de marketing es 0 o negativo: ningún ROAS cubre costes"]
@@ -198,9 +201,7 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
   // LTV
   if (inp.ltvEnabled && r.ltvFrequency !== null) {
     const aovNet = r.orders > 0 ? r.netProductSales / r.orders : null
-    f.ltvFrequency = r.ltvFrequencyIsEstimate
-      ? [`${n(r.orders)} pedidos ÷ (${n(r.newCustomers)} + ${n(r.returningCustomers)}) clientes = ${d(r.ltvFrequency)}`]
-      : []
+    f.ltvFrequency = []
     f.ltvRevenue = [
       `Ticket neto: ${e(r.netProductSales)} ÷ ${n(r.orders)} pedidos = ${e2(aovNet)}`,
       `${e2(aovNet)} × ${d(r.ltvFrequency)} pedidos al año = ${e2(r.ltvRevenue)}`,

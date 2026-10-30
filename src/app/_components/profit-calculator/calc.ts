@@ -75,8 +75,9 @@ export interface Inputs {
   shippingCharged: number | null
   orders: number | null
   sessions: number | null
+  /** Visitas que vienen de anuncios (solo modo completo; lo usa el simulador). */
+  adSessions?: number | null
   newCustomers: number | null
-  returningCustomers: number | null
 
   cogsMode: Mode
   cogs: number | null
@@ -267,8 +268,8 @@ export interface Results {
   conversionRate: number | null
   rpv: number | null
   newCustomers: number
-  returningCustomers: number
-  returningShare: number | null
+  /** Clientes nuevos > pedidos: dato imposible; CAC, primera compra y recompra no se calculan. */
+  newCustomersInvalid: boolean
   roasBreakeven: number | null // = MER mínimo para cubrir costes variables
   merProfit: number | null // MER mínimo para beneficio 0, contando los fijos (null si es imposible)
   merProfitImpossible: boolean // margen antes de marketing ≤ fijos: ningún nivel de marketing da beneficio
@@ -282,7 +283,6 @@ export interface Results {
 
   // LTV
   ltvFrequency: number | null
-  ltvFrequencyIsEstimate: boolean
   ltvRevenue: number | null
   ltvMargin: number | null
   ltvCac: number | null
@@ -330,7 +330,7 @@ export function applyMode(inp: Inputs): Inputs {
     returns: null,
     shippingCharged: null,
     newCustomers: null,
-    returningCustomers: null,
+    adSessions: null,
     packaging: null,
     fees: null,
     feesFixedPerOrder: null,
@@ -389,7 +389,7 @@ export function completeness(inp: Inputs, hasData: boolean): Completeness {
       "Envíos cobrados a clientes",
       "Email y otros gastos de marketing",
       "Desglose de publicidad por canal (ROAS)",
-      "Clientes nuevos y recurrentes (CAC, primera compra)",
+      "Clientes nuevos (CAC, primera compra)",
       "Tu sueldo por separado",
       ...(inp.quickIgnoresSalesFees ? ["Comisiones por venta (marketplace, plataforma y apps)"] : []),
       ...(n(inp.profitTaxPct) > 0 ? [] : ["Impuesto sobre el beneficio"]),
@@ -437,7 +437,6 @@ export function computeCore(inp: Inputs): Results {
   const orders = Math.max(0, n(inp.orders))
   const sessions = Math.max(0, n(inp.sessions))
   const newCustomers = Math.max(0, n(inp.newCustomers))
-  const returningCustomers = Math.max(0, n(inp.returningCustomers))
 
   const cogs = inp.cogsMode === "pct" ? Math.max(0, netProductSales) * (a(inp.cogs) / 100) : a(inp.cogs)
   const shippingPaid = a(inp.shippingPaid)
@@ -547,27 +546,24 @@ export function computeCore(inp: Inputs): Results {
   const aov = div(gross - discounts, orders)
   const conversionRate = div(orders, sessions)
   const rpv = div(gross - discounts, sessions)
-  const totalCustomers = newCustomers + returningCustomers
-  const returningShare = div(returningCustomers, totalCustomers)
+  // Cada cliente nuevo hace al menos un pedido: si hay más clientes nuevos que pedidos, el
+  // dato no es válido y no se usa (CAC, primera compra, pedidos de clientes que repiten).
+  const newCustomersInvalid = orders > 0 && newCustomers > orders
   const mer = div(netRevenue, marketing)
   // MER con el que el beneficio sería 0 a estos ingresos: marketing = margen antes de marketing − fijos.
   const merProfitImpossible = cm1 - fixed <= 0
   const merProfit = !merProfitImpossible && netRevenue > 0 ? netRevenue / (cm1 - fixed) : null
-  const recurrentOrders = has(inp.newCustomers) && orders > 0 ? Math.max(0, orders - newCustomers) : null
-  const cac = div(marketing, newCustomers)
+  // Pedidos de clientes que repiten = pedidos − clientes nuevos (lo usan la métrica y la palanca de Recompra).
+  const recurrentOrders = has(inp.newCustomers) && orders > 0 && !newCustomersInvalid ? Math.max(0, orders - newCustomers) : null
+  const cac = newCustomersInvalid ? null : div(marketing, newCustomers)
   const cm1PerOrder = div(cm1, orders)
   const breakevenRevenue = cm1PerEuro !== null && cm1PerEuro > 0 ? (marketing + fixed) / cm1PerEuro : null
   const discountPct = div(discounts, gross)
   const returnPct = div(returns, gross)
 
   // LTV (opcional)
-  let ltvFrequency: number | null = has(inp.ltvFrequency) && n(inp.ltvFrequency) > 0 ? n(inp.ltvFrequency) : null
-  let ltvFrequencyIsEstimate = false
-  if (ltvFrequency === null && inp.months === 12 && totalCustomers > 0 && orders > 0) {
-    // Con 12 meses de datos sí podemos estimarlo: pedidos / clientes únicos.
-    ltvFrequency = orders / totalCustomers
-    ltvFrequencyIsEstimate = true
-  }
+  // Pedidos por cliente al año: lo indica el usuario (sin clientes únicos no se puede estimar).
+  const ltvFrequency: number | null = has(inp.ltvFrequency) && n(inp.ltvFrequency) > 0 ? n(inp.ltvFrequency) : null
   const aovNet = div(netProductSales, orders)
   const ltvRevenue = inp.ltvEnabled && ltvFrequency !== null && aovNet !== null ? aovNet * ltvFrequency : null
   const ltvMargin = inp.ltvEnabled && ltvFrequency !== null && cm1PerOrder !== null ? cm1PerOrder * ltvFrequency : null
@@ -645,12 +641,12 @@ export function computeCore(inp: Inputs): Results {
     restRevenue, overAttribution, contribution, contributionPct,
     fixed, ownerSalary, ownerSalaryEmpty: ownerSalary === 0, ebit, tax, netProfit, netMarginPct,
     ownerTake, ownerHoursPeriod, ownerPerHour,
-    orders, sessions, aov, conversionRate, rpv, newCustomers, returningCustomers, returningShare,
+    orders, sessions, aov, conversionRate, rpv, newCustomers, newCustomersInvalid,
     roasBreakeven, merProfit, merProfitImpossible, mer, recurrentOrders, cac, cm1PerOrder,
     // Sin gastos fijos no hay punto de equilibrio que dar.
     breakevenRevenue: comp.fixedKnown ? breakevenRevenue : null,
     discountPct, returnPct,
-    ltvFrequency, ltvFrequencyIsEstimate, ltvRevenue, ltvMargin, ltvCac,
+    ltvFrequency, ltvRevenue, ltvMargin, ltvCac,
     firstOrderCustom, firstOrderTicket, firstOrderMargin, firstOrderProfit, ordersToRecoverCac,
     seasonFactor, weights, periodMonths, projection,
     projRevenue, projContribution, projProfitBeforeTax, projTax, projNetProfit, lossMonths,
@@ -1185,18 +1181,19 @@ function capitalize(s: string) {
 // ---------------------------------------------------------------------------
 // Cada palanca es un cambio relativo en % sobre la situación actual. Supuestos
 // (se explican en la página):
-// - Visitas y conversión cambian el nº de pedidos; el ticket medio, el importe
-//   de cada pedido. Descuentos y devoluciones mantienen su % salvo que muevas
-//   su palanca.
+// - Pedidos = visitas × conversión. La publicidad mueve solo las visitas de pago y
+//   la palanca de visitas solo las que no pagas (simTraffic). El ticket medio cambia
+//   el importe de cada pedido. Descuentos y devoluciones mantienen su % salvo que
+//   muevas su palanca.
 // - Envíos, packaging y comisiones escalan con los pedidos / ventas.
-// - Publicidad: rendimientos decrecientes. Las ventas de ads cambian según
+// - Publicidad: rendimientos decrecientes. Las visitas de pago cambian según
 //   (inversión nueva ÷ actual) ^ AD_ELASTICITY: al subir la inversión cada euro
-//   extra rinde algo menos (el ROAS baja) y al recortar se quita primero lo que
+//   extra trae algo menos (el ROAS baja) y al recortar se quita primero lo que
 //   menos rinde (el ROAS sube). Es un supuesto orientativo, no un dato medido.
 
 export const AD_ELASTICITY = 0.7
 
-/** Factor de ventas de publicidad para un cambio de inversión de `pct` %. */
+/** Factor de visitas de pago para un cambio de inversión de `pct` %. */
 export function adReturnFactor(pct: number): number {
   const ratio = Math.max(0, 1 + pct / 100)
   return ratio === 0 ? 0 : Math.pow(ratio, AD_ELASTICITY)
@@ -1213,17 +1210,115 @@ export const LEVER_GOOD_DIRECTION: Record<LeverKey, 1 | -1> = {
   traffic: 1, conversion: 1, aov: 1, repeat: 1, discounts: -1, returns: -1, cogs: -1, shipping: -1, ads: 1, fixed: -1,
 }
 
-export function simulate(inp: Inputs, base: Results, lv: Levers): Results {
-  const f = (v: number) => 1 + v / 100
-  const adShare = base.netRevenue > 0 ? Math.min(1, base.adAttributed / base.netRevenue) : 0
-  const adFactor = adReturnFactor(lv.ads) // ventas de ads, con rendimientos decrecientes
-  const adDemand = 1 + (adFactor - 1) * adShare
-  // Recompra: los clientes recurrentes hacen un X % más de pedidos. Pedidos de
-  // recurrentes = pedidos − clientes nuevos (cada cliente nuevo hace su primer pedido).
+/** Por qué no se puede usar una palanca (null = se puede). */
+export type LeverBlock = "quickMode" | "noAdSpend" | "noRepeatData" | "invalidNewCustomers" | "noRepeatOrders" | null
+
+/**
+ * Qué palancas se pueden simular con los datos actuales. Una palanca desactivada vale 0
+ * en todo el simulador (effectiveLevers): beneficio, tarjetas, proyección y ranking.
+ */
+export function leverAvailability(inp: Inputs, base: Results): Record<LeverKey, LeverBlock> {
+  const out = Object.fromEntries(LEVER_KEYS.map((k) => [k, null])) as Record<LeverKey, LeverBlock>
+  // Publicidad: en modo rápido no sabemos cuántas visitas traen los anuncios; sin gasto, no hay nada que mover.
+  if (inp.quickMode) out.ads = "quickMode"
+  else if (!(base.adSpend > 0)) out.ads = "noAdSpend"
+  // Recompra: hace falta saber cuántos pedidos son de clientes que repiten (pedidos − clientes nuevos).
+  if (base.newCustomersInvalid) out.repeat = "invalidNewCustomers"
+  else if (base.recurrentOrders === null) out.repeat = "noRepeatData" // falta pedidos o clientes nuevos
+  else if (!(base.recurrentOrders > 0)) out.repeat = "noRepeatOrders" // clientes nuevos = pedidos
+  return out
+}
+
+/** Valores que de verdad se aplican: las palancas desactivadas valen 0. */
+export function effectiveLevers(inp: Inputs, base: Results, lv: Levers): Levers {
+  const av = leverAvailability(inp, base)
+  const out = { ...lv }
+  for (const k of LEVER_KEYS) if (av[k] !== null) out[k] = 0
+  return out
+}
+
+/** Reparto de las visitas de partida entre las que vienen de anuncios y las que no. */
+export interface TrafficSplit {
+  /** Visitas de pago y sin pago. Sin dato de sesiones, en proporción (suman 1). */
+  paid: number
+  organic: number
+  /** Reparto estimado con las ventas atribuidas (falta el dato o no es válido). */
+  estimated: boolean
+  /**
+   * Dato «Visitas que vienen de anuncios»: empty = vacío · invalid = no es un número,
+   * negativo o mayor que las sesiones · noSessions = falta el total de sesiones · given = se usa.
+   */
+  adSessionsStatus: "empty" | "invalid" | "noSessions" | "given"
+  /** Hay sesiones: las cifras son visitas de verdad. */
+  hasSessions: boolean
+}
+
+/**
+ * Visitas de pago = «Visitas que vienen de anuncios» si es válido (0 ≤ dato ≤ sesiones).
+ * Si no, se estima: sesiones × min(ventas atribuidas a publicidad ÷ ingresos netos, 1).
+ */
+export function trafficSplit(inp: Inputs, base: Results): TrafficSplit {
+  const hasSessions = base.sessions > 0
+  const total = hasSessions ? base.sessions : 1
+  const raw = inp.adSessions
+  // NaN = el usuario escribió algo que no es un número (toInputs)
+  const status: TrafficSplit["adSessionsStatus"] =
+    raw === null || raw === undefined
+      ? "empty"
+      : !has(raw) || raw < 0 || (hasSessions && raw > base.sessions)
+        ? "invalid"
+        : !hasSessions
+          ? "noSessions"
+          : "given"
+  const valid = status === "given"
+  const share = base.netRevenue > 0 ? Math.min(1, Math.max(0, base.adAttributed / base.netRevenue)) : 0
+  const paid = valid ? n(raw) : total * share
+  return { paid, organic: total - paid, estimated: !valid, hasSessions, adSessionsStatus: status }
+}
+
+/** Visitas antes y después de mover las palancas (lo que muestran las tarjetas). */
+export interface SimTraffic extends TrafficSplit {
+  paid1: number
+  organic1: number
+  total0: number
+  total1: number
+  /** Visitas nuevas ÷ de partida, sin contar la recompra. */
+  visitsRatio: number
+  paidRatio: number
+  organicRatio: number
+  /** Factor de pedidos (y visitas) por la recompra. */
+  repeat: number
+}
+
+/**
+ * Modelo de tráfico del simulador. La publicidad mueve solo las visitas de pago (con
+ * rendimientos decrecientes) y la palanca de visitas solo las que no pagas. Las dos
+ * convierten igual. La recompra añade pedidos (y sus visitas) en la misma proporción.
+ */
+export function simTraffic(inp: Inputs, base: Results, levers: Levers): SimTraffic {
+  const lv = effectiveLevers(inp, base, levers)
+  const s = trafficSplit(inp, base)
+  const paidRatio = adReturnFactor(lv.ads)
+  const organicRatio = Math.max(0, 1 + lv.traffic / 100)
+  const total0 = s.paid + s.organic
+  const visitsRatio = total0 > 0 ? (s.paid * paidRatio + s.organic * organicRatio) / total0 : 1
+  // Recompra: los clientes que repiten hacen un X % más de pedidos. Sus pedidos
+  // = pedidos − clientes nuevos (cada cliente nuevo hace su primer pedido).
   const repeatShare = base.recurrentOrders !== null && base.orders > 0 ? base.recurrentOrders / base.orders : 0
-  const repeat = 1 + repeatShare * (lv.repeat / 100)
-  const customers = f(lv.traffic) * adDemand * f(lv.conversion) // factor sobre nº de clientes
-  const visits = f(lv.traffic) * adDemand * repeat
+  const repeat = Math.max(0, 1 + repeatShare * (lv.repeat / 100))
+  const paid1 = s.paid * paidRatio * repeat
+  const organic1 = s.organic * organicRatio * repeat
+  return { ...s, paid1, organic1, total0, total1: paid1 + organic1, visitsRatio, paidRatio, organicRatio, repeat }
+}
+
+export function simulate(inp: Inputs, base: Results, levers: Levers): Results {
+  const lv = effectiveLevers(inp, base, levers) // las desactivadas no se aplican nunca
+  const f = (v: number) => 1 + v / 100
+  // Toda la cadena pasa por las visitas: pedidos = visitas × conversión.
+  const t = simTraffic(inp, base, lv)
+  const repeat = t.repeat
+  const customers = t.visitsRatio * f(lv.conversion) // factor sobre nº de clientes
+  const visits = t.visitsRatio * repeat // factor sobre las sesiones (pedidos ÷ sesiones = conversión)
   const volume = customers * repeat // factor sobre nº de pedidos
   const ticket = f(lv.aov)
 
@@ -1242,7 +1337,9 @@ export function simulate(inp: Inputs, base: Results, lv: Levers): Results {
   const rev0 = ns0 + ship0
   const rev1 = ns1 + shippingCharged
   const revRatio = rev0 > 0 ? rev1 / rev0 : 1
-  const salesFactor = f(lv.traffic) * f(lv.conversion) * repeat * ticket // ventas no ligadas a ads
+  // Ventas atribuidas (solo para ROAS): las de anuncios siguen a las visitas de pago y las
+  // del email a las que no pagas. Ya no mueven los pedidos: eso lo hacen las visitas.
+  const perVisit = f(lv.conversion) * repeat * ticket
 
   const next: Inputs = {
     ...inp,
@@ -1253,7 +1350,6 @@ export function simulate(inp: Inputs, base: Results, lv: Levers): Results {
     orders: n(inp.orders) * volume,
     sessions: n(inp.sessions) * visits,
     newCustomers: n(inp.newCustomers) * customers,
-    returningCustomers: n(inp.returningCustomers) * customers,
     ltvFrequency: has(inp.ltvFrequency) ? n(inp.ltvFrequency) * repeat : inp.ltvFrequency,
     firstOrderAov: has(inp.firstOrderAov) ? Math.abs(n(inp.firstOrderAov)) * ticket : inp.firstOrderAov,
     cogs: inp.cogsMode === "pct" ? n(inp.cogs) * f(lv.cogs) : n(inp.cogs) * nsRatio * f(lv.cogs),
@@ -1266,9 +1362,9 @@ export function simulate(inp: Inputs, base: Results, lv: Levers): Results {
     ads: inp.ads.map((a) => ({
       ...a,
       spend: has(a.spend) ? n(a.spend) * f(lv.ads) : a.spend,
-      attributed: has(a.attributed) ? n(a.attributed) * adFactor * salesFactor : a.attributed,
+      attributed: has(a.attributed) ? n(a.attributed) * t.paidRatio * perVisit : a.attributed,
     })),
-    emailAttributed: has(inp.emailAttributed) ? n(inp.emailAttributed) * salesFactor : inp.emailAttributed,
+    emailAttributed: has(inp.emailAttributed) ? n(inp.emailAttributed) * t.organicRatio * perVisit : inp.emailAttributed,
     platformCost: has(inp.platformCost) ? n(inp.platformCost) * f(lv.fixed) : inp.platformCost,
     otherFixed: has(inp.otherFixed) ? n(inp.otherFixed) * f(lv.fixed) : inp.otherFixed,
     // El sueldo del dueño no entra en la palanca de fijos: bajarte el sueldo no mejora el negocio.
@@ -1320,7 +1416,9 @@ export function adsScenario(inp: Inputs, base: Results, monthlySpend: number, ro
 
 /** Cuánto cambia el beneficio neto (del periodo) al mejorar cada palanca un `step` %. */
 export function leverRanking(inp: Inputs, base: Results, step = 10) {
-  return LEVER_KEYS.filter((k) => (k !== "ads" || base.adSpend > 0) && (k !== "repeat" || (base.recurrentOrders ?? 0) > 0))
+  // Solo las palancas que se pueden simular (en modo rápido, la publicidad no entra).
+  const av = leverAvailability(inp, base)
+  return LEVER_KEYS.filter((k) => av[k] === null)
     .map((k) => {
       const lv = { ...ZERO_LEVERS, [k]: step * LEVER_GOOD_DIRECTION[k] }
       return { key: k, delta: simulate(inp, base, lv).netProfit - base.netProfit }
@@ -1453,6 +1551,8 @@ export function storeDecision(r: Results, inp: Inputs): StoreDecisionState {
 // ---------------------------------------------------------------------------
 // Avisos de datos incoherentes (probablemente un error al teclear)
 // ---------------------------------------------------------------------------
+export const NEW_CUSTOMERS_INVALID = "No puede haber más clientes nuevos que pedidos: cada cliente nuevo hace al menos un pedido."
+
 export function dataWarnings(inp: Inputs, r: Results): string[] {
   const w: string[] = []
   const gross = Math.abs(n(inp.grossSales))
@@ -1460,8 +1560,7 @@ export function dataWarnings(inp: Inputs, r: Results): string[] {
   if (gross > 0 && Math.abs(n(inp.discounts)) + Math.abs(n(inp.returns)) > gross)
     w.push("Descuentos y devoluciones suman más que tus ventas brutas. Revisa que sean del mismo periodo.")
   if (r.sessions > 0 && r.orders > r.sessions) w.push("Tienes más pedidos que sesiones: ¿puede que falte una cifra en las sesiones?")
-  if (r.orders > 0 && r.newCustomers + r.returningCustomers > r.orders)
-    w.push("Hay más clientes que pedidos: cada cliente hace al menos un pedido. Revisa clientes nuevos y recurrentes.")
+  if (r.newCustomersInvalid) w.push(NEW_CUSTOMERS_INVALID)
   if (Math.abs(n(inp.welcomeDiscountPct)) > 100) w.push("El descuento de bienvenida no puede superar el 100 %.")
   if (inp.cogsMode === "pct" && Math.abs(n(inp.cogs)) > 100) w.push(`El coste de producto supera el 100 % del precio de venta: ¿querías ponerlo en ${fmt.many()}?`)
   if (inp.salesChannel === "both" && has(inp.mkSharePct) && (n(inp.mkSharePct) < 0 || n(inp.mkSharePct) > 100))

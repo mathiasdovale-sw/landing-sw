@@ -37,8 +37,8 @@ export interface FormState {
   shippingCharged: string
   orders: string
   sessions: string
+  adSessions: string // visitas que vienen de anuncios (modo completo, opcional)
   newCustomers: string
-  returningCustomers: string
 
   cogsMode: Mode
   cogs: string
@@ -151,8 +151,9 @@ export function toInputs(f: FormState): Inputs {
     shippingCharged: parseNum(f.shippingCharged),
     orders: parseNum(f.orders),
     sessions: parseNum(f.sessions),
+    // Texto que no es un número → NaN: el simulador lo trata como dato no válido (no como vacío).
+    adSessions: (f.adSessions ?? "").trim() === "" ? null : parseNum(f.adSessions) ?? NaN,
     newCustomers: parseNum(f.newCustomers),
-    returningCustomers: parseNum(f.returningCustomers),
     cogsMode: f.cogsMode,
     cogs: parseNum(f.cogs),
     shippingPaid: parseNum(f.shippingPaid),
@@ -227,8 +228,8 @@ export function emptyForm(currency: CurrencyCode = "EUR"): FormState {
     shippingCharged: "",
     orders: "",
     sessions: "",
+    adSessions: "",
     newCustomers: "",
-    returningCustomers: "",
     cogsMode: "pct",
     cogs: "",
     shippingPaid: "",
@@ -299,8 +300,8 @@ export function exampleForm(currency: CurrencyCode = "EUR"): FormState {
     shippingCharged: m(2100),
     orders: "820",
     sessions: "41000",
+    adSessions: "24600", // 60 % de las sesiones (no cambia el resultado: solo lo usa el simulador)
     newCustomers: "610",
-    returningCustomers: "160",
     cogsMode: "pct",
     cogs: "38",
     shippingPaid: m(4300),
@@ -363,6 +364,8 @@ export function migrateSaved(raw: unknown): Saved | null {
   if (!o.form || typeof o.form !== "object") return null
   const base = emptyForm()
   const form: FormState = { ...base, ...o.form }
+  // Campos que ya no existen (p. ej. returningCustomers): se ignoran y no se vuelven a guardar.
+  for (const k of Object.keys(form)) if (!(k in base)) delete (form as unknown as Record<string, unknown>)[k]
   // Campos que no existían en v1: se quedan vacíos (no inventamos valores).
   if (!o.version || o.version < 2) {
     form.quickMode = false
@@ -378,7 +381,7 @@ export function migrateSaved(raw: unknown): Saved | null {
   if (!Array.isArray(form.apps)) form.apps = base.apps
   if (form.cpaMode !== "cpc" && form.cpaMode !== "cpa") form.cpaMode = base.cpaMode
   // Campos de texto nuevos o corruptos → vacíos (los antiguos guardados no los tienen)
-  for (const k of ["adsDailyBudget", "cpc", "storeCr", "cpaDirect", "storeGatewayPct", "storeGatewayFixed", "storePlatformPct", "storePlatformFixed", "storeFixedMonthly", "migratePct"] as const)
+  for (const k of ["adSessions", "adsDailyBudget", "cpc", "storeCr", "cpaDirect", "storeGatewayPct", "storeGatewayFixed", "storePlatformPct", "storePlatformFixed", "storeFixedMonthly", "migratePct"] as const)
     if (typeof form[k] !== "string") form[k] = base[k]
   if (!Array.isArray(form.customWeights) || form.customWeights.length !== 12) form.customWeights = base.customWeights
   const w = o.wizard

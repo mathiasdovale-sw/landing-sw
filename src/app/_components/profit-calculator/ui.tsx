@@ -135,6 +135,10 @@ interface NumFieldProps {
   nonNegative?: boolean
   /** Dato obligatorio sin rellenar: aviso neutro (ámbar suave). Texto = mensaje bajo el campo. */
   missing?: boolean | string
+  /** Valor no válido calculado por quien lo usa (rojo, aria-invalid); sustituye a la validación propia. */
+  error?: string
+  /** Aviso neutro bajo el campo (no es un error). */
+  note?: string
   /** false = solo marca el borde; el aviso lo pinta quien lo use (p. ej. una fila de tabla). */
   missingNote?: boolean
   /** Más bajo, para filas de tabla (en móvil mantiene 16 px para que iOS no haga zoom). */
@@ -164,6 +168,8 @@ export function NumField({
   onBlur,
   nonNegative,
   missing,
+  error,
+  note,
   missingNote = true,
   compact,
 }: NumFieldProps) {
@@ -174,8 +180,9 @@ export function NumField({
   const [blurred, setBlurred] = useState(false)
   const { button, panel, concept: c } = useConcept(concept)
   const text = label ?? money(c?.label) ?? ""
-  const invalid = blurred ? invalidMessage(value, nonNegative) : null
+  const invalid = error ?? (blurred ? invalidMessage(value, nonNegative) : null)
   const missingText = !invalid && missing && missingNote ? (typeof missing === "string" ? missing : "Si no tienes este gasto, pon 0.") : null
+  const noteText = !invalid && !missingText && note ? note : null
   return (
     <div className="min-w-0">
       {text && (
@@ -200,7 +207,7 @@ export function NumField({
           placeholder={placeholder ?? ""}
           aria-label={ariaLabel ?? (text || undefined)}
           aria-invalid={invalid ? true : undefined}
-          aria-describedby={invalid || missingText ? msgId : undefined}
+          aria-describedby={invalid || missingText || noteText ? msgId : undefined}
           onChange={(e) => onChange(e.target.value.replace(/[^\d.,\-]/g, ""))}
           onBlur={() => {
             setBlurred(true)
@@ -222,6 +229,12 @@ export function NumField({
       {missingText && (
         <p id={msgId} className="mt-1 text-xs text-amber-200">
           {missingText}
+        </p>
+      )}
+      {noteText && (
+        <p id={msgId} className="mt-1 flex items-start gap-1.5 text-xs leading-relaxed text-sw-fg-2">
+          <Info className="mt-px h-3.5 w-3.5 shrink-0 text-sw-fg-3" aria-hidden="true" />
+          {noteText}
         </p>
       )}
       {hint && <p className="mt-1 text-xs text-sw-fg-3">{hint}</p>}
@@ -388,9 +401,11 @@ interface KpiProps {
   label?: string
   /** Cuenta propia (p. ej. en la proyección); null = no mostrar cuenta */
   calc?: string[] | null
+  /** Contenido bajo el subtítulo (p. ej. un enlace al dato que falta). */
+  footer?: ReactNode
 }
 
-export function Kpi({ concept, value, level = "neutral", sub, label, calc }: KpiProps) {
+export function Kpi({ concept, value, level = "neutral", sub, label, calc, footer }: KpiProps) {
   const { button, panel, concept: c } = useConcept(concept, calc)
   const s = LEVEL_STYLES[level]
   return (
@@ -404,6 +419,7 @@ export function Kpi({ concept, value, level = "neutral", sub, label, calc }: Kpi
         <StatusPill level={level} />
       </div>
       {sub && <p className="mt-1 text-xs text-sw-fg-4">{sub}</p>}
+      {footer}
       {panel}
     </div>
   )
