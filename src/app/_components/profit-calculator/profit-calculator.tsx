@@ -7,7 +7,7 @@ import { buildFormulas } from "./formulas"
 import ReviewRequest, { HelpRequest } from "./review-request"
 import Simulator from "./simulator"
 import { amountSize, FormulaContext, HelpProvider, Kpi, LEVEL_STYLES, LevelIcon, NumField, Segmented, StatusPill, StepCard, Toggle, useConcept } from "./ui"
-import { domIdOfField, fieldOfLabel, hasUserData, mapStep, requiredMessage, stepOfField, stepsFor, type FieldKey, type StepId } from "./wizard"
+import { domIdOfField, fieldOfLabel, hasUserData, requiredMessage, stepOfField, stepsFor, type FieldKey, type StepId } from "./wizard"
 
 const PROFILE_OPTIONS: { value: SeasonProfile; label: string }[] = [
   { value: "flat", label: "Estable todo el año" },
@@ -211,12 +211,16 @@ export default function ProfitCalculator() {
     const full = stepsFor(false)
     openStepIn(full, full.findIndex((s) => s.id === "sales"))
   }
-  const toQuick = () => {
-    const target = mapStep(steps[cur].id, true)
-    setForm((f) => toQuickMode(f))
-    setRefined(false)
-    const q = stepsFor(true)
-    openStepIn(q, Math.max(0, q.findIndex((s) => s.id === target)))
+  /**
+   * Elegir modo en el selector (también el que ya está marcado): cambia de modo si hace
+   * falta, conservando los datos, y lleva al primer paso (periodo y estacionalidad).
+   */
+  const chooseMode = (toQuickMode_: boolean) => {
+    if (toQuickMode_ !== quick) {
+      setForm((f) => (toQuickMode_ ? toQuickMode(f) : toFullMode(f)))
+      setRefined(!toQuickMode_ && form.otherFixed.trim() !== "" && form.ownerSalary.trim() === "")
+    }
+    openStepIn(stepsFor(toQuickMode_), 0)
   }
   // Cambiar de moneda: el ejemplo se rehace con importes convertidos (aprox.);
   // con datos propios solo se ajustan IVA y separador decimal (switchCurrency).
@@ -721,7 +725,7 @@ export default function ProfitCalculator() {
             )}
 
             {/* Modo rápido / completo: las dos opciones a la vista, la actual marcada */}
-            <ModeSwitch quick={quick} onQuick={toQuick} onFull={refine} />
+            <ModeSwitch quick={quick} onChoose={chooseMode} />
 
             {/* Vaciar / ejemplo (acciones secundarias) */}
             {!isExample && (
@@ -841,9 +845,9 @@ function ModeBadge({ quick }: { quick: boolean }) {
 
 /**
  * Selector de modo con las dos opciones a la vista: qué incluye cada una y cuál estás usando.
- * Cambiar de modo conserva los datos (toFullMode / toQuickMode).
+ * Elegir una opción (también la marcada) lleva al primer paso; cambiar de modo conserva los datos.
  */
-function ModeSwitch({ quick, onQuick, onFull }: { quick: boolean; onQuick: () => void; onFull: () => void }) {
+function ModeSwitch({ quick, onChoose }: { quick: boolean; onChoose: (quick: boolean) => void }) {
   const options = [
     {
       value: true,
@@ -851,7 +855,6 @@ function ModeSwitch({ quick, onQuick, onFull }: { quick: boolean; onQuick: () =>
       title: "Modo rápido",
       meta: "8 datos · unos 2 minutos",
       text: "Una primera estimación. No incluye pasarela de pago, packaging, descuentos ni devoluciones.",
-      onSelect: onQuick,
     },
     {
       value: false,
@@ -859,7 +862,6 @@ function ModeSwitch({ quick, onQuick, onFull }: { quick: boolean; onQuick: () =>
       title: "Modo completo",
       meta: "6 pasos · más detalle",
       text: "El cálculo más fiable: todos tus costes, canales de publicidad, tu sueldo y el valor del cliente.",
-      onSelect: onFull,
     },
   ]
   return (
@@ -877,7 +879,7 @@ function ModeSwitch({ quick, onQuick, onFull }: { quick: boolean; onQuick: () =>
               type="button"
               role="radio"
               aria-checked={active}
-              onClick={() => !active && o.onSelect()}
+              onClick={() => onChoose(o.value)}
               className={`flex flex-col rounded-sm border p-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-sw-secondary/70 ${
                 active ? "border-sw-secondary bg-sw-secondary/15" : "border-sw-line-strong hover:border-sw-fg-3"
               }`}
