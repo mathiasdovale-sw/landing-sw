@@ -6,7 +6,7 @@
 //   cambios de ticket medio, lo que deja cada euro de más según simulate().
 // El beneficio de una campaña es la diferencia con «no hacer nada» esos mismos días,
 // antes de impuestos y sin gastos fijos (no cambian).
-import { adReturnFactor, fmt, MONTHS_LONG, simulate, trafficSplit, ZERO_LEVERS, type Inputs, type Results } from "./calc"
+import { adReturnFactor, computeCore, fmt, MONTHS_LONG, simulate, trafficSplit, ZERO_LEVERS, type Inputs, type Results } from "./calc"
 import type { TemplateId } from "./campaign-dates"
 
 // ---------------------------------------------------------------------------
@@ -36,6 +36,14 @@ export interface PlanBase {
   /** Lo que deja (margen) y lo que suma (ingresos) cada euro de más en el ticket medio. */
   marginPerTicketEuro: number
   revenuePerTicketEuro: number
+  /**
+   * Parte de cada euro de descuento que sale del margen: 1 − comisiones en % por euro (pasarela,
+   * marketplace, plataforma y apps también bajan cuando baja el precio). El producto no baja.
+   */
+  discountKeep: number
+  /** Estacionalidad: pesos de los 12 meses y peso medio de los meses del periodo de datos. */
+  weights: number[]
+  periodMeanWeight: number
   // Para «Tu cuenta»
   adSpend: number
   adVisits: number
@@ -69,6 +77,12 @@ export function planBase(inp: Inputs, r: Results, today: Date): PlanBase | null 
   const marginPerTicketEuro = dTicket > 0 ? (up.cm1 - r.cm1) / r.orders / dTicket : 0
   const revenuePerTicketEuro = dTicket > 0 ? (up.netRevenue - r.netRevenue) / r.orders / dTicket : 0
   const cpcCurrent = split.adSessionsStatus === "given" && split.paid > 0 && r.adSpend > 0 ? r.adSpend / split.paid : null
+  // Un 1 % más de descuento (en las mismas unidades que el formulario): cuánto margen se pierde por euro.
+  const grossIn = Math.abs(inp.grossSales ?? 0)
+  const probe = grossIn > 0 ? computeCore({ ...inp, discounts: Math.abs(inp.discounts ?? 0) + grossIn * 0.01 }) : null
+  const dRev = probe ? r.netRevenue - probe.netRevenue : 0
+  const discountKeep = probe && dRev > 0 ? (r.cm1 - probe.cm1) / dRev : 1
+  const periodMeanWeight = r.periodMonths.reduce((acc, m) => acc + r.weights[m], 0) / Math.max(1, r.periodMonths.length)
   return {
     periodDays,
     periodText,
@@ -85,11 +99,39 @@ export function planBase(inp: Inputs, r: Results, today: Date): PlanBase | null 
     cpcCurrent,
     marginPerTicketEuro,
     revenuePerTicketEuro,
+    discountKeep,
+    weights: r.weights,
+    periodMeanWeight,
     adSpend: r.adSpend,
     adVisits: split.adSessionsStatus === "given" ? split.paid : 0,
     orders: r.orders,
     sessions: r.sessions,
   }
+}
+
+export interface CampaignSeason {
+  /** Peso medio de los días de campaña ÷ peso medio de los meses del periodo de datos. */
+  factor: number
+  /** «noviembre» o «noviembre y diciembre» */
+  months: string
+}
+
+/**
+ * Un día normal de la campaña según tu estacionalidad: visitas y pedidos del periodo × (peso del
+ * mes de la campaña ÷ peso medio de los meses del periodo). Si la campaña cruza meses, se pondera por días.
+ */
+export function campaignSeason(b: PlanBase, start: Date, end: Date): CampaignSeason {
+  const count = new Map<number, number>()
+  let total = 0
+  for (let d = new Date(start.getFullYear(), start.getMonth(), start.getDate()); d <= end && total < 400; d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1)) {
+    count.set(d.getMonth(), (count.get(d.getMonth()) ?? 0) + 1)
+    total++
+  }
+  if (total === 0 || !(b.periodMeanWeight > 0)) return { factor: 1, months: "" }
+  let w = 0
+  count.forEach((c, m) => (w += b.weights[m] * c))
+  const names = [...count.keys()].map((m) => MONTHS_LONG[m])
+  return { factor: w / total / b.periodMeanWeight, months: names.length === 1 ? names[0] : `${names.slice(0, -1).join(", ")} y ${names[names.length - 1]}` }
 }
 
 /**
@@ -120,7 +162,7 @@ export interface FieldDef {
   /** Valor por defecto si el usuario no lo toca (p. ej. 100 %). */
   defaultValue?: number
   /** Se precarga con un dato de la calculadora («De tu cálculo»). */
-  prefill?: "cpc"
+  prefill?: "cpc" | "cr"
   hint?: string | ((b: PlanBase) => string)
   /** Máximo admitido (los % de reparto, descuento y comisión no pasan de 100). */
   max?: number
@@ -137,6 +179,15 @@ export interface TemplateDef {
 }
 
 const daysField: FieldDef = { key: "days", label: "Duración de la campaña", unit: "days", concept: "cpDays", required: true, integer: true }
+const adCrField: FieldDef = {
+  key: "adCr",
+  label: "Conversión de las visitas de anuncios",
+  unit: "pct",
+  concept: "cpAdCr",
+  prefill: "cr",
+  max: 100,
+  hint: "El tráfico de anuncios suele convertir menos que la media de tu tienda: si lo sabes, ponlo.",
+}
 const cpcField: FieldDef = {
   key: "cpc",
   label: "Coste por clic (por visita de anuncios)",
@@ -156,7 +207,8 @@ export const TEMPLATES: TemplateDef[] = [
       { key: "discountShare", label: "Parte de los pedidos que usará el descuento", unit: "pct", concept: "cpDiscountShare", defaultValue: 100, max: 100, hint: "Si el descuento es para toda la tienda, déjalo en 100 %." },
       { key: "budget", label: "Presupuesto extra en anuncios", unit: "money", concept: "cpBudget" },
       { ...cpcField, hint: "Puedes subirlo si esperas más competencia esos días.", required: (v, b) => (v.budget ?? 0) > 0 && b.cpcCurrent === null },
-      { key: "visitsUp", label: "¿Esperas más visitas de lo normal esos días?", unit: "pct", concept: "cpVisitsUp", hint: "Si tienes los datos del año pasado, compara esos días con un día normal." },
+      adCrField,
+      { key: "visitsUp", label: "¿Esperas más visitas de lo normal esos días?", unit: "pct", concept: "cpVisitsUp", hint: "Cuenta solo las visitas que trae la campaña. Las que llegarían igualmente por la fecha ya están en tu estacionalidad." },
       { key: "crUp", label: "¿Esperas que compre más gente de la que te visita?", unit: "pct", concept: "cpCrUp" },
       { key: "otherCosts", label: "Otros costes de la campaña", unit: "money", concept: "cpOtherCosts", hint: "Creatividades, regalos, influencers…" },
     ],
@@ -169,6 +221,7 @@ export const TEMPLATES: TemplateDef[] = [
       daysField,
       { key: "budget", label: "Presupuesto en anuncios", unit: "money", concept: "cpBudget", required: true },
       { ...cpcField, required: (_v, b) => b.cpcCurrent === null },
+      adCrField,
     ],
   },
   {
@@ -227,6 +280,7 @@ export const isRequired = (f: FieldDef, v: Values, b: PlanBase) => (typeof f.req
 /** Valor por defecto de un campo: dato de la calculadora o valor fijo. */
 export function fieldDefault(f: FieldDef, b: PlanBase): number | null {
   if (f.prefill === "cpc") return b.cpcCurrent
+  if (f.prefill === "cr") return Math.round(b.cr * 10000) / 100
   return f.defaultValue ?? null
 }
 
@@ -317,12 +371,25 @@ const signed = (v: number) => `${v >= 0 ? "+" : "−"}${e(Math.abs(v))}`
  * Calcula una plantilla. `values` ya trae los valores efectivos (los del usuario o los
  * precargados); `target` es el objetivo de beneficio (0 = no perder dinero).
  */
-export function computePlan(id: TemplateId, v: Values, b: PlanBase, days: number, target: number, inverse: boolean): PlanResult {
+export function computePlan(
+  id: TemplateId,
+  v: Values,
+  b: PlanBase,
+  days: number,
+  target: number,
+  inverse: boolean,
+  season: CampaignSeason = { factor: 1, months: "" },
+): PlanResult {
   const D = Math.max(1, Math.round(days))
   const M = b.margin
   const T = b.ticket
-  const O = b.ordersDay
-  const V = b.visitsDay
+  // Un día normal de la campaña, según tu estacionalidad (las visitas que llegarían igual por la fecha)
+  const O = b.ordersDay * season.factor
+  const V = b.visitsDay * season.factor
+  /** Lo que sale del margen por cada euro de descuento (las comisiones en % también bajan). */
+  const K = b.discountKeep
+  /** Conversión de las visitas de anuncios (por defecto, la media de la tienda). */
+  const crAds = (v.adCr === null || v.adCr === undefined || !Number.isFinite(v.adCr) ? b.cr * 100 : (v.adCr as number)) / 100
   const goal = inverse ? target : 0
   const goalText = inverse && target !== 0 ? `Para ganar ${e(target)}, ` : ""
   const cap = (s: string) => (goalText ? s.charAt(0).toLowerCase() + s.slice(1) : s)
@@ -341,7 +408,11 @@ export function computePlan(id: TemplateId, v: Values, b: PlanBase, days: number
     minOrders: null,
   }
   const baseLines = [
-    `Un día normal (${b.periodText}): ${num(V)} visitas, ${num(O)} pedidos (conversión ${fmt.conv(b.cr)})`,
+    season.months
+      ? `Un día normal de ${season.months} (según tu estacionalidad): ${num(V)} visitas, ${num(O)} pedidos (conversión ${fmt.conv(b.cr)})${
+          Math.abs(season.factor - 1) > 0.005 ? ` · tu periodo (${b.periodText}) × ${fmt.dec(season.factor)}` : ""
+        }`
+      : `Un día normal (${b.periodText}): ${num(V)} visitas, ${num(O)} pedidos (conversión ${fmt.conv(b.cr)})`,
     `Margen por pedido antes de marketing: ${e2(M)} · ticket medio ${e2(T)}`,
   ]
   out.fieldCalc.cpDays = [`${num(D)} días de campaña`]
@@ -359,14 +430,12 @@ export function computePlan(id: TemplateId, v: Values, b: PlanBase, days: number
       const k = val(v, "crUp") / 100
       const X = val(v, "otherCosts")
       const extraDay = (cpc: number) => extraPaidVisitsDay(b, B / D, cpc)
-      const P = (dd: number, vv = vu, cc = c) => {
-        const visits = V * (1 + vv) + extraDay(cc)
-        const orders = visits * b.cr * (1 + k)
-        return D * orders * (M - T * dd * u) - B - X - D * O * M
-      }
+      // Pedidos: visitas normales (+ extra) × conversión media + visitas de anuncios extra × su conversión
+      const ordersOf = (vv: number, cc: number) => (V * (1 + vv) * b.cr + extraDay(cc) * crAds) * (1 + k)
+      const P = (dd: number, vv = vu, cc = c) => D * ordersOf(vv, cc) * (M - T * dd * u * K) - B - X - D * O * M
       const visitsDay = V * (1 + vu) + extraDay(c)
-      const ordersDay = visitsDay * b.cr * (1 + k)
-      const mDisc = M - T * d * u
+      const ordersDay = ordersOf(vu, c)
+      const mDisc = M - T * d * u * K
       out.profit = P(d)
       out.plannedOrders = D * ordersDay
       out.figures = {
@@ -374,7 +443,7 @@ export function computePlan(id: TemplateId, v: Values, b: PlanBase, days: number
         orders: [base.orders, D * ordersDay],
         sales: [base.sales, D * ordersDay * (b.revenuePerOrder - T * d * u)],
       }
-      if (mDisc <= 0) out.impossible = `Con un descuento del ${pct(d)} pierdes dinero en cada pedido: el descuento (${e2(T * d * u)} por pedido) es mayor que tu margen (${e2(M)}).`
+      if (mDisc <= 0) out.impossible = `Con un descuento del ${pct(d)} pierdes dinero en cada pedido: el descuento (${e2(T * d * u * K)} de margen por pedido) es mayor que tu margen (${e2(M)}).`
       // Variable clave: descuento máximo
       const p0 = P(0)
       if (p0 < goal) {
@@ -403,13 +472,17 @@ export function computePlan(id: TemplateId, v: Values, b: PlanBase, days: number
       out.lines = [
         ...baseLines,
         `Visitas al día con campaña: ${num(V)} × (1 + ${pct(vu)})${B > 0 ? ` + ${num(extraDay(c))} de anuncios extra` : ""} = ${num(visitsDay)}`,
-        `Pedidos al día: ${num(visitsDay)} × ${fmt.conv(b.cr)}${k ? ` × (1 + ${pct(k)})` : ""} = ${num(ordersDay)}`,
-        `Margen por pedido con descuento: ${e2(M)} − ${e2(T)} × ${pct(d)} × ${pct(u)} = ${e2(mDisc)}`,
+        `Pedidos al día: (${num(V * (1 + vu))} × ${fmt.conv(b.cr)}${B > 0 ? ` + ${num(extraDay(c))} × ${fmt.conv(crAds)} de anuncios` : ""})${k ? ` × (1 + ${pct(k)})` : ""} = ${num(ordersDay)}`,
+        `Margen por pedido con descuento: ${e2(M)} − ${e2(T)} × ${pct(d)} × ${pct(u)} × ${pct(K)} (lo que no se llevan las comisiones) = ${e2(mDisc)}`,
         `Con campaña: ${num(D)} días × ${num(ordersDay)} pedidos × ${e2(mDisc)} − ${e(B)} anuncios − ${e(X)} otros costes = ${e(D * ordersDay * mDisc - B - X)}`,
         `Sin campaña: ${num(D)} días × ${num(O)} pedidos × ${e2(M)} = ${e(D * O * M)}`,
         `Diferencia: ${signed(out.profit)}`,
       ]
-      out.fieldCalc.cpDiscount = [`${e2(T)} × ${pct(d)} × ${pct(u)} = ${e2(T * d * u)} menos de margen por pedido`, `Margen por pedido: ${e2(M)} → ${e2(mDisc)}`]
+      out.fieldCalc.cpDiscount = [
+        `${e2(T)} × ${pct(d)} × ${pct(u)} × ${pct(K)} = ${e2(T * d * u * K)} menos de margen por pedido`,
+        `(El ${pct(1 - K)} restante lo dejas de pagar en comisiones en %; el coste de producto no baja.)`,
+        `Margen por pedido: ${e2(M)} → ${e2(mDisc)}`,
+      ]
       out.fieldCalc.cpDiscountShare = out.fieldCalc.cpDiscount
       if (B > 0) out.fieldCalc.cpBudget = [`${e(B)} ÷ ${num(D)} días = ${e(B / D)} al día`, `Visitas extra al día: ${num(extraDay(c))}`]
       out.fieldCalc.cpVisitsUp = [`${num(V)} visitas al día × (1 + ${pct(vu)}) = ${num(V * (1 + vu))}`]
@@ -421,13 +494,13 @@ export function computePlan(id: TemplateId, v: Values, b: PlanBase, days: number
       const B = val(v, "budget")
       const c = val(v, "cpc")
       const extraV = (bb: number) => D * extraPaidVisitsDay(b, bb / D, c)
-      const P = (bb: number) => extraV(bb) * b.cr * M - bb
+      const P = (bb: number) => extraV(bb) * crAds * M - bb
       const ev = extraV(B)
-      const eo = ev * b.cr
+      const eo = ev * crAds
       out.profit = P(B)
       out.plannedOrders = base.orders + eo
       out.figures = { visits: [base.visits, base.visits + ev], orders: [base.orders, base.orders + eo], sales: [base.sales, base.sales + eo * b.revenuePerOrder] }
-      const breakeven = b.cr * M
+      const breakeven = crAds * M
       if (inverse && target > 0) {
         if (!(c > 0)) out.key = "Indica tu coste por clic para calcularlo."
         else {
@@ -447,12 +520,13 @@ export function computePlan(id: TemplateId, v: Values, b: PlanBase, days: number
           `Con tu presupuesto y tu coste por clic, cada visita extra te saldría de media a ${e2(avg)}${b.adSpendDay > 0 ? " (al invertir más, cada visita extra cuesta algo más)" : ""}.`,
         )
         if (avg > breakeven) out.secondary.push(`Ahora cada visita extra te costaría más de lo que deja: baja el presupuesto o el coste por clic.`)
+        if (Math.abs(crAds - b.cr) < 1e-9) out.notes.push("Suponemos que las visitas de anuncios convierten como la media de tu tienda. Suelen convertir menos: si sabes su conversión, ponla en el paso 2.")
       }
       out.lines = [
         ...baseLines,
-        `Lo que deja una visita: ${fmt.conv(b.cr)} × ${e2(M)} = ${e2(breakeven)}`,
+        `Lo que deja una visita de anuncios: ${fmt.conv(crAds)} × ${e2(M)} = ${e2(breakeven)}`,
         `Visitas extra: ${num(ev)} (${num(D)} días, ${e(B)} de presupuesto, ${e2(c)} por clic)`,
-        `Pedidos extra: ${num(ev)} × ${fmt.conv(b.cr)} = ${num(eo)}`,
+        `Pedidos extra: ${num(ev)} × ${fmt.conv(crAds)} = ${num(eo)}`,
         `${num(eo)} pedidos × ${e2(M)} − ${e(B)} = ${signed(out.profit)}`,
       ]
       out.fieldCalc.cpBudget = [`${e(B)} ÷ ${num(D)} días = ${e(B / D)} al día`, `Visitas extra: ${num(ev)}`]
@@ -558,10 +632,10 @@ export function computePlan(id: TemplateId, v: Values, b: PlanBase, days: number
       const d = val(v, "discount") / 100
       const X = val(v, "extraCost")
       const share = v.buyShare
-      const m = M - T * d
+      const m = M - T * d * K
       out.notes.push("Parte de estos clientes te habría comprado igual: cuenta solo los pedidos que crees que trae el email.")
       if (m <= 0) {
-        out.impossible = `Con un descuento del ${pct(d)} pierdes dinero en cada pedido: el descuento (${e2(T * d)}) es mayor que tu margen (${e2(M)}).`
+        out.impossible = `Con un descuento del ${pct(d)} pierdes dinero en cada pedido: el descuento (${e2(T * d * K)} de margen) es mayor que tu margen (${e2(M)}).`
         out.key = "Con estos números no es posible salir a cuenta."
       } else {
         const need = Math.max(0, Math.ceil((X + goal) / m - 1e-9))
@@ -579,7 +653,7 @@ export function computePlan(id: TemplateId, v: Values, b: PlanBase, days: number
       }
       out.lines = [
         ...baseLines,
-        `Margen por pedido del email: ${e2(M)}${d ? ` − ${e2(T)} × ${pct(d)}` : ""} = ${e2(m)}`,
+        `Margen por pedido del email: ${e2(M)}${d ? ` − ${e2(T)} × ${pct(d)} × ${pct(K)} (lo que no se llevan las comisiones)` : ""} = ${e2(m)}`,
         ...out.lines,
         ...(out.profit !== null ? [`${num(out.plannedOrders ?? 0)} pedidos × ${e2(m)} − ${e(X)} = ${signed(out.profit)}`] : []),
         ...(m > 0 ? [`Pedidos mínimos: (${e(X)}${goal ? ` + ${e(goal)}` : ""}) ÷ ${e2(m)} = ${num(out.minOrders ?? 0)} (redondeado hacia arriba)`] : []),
@@ -593,7 +667,9 @@ export function computePlan(id: TemplateId, v: Values, b: PlanBase, days: number
       const c = val(v, "commission") / 100
       const d = val(v, "codeDiscount") / 100
       const expected = v.expectedOrders
-      const mc = M - T * (c + d)
+      // El descuento del código sale del margen (menos lo que dejas de pagar en comisiones en %);
+      // la comisión del influencer se calcula sobre el ticket ya rebajado.
+      const mc = M - T * d * K - T * (1 - d) * c
       const fixed = pay + prod
       if (mc <= 0) {
         out.impossible = "Con esa comisión y ese descuento pierdes dinero en cada pedido: baja alguno de los dos."
@@ -610,13 +686,14 @@ export function computePlan(id: TemplateId, v: Values, b: PlanBase, days: number
       }
       out.lines = [
         ...baseLines,
-        `Margen por pedido con código: ${e2(M)} − ${e2(T)} × (${pct(c)} + ${pct(d)}) = ${e2(mc)}`,
+        `Margen por pedido con código: ${e2(M)} − ${e2(T)} × ${pct(d)} × ${pct(K)} de descuento − ${e2(T * (1 - d))} × ${pct(c)} de comisión = ${e2(mc)}`,
         `Costes fijos: ${e(pay)} de pago + ${e(prod)} de producto = ${e(fixed)}`,
         ...(mc > 0 ? [`Pedidos mínimos: ${e(fixed)}${goal ? ` + ${e(goal)}` : ""} ÷ ${e2(mc)} = ${num(out.minOrders ?? 0)} (redondeado hacia arriba)`] : []),
         ...(out.profit !== null ? [`${num(expected as number)} pedidos × ${e2(mc)} − ${e(fixed)} = ${signed(out.profit)}`] : []),
       ]
-      out.fieldCalc.cpCommission = [`${e2(T)} × ${pct(c)} = ${e2(T * c)} por pedido`]
-      out.fieldCalc.cpCodeDiscount = [`${e2(T)} × ${pct(d)} = ${e2(T * d)} por pedido`]
+      out.notes.push("Parte de los pedidos con código se habrían hecho igual: cuenta solo los que crees que trae el influencer.")
+      out.fieldCalc.cpCommission = [`Sobre el ticket con el descuento del código: ${e2(T * (1 - d))} × ${pct(c)} = ${e2(T * (1 - d) * c)} por pedido`]
+      out.fieldCalc.cpCodeDiscount = [`${e2(T)} × ${pct(d)} × ${pct(K)} = ${e2(T * d * K)} menos de margen por pedido`]
       break
     }
   }

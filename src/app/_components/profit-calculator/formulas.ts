@@ -28,18 +28,20 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
   f.vatCollected = [`${e(r.netRevenue)} × ${p(r.vatRate)} = ${e(r.vatCollected)}`]
 
   // Costes variables
-  if (inp.cogsMode === "pct") f.cogs = [`${e(r.netProductSales)} × ${pctIn(inp.cogs)} = ${e(r.cogs)}`]
-  if (inp.cogsMode === "pct") f.cogsQuick = [`${e(r.netProductSales)} × ${pctIn(inp.cogs)} = ${e(r.cogs)}`]
+  // Base del %: precio antes de descuentos de lo que el cliente se queda (brutas − devoluciones)
+  if (inp.cogsMode === "pct")
+    f.cogs = [`Base: ${e(r.gross)} ventas brutas − ${e(r.returns)} devoluciones = ${e(r.cogsBase)} (sin restar descuentos)`, `${e(r.cogsBase)} × ${pctIn(inp.cogs)} = ${e(r.cogs)}`]
+  if (inp.cogsMode === "pct") f.cogsQuick = [`${e(r.cogsBase)} ventas brutas × ${pctIn(inp.cogs)} = ${e(r.cogs)}`]
   const share = r.mkShare
   const storeShare = 1 - share
   const partial = share > 0 && share < 1
   if (inp.feesMode === "pct") {
-    const all = r.totalCharged * (Math.abs(num(inp.fees)) / 100) + r.orders * Math.abs(num(inp.feesFixedPerOrder))
+    const all = r.chargedBeforeReturns * (Math.abs(num(inp.fees)) / 100) + r.orders * Math.abs(num(inp.feesFixedPerOrder))
     f.fees = [
-      `Lo que pagan los clientes: ${e(r.netRevenue)} × ${d(1 + r.vatRate)} = ${e(r.totalCharged)}`,
+      `Lo cobrado antes de devoluciones: (${e(r.gross)} − ${e(r.discounts)} + ${e(r.shippingRevenue)} envío) × ${d(1 + r.vatRate)} = ${e(r.chargedBeforeReturns)}`,
       partial
-        ? `${e(r.totalCharged)} × ${pctIn(inp.fees)} + ${n(r.orders)} pedidos × ${e2(num(inp.feesFixedPerOrder))} = ${e(all)}`
-        : `${e(r.totalCharged)} × ${pctIn(inp.fees)} + ${n(r.orders)} pedidos × ${e2(num(inp.feesFixedPerOrder))} = ${e(r.fees)}`,
+        ? `${e(r.chargedBeforeReturns)} × ${pctIn(inp.fees)} + ${n(r.orders)} pedidos × ${e2(num(inp.feesFixedPerOrder))} = ${e(all)}`
+        : `${e(r.chargedBeforeReturns)} × ${pctIn(inp.fees)} + ${n(r.orders)} pedidos × ${e2(num(inp.feesFixedPerOrder))} = ${e(r.fees)}`,
       ...(partial ? [`Solo la parte de tu tienda: ${e(all)} × ${p(storeShare)} = ${e(r.fees)}`] : []),
     ]
   } else if (partial) {
@@ -51,11 +53,10 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
   const nps = Math.max(0, r.netProductSales)
   if (r.marketplaceFees > 0 || inp.salesChannel !== "store") {
     const ship = inp.mkFeeOnShipping ? r.shippingRevenue : 0
-    const base = (nps + ship) * share
+    const vat = inp.mkFeeOnVat !== false ? 1 + r.vatRate : 1
+    const base = (nps + ship) * share * vat
     const lines = [
-      inp.mkFeeOnShipping
-        ? `Ventas del marketplace con envío: (${e(nps)} + ${e(r.shippingRevenue)}) × ${p(share)} = ${e(base)}`
-        : `Ventas del marketplace: ${e(nps)} × ${p(share)} = ${e(base)}`,
+      `Base: ${inp.mkFeeOnShipping ? `(${e(nps)} + ${e(r.shippingRevenue)} envío)` : e(nps)} × ${p(share)}${vat > 1 ? ` × ${d(vat)} (con IVA)` : " (sin IVA)"} = ${e(base)}`,
       `${e(base)} × ${pctIn(inp.mkFeePct)} = ${e(base * (Math.abs(num(inp.mkFeePct)) / 100))}`,
     ]
     if (num(inp.mkFeeFixed) !== 0) lines.push(`${n(r.orders * share)} pedidos × ${e2(Math.abs(num(inp.mkFeeFixed)))} = ${e(r.orders * share * Math.abs(num(inp.mkFeeFixed)))}`)
@@ -68,9 +69,16 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
     const storeSales = nps * storeShare
     const storeOrders = r.orders * storeShare
     const storeLine = partial ? [`Ventas de tu tienda: ${e(nps)} × ${p(storeShare)} = ${e(storeSales)} · ${n(storeOrders)} pedidos`] : []
+    // Base de cada comisión: ventas netas de la tienda (+ envío) (× IVA), según lo que haya marcado
+    const baseOf = (onShipping?: boolean, onVat?: boolean) => {
+      const b = (nps + (onShipping ? r.shippingRevenue : 0)) * storeShare * (onVat ? 1 + r.vatRate : 1)
+      const what = `${onShipping ? `(${e(nps)} + ${e(r.shippingRevenue)} envío)` : e(nps)}${partial ? ` × ${p(storeShare)}` : ""}${onVat ? ` × ${d(1 + r.vatRate)} (con IVA)` : ""}`
+      return { b, text: onShipping || onVat || partial ? `${what} = ${e(b)}` : e(b) }
+    }
+    const pb = baseOf(inp.platformFeeOnShipping, inp.platformFeeOnVat)
     f.platformFee = [
       ...storeLine,
-      `${e(storeSales)} × ${pctIn(inp.platformFeePct)} + ${n(storeOrders)} pedidos × ${e2(Math.abs(num(inp.platformFeeFixed)))} = ${e(r.platformFees)}`,
+      `${pb.text} × ${pctIn(inp.platformFeePct)} + ${n(storeOrders)} pedidos × ${e2(Math.abs(num(inp.platformFeeFixed)))} = ${e(r.platformFees)}`,
     ]
     if (r.appBreakdown.length > 0) {
       const byId = new Map((inp.apps ?? []).map((x) => [x.id, x]))
@@ -78,7 +86,8 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
         ...storeLine,
         ...r.appBreakdown.map((x) => {
           const src = byId.get(x.id)
-          return `${x.name}: ${e(storeSales)} × ${pctIn(src?.pct ?? 0)} + ${n(storeOrders)} pedidos × ${e2(Math.abs(num(src?.fixed)))} = ${e(x.amount)}`
+          const ab = baseOf(src?.onShipping, src?.onVat)
+          return `${x.name}: ${ab.text} × ${pctIn(src?.pct ?? 0)} + ${n(storeOrders)} pedidos × ${e2(Math.abs(num(src?.fixed)))} = ${e(x.amount)}`
         }),
         ...(r.appBreakdown.length > 1 ? [`Total apps = ${e(r.appFees)}`] : []),
       ]
@@ -102,7 +111,9 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
     ]
   }
 
-  const varLine = `${e(r.cogs)} + ${e(r.shippingPaid)} + ${e(r.packaging)} + ${e(r.fees)}${r.salesFeesTotal > 0 ? ` + ${e(r.salesFeesTotal)} comisiones` : ""}${r.returnCosts > 0 ? ` + ${e(r.returnCosts)}` : ""} = ${e(r.variableCosts)}`
+  const varLine = `${e(r.cogs)} producto + ${e(r.shippingPaid)} envíos + ${e(r.packaging)} packaging + ${e(r.fees)} pasarela${
+    r.salesFeesTotal > 0 ? ` + ${e(r.salesFeesTotal)} comisiones (marketplace, plataforma y apps)` : ""
+  }${r.returnCosts > 0 ? ` + ${e(r.returnCosts)} devoluciones` : ""} = ${e(r.variableCosts)}`
   f.variableCosts = [varLine]
   f.cm1 = [
     `Costes variables: ${varLine}`,
@@ -126,9 +137,17 @@ export function buildFormulas(r: Results, inp: Inputs): Formulas {
     ]
   }
   f.ebit = [`${e(r.contribution)} − ${e(r.fixed)} = ${e(r.ebit)}`]
+  const autonomo = inp.taxRegime === "autonomo"
   f.profitTax =
-    r.ebit > 0
-      ? [`${e(r.ebit)} × ${pctIn(inp.profitTaxPct)} = ${e(r.tax)}`]
+    r.taxBase > 0
+      ? [
+          ...(autonomo && r.ownerSalary > 0
+            ? [`Autónomo: tu sueldo no es gasto deducible → ${e(r.ebit)} + ${e(r.ownerSalary)} de sueldo = ${e(r.taxBase)}`]
+            : inp.taxRegime !== "autonomo" && r.ownerSalary > 0
+              ? [`${inp.taxRegime === "sociedad" ? "Sociedad" : "Sin indicar cómo facturas: como sociedad"}: tu sueldo se resta antes del impuesto`]
+              : []),
+          `${e(r.taxBase)} × ${pctIn(inp.profitTaxPct)} = ${e(r.tax)}`,
+        ]
       : [`No hay beneficio, así que no se aplica impuesto: ${e(0)}`]
   f.netProfit = [
     `${e(r.netRevenue)} − ${e(r.variableCosts)} − ${e(r.marketing)} − ${e(r.fixed)} = ${e(r.ebit)} antes de impuestos`,

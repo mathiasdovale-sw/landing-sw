@@ -55,7 +55,13 @@ export interface AppFee {
   name: string
   pct: number | null
   fixed: number | null
+  /** La comisión se calcula sobre el precio con IVA / incluye el envío cobrado. */
+  onVat?: boolean
+  onShipping?: boolean
 }
+
+/** Cómo factura el dueño: decide si su sueldo se resta antes del impuesto. */
+export type TaxRegime = "autonomo" | "sociedad"
 
 export interface Inputs {
   /** Modo rápido: solo cuentan los campos del modo rápido (ver applyMode). */
@@ -95,9 +101,12 @@ export interface Inputs {
   mkFeePct: number | null // % sobre lo vendido en el marketplace (sin IVA)
   mkFeeFixed: number | null // fijo por pedido del marketplace
   mkFeeOnShipping: boolean // la comisión se aplica también al envío cobrado
+  mkFeeOnVat?: boolean // la comisión se calcula sobre el precio con IVA (por defecto, sí)
   mkOtherFees: number | null // otras tarifas del marketplace: total del periodo
   platformFeePct: number | null // comisión por transacción de la plataforma de la tienda
   platformFeeFixed: number | null
+  platformFeeOnVat?: boolean // por defecto, no
+  platformFeeOnShipping?: boolean // por defecto, no
   apps: AppFee[]
 
   ads: AdChannel[]
@@ -111,6 +120,8 @@ export interface Inputs {
   ownerSalary: number | null // lo que se paga el dueño en el periodo
   ownerHours: number | null // horas al mes que le dedica
   profitTaxPct: number | null
+  /** Autónomo: el impuesto va sobre el beneficio antes de tu sueldo. Sociedad (o sin indicar): después. */
+  taxRegime?: TaxRegime | null
 
   ltvEnabled: boolean
   ltvFrequency: number | null // pedidos por cliente en 12 meses
@@ -210,6 +221,10 @@ export interface Results {
   shippingRevenue: number
   netRevenue: number
   totalCharged: number // lo que pagan los clientes, con IVA
+  chargedBeforeReturns: number // lo cobrado antes de devoluciones (brutas − descuentos + envío), con IVA: base de la pasarela
+  cogsBase: number // base del coste de producto en %: ventas brutas − devoluciones (sin IVA)
+  /** Base sobre la que paga impuesto: con autónomo, el beneficio antes de tu sueldo. */
+  taxBase: number
   vatCollected: number
 
   // Costes variables
@@ -345,7 +360,7 @@ export function applyMode(inp: Inputs): Inputs {
     emailToolCost: null,
     emailAttributed: null,
     otherMarketing: null,
-    platformCost: null,
+    // «Plataforma, hosting y apps» del modo completo se suma a los gastos fijos (y se dice en el paso 4).
     ownerSalary: null,
     ownerHours: null,
     ltvEnabled: false,
@@ -436,7 +451,10 @@ export function computeCore(inp: Inputs): Results {
   const sessions = Math.max(0, n(inp.sessions))
   const newCustomers = Math.max(0, n(inp.newCustomers))
 
-  const cogs = inp.cogsMode === "pct" ? Math.max(0, netProductSales) * (a(inp.cogs) / 100) : a(inp.cogs)
+  // Coste de producto en %: sobre el precio de venta antes de descuentos, de lo que el cliente se
+  // queda (ventas brutas − devoluciones). El descuento baja el precio, no el coste.
+  const cogsBase = Math.max(0, gross - returns)
+  const cogs = inp.cogsMode === "pct" ? cogsBase * (a(inp.cogs) / 100) : a(inp.cogs)
   const shippingPaid = a(inp.shippingPaid)
   const packaging = a(inp.packaging)
   // Parte de las ventas que viene del marketplace. Las cifras de ventas son el total.
@@ -446,24 +464,32 @@ export function computeCore(inp: Inputs): Results {
   const productBase = Math.max(0, netProductSales)
 
   // Pasarela: solo cobra en la tienda propia (en el marketplace el cobro va en su comisión).
-  // En % se aplica a la parte de tienda; en importe total, el usuario mete lo que pagó a su
-  // pasarela, que ya es solo de la tienda, así que se usa tal cual (0 si solo vende en marketplace).
+  // En % se aplica a lo cobrado antes de devoluciones (brutas − descuentos + envío, con IVA): las
+  // pasarelas no suelen devolver su comisión al reembolsar. En importe total, el usuario mete lo que
+  // pagó a su pasarela, que ya es solo de la tienda (0 si solo vende en marketplace).
+  const chargedBeforeReturns = Math.max(0, gross - discounts + shippingRevenue) * (1 + vatRate)
   const fees =
     inp.feesMode === "pct"
-      ? (Math.max(0, totalCharged) * (a(inp.fees) / 100) + orders * a(inp.feesFixedPerOrder)) * storeShare
+      ? (chargedBeforeReturns * (a(inp.fees) / 100) + orders * a(inp.feesFixedPerOrder)) * storeShare
       : channel === "marketplace"
         ? 0
         : a(inp.fees)
   const returnCosts = a(inp.returnCosts)
 
-  // Comisiones por venta: escalan con lo vendido en cada canal (sin IVA).
+  // Comisiones por venta: escalan con lo vendido en cada canal. Base: ventas netas (+ envío si la
+  // comisión lo incluye), con IVA si se calcula sobre el precio con IVA (en el marketplace, por defecto).
+  const feeBase = (onShipping: boolean | undefined, onVat: boolean | undefined) =>
+    (productBase + (onShipping ? shippingRevenue : 0)) * (onVat ? 1 + vatRate : 1)
   const marketplaceFees =
     channel === "store"
       ? 0
-      : (productBase + (inp.mkFeeOnShipping ? shippingRevenue : 0)) * mkShare * (a(inp.mkFeePct) / 100) +
+      : feeBase(inp.mkFeeOnShipping, inp.mkFeeOnVat !== false) * mkShare * (a(inp.mkFeePct) / 100) +
         orders * mkShare * a(inp.mkFeeFixed) +
         a(inp.mkOtherFees)
-  const platformFees = channel === "marketplace" ? 0 : productBase * storeShare * (a(inp.platformFeePct) / 100) + orders * storeShare * a(inp.platformFeeFixed)
+  const platformFees =
+    channel === "marketplace"
+      ? 0
+      : feeBase(inp.platformFeeOnShipping, inp.platformFeeOnVat) * storeShare * (a(inp.platformFeePct) / 100) + orders * storeShare * a(inp.platformFeeFixed)
   const appBreakdown =
     channel === "marketplace"
       ? []
@@ -472,7 +498,7 @@ export function computeCore(inp: Inputs): Results {
           .map((x) => ({
             id: x.id,
             name: x.name || "App",
-            amount: productBase * storeShare * (a(x.pct) / 100) + orders * storeShare * a(x.fixed),
+            amount: feeBase(x.onShipping, x.onVat) * storeShare * (a(x.pct) / 100) + orders * storeShare * a(x.fixed),
           }))
   const appFees = appBreakdown.reduce((acc, x) => acc + x.amount, 0)
   const salesFeesTotal = marketplaceFees + platformFees + appFees
@@ -532,7 +558,11 @@ export function computeCore(inp: Inputs): Results {
   const fixed = a(inp.platformCost) + a(inp.otherFixed) + ownerSalary
   const ebit = contribution - fixed
   const taxRate = Math.max(0, n(inp.profitTaxPct)) / 100
-  const tax = ebit > 0 ? ebit * taxRate : 0
+  // Autónomo: tu sueldo no es gasto deducible, así que el % va sobre el beneficio antes de restarlo.
+  // Sociedad (o sin indicar): tu sueldo es gasto y el % va sobre lo que queda. Es una aproximación.
+  const autonomo = inp.taxRegime === "autonomo"
+  const taxBase = autonomo ? ebit + ownerSalary : ebit
+  const tax = taxBase > 0 ? taxBase * taxRate : 0
   const netProfit = ebit - tax
   const netMarginPct = div(netProfit, netRevenue)
 
@@ -568,19 +598,24 @@ export function computeCore(inp: Inputs): Results {
   const ltvCac = ltvMargin !== null && cac !== null && cac > 0 ? ltvMargin / cac : null
 
   // Primera compra. Partimos del margen por pedido medio y ajustamos por la
-  // diferencia de importe: producto y comisiones escalan con lo vendido; envío y
+  // diferencia de importe: el producto sigue al precio (no al descuento de bienvenida), las
+  // comisiones a lo cobrado; envío y
   // packaging se pagan igual en cualquier pedido.
   const firstOrderCustom = has(inp.firstOrderAov) || (has(inp.welcomeDiscountPct) && n(inp.welcomeDiscountPct) !== 0)
   const baseTicket = has(inp.firstOrderAov) ? Math.abs(n(inp.firstOrderAov)) * vatFactor : aov
   const welcome = Math.min(100, Math.max(0, n(inp.welcomeDiscountPct))) / 100
   const firstOrderTicket = baseTicket !== null ? baseTicket * (1 - welcome) : null
   const returnRate = gross - discounts > 0 ? returns / (gross - discounts) : 0
-  const cogsRatio = netProductSales > 0 ? cogs / netProductSales : 0
   const feesRatio = netRevenue > 0 ? (fees + salesFeesTotal) / netRevenue : 0
   const avgNetPerOrder = div(netProductSales, orders)
+  // El coste de producto sigue al precio del pedido (ticket antes del descuento de bienvenida),
+  // no al descuento; las comisiones, a lo cobrado.
+  const avgCogsPerOrder = div(cogs, orders)
   const firstOrderMargin =
-    cm1PerOrder !== null && avgNetPerOrder !== null && firstOrderTicket !== null
-      ? cm1PerOrder + (firstOrderTicket * (1 - returnRate) - avgNetPerOrder) * (1 - cogsRatio - feesRatio)
+    cm1PerOrder !== null && avgNetPerOrder !== null && firstOrderTicket !== null && baseTicket !== null && aov !== null && aov > 0 && avgCogsPerOrder !== null
+      ? cm1PerOrder +
+        (firstOrderTicket * (1 - returnRate) - avgNetPerOrder) * (1 - feesRatio) -
+        avgCogsPerOrder * (baseTicket / aov - 1)
       : null
   const firstOrderProfit = firstOrderMargin !== null && cac !== null ? firstOrderMargin - cac : null
   const ordersToRecoverCac =
@@ -618,7 +653,8 @@ export function computeCore(inp: Inputs): Results {
   const projRevenue = annualRevenue
   const projContribution = annualRevenue - annualVariable - annualScaledMkt - emailToolCost * linearFactor
   const projProfitBeforeTax = projContribution - fixed * linearFactor
-  const projTax = projProfitBeforeTax > 0 ? projProfitBeforeTax * taxRate : 0
+  const projTaxBase = autonomo ? projProfitBeforeTax + ownerSalary * linearFactor : projProfitBeforeTax
+  const projTax = projTaxBase > 0 ? projTaxBase * taxRate : 0
   const projNetProfit = projProfitBeforeTax - projTax
   const lossMonths = projection.filter((p) => p.profitBeforeTax < 0).map((p) => MONTHS_LONG[p.monthIndex])
 
@@ -628,7 +664,7 @@ export function computeCore(inp: Inputs): Results {
 
   const r: Results = {
     hasData, completeness: comp, trusted, vatRate, vatFactor,
-    gross, discounts, returns, netProductSales, shippingRevenue, netRevenue, totalCharged, vatCollected,
+    gross, discounts, returns, netProductSales, shippingRevenue, netRevenue, totalCharged, vatCollected, chargedBeforeReturns, cogsBase, taxBase,
     cogs, shippingPaid, packaging, fees, returnCosts, variableCosts, shippingSubsidy, cm1, cm1PerEuro,
     mkShare, marketplaceFees, platformFees, appFees, appBreakdown, salesFeesTotal, cm1PerEuroStore, cm1PerEuroMarketplace,
     channels, adSpend, adAttributed, emailToolCost, emailAttributed, emailRoas, otherMarketing, marketing,
@@ -704,7 +740,7 @@ export const levelOf = {
 // tax: organismo al que se paga el IVA.
 export const CURRENCIES = [
   { code: "EUR", vat: 21, perEur: 1, tax: "Hacienda", locale: "es-ES", one: "euro", many: "euros", label: "Euro (EUR) · España" },
-  { code: "USD", vat: 15, perEur: 1.15, tax: "el SRI", locale: "es-EC", one: "dólar", many: "dólares", label: "Dólar (USD) · Ecuador, El Salvador, Panamá…" },
+  { code: "USD", vat: 15, perEur: 1.15, tax: "el SRI", locale: "es-EC", one: "dólar", many: "dólares", label: "Dólar (USD) · Ecuador y otros" },
   { code: "MXN", vat: 16, perEur: 21.5, tax: "el SAT", locale: "es-MX", one: "peso", many: "pesos", label: "Peso mexicano (MXN)" },
   { code: "ARS", vat: 21, perEur: 1500, tax: "ARCA", locale: "es-AR", one: "peso", many: "pesos", label: "Peso argentino (ARS)" },
   { code: "COP", vat: 19, perEur: 4600, tax: "la DIAN", locale: "es-CO", one: "peso", many: "pesos", label: "Peso colombiano (COP)" },
@@ -844,6 +880,13 @@ export const LEVER_PHRASE: Record<LeverKey, string> = {
   fixed: "Bajar un 10 % los gastos fijos",
 }
 
+/** Umbrales fijos: no son un problema absoluto, depende del sector. */
+const ABOVE_USUAL = "Por encima de lo habitual en muchas tiendas (orientativo: depende del sector)."
+const ABOVE_USUAL_RETURNS = "Por encima de lo habitual en muchas tiendas (orientativo: depende del sector; en moda, por ejemplo, las devoluciones suelen ser más altas)."
+/** Resultado de la tienda propia con recompra: qué significa la cifra. */
+export const REPEAT_LABEL = "con recompra (margen a 12 meses de los clientes captados en un mes)"
+const signedEur = (v: number) => `${v >= 0 ? "+" : "−"}${fmt.eur(Math.abs(v))}`
+
 function buildInsights(r: Results, inp: Inputs): Insight[] {
   if (!r.hasData || r.netRevenue <= 0) return []
   const out: Insight[] = []
@@ -956,7 +999,9 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
       level: "bad",
       impact: Math.max(0, c.spend - c.attributed * cm1PerEuro),
       title: `${c.name} no se paga ni con sus propios datos`,
-      text: `ROAS de ${fmt.x(c.roas)} cuando necesitas al menos ${fmt.x(r.roasBreakeven)} para cubrir costes. Y las plataformas tienden a atribuirse de más, así que la realidad suele ser peor. Revisa campañas, público y creatividades, o baja el presupuesto.`,
+      text: `ROAS de ${fmt.x(c.roas)} cuando necesitas al menos ${fmt.x(r.roasBreakeven)} para cubrir costes. Y las plataformas suelen atribuirse de más, así que probablemente rinde menos de lo que indica. Revisa campañas, público y creatividades, o baja el presupuesto.${
+        inp.salesChannel === "both" ? " Ojo: parte de lo que generan tus anuncios puede acabar vendiéndose en el marketplace y no aparece aquí." : ""
+      }`,
     })
   }
 
@@ -980,20 +1025,25 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
   }
 
   // Comisiones por venta (marketplace, plataforma y apps; la pasarela va aparte).
+  const sd = storeDecision(r, inp)
   const feesShare = r.salesFeesTotal / r.netRevenue
   if (feesShare > 0.15) {
     const channel = inp.salesChannel
     const advice =
       channel === "marketplace"
-        ? "Revisa si tu plan del marketplace te compensa, si alguna tarifa depende de la categoría o del volumen y si puedes negociarla. Y valora abrir un canal propio: en tu tienda no pagas comisión por cada venta."
+        ? `Revisa si tu plan del marketplace te compensa, si alguna tarifa depende de la categoría o del volumen y si puedes negociarla.${
+            sd.state === "ready" ? " Mira si te compensa una tienda propia en la sección «Tienda propia»." : ""
+          }`
         : channel === "both"
-          ? "Revisa tu plan en cada canal, negocia lo que se pueda y empuja las ventas hacia el canal que te deja más margen (normalmente, tu tienda propia)."
+          ? `Revisa tu plan en cada canal, negocia lo que se pueda y empuja las ventas hacia el canal que te deja más margen.${
+              sd.state === "ready" ? " Mira si te compensa la publicidad de tu tienda en la sección «Tienda propia»." : ""
+            }`
           : "Revisa si un plan superior de tu plataforma cobra menos por transacción y qué apps se quedan un % de tus ventas: compara con alternativas de cuota fija."
     out.push({
       level: "warn",
       impact: r.salesFeesTotal - 0.15 * r.netRevenue,
       title: `Las comisiones se llevan el ${fmt.pct(feesShare)} de cada venta`,
-      text: `Pagas ${fmt.eur(r.salesFeesTotal)} ${per} en comisiones por venta, sin contar la pasarela de pago. ${advice}`,
+      text: `Pagas ${fmt.eur(r.salesFeesTotal)} ${per} en comisiones por venta, sin contar la pasarela de pago. ${ABOVE_USUAL} ${advice}`,
     })
   }
 
@@ -1007,22 +1057,22 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
       title: `De cada ${fmt.eur(100)} que vendes en el marketplace te quedan ${fmt.eur2(r.cm1PerEuroMarketplace * 100)}; en tu tienda, ${fmt.eur2(r.cm1PerEuroStore * 100)}`,
       text: `Antes de marketing y gastos fijos. ${
         storeBetter
-          ? "Tu tienda te deja más por cada venta: cada cliente que compra en ella en lugar de en el marketplace suma margen. Usa el marketplace para que te descubran y trae la recompra a tu tienda (email, inserto en el paquete, ventajas por comprar directo)."
+          ? "En tu tienda te queda más por venta antes de marketing, pero allí tienes que pagar para conseguir el tráfico."
           : "El marketplace te deja más por cada venta que tu tienda: revisa la pasarela, la comisión de tu plataforma y las apps que cobran un %."
       } Supone el mismo coste de producto, envíos y packaging en los dos canales.`,
     })
   }
 
-  // ¿Te conviene abrir tu tienda propia? (solo si el bloque tiene todos sus datos)
-  const sd = storeDecision(r, inp)
+  // ¿Te conviene abrir tu tienda propia? (solo si el bloque tiene todos sus datos).
+  // El veredicto y el título usan solo la publicidad; los clientes que pasan del marketplace, aparte.
   if (sd.state === "ready") {
     const d = sd.d
     const what = d.channel === "marketplace" ? "Abrir tu tienda propia con publicidad" : "La publicidad de tu tienda propia"
     out.push({
       level: d.level === "good" ? capGood("good", r) : d.level,
-      impact: Math.abs(d.resultTotal),
-      title: `${what}: ${d.title.charAt(0).toLowerCase()}${d.title.slice(1)} (${d.resultTotal >= 0 ? "+" : ""}${fmt.eur(d.resultTotal)} al mes)`,
-      text: `${d.text} Es una estimación con tus datos de publicidad: la forma de confirmarlo es una prueba de 30–45 días con presupuesto cerrado.`,
+      impact: Math.abs(d.adsResult),
+      title: `${what}: ${d.title.charAt(0).toLowerCase()}${d.title.slice(1)} (${signedEur(d.adsResult)} ${d.adsResultIsRepeat ? REPEAT_LABEL : "al mes"})`,
+      text: `${d.text}${d.breakdown ? ` ${d.breakdown}` : ""} Es una estimación con tus datos de publicidad: la forma de confirmarlo es una prueba de 30–45 días con presupuesto cerrado.`,
     })
   }
 
@@ -1034,7 +1084,7 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
       level: discLevel,
       impact: Math.max(0, r.discounts - 0.12 * r.gross),
       title: `Los descuentos se llevan el ${fmt.pct(r.discountPct)} de tus ventas brutas`,
-      text: `Cada ${fmt.one()} de descuento sale directo de tu margen. Revisa si los códigos están generando ventas nuevas o solo regalando margen a quien iba a comprar igual.`,
+      text: `${ABOVE_USUAL} Cada ${fmt.one()} de descuento sale directo de tu margen. Revisa si los códigos están generando ventas nuevas o solo regalando margen a quien iba a comprar igual.`,
     })
   }
 
@@ -1045,7 +1095,7 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
       level: retLevel,
       impact: excess * cm1PerEuro + (r.returns > 0 ? r.returnCosts * (excess / r.returns) : 0),
       title: `Devoluciones del ${fmt.pct(r.returnPct)}`,
-      text: `${
+      text: `${ABOVE_USUAL_RETURNS} ${
         r.returnCosts > 0 ? `Además del importe devuelto, te cuestan ${fmt.eur(r.returnCosts)} en envíos de vuelta y producto que no puedes revender. ` : ""
       }Suele indicar que el cliente no recibe lo que esperaba: tallas, medidas, fotos, materiales. Mira qué productos concentran las devoluciones y por qué.`,
     })
@@ -1139,7 +1189,7 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
         title: `${LEVER_PHRASE[x.key]} sumaría ${fmt.eur(x.delta)} ${per}`,
         text: `Es la ${i === 0 ? "palanca con más impacto" : "segunda palanca con más impacto"} en tu caso según el simulador${
           sure ? "" : ", con los datos que has metido"
-        }${x.key === "ads" ? " (suponiendo que cada ${fmt.one()} extra de publicidad rinde algo menos que el anterior)" : ""}. Más abajo puedes moverla y combinarla con otras.`,
+        }${x.key === "ads" ? ` (suponiendo que cada ${fmt.one()} extra de publicidad rinde algo menos que el anterior)` : ""}. Más abajo puedes moverla y combinarla con otras.`,
       })
     })
 
@@ -1348,7 +1398,8 @@ export function simulate(inp: Inputs, base: Results, levers: Levers): Results {
     newCustomers: n(inp.newCustomers) * customers,
     ltvFrequency: has(inp.ltvFrequency) ? n(inp.ltvFrequency) * repeat : inp.ltvFrequency,
     firstOrderAov: has(inp.firstOrderAov) ? Math.abs(n(inp.firstOrderAov)) * ticket : inp.firstOrderAov,
-    cogs: inp.cogsMode === "pct" ? n(inp.cogs) * f(lv.cogs) : n(inp.cogs) * nsRatio * f(lv.cogs),
+    // En %, la base (brutas − devoluciones) ya se recalcula; en €, el coste sigue a esa misma base.
+    cogs: inp.cogsMode === "pct" ? n(inp.cogs) * f(lv.cogs) : n(inp.cogs) * (gross0 - ret0 > 0 ? (gross - returns) / (gross0 - ret0) : volume * ticket) * f(lv.cogs),
     shippingPaid: n(inp.shippingPaid) * volume * f(lv.shipping),
     packaging: n(inp.packaging) * volume,
     returnCosts: ret0 > 0 ? n(inp.returnCosts) * (returns / ret0) : n(inp.returnCosts) * volume,
@@ -1460,6 +1511,11 @@ export interface StoreDecision {
   resultRepeat: number | null // margen a 12 meses de los clientes captados en un mes − ads − cuota
   mkOrdersMonth: number
   migrateGain: number | null
+  /** Resultado de la publicidad (primera compra o, si solo sale a cuenta con recompra, con recompra). */
+  adsResult: number
+  adsResultIsRepeat: boolean
+  /** «La publicidad: … · Clientes que pasas del marketplace: … · Total: …» (solo si hay migración) */
+  breakdown: string | null
   resultTotal: number
   level: Level
   title: string
@@ -1510,7 +1566,16 @@ export function storeDecision(r: Results, inp: Inputs): StoreDecisionState {
 
   const mkOrdersMonth = (r.orders * r.mkShare) / m
   const migrateGain = has(inp.migratePct) && n(inp.migratePct) !== 0 ? mkOrdersMonth * (Math.min(100, Math.max(0, n(inp.migratePct))) / 100) * (Ms - Mm) : null
-  const resultTotal = (resultRepeat ?? result1) + (migrateGain ?? 0)
+  // El veredicto se decide SOLO con la publicidad: primera compra y, si la hay, recompra.
+  // Los clientes que pasan del marketplace son otra cosa: se muestran aparte, con su signo.
+  const adsResultIsRepeat = result1 <= 0 && resultRepeat !== null
+  const adsResult = adsResultIsRepeat ? (resultRepeat as number) : result1
+  const resultTotal = adsResult + (migrateGain ?? 0)
+  const signed = (v: number) => `${v >= 0 ? "+" : "−"}${fmt.eur(Math.abs(v))}`
+  const breakdown =
+    migrateGain !== null
+      ? `La publicidad: ${signed(adsResult)}/mes${adsResultIsRepeat ? " (con recompra)" : ""} · Clientes que pasas del marketplace: ${signed(migrateGain)}/mes · Total: ${signed(resultTotal)}/mes.`
+      : null
 
   let level: Level
   let title: string
@@ -1519,14 +1584,14 @@ export function storeDecision(r: Results, inp: Inputs): StoreDecisionState {
     level = "bad"
     title = "Hoy no te conviene"
     text = "Cada pedido en tu tienda pierde dinero antes de pagar publicidad."
-  } else if (result1 + (migrateGain ?? 0) > 0) {
+  } else if (result1 > 0) {
     level = "good"
     title = "Te conviene"
-    text = `Con un coste por pedido de ${fmt.eur2(cpa)} la publicidad se paga ya con la primera compra: ${fmt.eur(result1 + (migrateGain ?? 0))} al mes.`
-  } else if (resultTotal > 0) {
+    text = `Con un coste por pedido de ${fmt.eur2(cpa)} la publicidad se paga ya con la primera compra: ${signed(result1)} al mes.`
+  } else if (resultRepeat !== null && resultRepeat > 0) {
     level = "warn"
     title = "Solo si te vuelven a comprar"
-    text = "Pierdes en la primera compra; ganas si los clientes repiten como has indicado."
+    text = `Pierdes en la primera compra (${signed(result1)} al mes); ganas si los clientes repiten como has indicado: ${signed(resultRepeat)} ${REPEAT_LABEL}.`
   } else {
     level = "bad"
     title = "Hoy no te conviene"
@@ -1538,7 +1603,7 @@ export function storeDecision(r: Results, inp: Inputs): StoreDecisionState {
     state: "ready",
     d: {
       channel, months: m, T, C, mkFeePerOrder, Mm, Fs, Ms, A, F, cpa, ordersFromAds, ordersNeeded, cpaMax, roasMin, result1,
-      repeatFreq, cpaMaxRepeat, resultRepeat, mkOrdersMonth, migrateGain, resultTotal, level, title, text,
+      repeatFreq, cpaMaxRepeat, resultRepeat, mkOrdersMonth, migrateGain, adsResult, adsResultIsRepeat, breakdown, resultTotal, level, title, text,
       storeBelowMk: Ms <= Mm,
     },
   }

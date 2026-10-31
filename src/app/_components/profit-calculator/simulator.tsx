@@ -69,7 +69,7 @@ const LEVERS: LeverDef[] = [
   },
   { key: "discounts", label: "Descuentos", hint: "Peso de los descuentos sobre las ventas", icon: Percent, min: -100, max: 100, step: 5, show: (r) => fmt.pct(r.discountPct) },
   { key: "returns", label: "Devoluciones", hint: "Peso de las devoluciones sobre las ventas", icon: Undo2, min: -100, max: 100, step: 5, show: (r) => fmt.pct(r.returnPct) },
-  { key: "cogs", label: "Coste de producto", hint: "Negociar con proveedores, cambiar de fabricante…", icon: Package, min: -30, max: 30, step: 1, show: (r) => fmt.pct(share(r.cogs, r.netProductSales)) },
+  { key: "cogs", label: "Coste de producto", hint: "Negociar con proveedores, cambiar de fabricante…", icon: Package, min: -30, max: 30, step: 1, show: (r) => fmt.pct(share(r.cogs, r.cogsBase)) }, // % del precio antes de descuentos (misma base que el campo)
   { key: "shipping", label: "Coste de envío por pedido", hint: "Mejores tarifas de transporte", icon: Truck, min: -50, max: 50, step: 5, show: (r) => fmt.eur2(share(r.shippingPaid, r.orders)) },
   { key: "ads", label: "Inversión en publicidad", hint: "Cada inversión extra rinde algo menos que la anterior", icon: Megaphone, min: -100, max: 100, step: 5, show: (r) => fmt.eur(r.adSpend) },
   { key: "fixed", label: "Gastos fijos", hint: "Plataforma, alquiler, gestoría… (sin tu sueldo)", icon: Building2, min: -50, max: 50, step: 5, show: (r) => fmt.eur(r.fixed) },

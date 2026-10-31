@@ -61,13 +61,13 @@ export const CONCEPTS: Record<string, Concept> = {
   cogs: {
     label: "Coste de producto",
     what: "Lo que te cuesta lo que vendes: compra o fabricación del producto, sin IVA.",
-    how: "Puedes meterlo en {euros} (total del periodo) o como % sobre tus ventas netas sin IVA. Ej.: si un producto se vende a {100} sin IVA y te cuesta {35}, son un 35 %.",
+    how: "Puedes meterlo en {euros} (total del periodo) o como % del precio de venta sin IVA, antes de descuentos. Ej.: lo vendes a {100} y te cuesta {35} → 35 %, aunque lo hayas vendido con descuento. El % se aplica a tus ventas brutas menos devoluciones: el descuento baja el precio, no el coste.",
   },
   // Modo rápido: no pide descuentos ni devoluciones, así que el % va sobre las ventas sin IVA tal cual.
   cogsQuick: {
     label: "Coste de producto",
     what: "Lo que te cuesta lo que vendes: compra o fabricación del producto, sin IVA.",
-    how: "Mételo como % sobre tus ventas sin IVA. Ej.: si un producto se vende a {100} sin IVA y te cuesta {35}, son un 35 %. En el modo rápido no restamos descuentos ni devoluciones.",
+    how: "% del precio de venta sin IVA, antes de descuentos. Ej.: lo vendes a {100} y te cuesta {35} → 35 %, aunque lo hayas vendido con descuento. En el modo rápido se aplica a tus ventas brutas (no pedimos devoluciones).",
   },
   shippingPaid: {
     label: "Envíos pagados",
@@ -95,7 +95,7 @@ export const CONCEPTS: Record<string, Concept> = {
   marketplaceFee: {
     label: "Comisión del marketplace",
     what: "El % que se queda el marketplace de cada venta (y el fijo por pedido, si lo hay). En un marketplace el cobro ya va incluido en su comisión: no hay pasarela aparte.",
-    how: "(Ventas netas del marketplace + envío cobrado, si la comisión también se aplica al envío) × % + pedidos del marketplace × fijo por pedido. Mira el % en las condiciones de tu plan: cambia según el plan, la categoría y el país.",
+    how: "(Ventas netas del marketplace + envío cobrado, si la comisión también se aplica al envío) × (1 + IVA), si la comisión se calcula sobre el precio con IVA, × % + pedidos del marketplace × fijo por pedido. Muchos marketplaces cobran sobre el precio con IVA: por eso viene marcado. Mira el % y la base en las condiciones de tu plan: cambian según el plan, la categoría y el país.",
   },
   mkOtherFees: {
     label: "Otras tarifas del marketplace",
@@ -105,12 +105,12 @@ export const CONCEPTS: Record<string, Concept> = {
   platformFee: {
     label: "Comisión de la plataforma de tu tienda",
     what: "Lo que cobra la plataforma de tu tienda por cada venta (comisión por transacción), aparte de la cuota mensual (esa va en gastos fijos).",
-    how: "Ventas netas de tu tienda × % + pedidos de tu tienda × fijo por pedido. Mira el % en las condiciones de tu plan: en algunas plataformas depende también de qué pasarela uses.",
+    how: "Ventas netas de tu tienda (+ envío, si lo marcas) (× (1 + IVA), si la comisión se calcula sobre el precio con IVA) × % + pedidos de tu tienda × fijo por pedido. Mira el % y la base en las condiciones de tu plan: en algunas plataformas depende también de qué pasarela uses.",
   },
   appFees: {
     label: "Apps que cobran un % de tus ventas",
     what: "Apps o servicios que se quedan un porcentaje de lo que vendes en tu tienda (y a veces un fijo por pedido). Las que cobran una cuota fija van en gastos fijos.",
-    how: "Por cada app: ventas netas de tu tienda × % + pedidos de tu tienda × fijo por pedido.",
+    how: "Por cada app: ventas netas de tu tienda (+ envío, si lo marcas) (× (1 + IVA), si cobra sobre el precio con IVA) × % + pedidos de tu tienda × fijo por pedido.",
   },
   storeAdsBudget: {
     label: "Presupuesto de publicidad al día",
@@ -160,7 +160,7 @@ export const CONCEPTS: Record<string, Concept> = {
   fees: {
     label: "Comisiones de pasarela de pago",
     what: "Lo que te cobra tu pasarela o TPV virtual (Stripe, PayPal, Redsys, el sistema de pagos de tu plataforma…) por cada cobro.",
-    how: "En {euros} (total del periodo) o como % + importe fijo por pedido. El % se aplica sobre lo que paga el cliente (con IVA y envío), que es sobre lo que cobran las pasarelas.",
+    how: "En {euros} (total del periodo) o como % + importe fijo por pedido. El % se aplica sobre lo que cobras antes de devoluciones (ventas brutas − descuentos + envío, con IVA): las pasarelas no suelen devolver su comisión cuando reembolsas.",
   },
   returnCosts: {
     label: "Coste de devoluciones",
@@ -200,8 +200,8 @@ export const CONCEPTS: Record<string, Concept> = {
   },
   profitTax: {
     label: "Impuesto sobre el beneficio",
-    what: "El % que pagas sobre lo que ganas. Si eres autónomo, tu tramo aproximado de IRPF; si tienes una SL, el impuesto de sociedades.",
-    how: "Solo se aplica si hay beneficio. Si no lo sabes, pregúntale a tu gestor. Déjalo en 0 para ver el resultado antes de impuestos.",
+    what: "Es una aproximación. Si eres autónomo, tu tramo de IRPF aproximado; si tienes una sociedad, el impuesto de sociedades.",
+    how: "Autónomo: el % va sobre el beneficio antes de restar tu sueldo (tu sueldo no es un gasto deducible). Sociedad: tu sueldo se resta y el % va sobre lo que queda. Solo se aplica si hay beneficio. Déjalo vacío o en 0 para ver el resultado antes de impuestos.",
   },
   firstOrderAov: {
     label: "Ticket medio del primer pedido",
@@ -248,11 +248,11 @@ export const CONCEPTS: Record<string, Concept> = {
   variableCosts: {
     label: "Costes variables",
     what: "Lo que cuesta servir cada pedido. Si vendes más, suben; si vendes menos, bajan.",
-    how: "Producto + envíos pagados + packaging + comisiones de pasarela + coste de devoluciones.",
+    how: "Producto + envíos pagados + packaging + pasarela + comisiones del marketplace, la plataforma y las apps + coste de devoluciones.",
   },
   cm1: {
     label: "Margen antes de marketing",
-    what: "Lo que te queda de tus ventas después de pagar producto, envío, packaging, pasarela y devoluciones.",
+    what: "Lo que te queda de tus ventas después de pagar producto, envío, packaging, pasarela, comisiones (marketplace, plataforma y apps) y devoluciones.",
     how: "Ingresos netos − costes variables.",
   },
   cm1PerEuro: {
@@ -394,7 +394,7 @@ export const CONCEPTS: Record<string, Concept> = {
   cpDiscount: {
     label: "Descuento",
     what: "El % que rebajas el precio durante la campaña.",
-    how: "Cada pedido con descuento deja menos margen: ticket medio × descuento. Ese dinero sale entero de tu margen, también en los pedidos que habrías tenido igual sin campaña.",
+    how: "Cada pedido con descuento deja menos margen: ticket medio × descuento × (1 − lo que se llevan las comisiones en % por euro), porque las comisiones también bajan. El coste de producto no baja. Se aplica también a los pedidos que habrías tenido igual sin campaña.",
   },
   cpDiscountShare: {
     label: "Parte de los pedidos que usará el descuento",
@@ -413,8 +413,13 @@ export const CONCEPTS: Record<string, Concept> = {
   },
   cpVisitsUp: {
     label: "Más visitas de lo normal",
-    what: "Cuántas visitas más esperas esos días sin contar los anuncios extra (por la fecha, por tus redes, por el email…). Por defecto, 0: no prometemos nada que no sepas.",
-    how: "Visitas de un día normal × (1 + este %). Si tienes los datos del año pasado, compara esos días con un día normal.",
+    what: "Cuenta solo las visitas que trae la campaña. Las que llegarían igualmente por la fecha ya están en tu estacionalidad. Por defecto, 0: no prometemos nada que no sepas.",
+    how: "Visitas de un día normal de ese mes (según tu estacionalidad) × (1 + este %).",
+  },
+  cpAdCr: {
+    label: "Conversión de las visitas de anuncios",
+    what: "Qué parte de las visitas que traen tus anuncios compra. El tráfico de anuncios suele convertir menos que la media de tu tienda: si lo sabes, ponlo.",
+    how: "Por defecto, la conversión media de tu tienda (pedidos ÷ visitas). Pedidos extra = visitas de anuncios extra × esta conversión.",
   },
   cpCrUp: {
     label: "Mejora de la conversión",
@@ -479,7 +484,7 @@ export const CONCEPTS: Record<string, Concept> = {
   cpCommission: {
     label: "Comisión por venta",
     what: "El % de cada venta con su código que se lleva el influencer.",
-    how: "Ticket medio × comisión, por cada pedido con el código.",
+    how: "Ticket medio con el descuento del código ya aplicado × comisión, por cada pedido con el código.",
   },
   cpCodeDiscount: {
     label: "Descuento del código",

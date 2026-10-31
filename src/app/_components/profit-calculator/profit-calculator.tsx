@@ -1,7 +1,7 @@
 "use client"
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { ArrowDown, ArrowRight, CheckCircle2, Plus, RotateCcw, SlidersHorizontal, Trash2, X, Zap } from "lucide-react"
-import { adsScenario, applyMode, capGood, compute, NEW_CUSTOMERS_INVALID, CURRENCIES, currencyInfo, dataWarnings, fmt, isCurrency, levelOf, setCurrency, storeDecision, ordinal, MONTHS_LONG, MONTHS_SHORT, type CurrencyCode, type Inputs, type Level, type Results, type SeasonProfile, type StoreDecision } from "./calc"
+import { adsScenario, applyMode, capGood, compute, money, NEW_CUSTOMERS_INVALID, REPEAT_LABEL, CURRENCIES, currencyInfo, dataWarnings, fmt, isCurrency, levelOf, setCurrency, storeDecision, ordinal, MONTHS_LONG, MONTHS_SHORT, type CurrencyCode, type Inputs, type Level, type TaxRegime, type Results, type SeasonProfile, type StoreDecision } from "./calc"
 import { emptyForm, exampleForm, loadSaved, parseNum, serializeSaved, STORAGE_KEY, switchCurrency, toFullMode, toInputs, toQuickMode, type FormState } from "./form"
 import { buildFormulas } from "./formulas"
 import CampaignPlanner from "./campaign-planner"
@@ -487,7 +487,7 @@ export default function ProfitCalculator() {
                   onChange={(v) => set("cogs", v)}
                   suffix={form.cogsMode === "pct" ? "%" : fmt.sym()}
                   placeholder={form.cogsMode === "pct" ? "ej. 35" : undefined}
-                  hint={form.cogsMode === "pct" ? "% sobre tus ventas sin IVA (en el modo rápido no restamos descuentos ni devoluciones)" : "Total del periodo, sin IVA"}
+                  hint={form.cogsMode === "pct" ? money(COGS_NOTE) : "Total del periodo, sin IVA"}
                   onBlur={touch("cogs")}
                   missing={fieldMsg("cogs")}
                 />
@@ -533,6 +533,11 @@ export default function ProfitCalculator() {
                 onChange={(v) => set("otherFixed", v)}
                 suffix={fmt.sym()}
                 hint="Plataforma, apps, alquiler, gestoría, cuota de autónomo… todo lo que pagas vendas o no. Sin tu propio sueldo: si no te pagas nada aparte, el beneficio que veas también es tu sueldo."
+                note={
+                  (parseNum(form.platformCost) ?? 0) !== 0
+                    ? `Sumamos además ${fmt.eur(Math.abs(parseNum(form.platformCost) ?? 0))} que metiste en «Plataforma, hosting y apps» (modo completo): no lo repitas aquí.`
+                    : undefined
+                }
                 onBlur={touch("fixed")}
                 missing={fieldMsg("fixed")}
               />
@@ -572,7 +577,7 @@ export default function ProfitCalculator() {
                       value={form.cogs}
                       onChange={(v) => set("cogs", v)}
                       suffix={form.cogsMode === "pct" ? "%" : fmt.sym()}
-                      hint={form.cogsMode === "pct" ? `% sobre ventas netas sin IVA → ${fmt.eur(r.cogs)}` : "Total del periodo, sin IVA"}
+                      hint={form.cogsMode === "pct" ? `${money(COGS_NOTE)} Ahora: ${fmt.eur(r.cogs)}.` : "Total del periodo, sin IVA"}
                       onBlur={touch("cogs")}
                       missing={fieldMsg("cogs")}
                     />
@@ -701,6 +706,24 @@ export default function ProfitCalculator() {
               <NumField concept="ownerSalary" value={form.ownerSalary} onChange={(v) => set("ownerSalary", v)} suffix={fmt.sym()} hint="Opcional. Total del periodo." />
               <NumField concept="ownerHours" value={form.ownerHours} onChange={(v) => set("ownerHours", v)} suffix="h/mes" integer nonNegative hint="Opcional." />
               <NumField concept="profitTax" value={form.profitTaxPct} onChange={(v) => set("profitTaxPct", v)} suffix="%" nonNegative />
+              <div className="sm:col-span-2">
+                <span id="pc-taxRegime-label" className="mb-2 block text-sm text-sw-fg-2">
+                  ¿Cómo facturas?
+                </span>
+                <Segmented
+                  ariaLabel="¿Cómo facturas?"
+                  value={form.taxRegime ?? ""}
+                  onChange={(v) => set("taxRegime", v as TaxRegime)}
+                  options={[
+                    { value: "autonomo", label: "Autónomo" },
+                    { value: "sociedad", label: "Sociedad" },
+                  ]}
+                />
+                <p className="mt-1 text-xs text-sw-fg-3">
+                  Es una aproximación. Autónomo: el impuesto va sobre el beneficio antes de tu sueldo (no es gasto deducible). Sociedad: tu sueldo se resta antes.
+                  {form.taxRegime === null ? " Si no eliges, calculamos como sociedad." : ""}
+                </p>
+              </div>
             </div>
           ),
         }
@@ -1118,6 +1141,13 @@ function CommissionTable({
         fixed={{ value: form.platformFeeFixed, onChange: (v) => set("platformFeeFixed", v), placeholder: "ej. 0" }}
         amount={r.platformFees}
         note="Si tu plataforma no te cobra comisión por venta, déjalo vacío o pon 0."
+        below={
+          <FeeBaseOptions
+            onVat={form.platformFeeOnVat}
+            onShipping={form.platformFeeOnShipping}
+            onChange={(p) => setFields({ ...(p.onVat !== undefined ? { platformFeeOnVat: p.onVat } : {}), ...(p.onShipping !== undefined ? { platformFeeOnShipping: p.onShipping } : {}) })}
+          />
+        }
       />
       {form.apps.map((app, i) => (
         <CommissionRow
@@ -1129,6 +1159,7 @@ function CommissionTable({
           fixed={{ value: app.fixed, onChange: (v) => setApp(i, { fixed: v }) }}
           amount={r.appBreakdown.find((x) => x.id === app.id)?.amount ?? 0}
           onRemove={() => set("apps", form.apps.filter((x) => x.id !== app.id))}
+          below={<FeeBaseOptions onVat={!!app.onVat} onShipping={!!app.onShipping} onChange={(p) => setApp(i, p)} />}
         />
       ))}
       <div className="pt-1 sm:py-2">
@@ -1149,15 +1180,11 @@ function CommissionTable({
         fixed={{ value: form.mkFeeFixed, onChange: (v) => set("mkFeeFixed", v) }}
         amount={r.marketplaceFees - otherFees}
         below={
-          <label className="mt-1.5 flex cursor-pointer items-center gap-2 text-sm text-sw-fg-2">
-            <input
-              type="checkbox"
-              checked={form.mkFeeOnShipping}
-              onChange={(e) => set("mkFeeOnShipping", e.target.checked)}
-              className="h-4 w-4 shrink-0 accent-sw-secondary"
-            />
-            La comisión también se aplica al envío
-          </label>
+          <FeeBaseOptions
+            onVat={form.mkFeeOnVat}
+            onShipping={form.mkFeeOnShipping}
+            onChange={(p) => setFields({ ...(p.onVat !== undefined ? { mkFeeOnVat: p.onVat } : {}), ...(p.onShipping !== undefined ? { mkFeeOnShipping: p.onShipping } : {}) })}
+          />
         }
       />
       <CommissionRow
@@ -1394,7 +1421,7 @@ function VatField({ form, set, msg }: { form: FormState; set: SetField; msg?: st
               ]}
             />
           </div>
-          <NumField id="pc-vatPct" label="Tipo de IVA" value={form.vatPct} onChange={(v) => set("vatPct", v)} suffix="%" nonNegative placeholder={String(currencyInfo(form.currency).vat)} />
+          <NumField id="pc-vatPct" label={form.currency === "BRL" ? "Impuesto sobre ventas (aprox.)" : "Tipo de IVA"} hint="Revisa el tipo de tu país." value={form.vatPct} onChange={(v) => set("vatPct", v)} suffix="%" nonNegative placeholder={String(currencyInfo(form.currency).vat)} />
         </div>
         {panel}
       </div>
@@ -1583,6 +1610,7 @@ function SummaryCard({
               {taxKnown ? "de beneficio neto" : "de beneficio antes de impuestos"} {per}
               {months > 1 && <> · {fmt.eur(r.netProfit / months)} al mes</>}
             </p>
+            {comp.status === "quick" && <p className="mt-1 text-sm font-semibold text-amber-200">Estimación rápida: el beneficio real suele ser menor.</p>}
           </>
         ) : r.hasData ? (
           <p className="mt-3 text-sm text-sw-fg-3">Mete tus ventas brutas para ver si tu tienda gana o pierde dinero.</p>
@@ -1653,6 +1681,7 @@ function SummaryCard({
 
       {r.hasData && (
         <div className="space-y-5 p-5">
+          <p className="-mb-2 text-xs text-sw-fg-4">Colores orientativos: dependen del sector.</p>
           <dl className="space-y-2.5 text-sm">
             <Row label="Ingresos netos (sin IVA)" value={fmt.eur(r.netRevenue)} />
             <Row
@@ -1849,6 +1878,11 @@ function ChannelMargins({ r }: { r: Results }) {
           )
         })}
       </ul>
+      {!tie && r.cm1PerEuroStore > r.cm1PerEuroMarketplace && (
+        <p className="mt-2 text-xs leading-relaxed text-sw-fg-3">
+          En tu tienda te queda más por venta antes de marketing, pero allí tienes que pagar para conseguir el tráfico.
+        </p>
+      )}
       {panel}
     </div>
   )
@@ -2112,14 +2146,22 @@ function Analysis({ r, inputs, form, per, set, onRefine, onEditTrafficField, rea
         {/* Marketing */}
         <div>
           <SectionTitle eyebrow="Marketing" title="¿Qué canal se paga y cuál no?" />
-          <Channels r={r} />
+          {form.quickMode ? (
+            <QuickOnlyFull text="«ROAS de cada plataforma»: disponible en el modo completo, con el gasto y las ventas de cada plataforma." onRefine={onRefine} />
+          ) : (
+            <Channels r={r} both={form.salesChannel === "both"} />
+          )}
           {r.adSpend === 0 && r.netRevenue > 0 && (
             <div className="mt-8">
               <AdsScenario r={r} inputs={inputs} per={per} />
             </div>
           )}
           <div className="mt-8">
-            <Attribution r={r} />
+            {form.quickMode ? (
+              <QuickOnlyFull text="«De dónde vienen tus ventas»: disponible en el modo completo. En el rápido no sabemos qué parte de tus ventas viene de la publicidad." onRefine={onRefine} />
+            ) : (
+              <Attribution r={r} />
+            )}
           </div>
         </div>
 
@@ -2420,8 +2462,8 @@ function StoreDecisionResult({ r, d }: { r: Results; d: StoreDecision }) {
   const cpaLevel: Level =
     d.cpaMax === null ? "bad" : d.cpa <= d.cpaMax ? "good" : d.cpaMaxRepeat !== null && d.cpa <= d.cpaMaxRepeat ? "warn" : "bad"
   const resultSub = [
-    ...(d.resultRepeat !== null ? [`con recompra: ${fmt.eur(d.resultRepeat)}`] : []),
-    ...(d.migrateGain !== null ? [`+ clientes que pasas del marketplace: ${fmt.eur(d.migrateGain)}`] : []),
+    "solo primeras compras",
+    ...(d.resultRepeat !== null ? [`${REPEAT_LABEL}: ${fmt.eur(d.resultRepeat)}`] : []),
   ].join(" · ")
   return (
     <>
@@ -2431,6 +2473,7 @@ function StoreDecisionResult({ r, d }: { r: Results; d: StoreDecision }) {
           {d.title}
         </p>
         <p className="mt-1 text-sm leading-relaxed text-sw-fg-2">{d.text}</p>
+        {d.breakdown && <p className="mt-2 text-sm font-semibold tabular-nums text-sw-fg-1">{d.breakdown}</p>}
       </div>
       {d.storeBelowMk && d.Ms > 0 && (
         <p className="flex items-start gap-1.5 rounded-sm border border-amber-400/40 bg-amber-400/10 px-3 py-2 text-sm text-sw-fg-2">
@@ -2454,7 +2497,7 @@ function StoreDecisionResult({ r, d }: { r: Results; d: StoreDecision }) {
           level={capGood(cpaLevel, r)}
           sub={`hoy: ${fmt.eur2(d.cpa)}${d.cpaMaxRepeat !== null ? ` · con recompra: ${fmt.eur2(d.cpaMaxRepeat)}` : ""}`}
         />
-        <Kpi concept="storeResult" value={fmt.eur(d.result1)} level={capGood(levelOf.profit(d.result1), r)} sub={resultSub || "solo primeras compras"} />
+        <Kpi concept="storeResult" value={fmt.eur(d.result1)} level={capGood(levelOf.profit(d.result1), r)} sub={resultSub} />
       </div>
     </>
   )
@@ -2725,7 +2768,38 @@ function AdsScenario({ r, inputs, per }: { r: Results; inputs: Inputs; per: stri
   )
 }
 
-function Channels({ r }: { r: Results }) {
+/** Coste de producto en %: qué es la base (visible junto al campo y en la ayuda). */
+const COGS_NOTE = "% del precio de venta sin IVA, antes de descuentos. Ej.: lo vendes a {100} y te cuesta {35} → 35 %, aunque lo hayas vendido con descuento."
+
+/** Base de una comisión: sobre el precio con IVA y/o con el envío cobrado. */
+function FeeBaseOptions({ onVat, onShipping, onChange }: { onVat: boolean; onShipping: boolean; onChange: (p: { onVat?: boolean; onShipping?: boolean }) => void }) {
+  return (
+    <div className="mt-1.5 space-y-1">
+      <label className="flex min-h-8 cursor-pointer items-center gap-2 text-sm text-sw-fg-2">
+        <input type="checkbox" checked={onVat} onChange={(e) => onChange({ onVat: e.target.checked })} className="h-4 w-4 shrink-0 accent-sw-secondary" />
+        La comisión se calcula sobre el precio con IVA
+      </label>
+      <label className="flex min-h-8 cursor-pointer items-center gap-2 text-sm text-sw-fg-2">
+        <input type="checkbox" checked={onShipping} onChange={(e) => onChange({ onShipping: e.target.checked })} className="h-4 w-4 shrink-0 accent-sw-secondary" />
+        La comisión también se aplica al envío
+      </label>
+    </div>
+  )
+}
+
+/** Bloque que solo existe en el modo completo. */
+function QuickOnlyFull({ text, onRefine }: { text: string; onRefine: () => void }) {
+  return (
+    <div className="rounded-sm border border-sw-line bg-sw-bg-0 p-4 text-sm text-sw-fg-3">
+      {text}{" "}
+      <button type="button" onClick={onRefine} className="text-sw-secondary underline-offset-2 hover:underline">
+        Pasar al modo completo
+      </button>
+    </div>
+  )
+}
+
+function Channels({ r, both }: { r: Results; both: boolean }) {
   const roasHelp = useConcept("roas")
   const emailHelp = useConcept("emailRoas")
   const rows = r.channels
@@ -2773,6 +2847,7 @@ function Channels({ r }: { r: Results }) {
           </div>
           <p className="mt-3 text-xs text-sw-fg-4">
             Ventas atribuidas según cada plataforma (sin IVA). Suelen ser optimistas: si una plataforma está justo en el límite, probablemente no se paga.
+            {both ? " Ojo: parte de lo que generan tus anuncios puede acabar vendiéndose en el marketplace y no aparece aquí." : ""}
           </p>
         </>
       )}
@@ -2894,7 +2969,7 @@ function Projection({ r, form, set }: { r: Results; form: FormState; set: SetFie
             Mes a mes {button}
           </span>
           <label className="flex w-full items-center gap-3 text-sm text-sw-fg-3 sm:w-auto">
-            <span className="shrink-0">Crecimiento esperado</span>
+            <span className="shrink-0">Crecimiento frente a tu ritmo actual (12 meses)</span>
             <input
               type="range"
               min={-50}
@@ -2903,7 +2978,7 @@ function Projection({ r, form, set }: { r: Results; form: FormState; set: SetFie
               value={growth}
               onChange={(e) => set("growthPct", e.target.value, true)}
               className="w-full accent-[#7CB3E0] sm:w-40"
-              aria-label="Crecimiento esperado en %"
+              aria-label="Crecimiento esperado frente a tu ritmo actual, en %, aplicado a los 12 meses"
             />
             <span className="w-12 shrink-0 text-right font-semibold tabular-nums text-sw-fg-1">
               {growth > 0 ? "+" : ""}

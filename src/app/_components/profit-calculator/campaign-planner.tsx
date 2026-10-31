@@ -22,7 +22,7 @@ import {
   type DateSize,
   type TemplateId,
 } from "./campaign-dates"
-import { computePlan, fieldDefault, isRequired, planBase, templateOf, TEMPLATES, type FieldDef, type PlanBase, type PlanResult, type Values } from "./campaign-plan"
+import { campaignSeason, computePlan, fieldDefault, isRequired, planBase, templateOf, TEMPLATES, type FieldDef, type PlanBase, type PlanResult, type Values } from "./campaign-plan"
 import { CHANNELS, phasesFor, taskText, tasksFor, type Channel, type Phase, type TaskCtx } from "./campaign-tasks"
 import { parseNum } from "./form"
 import { FormulaContext, NumField, StepCard, StepProgress, Toggle } from "./ui"
@@ -255,7 +255,8 @@ function PlannerBody({ inputs, r, currency, isExample, onEditSessions, onGoToCal
   }
   const p1 = step1Problem()
 
-  const result: PlanResult | null = tpl && days && step2Problems.length === 0 ? computePlan(tpl.id, values, base, days, targetNum, s.inverse) : null
+  const season = startDate && endDate && endDate >= startDate ? campaignSeason(base, startDate, endDate) : undefined
+  const result: PlanResult | null = tpl && days && step2Problems.length === 0 ? computePlan(tpl.id, values, base, days, targetNum, s.inverse, season) : null
   const ended = endedOnLoad && s.stage === "wizard"
 
   // ---- Acciones -------------------------------------------------------------
@@ -465,7 +466,7 @@ function PlannerBody({ inputs, r, currency, isExample, onEditSessions, onGoToCal
                       />
                       {f.prefill && def !== null && edited && (
                         <button type="button" onClick={() => resetValue(f.key)} className="mt-1 min-h-11 text-left text-xs text-sw-secondary underline underline-offset-2 hover:text-sw-fg-1">
-                          Usar el valor de tu cálculo ({fmt.eur2(def)})
+                          Usar el valor de tu cálculo ({f.unit === "pct" ? `${fmt.dec(def)} %` : fmt.eur2(def)})
                         </button>
                       )}
                     </div>

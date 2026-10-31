@@ -1,6 +1,6 @@
 // Estado del formulario (strings, para permitir escribir "12," o vacío) y su
 // conversión a números para el motor de cálculo.
-import { currencyInfo, fmt, isCurrency, setCurrency, type CpaMode, type CurrencyCode, type Inputs, type Mode, type SalesChannel, type SeasonProfile } from "./calc"
+import { currencyInfo, fmt, isCurrency, setCurrency, type TaxRegime, type CpaMode, type CurrencyCode, type Inputs, type Mode, type SalesChannel, type SeasonProfile } from "./calc"
 
 export interface AdRow {
   id: string
@@ -15,6 +15,9 @@ export interface AppRow {
   name: string
   pct: string
   fixed: string
+  /** La comisión se calcula sobre el precio con IVA / incluye el envío (por defecto, no). */
+  onVat?: boolean
+  onShipping?: boolean
 }
 
 export const SALES_CHANNELS: SalesChannel[] = ["store", "marketplace", "both"]
@@ -54,9 +57,12 @@ export interface FormState {
   mkFeePct: string
   mkFeeFixed: string
   mkFeeOnShipping: boolean
+  mkFeeOnVat: boolean // la comisión del marketplace se calcula sobre el precio con IVA
   mkOtherFees: string
   platformFeePct: string
   platformFeeFixed: string
+  platformFeeOnVat: boolean
+  platformFeeOnShipping: boolean
   apps: AppRow[]
 
   ads: AdRow[]
@@ -70,6 +76,7 @@ export interface FormState {
   ownerSalary: string
   ownerHours: string
   profitTaxPct: string
+  taxRegime: TaxRegime | null // ¿Cómo facturas? null = sin contestar (se calcula como sociedad)
 
   ltvEnabled: boolean
   ltvFrequency: string
@@ -166,10 +173,13 @@ export function toInputs(f: FormState): Inputs {
     mkFeePct: parseNum(f.mkFeePct),
     mkFeeFixed: parseNum(f.mkFeeFixed),
     mkFeeOnShipping: f.mkFeeOnShipping,
+    mkFeeOnVat: f.mkFeeOnVat,
     mkOtherFees: parseNum(f.mkOtherFees),
     platformFeePct: parseNum(f.platformFeePct),
     platformFeeFixed: parseNum(f.platformFeeFixed),
-    apps: f.apps.map((x) => ({ id: x.id, name: x.name, pct: parseNum(x.pct), fixed: parseNum(x.fixed) })),
+    platformFeeOnVat: f.platformFeeOnVat,
+    platformFeeOnShipping: f.platformFeeOnShipping,
+    apps: f.apps.map((x) => ({ id: x.id, name: x.name, pct: parseNum(x.pct), fixed: parseNum(x.fixed), onVat: !!x.onVat, onShipping: !!x.onShipping })),
     ads: f.ads.map((a) => ({ id: a.id, name: a.name, spend: parseNum(a.spend), attributed: parseNum(a.attributed) })),
     adSpendTotal: parseNum(f.adSpendTotal),
     emailToolCost: parseNum(f.emailToolCost),
@@ -180,6 +190,7 @@ export function toInputs(f: FormState): Inputs {
     ownerSalary: parseNum(f.ownerSalary),
     ownerHours: parseNum(f.ownerHours),
     profitTaxPct: parseNum(f.profitTaxPct),
+    taxRegime: f.taxRegime,
     ltvEnabled: f.ltvEnabled,
     ltvFrequency: parseNum(f.ltvFrequency),
     firstOrderAov: parseNum(f.firstOrderAov ?? ""),
@@ -241,9 +252,12 @@ export function emptyForm(currency: CurrencyCode = "EUR"): FormState {
     mkFeePct: "",
     mkFeeFixed: "",
     mkFeeOnShipping: true,
+    mkFeeOnVat: true, // los marketplaces suelen cobrar sobre el precio con IVA
     mkOtherFees: "",
     platformFeePct: "",
     platformFeeFixed: "",
+    platformFeeOnVat: false,
+    platformFeeOnShipping: false,
     apps: [],
     ads: DEFAULT_ADS.map((a) => ({ ...a })),
     adSpendTotal: "",
@@ -255,6 +269,7 @@ export function emptyForm(currency: CurrencyCode = "EUR"): FormState {
     ownerSalary: "",
     ownerHours: "",
     profitTaxPct: "", // vacío = resultado antes de impuestos (cuenta como 0)
+    taxRegime: null,
     ltvEnabled: false,
     ltvFrequency: "",
     firstOrderAov: "",
@@ -375,6 +390,8 @@ export function migrateSaved(raw: unknown): Saved | null {
   if (!Array.isArray(form.ads)) form.ads = base.ads
   if (!SALES_CHANNELS.includes(form.salesChannel)) form.salesChannel = base.salesChannel
   if (typeof form.mkFeeOnShipping !== "boolean") form.mkFeeOnShipping = base.mkFeeOnShipping
+  for (const k of ["mkFeeOnVat", "platformFeeOnVat", "platformFeeOnShipping"] as const) if (typeof form[k] !== "boolean") form[k] = base[k]
+  if (form.taxRegime !== "autonomo" && form.taxRegime !== "sociedad") form.taxRegime = null
   if (!Array.isArray(form.apps)) form.apps = base.apps
   if (form.cpaMode !== "cpc" && form.cpaMode !== "cpa") form.cpaMode = base.cpaMode
   // Campos de texto nuevos o corruptos → vacíos (los antiguos guardados no los tienen)

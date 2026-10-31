@@ -131,7 +131,7 @@ interface NumFieldProps {
   id?: string
   /** Al salir del campo (para validar solo lo que el usuario ya ha tocado). */
   onBlur?: () => void
-  /** Ventas, pedidos, sesiones…: un negativo es imposible (se marca en rojo). */
+  /** Un negativo no tiene sentido (se marca en rojo). Por defecto, sí: casi ningún campo admite negativos. */
   nonNegative?: boolean
   /** Dato obligatorio sin rellenar: aviso neutro (ámbar suave). Texto = mensaje bajo el campo. */
   missing?: boolean | string
@@ -150,7 +150,7 @@ export function invalidMessage(value: string, nonNegative?: boolean): string | n
   if (value.trim() === "") return null
   const v = parseNum(value)
   if (v === null) return "Esto no es un número válido."
-  if (nonNegative && v < 0) return "No puede ser negativo."
+  if (nonNegative && v < 0) return "Tiene que ser 0 o más."
   return null
 }
 
@@ -166,7 +166,7 @@ export function NumField({
   ariaLabel,
   id: idProp,
   onBlur,
-  nonNegative,
+  nonNegative = true,
   missing,
   error,
   note,
