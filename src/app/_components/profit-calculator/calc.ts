@@ -1072,7 +1072,7 @@ function buildInsights(r: Results, inp: Inputs): Insight[] {
       level: d.level === "good" ? capGood("good", r) : d.level,
       impact: Math.abs(d.adsResult),
       title: `${what}: ${d.title.charAt(0).toLowerCase()}${d.title.slice(1)} (${signedEur(d.adsResult)} ${d.adsResultIsRepeat ? REPEAT_LABEL : "al mes"})`,
-      text: `${d.text}${d.breakdown ? ` ${d.breakdown}` : ""} Es una estimación con tus datos de publicidad: la forma de confirmarlo es una prueba de 30–45 días con presupuesto cerrado.`,
+      text: `${d.text}${d.breakdown ? ` ${d.breakdown}` : ""} Es una estimación con tus datos de publicidad: la forma de confirmarlo es una prueba de 30–45 días con presupuesto cerrado. La cuenta solo mide dinero: lo que no tiene cifra (marca, relación directa con tus clientes, depender del tráfico que consigas) lo tienes en la sección «Tienda propia».`,
     })
   }
 

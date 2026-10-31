@@ -2350,6 +2350,36 @@ function StoreDecisionBlock({ r, inputs, form, set }: { r: Results; inputs: Inpu
           </a>
         </div>
       </div>
+
+      {/* Lo que la cuenta no mide: neutral, con lo bueno y lo que cuesta. No cambia el veredicto. */}
+      <div className="mt-6 rounded-sm border border-sw-line bg-sw-bg-0 p-4 sm:p-5">
+        <p className="font-semibold text-sw-fg-1">Lo que esta cuenta no mide</p>
+        <p className="mt-1 text-sm text-sw-fg-3">El cálculo de arriba solo mira el dinero de la publicidad. Hay cosas que pesan en la decisión y no tienen cifra:</p>
+        <div className="mt-3 grid gap-4 text-sm leading-relaxed sm:grid-cols-2">
+          <div>
+            <p className="font-semibold text-sw-fg-2">A favor de la tienda propia</p>
+            <ul className="mt-1 list-disc space-y-1 pl-5 text-sw-fg-2">
+              <li>Construyes tu marca: el cliente te compra a ti, no «en» el marketplace.</li>
+              <li>Tus productos no aparecen al lado de otros parecidos ni compiten por precio en la misma página.</li>
+              <li>
+                La relación con el cliente es tuya: con su permiso, puedes escribirle por email o SMS y volver a venderle sin pagar comisión al marketplace ni
+                publicidad por esa venta.
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p className="font-semibold text-sw-fg-2">Lo que tienes que tener en cuenta</p>
+            <ul className="mt-1 list-disc space-y-1 pl-5 text-sw-fg-2">
+              <li>El tráfico lo tienes que conseguir tú: publicidad, contenido, redes o posicionamiento en buscadores.</li>
+              <li>La marca y la lista de clientes tardan en notarse en las ventas.</li>
+              <li>El marketplace te da visitas y confianza desde el primer día: muy útil para validar productos.</li>
+            </ul>
+          </div>
+        </div>
+        <p className="mt-3 text-xs leading-relaxed text-sw-fg-3">
+          Muchas tiendas usan los dos canales. Si quieres ponerle número a la recompra, activa el LTV (paso 6) y el % de clientes que podrías pasar del marketplace a tu tienda.
+        </p>
+      </div>
     </div>
   )
 }
