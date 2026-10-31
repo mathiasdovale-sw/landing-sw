@@ -308,9 +308,9 @@ interface StepCardProps {
   /** Frase corta que dice qué hacer en el paso. */
   intro: string
   children: ReactNode
-  /** Botón principal (Siguiente / Ver mi resultado). */
-  nextLabel: string
-  onNext: () => void
+  /** Botón principal (Siguiente / Ver mi resultado). Sin él, el paso no tiene pie (p. ej. un resultado). */
+  nextLabel?: string
+  onNext?: () => void
   onBack?: () => void
 }
 
@@ -346,7 +346,7 @@ export function StepCard({ id, index, title, summary, done, current, visited, on
             type="button"
             onClick={onOpen}
             aria-label={`${visited ? "Editar" : "Abrir"} paso ${index + 1}: ${title}`}
-            className="shrink-0 rounded-sm px-2 py-1 text-sm font-semibold text-sw-secondary underline-offset-4 transition-colors hover:text-sw-fg-1 hover:underline"
+            className="min-h-11 shrink-0 rounded-sm px-3 py-2 text-sm font-semibold text-sw-secondary underline-offset-4 transition-colors hover:text-sw-fg-1 hover:underline"
           >
             {visited ? "Editar" : "Abrir"}
           </button>
@@ -356,30 +356,60 @@ export function StepCard({ id, index, title, summary, done, current, visited, on
         <div className="border-t border-sw-line px-4 pb-5 pt-4 sm:px-5">
           <p className="mb-5 text-sm leading-relaxed text-sw-fg-1">{intro}</p>
           {children}
+          {(nextLabel || onBack) && (
           <div className="mt-6 flex flex-col-reverse gap-3 border-t border-sw-line pt-4 sm:flex-row sm:items-center sm:justify-between">
             {onBack ? (
               <button
                 type="button"
                 onClick={onBack}
-                className="self-start rounded-sm px-1 py-2 text-sm text-sw-fg-2 underline underline-offset-4 transition-colors hover:text-sw-fg-1"
+                className="min-h-11 self-start rounded-sm px-1 py-2 text-sm text-sw-fg-2 underline underline-offset-4 transition-colors hover:text-sw-fg-1"
               >
                 Atrás
               </button>
             ) : (
               <span className="hidden sm:block" />
             )}
-            <button
-              type="button"
-              onClick={onNext}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-sm bg-sw-secondary-strong px-5 py-3 text-base font-semibold text-white transition-colors hover:bg-sw-secondary sm:w-auto"
-            >
-              {nextLabel}
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </button>
+            {nextLabel && (
+              <button
+                type="button"
+                onClick={onNext}
+                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-sm bg-sw-secondary-strong px-5 py-3 text-base font-semibold text-white transition-colors hover:bg-sw-secondary sm:w-auto"
+              >
+                {nextLabel}
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </button>
+            )}
           </div>
+          )}
         </div>
       )}
     </section>
+  )
+}
+
+/** Barra «Paso X de Y · título», compartida por los dos asistentes. `badge` va delante del texto. */
+export function StepProgress({ id, current, total, title, badge }: { id: string; current: number; total: number; title: string; badge?: ReactNode }) {
+  const text = `Paso ${current} de ${total}`
+  return (
+    <div className="px-1 pt-2">
+      <p id={`${id}-label`} className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold text-sw-fg-1">
+        {badge}
+        <span>
+          {text} · {title}
+        </span>
+      </p>
+      <div
+        role="progressbar"
+        aria-labelledby={`${id}-label`}
+        aria-valuemin={1}
+        aria-valuemax={total}
+        aria-valuenow={current}
+        aria-valuetext={`${text}: ${title}`}
+        className="mt-2 h-1.5 overflow-hidden rounded-full bg-sw-line"
+      >
+        <div className="h-full rounded-full bg-sw-secondary transition-[width] duration-300 motion-reduce:transition-none" style={{ width: `${(current / total) * 100}%` }} />
+      </div>
+    </div>
   )
 }
 

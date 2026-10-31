@@ -18,6 +18,8 @@ const reviewRequestSchema = z.object({
     .email('Invalid email format')
     .max(254, 'Email too long'),
   source: z.enum(['calculadora de beneficios', 'calculadora de beneficios (ayuda para rellenarla)']),
+  // Petición hecha desde el planificador de campañas. Solo este valor: ningún número viaja.
+  origin: z.literal('planificador').optional(),
   website: z.string().max(500).optional()
 }).strict()
 
@@ -65,7 +67,8 @@ async function handleReviewRequest(body: unknown) {
   const possibleBot = Boolean(parsed.data.website && parsed.data.website.trim() !== '')
   const email = DOMPurify.sanitize(parsed.data.email, { ALLOWED_TAGS: [] })
 
-  const template = getReviewRequestCompanyEmailTemplate(email, parsed.data.source, possibleBot)
+  const source = parsed.data.origin === 'planificador' ? `${parsed.data.source} · planificador de campañas` : parsed.data.source
+  const template = getReviewRequestCompanyEmailTemplate(email, source, possibleBot)
   const response = await fetch('https://api.sendinblue.com/v3/smtp/email', {
     method: 'POST',
     headers: {

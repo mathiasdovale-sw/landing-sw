@@ -22,10 +22,15 @@ interface EmailFormProps {
   /** Analítica (GTM): nombre del formulario en el evento generate_lead. */
   formName: string
   autoFocus?: boolean
+  /** id del campo de email (para llevarle el foco desde otra parte de la página). */
+  inputId?: string
+  /** Origen de la petición (solo «planificador»): viaja como campo oculto, sin ningún número. */
+  origin?: "planificador" | null
 }
 
-function EmailForm({ source, submitLabel, successText, legal, formName, autoFocus }: EmailFormProps) {
-  const id = useId()
+function EmailForm({ source, submitLabel, successText, legal, formName, autoFocus, inputId, origin }: EmailFormProps) {
+  const autoId = useId()
+  const id = inputId ?? autoId
   const [email, setEmail] = useState("")
   const [status, setStatus] = useState<Status>("idle")
   // Campo trampa (antispam): oculto para las personas; solo lo rellenan los bots.
@@ -44,7 +49,7 @@ function EmailForm({ source, submitLabel, successText, legal, formName, autoFocu
         headers: { "Content-Type": "application/json" },
         // Solo email y origen. Nada de los números de la calculadora. El campo
         // trampa solo viaja si alguien (un bot) lo ha rellenado.
-        body: JSON.stringify({ type: "review-request", email: value, source, ...(trap ? { website: trap } : {}) }),
+        body: JSON.stringify({ type: "review-request", email: value, source, ...(origin ? { origin } : {}), ...(trap ? { website: trap } : {}) }),
       })
       const data = await res.json().catch(() => null)
       if (res.ok && data?.success) {
@@ -80,6 +85,7 @@ function EmailForm({ source, submitLabel, successText, legal, formName, autoFocu
 
   return (
     <form onSubmit={submit} noValidate className="text-left">
+      {origin && <input type="hidden" name="origen" value={origin} />}
       {/* Campo trampa: fuera de pantalla, sin foco con teclado y oculto a lectores de pantalla. */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
         <label htmlFor={`${id}-web`}>No rellenes este campo</label>
@@ -159,9 +165,9 @@ function EmailForm({ source, submitLabel, successText, legal, formName, autoFocu
 }
 
 /** Bloque final: "Revisemos tus números juntos (15 min, gratis)". */
-export default function ReviewRequest() {
+export default function ReviewRequest({ origin = null }: { origin?: "planificador" | null }) {
   return (
-    <div className="rounded-sm border border-sw-line-strong bg-sw-bg-0 p-5 sm:p-10">
+    <div id="pc-review" className="scroll-mt-24 rounded-sm border border-sw-line-strong bg-sw-bg-0 p-5 sm:p-10">
       <div className="mx-auto max-w-xl text-center">
         <h2 className="font-display text-2xl text-sw-fg-1 sm:text-4xl">Revisemos tus números juntos (15 min, gratis)</h2>
         <p className="mt-4 text-sw-fg-2">Una videollamada corta para repasar tus resultados y resolver dudas sobre cómo leerlos.</p>
@@ -172,6 +178,8 @@ export default function ReviewRequest() {
             successText="Te escribo para buscar un hueco."
             legal="Solo nos llega tu email, no tus números. Lo usamos para escribirte sobre esta revisión."
             formName="calculadora_beneficios"
+            inputId="pc-review-email"
+            origin={origin}
           />
         </div>
       </div>

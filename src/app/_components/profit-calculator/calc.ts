@@ -119,7 +119,6 @@ export interface Inputs {
   firstOrderAov: number | null // ticket medio del primer pedido, antes del descuento de bienvenida
   welcomeDiscountPct: number | null
 
-  croUpliftPct: number | null
 
   // ¿Te conviene abrir tu tienda propia? (solo marketplace / las dos cosas; no afecta a compute)
   adsDailyBudget?: number | null // publicidad al día para la tienda
@@ -307,7 +306,6 @@ export interface Results {
   lossMonths: string[]
 
   // ¿Y si mejoras la conversión?
-  croExtraProfitYear: number | null
 
   insights: Insight[]
 }
@@ -624,10 +622,6 @@ export function computeCore(inp: Inputs): Results {
   const projNetProfit = projProfitBeforeTax - projTax
   const lossMonths = projection.filter((p) => p.profitBeforeTax < 0).map((p) => MONTHS_LONG[p.monthIndex])
 
-  const uplift = Math.max(0, n(inp.croUpliftPct)) / 100
-  const croExtraProfitYear =
-    cm1PerEuro !== null && netRevenue > 0 ? netRevenue * uplift * cm1PerEuro * seasonFactor * growth : null
-
   const hasData = netRevenue !== 0 || orders > 0
   const comp = completeness(inp, hasData)
   const trusted = comp.status === "complete" && netProfit >= 0
@@ -650,7 +644,6 @@ export function computeCore(inp: Inputs): Results {
     firstOrderCustom, firstOrderTicket, firstOrderMargin, firstOrderProfit, ordersToRecoverCac,
     seasonFactor, weights, periodMonths, projection,
     projRevenue, projContribution, projProfitBeforeTax, projTax, projNetProfit, lossMonths,
-    croExtraProfitYear,
     insights: [],
   }
   return r

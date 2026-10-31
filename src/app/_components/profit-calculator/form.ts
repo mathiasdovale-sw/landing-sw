@@ -77,7 +77,6 @@ export interface FormState {
   firstOrderAov: string
   welcomeDiscountPct: string
 
-  croUpliftPct: string
 
   // ¿Te conviene abrir tu tienda propia? (sin IVA, en la moneda elegida)
   adsDailyBudget: string
@@ -185,7 +184,6 @@ export function toInputs(f: FormState): Inputs {
     ltvFrequency: parseNum(f.ltvFrequency),
     firstOrderAov: parseNum(f.firstOrderAov ?? ""),
     welcomeDiscountPct: parseNum(f.welcomeDiscountPct ?? ""),
-    croUpliftPct: parseNum(f.croUpliftPct),
     adsDailyBudget: parseNum(f.adsDailyBudget),
     cpaMode: f.cpaMode,
     cpc: parseNum(f.cpc),
@@ -261,7 +259,6 @@ export function emptyForm(currency: CurrencyCode = "EUR"): FormState {
     ltvFrequency: "",
     firstOrderAov: "",
     welcomeDiscountPct: "",
-    croUpliftPct: "20",
     adsDailyBudget: "",
     cpaMode: "cpc",
     cpc: "",

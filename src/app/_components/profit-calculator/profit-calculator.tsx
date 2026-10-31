@@ -4,9 +4,10 @@ import { ArrowDown, ArrowRight, CheckCircle2, Plus, RotateCcw, SlidersHorizontal
 import { adsScenario, applyMode, capGood, compute, NEW_CUSTOMERS_INVALID, CURRENCIES, currencyInfo, dataWarnings, fmt, isCurrency, levelOf, setCurrency, storeDecision, ordinal, MONTHS_LONG, MONTHS_SHORT, type CurrencyCode, type Inputs, type Level, type Results, type SeasonProfile, type StoreDecision } from "./calc"
 import { emptyForm, exampleForm, loadSaved, parseNum, serializeSaved, STORAGE_KEY, switchCurrency, toFullMode, toInputs, toQuickMode, type FormState } from "./form"
 import { buildFormulas } from "./formulas"
+import CampaignPlanner from "./campaign-planner"
 import ReviewRequest, { HelpRequest } from "./review-request"
 import Simulator from "./simulator"
-import { amountSize, FormulaContext, HelpProvider, Kpi, LEVEL_STYLES, LevelIcon, NumField, Segmented, StatusPill, StepCard, Toggle, useConcept } from "./ui"
+import { amountSize, FormulaContext, HelpProvider, StepProgress, Kpi, LEVEL_STYLES, LevelIcon, NumField, Segmented, StatusPill, StepCard, Toggle, useConcept } from "./ui"
 import { domIdOfField, fieldOfLabel, hasUserData, requiredMessage, stepOfField, stepsFor, type FieldKey, type StepId } from "./wizard"
 
 const PROFILE_OPTIONS: { value: SeasonProfile; label: string }[] = [
@@ -42,6 +43,8 @@ export default function ProfitCalculator() {
   const [focusReq, setFocusReq] = useState<FocusRequest | null>(null)
   // Acaba de pasar de modo rápido a completo (para avisar dónde quedaron sus fijos).
   const [refined, setRefined] = useState(false)
+  // La revisión se pidió desde el planificador de campañas (solo viaja este origen, ningún número).
+  const [reviewOrigin, setReviewOrigin] = useState<"planificador" | null>(null)
 
   // Recuperar lo que el usuario metió la última vez (solo en su navegador).
   // Lee también la clave antigua (v1) y la migra al formato actual.
@@ -250,6 +253,11 @@ export default function ProfitCalculator() {
     request(id, id, "center")
   }
   const continueBar = () => (missingFields.length > 0 ? goToField(missingFields[0]) : openStep(cur))
+  /** CTA del planificador: al formulario de revisión, con el foco en el email. */
+  const requestReview = () => {
+    setReviewOrigin("planificador")
+    request("pc-review", "pc-review-email", "center")
+  }
 
   const periodLabel = periodText(r.periodMonths, form.months)
   const per = form.months === 1 ? "al mes" : `en ${form.months} meses`
@@ -799,25 +807,7 @@ export default function ProfitCalculator() {
             )}
 
             {/* Progreso */}
-            <div className="px-1 pt-2">
-              <p id="pc-progress-label" className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold text-sw-fg-1">
-                <ModeBadge quick={quick} />
-                <span>
-                  {progressText} · {steps[cur].title}
-                </span>
-              </p>
-              <div
-                role="progressbar"
-                aria-labelledby="pc-progress-label"
-                aria-valuemin={1}
-                aria-valuemax={steps.length}
-                aria-valuenow={cur + 1}
-                aria-valuetext={`${progressText}: ${steps[cur].title}`}
-                className="mt-2 h-1.5 overflow-hidden rounded-full bg-sw-line"
-              >
-                <div className="h-full rounded-full bg-sw-secondary transition-[width] duration-300 motion-reduce:transition-none" style={{ width: `${((cur + 1) / steps.length) * 100}%` }} />
-              </div>
-            </div>
+            <StepProgress id="pc-progress" current={cur + 1} total={steps.length} title={steps[cur].title} badge={<ModeBadge quick={quick} />} />
 
             {/* Pasos: solo el actual está abierto */}
             {steps.map((s, i) => {
@@ -872,7 +862,25 @@ export default function ProfitCalculator() {
       </section>
 
       {/* Análisis completo */}
-      <Analysis r={r} ready={ready} inputs={inputs} form={form} per={per} set={set} onRefine={refine} onEditTrafficField={editTrafficField} />
+      <Analysis
+        r={r}
+        ready={ready}
+        inputs={inputs}
+        form={form}
+        per={per}
+        set={set}
+        onRefine={refine}
+        onEditTrafficField={editTrafficField}
+        planner={{
+          isExample,
+          firstMissing: r.completeness.missing[0] ?? null,
+          onGoToMissing: continueBar,
+          onGoToCalculator: () => openStep(0),
+          onRequestReview: requestReview,
+          onStartOwn: startOwn,
+        }}
+        reviewOrigin={reviewOrigin}
+      />
 
       <MobileBar r={r} ready={ready} per={per} progress={progressShort} missingCount={missingCount} taxKnown={taxKnown} isExample={isExample} onContinue={continueBar} />
         </>
@@ -1862,6 +1870,17 @@ interface AnalysisProps {
   onEditTrafficField: (id: SalesFieldId) => void
   /** Datos mínimos completos */
   ready: boolean
+  /** Lo que necesita el planificador de campañas de la página. */
+  planner: {
+    isExample: boolean
+    firstMissing: string | null
+    onGoToMissing: () => void
+    onGoToCalculator: () => void
+    onRequestReview: () => void
+    onStartOwn: () => void
+  }
+  /** Origen de la petición de revisión (CTA del planificador). */
+  reviewOrigin: "planificador" | null
 }
 
 /** Nota para una métrica que sería "Bien" pero el resultado global no lo respalda. */
@@ -1872,13 +1891,26 @@ function cappedNote(raw: Level, r: Results): string | null {
 }
 const withNote = (sub: string | undefined, note: string | null) => (note ? (sub ? `${sub} · ${note}` : note) : sub)
 
-function Analysis({ r, inputs, form, per, set, onRefine, onEditTrafficField, ready }: AnalysisProps) {
+function Analysis({ r, inputs, form, per, set, onRefine, onEditTrafficField, ready, planner, reviewOrigin }: AnalysisProps) {
+  const plannerEl = (
+    <CampaignPlanner
+      inputs={inputs}
+      r={r}
+      currency={form.currency}
+      quick={form.quickMode}
+      ready={ready}
+      onRefine={onRefine}
+      onEditSessions={() => onEditTrafficField("pc-sessions")}
+      {...planner}
+    />
+  )
   if (!ready) {
     return (
       <section id="analisis" className="bg-sw-bg-1 py-16">
         <div className="mx-auto max-w-3xl px-5 text-center text-sw-fg-3">
           Cuando completes los datos mínimos, aquí verás el análisis completo y qué hacer.
         </div>
+        <div className="mx-auto mt-12 max-w-7xl px-4 sm:px-6 lg:px-8">{plannerEl}</div>
       </section>
     )
   }
@@ -2119,8 +2151,11 @@ function Analysis({ r, inputs, form, per, set, onRefine, onEditTrafficField, rea
           <Simulator inputs={inputs} base={r} per={per} onRefine={onRefine} onEditTrafficField={onEditTrafficField} />
         </div>
 
+        {/* Planificador de campañas: después del simulador, antes del cierre */}
+        {plannerEl}
+
         {/* Revisión de números: solo se envía el email */}
-        <ReviewRequest />
+        <ReviewRequest origin={reviewOrigin} />
 
         <div className="mx-auto max-w-3xl text-center">
           <Disclaimer />

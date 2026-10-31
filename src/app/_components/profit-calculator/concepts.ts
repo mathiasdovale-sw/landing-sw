@@ -384,4 +384,116 @@ export const CONCEPTS: Record<string, Concept> = {
     label: "¿A dónde va cada {100}?",
     what: "Por cada {100} que ingresas (sin IVA), cuánto se va en cada partida y cuánto te queda.",
   },
+
+  // ---- Planificador de campañas ------------------------------------------
+  cpDays: {
+    label: "Duración de la campaña",
+    what: "Cuántos días dura la campaña. Comparamos esos días con los mismos días sin campaña.",
+    how: "Sale de las fechas del paso 1. Si lo cambias aquí, se mueve la fecha de fin.",
+  },
+  cpDiscount: {
+    label: "Descuento",
+    what: "El % que rebajas el precio durante la campaña.",
+    how: "Cada pedido con descuento deja menos margen: ticket medio × descuento. Ese dinero sale entero de tu margen, también en los pedidos que habrías tenido igual sin campaña.",
+  },
+  cpDiscountShare: {
+    label: "Parte de los pedidos que usará el descuento",
+    what: "Si el descuento es para toda la tienda, es el 100 %. Si es solo para algunos productos o con un código, pon qué parte de los pedidos crees que lo usará.",
+    how: "Margen por pedido − ticket medio × descuento × esta parte.",
+  },
+  cpBudget: {
+    label: "Presupuesto en anuncios",
+    what: "Lo que vas a gastar en anuncios durante la campaña, además de lo que ya gastas normalmente.",
+    how: "Se reparte entre los días de campaña. Las visitas que trae siguen la misma curva que el simulador: cada euro extra trae algo menos de visitas que el anterior.",
+  },
+  cpCpc: {
+    label: "Coste por clic (CPC)",
+    what: "Cuánto te cuesta de media cada clic en tus anuncios, es decir, cada visita que traen. Lo ves en tu plataforma de anuncios (CPC).",
+    how: "Lo calculamos con tu gasto en publicidad ÷ tus visitas de anuncios. Puedes subirlo si esperas más competencia esos días.",
+  },
+  cpVisitsUp: {
+    label: "Más visitas de lo normal",
+    what: "Cuántas visitas más esperas esos días sin contar los anuncios extra (por la fecha, por tus redes, por el email…). Por defecto, 0: no prometemos nada que no sepas.",
+    how: "Visitas de un día normal × (1 + este %). Si tienes los datos del año pasado, compara esos días con un día normal.",
+  },
+  cpCrUp: {
+    label: "Mejora de la conversión",
+    what: "Cuánto esperas que suba la parte de visitas que compra. Por defecto, 0.",
+    how: "Conversión actual × (1 + este %). Más conversión = más pedidos con las mismas visitas.",
+  },
+  cpOtherCosts: {
+    label: "Otros costes de la campaña",
+    what: "Lo que pagas solo por esta campaña: creatividades, regalos, influencers…",
+    how: "Se resta entero del beneficio de la campaña.",
+  },
+  cpThreshold: {
+    label: "Envío gratis a partir de",
+    what: "El importe de compra a partir del cual no cobras el envío.",
+    how: "Sirve para estimar qué parte de tus pedidos lo superará. Compáralo con tu ticket medio.",
+  },
+  cpShareAbove: {
+    label: "Pedidos que superarán el umbral",
+    what: "Qué parte de tus pedidos crees que llegará al importe del envío gratis.",
+    how: "Esos pedidos dejan de pagarte el envío que cobras de media: se pierde de tu margen.",
+  },
+  cpTicketUp: {
+    label: "Mejora del ticket medio",
+    what: "Cuánto esperas que suba lo que gasta cada cliente por pedido. Por defecto, 0.",
+    how: "Cada euro de más en el ticket deja el mismo margen que en la palanca «Ticket medio» del simulador.",
+  },
+  cpGiftCost: {
+    label: "Coste del regalo",
+    what: "Lo que te cuesta a ti el regalo o el pack que añades a cada pedido.",
+    how: "Se resta del margen de cada pedido que lo recibe.",
+  },
+  cpGiftShare: {
+    label: "Pedidos que reciben el regalo",
+    what: "Si el regalo es para todos los pedidos, el 100 %. Si hay un gasto mínimo para recibirlo, la parte de pedidos que lo alcanzará.",
+    how: "Margen por pedido − coste del regalo × esta parte.",
+  },
+  cpListSize: {
+    label: "Clientes a los que escribes",
+    what: "Cuántas personas recibirán el email.",
+    how: "Sirve para ver qué parte de la lista tiene que comprar para que salga a cuenta.",
+  },
+  cpExtraCost: {
+    label: "Coste extra",
+    what: "Lo que pagas solo por este envío: SMS, diseño, una herramienta…",
+    how: "Se resta entero del beneficio. La cuota de tu herramienta de email ya está en tus gastos.",
+  },
+  cpBuyShare: {
+    label: "Parte que comprará",
+    what: "Qué parte de la lista crees que comprará gracias al email. Cuenta solo los pedidos que crees que trae el email, no los que harían igual.",
+    how: "Clientes × este % = pedidos que trae el email.",
+  },
+  cpFixedPay: {
+    label: "Pago fijo",
+    what: "Lo que le pagas al influencer o a la marca colaboradora, venda o no.",
+    how: "Se suma al coste del producto que le envías: son los costes fijos de la colaboración.",
+  },
+  cpProductCost: {
+    label: "Coste del producto que le envías",
+    what: "Lo que te cuesta el producto (y su envío) que le regalas para que lo pruebe.",
+    how: "Coste fijo de la colaboración, como el pago fijo.",
+  },
+  cpCommission: {
+    label: "Comisión por venta",
+    what: "El % de cada venta con su código que se lleva el influencer.",
+    how: "Ticket medio × comisión, por cada pedido con el código.",
+  },
+  cpCodeDiscount: {
+    label: "Descuento del código",
+    what: "El % de descuento que da el código a sus seguidores.",
+    how: "Ticket medio × descuento, por cada pedido con el código.",
+  },
+  cpExpectedOrders: {
+    label: "Pedidos que esperas con el código",
+    what: "Si tienes una idea de cuántos pedidos traerá (por colaboraciones anteriores), ponla para ver el resultado. Si no, déjalo vacío: te decimos cuántos necesitas.",
+    how: "Pedidos × margen con código − costes fijos.",
+  },
+  cpTarget: {
+    label: "Cuánto quieres ganar con la campaña",
+    what: "El beneficio que quieres sacar de la campaña, frente a no hacerla. Con 0, la cuenta es «para no perder dinero».",
+    how: "Buscamos el valor de la variable clave (descuento, coste por visita, pedidos…) que te deja justo este beneficio.",
+  },
 }
