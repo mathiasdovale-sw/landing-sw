@@ -2998,8 +2998,8 @@ function Projection({ r, form, set }: { r: Results; form: FormState; set: SetFie
           <span className="flex items-center gap-2 font-semibold text-sw-fg-1">
             Mes a mes {button}
           </span>
-          <label className="flex w-full items-center gap-3 text-sm text-sw-fg-3 sm:w-auto">
-            <span className="shrink-0">Crecimiento frente a tu ritmo actual (12 meses)</span>
+          <label className="flex w-full min-w-0 flex-wrap items-center gap-x-3 gap-y-2 text-sm text-sw-fg-3 sm:w-auto sm:flex-nowrap">
+            <span className="w-full sm:w-auto sm:shrink-0">Crecimiento frente a tu ritmo actual (12 meses)</span>
             <input
               type="range"
               min={-50}
@@ -3007,7 +3007,7 @@ function Projection({ r, form, set }: { r: Results; form: FormState; set: SetFie
               step={5}
               value={growth}
               onChange={(e) => set("growthPct", e.target.value, true)}
-              className="w-full accent-[#7CB3E0] sm:w-40"
+              className="min-w-0 flex-1 accent-[#7CB3E0] sm:w-40 sm:flex-none"
               aria-label="Crecimiento esperado frente a tu ritmo actual, en %, aplicado a los 12 meses"
             />
             <span className="w-12 shrink-0 text-right font-semibold tabular-nums text-sw-fg-1">

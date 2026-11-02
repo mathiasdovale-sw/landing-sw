@@ -173,15 +173,15 @@ export default function MigrationPage({ locale, faqs }: { locale: "es" | "en"; f
             <span className="font-mono-label text-sw-fg-3">{c.termsEyebrow}</span>
             <span className="font-mono-label text-sw-secondary">02</span>
           </div>
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            <div className="rounded-sm border border-sw-line bg-sw-bg-2 p-6 sm:p-8">
+          <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="min-w-0 rounded-sm border border-sw-line bg-sw-bg-2 p-5 sm:p-8">
               <span className="font-mono-label text-sw-fg-3">{c.timeLabel}</span>
-              <p className="mt-4 font-display text-3xl text-sw-fg-1 sm:text-4xl">{c.time}</p>
+              <p className="mt-4 break-words font-display text-2xl text-sw-fg-1 [hyphens:auto] sm:text-4xl">{c.time}</p>
               <p className="mt-3 text-sw-fg-2">{c.timeNote}</p>
             </div>
-            <div className="rounded-sm border border-sw-line bg-sw-bg-2 p-6 sm:p-8">
+            <div className="min-w-0 rounded-sm border border-sw-line bg-sw-bg-2 p-5 sm:p-8">
               <span className="font-mono-label text-sw-fg-3">{c.priceLabel}</span>
-              <p className="mt-4 font-display text-3xl text-sw-fg-1 sm:text-4xl">{c.price}</p>
+              <p className="mt-4 break-words font-display text-2xl text-sw-fg-1 [hyphens:auto] sm:text-4xl">{c.price}</p>
               <p className="mt-3 text-sw-fg-2">{c.priceNote}</p>
             </div>
           </div>
