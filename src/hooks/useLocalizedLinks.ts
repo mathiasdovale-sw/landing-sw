@@ -22,11 +22,13 @@ export const useLocalizedLinks = () => {
     // Calculadora de beneficios: solo existe en español
     calculator: '/es/calculadora-rentabilidad',
     newsletterConfirmed: currentLocale === 'es' ? '/es/suscripcion-confirmada' : '/en/newsletter-confirmed',
+    // Sección de casos de la home
+    cases: currentLocale === 'es' ? '/es/#casos-reales' : '/en/#casos-reales',
     // Service pages
+    newStore: currentLocale === 'es' ? '/es/tienda-nueva' : '/en/new-shopify-store',
     migration: currentLocale === 'es' ? '/es/migracion-shopify' : '/en/shopify-migration',
     customDev: currentLocale === 'es' ? '/es/desarrollos-a-medida' : '/en/custom-shopify-development',
     monthly: currentLocale === 'es' ? '/es/mejora-continua' : '/en/continuous-improvement',
-    emailAutomation: currentLocale === 'es' ? '/es/email-marketing-automation' : '/en/email-marketing-automation',
   }
   
   // Función para generar enlaces de posts de blog

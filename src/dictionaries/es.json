@@ -7,7 +7,8 @@
     "hero": {
       "titleLine1": "Hola, soy",
       "titleLine2": "Mathias.",
-      "subtitle": "Ingeniero en informática, argentino viviendo en Barcelona. A finales de 2024 fundé SellifyWorks."
+      "subtitle": "Ingeniero en informática, argentino viviendo en Barcelona. A finales de 2024 fundé SellifyWorks.",
+      "experience": "Llevo {years} años desarrollando software."
     },
     "journey": {
       "eyebrow": "Mi recorrido",
@@ -54,9 +55,20 @@
         }
       ]
     },
+    "build": {
+      "title": "Lo que construyo",
+      "services": [
+        { "label": "Tienda nueva", "href": "/es/tienda-nueva" },
+        { "label": "Migración a Shopify", "href": "/es/migracion-shopify" },
+        { "label": "Desarrollo a medida", "href": "/es/desarrollos-a-medida" }
+      ],
+      "casesText": "Algunas tiendas que he construido: Can Ramos, Mates Ramos Europa y Termolar.",
+      "casesLink": "Ver los casos",
+      "casesHref": "/es/#casos-reales"
+    },
     "cta": {
       "title": "¿Hablamos de tu tienda?",
-      "subtitle": "Hago que tu tienda online venda más por cada visita.",
+      "subtitle": "Construyo tiendas Shopify sin límites. Cuéntame qué necesitas.",
       "button": "Hablemos de tu tienda"
     }
   }

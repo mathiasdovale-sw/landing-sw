@@ -25,8 +25,8 @@ const ContactStructuredData = ({
       `Contacto - ${organizationName}` : 
       `Contact - ${organizationName}`,
     "description": language === 'es' ? 
-      "Ponte en contacto con nuestro equipo de expertos en Shopify para discutir tu proyecto." :
-      "Get in touch with our Shopify expert team to discuss your project.",
+      "Escríbeme para hablar de tu tienda Shopify: tienda nueva, migración o desarrollo a medida." :
+      "Get in touch to talk about your Shopify store: a new store, a migration or custom development.",
     "url": `${baseUrl}/${language}/${language === 'es' ? 'contacto' : 'contact'}`,
     "mainEntity": {
       "@type": "Organization",
@@ -95,13 +95,13 @@ const ContactStructuredData = ({
       {
         "@type": "Question",
         "name": language === 'es' ? 
-          "¿Cuánto tiempo tardan en responder?" : 
+          "¿Cuánto tardas en responder?" : 
           "How long does it take to respond?",
         "acceptedAnswer": {
           "@type": "Answer",
           "text": language === 'es' ? 
-            "Normalmente respondemos dentro de 24 horas durante días laborables." :
-            "We typically respond within 24 hours during business days."
+            "Te respondo yo en 24 horas laborables." :
+            "I reply myself within 24 working hours."
         }
       },
       {
@@ -112,20 +112,20 @@ const ContactStructuredData = ({
         "acceptedAnswer": {
           "@type": "Answer",
           "text": language === 'es' ? 
-            "Te respondo yo para buscar un hueco para una reunión gratis en la que entendemos qué le pasa a tu tienda. Si encaja, te envío precio y plazos antes de empezar." :
-            "I reply myself to find a time for a free meeting where we look at what's holding your store back. If it's a fit, you get price and timing before we start."
+            "Te respondo yo, hacemos una reunión gratis para entender qué necesitas y te paso precio y fecha cerrados, por escrito." :
+            "I reply myself, we have a free meeting to understand what you need, and I send you a fixed price and date in writing."
         }
       },
       {
         "@type": "Question",
         "name": language === 'es' ? 
-          "¿En qué idiomas atienden?" :
+          "¿En qué idiomas atiendes?" :
           "What languages do you support?",
         "acceptedAnswer": {
           "@type": "Answer", 
           "text": language === 'es' ?
-            "Atendemos en español e inglés." :
-            "We provide support in Spanish and English."
+            "En español y en inglés." :
+            "In Spanish and English."
         }
       }
     ]

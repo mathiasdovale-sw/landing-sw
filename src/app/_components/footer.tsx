@@ -6,7 +6,6 @@ import { motion } from "framer-motion"
 import { usePathname } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
-import { SERVICES } from "@/lib/services-config"
 import { CHROMELESS_ROUTES } from "@/lib/chromeless-routes"
 
 import { ArrowRight } from "lucide-react"
@@ -14,6 +13,9 @@ import { ArrowRight } from "lucide-react"
 // Suscripción al newsletter oculta temporalmente en toda la web.
 // Para reactivarla, poner a true.
 const SHOW_NEWSLETTER = false
+
+// Servicios del pie, en orden. Email marketing automation ya no se enlaza aquí (la página sigue existiendo).
+const FOOTER_SERVICES = ['newStore', 'migration', 'customDev', 'monthly'] as const
 
 
 export default function Footer() {
@@ -111,14 +113,14 @@ export default function Footer() {
                   placeholder={t('footer.newsletter.placeholder')}
                   required
                   disabled={isSubmitting}
-                  className="flex-1 rounded-sm border border-sw-line-strong bg-sw-bg-2 px-6 py-4 text-sw-fg-1 outline-none transition-colors focus:border-sw-secondary disabled:opacity-50"
+                  className="flex-1 rounded-sm border border-sw-line-strong bg-sw-bg-2 px-6 py-4 text-sw-fg-1 outline-none transition-colors focus:border-sw-brand disabled:opacity-50"
                 />
                 <motion.button
                   type="submit"
                   disabled={isSubscribed || isSubmitting}
                   whileHover={!isSubscribed && !isSubmitting ? { scale: 1.03 } : {}}
                   whileTap={!isSubscribed && !isSubmitting ? { scale: 0.97 } : {}}
-                  className="group flex items-center justify-center rounded-sm bg-sw-secondary-strong px-8 py-4 font-medium text-white transition-colors hover:bg-sw-secondary disabled:opacity-50"
+                  className="group flex items-center justify-center rounded-sm bg-sw-brand px-8 py-4 font-medium text-white transition-colors hover:bg-sw-brand-hover disabled:opacity-50"
                 >
                   {isSubmitting ? t('footer.newsletter.sending') : isSubscribed ? (subscriptionMessage || t('footer.newsletter.subscribed')) : t('footer.newsletter.button')}
                   {!isSubscribed && !isSubmitting && (
@@ -157,13 +159,13 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <h4 className="mb-4 font-mono-label text-sw-fg-3">{t('footer.services.title')}</h4>
             <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {SERVICES.map((service) => (
-                <li key={service.key}>
+              {FOOTER_SERVICES.map((key) => (
+                <li key={key}>
                   <a
-                    href={links[service.key as keyof typeof links]}
-                    className="text-sm text-sw-fg-2 transition-colors hover:text-sw-secondary"
+                    href={links[key]}
+                    className="text-sm text-sw-fg-2 transition-colors hover:text-sw-brand"
                   >
-                    {t(`footer.services.${service.key}`)}
+                    {t(`footer.services.${key}`)}
                   </a>
                 </li>
               ))}
@@ -173,7 +175,7 @@ export default function Footer() {
                 <h4 className="mb-4 mt-8 font-mono-label text-sw-fg-3">{t('footer.tools.title')}</h4>
                 <a
                   href={links.calculator}
-                  className="text-sm text-sw-fg-2 transition-colors hover:text-sw-secondary"
+                  className="text-sm text-sw-fg-2 transition-colors hover:text-sw-brand"
                 >
                   {t('footer.tools.calculator')}
                 </a>
@@ -201,6 +203,9 @@ export default function Footer() {
             </div>
 
             <div className="flex flex-wrap gap-6 text-sm">
+              <a href={links.blog} className="text-sw-fg-3 transition-colors hover:text-sw-fg-1">
+                {t('nav.blog')}
+              </a>
               <a href={links.privacyPolicy} className="text-sw-fg-3 transition-colors hover:text-sw-fg-1">
                 {t('footer.privacy')}
               </a>

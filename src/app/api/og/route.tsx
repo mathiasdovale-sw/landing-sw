@@ -49,7 +49,7 @@ export async function GET() {
               marginBottom: '40px',
             }}
           >
-            AGENCIA SHOPIFY
+            ESPECIALISTA EN SHOPIFY · BARCELONA
           </div>
           
           <div
@@ -62,7 +62,7 @@ export async function GET() {
               textAlign: 'center',
             }}
           >
-            Creamos, optimizamos y hacemos crecer tiendas online que convierten
+            Tiendas Shopify sin límites: tiendas nuevas, migraciones y desarrollo a medida
           </div>
           
           <div

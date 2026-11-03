@@ -14,13 +14,13 @@ function NewsletterConfirmedContent() {
       case 'success':
         return {
           title: 'Subscription confirmed!',
-          message: 'Thank you for subscribing to our newsletter. You will receive valuable content about Shopify and ecommerce.',
+          message: 'Thanks for subscribing to the SellifyWorks newsletter. You will receive tips about Shopify and ecommerce.',
           type: 'success'
         }
       case 'already-subscribed':
         return {
           title: 'Already subscribed',
-          message: 'Your email is already registered in our newsletter.',
+          message: 'Your email is already subscribed to the SellifyWorks newsletter.',
           type: 'info'
         }
       default:

@@ -7,7 +7,8 @@
     "hero": {
       "titleLine1": "Hi, I'm",
       "titleLine2": "Mathias.",
-      "subtitle": "Software engineer, Argentinian living in Barcelona. I founded SellifyWorks in late 2024."
+      "subtitle": "Software engineer, Argentinian living in Barcelona. I founded SellifyWorks in late 2024.",
+      "experience": "I've spent {years} years building software."
     },
     "journey": {
       "eyebrow": "My path",
@@ -54,9 +55,20 @@
         }
       ]
     },
+    "build": {
+      "title": "What I build",
+      "services": [
+        { "label": "New store", "href": "/en/new-shopify-store" },
+        { "label": "Migration to Shopify", "href": "/en/shopify-migration" },
+        { "label": "Custom development", "href": "/en/custom-shopify-development" }
+      ],
+      "casesText": "Some of the stores I've built: Can Ramos, Mates Ramos Europa and Termolar.",
+      "casesLink": "See the case studies",
+      "casesHref": "/en/#casos-reales"
+    },
     "cta": {
       "title": "Shall we talk about your store?",
-      "subtitle": "I make your online store sell more per visit.",
+      "subtitle": "I build Shopify stores without limits. Tell me what you need.",
       "button": "Let's talk about your store"
     }
   }

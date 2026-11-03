@@ -21,16 +21,16 @@ export function getCanonicalBaseUrl(): string {
 // Meta descriptions for all pages in both languages
 export const metaDescriptions: Record<string, MetaDescription> = {
   home: {
-    es: "Más beneficio con el mismo tráfico que ya pagas. Hago que tu tienda online venda más por cada visita.",
-    en: "More profit from the traffic you already pay for. I make your online store sell more per visit."
+    es: "Tiendas nuevas, migraciones a Shopify y desarrollos a medida. Precio cerrado y una sola persona responsable, desde Barcelona.",
+    en: "New stores, migrations to Shopify and custom development. A fixed price and one person accountable, from Barcelona."
   },
   about: {
-    es: "Soy Mathias, fundador de SellifyWorks. Hago que tu tienda online venda más por cada visita.",
-    en: "I'm Mathias, founder of SellifyWorks. I make your online store sell more per visit."
+    es: "Soy Mathias, ingeniero informático en Barcelona y fundador de SellifyWorks. Construyo tiendas Shopify: tiendas nuevas, migraciones y desarrollos a medida.",
+    en: "I'm Mathias, a software engineer in Barcelona and the founder of SellifyWorks. I build Shopify stores: new stores, migrations and custom development."
   },
   contact: {
-    es: "Pide una reunión gratis para entender qué le pasa a tu tienda Shopify: mejora continua para vender más por cada visita o migración a Shopify con las mejoras ya hechas.",
-    en: "Book a free meeting to understand what's holding your Shopify store back: continuous improvement to sell more per visit, or a Shopify migration with the improvements already done."
+    es: "Pide una reunión gratis para tu tienda Shopify: tienda nueva, migración o desarrollo a medida. Te respondo yo y te paso precio y fecha cerrados, por escrito.",
+    en: "Book a free meeting about your Shopify store: a new store, a migration or custom development. I reply myself and send you a fixed price and date, in writing."
   },
   blog: {
     es: "Blog de SellifyWorks: consejos, trucos y estrategias para Shopify. Aprende sobre ecommerce, SEO, conversión y marketing digital para hacer crecer tu tienda online.",
@@ -49,26 +49,26 @@ export const metaDescriptions: Record<string, MetaDescription> = {
     en: "Subscription confirmed! Thanks for joining the SellifyWorks community. You'll receive exclusive content about Shopify, ecommerce and growth strategies."
   },
   services: {
-    es: "Dos caminos: mejora continua para tiendas Shopify (290 € + IVA al mes, sin permanencia) o migración a Shopify con las mejoras ya hechas. Empezamos con una reunión gratis.",
-    en: "Two paths: continuous improvement for Shopify stores (€290 + VAT per month, no lock-in) or a Shopify migration with the improvements already done. We start with a free meeting."
+    es: "Tiendas nuevas, migraciones a Shopify y desarrollos a medida. Precio cerrado y una sola persona responsable, desde Barcelona.",
+    en: "New stores, migrations to Shopify and custom development. A fixed price and one person accountable, from Barcelona."
   },
   
   // Services meta descriptions
+  newStore: {
+    es: "Creo tu tienda Shopify desde cero: diseño, catálogo, pagos y envíos configurados. Precio y fecha cerrados antes de empezar.",
+    en: "I build your Shopify store from scratch: design, catalogue, payments and shipping set up. Price and date agreed before we start."
+  },
   migration: {
     es: "Migro tu tienda a Shopify desde WooCommerce, PrestaShop, Wix o Magento con las mejoras ya hechas, sin cerrar ni un día. En unas 3 semanas, con precio cerrado antes de empezar.",
     en: "I migrate your store to Shopify from WooCommerce, PrestaShop, Wix or Magento with the improvements already done, without closing for a day. In about 3 weeks, with a fixed price."
   },
   customDev: {
-    es: "Desarrollos a medida para Shopify: integraciones, automatizaciones y funcionalidades a medida cuando lo estándar no alcanza.",
-    en: "Custom Shopify development: integrations, automations and bespoke functionality when the standard scope isn't enough."
+    es: "Integraciones, automatizaciones y funcionalidades a medida para tu tienda Shopify. Un ingeniero que lo construye y responde por ello, con precio cerrado.",
+    en: "Integrations, automations and custom features for your Shopify store. An engineer who builds it and stands behind it, with a fixed price."
   },
   monthly: {
     es: "Que cada visita de tu tienda Shopify venda más: al menos 4 mejoras al mes, informe de facturación por visita y reunión mensual. 290 € + IVA al mes, sin permanencia.",
     en: "Make every visit to your Shopify store sell more: at least 4 improvements a month, a revenue-per-visit report and a monthly meeting. €290 + VAT per month, no lock-in."
-  },
-  emailAutomation: {
-    es: "Email marketing automation para Shopify: welcome flow, post-compra, carrito abandonado y más.",
-    en: "Email marketing automation for Shopify: welcome flow, post-purchase, abandoned cart and more."
   }
 }
 
@@ -84,15 +84,15 @@ export const seoUrls: Record<string, SeoUrl> = {
   newsletterConfirmed: { es: '/suscripcion-confirmada', en: '/newsletter-confirmed' },
   
   // Services
+  newStore: { es: '/tienda-nueva', en: '/new-shopify-store' },
   migration: { es: '/migracion-shopify', en: '/shopify-migration' },
   customDev: { es: '/desarrollos-a-medida', en: '/custom-shopify-development' },
-  monthly: { es: '/mejora-continua', en: '/continuous-improvement' },
-  emailAutomation: { es: '/email-marketing-automation', en: '/email-marketing-automation' }
+  monthly: { es: '/mejora-continua', en: '/continuous-improvement' }
 }
 
 // Service keys (subset of seoUrls) used for sitemap / catalog generation
 export const SERVICE_PAGE_KEYS = [
-  'migration', 'customDev', 'monthly', 'emailAutomation'
+  'newStore', 'migration', 'customDev', 'monthly'
 ] as const
 
 // Generate hreflang alternates for a given page

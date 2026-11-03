@@ -1,12 +1,13 @@
 import Reveal from "@/app/_components/reveal";
-import Marquee from "@/app/_components/marquee";
-import FunnelLeakSection from "@/app/_components/funnel-leak-section";
-import HowIWorkSection, { HOME_EN_COPY } from "@/app/_components/how-i-work-section";
+import HowIWorkSection from "@/app/_components/how-i-work-section";
 import CaseStudySection from "@/app/_components/case-study-section";
 import ContactSection from "@/app/_components/contact-section";
 import Hero from "@/app/_components/home/hero";
-import Problem from "@/app/_components/home/problem";
-import HowIDoIt from "@/app/_components/home/how-i-do-it";
+import Commitments from "@/app/_components/home/commitments";
+import Services from "@/app/_components/home/services";
+import AboutMe from "@/app/_components/about-me";
+import MobileStickyCta from "@/app/_components/mobile-sticky-cta";
+import Link from "next/link";
 import type { Metadata } from 'next'
 import { HomeFAQsEn } from "@/lib/faqs";
 import FAQAccordion from "@/app/_components/faq-accordion";
@@ -15,29 +16,39 @@ import { generatePageMetadata } from "@/lib/seo-utils";
 export const metadata: Metadata = generatePageMetadata(
   'home',
   'en',
-  'More profit from the traffic you already pay for — SellifyWorks'
+  'Shopify stores without limits — SellifyWorks'
 )
 
-const MARQUEE_EN = ["Continuous improvement", "Shopify migration", "Revenue per visit", "No lock-in"]
-
-// English home. Same structure as the Spanish one, without the calculator
-// (Spanish only for now): the main CTA is the free meeting.
+// English home. Same structure as the Spanish one; single repeated CTA: the free meeting (#contacto).
 export default function HomePage() {
   return (
     <main>
       <Hero locale="en" />
-      <Marquee items={MARQUEE_EN} />
+      <Commitments locale="en" />
 
-      <Reveal><Problem locale="en" /></Reveal>
-      <Reveal><FunnelLeakSection /></Reveal>
-      <Reveal><HowIDoIt locale="en" contactHref="#contacto" /></Reveal>
+      <Reveal><CaseStudySection locale="en" /></Reveal>
+      <Reveal><AboutMe locale="en" /></Reveal>
+      <Reveal><Services locale="en" /></Reveal>
       <Reveal>
-        <HowIWorkSection locale="en" variant="compact" ctaHref="/en/continuous-improvement" copyOverride={HOME_EN_COPY} />
+        <HowIWorkSection locale="en" ctaHref="#contacto" className="border-t border-sw-line" />
       </Reveal>
-      <Reveal><CaseStudySection variant="brief" /></Reveal>
-      <Marquee items={MARQUEE_EN} />
+      <Reveal>
+        <FAQAccordion
+          faqs={HomeFAQsEn}
+          title="Frequently asked questions"
+          className="bg-sw-bg-1"
+          footer={
+            <>
+              Moving your store?{" "}
+              <Link href="/en/shopify-migration#preguntas" className="font-semibold text-sw-brand underline-offset-4 hover:underline">
+                All the questions about the migration are here.
+              </Link>
+            </>
+          }
+        />
+      </Reveal>
       <Reveal><ContactSection /></Reveal>
-      <Reveal><FAQAccordion faqs={HomeFAQsEn} title="Frequently asked questions" className="bg-sw-bg-1" /></Reveal>
+      <MobileStickyCta locale="en" />
     </main>
   );
 }

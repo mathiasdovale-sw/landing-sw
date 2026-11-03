@@ -1,21 +1,42 @@
 "use client"
-import { Mail, MapPin, ArrowRight, MessageCircle } from "lucide-react"
-import { useState } from "react"
+import { Mail, MapPin, ArrowRight } from "lucide-react"
+import { useEffect, useState } from "react"
+import Image from "next/image"
 import { motion } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { whatsappHref } from "@/lib/contact-config"
+import { REPLY_STEP } from "@/lib/commitments"
+import { SERVICE_OPTIONS, isServiceOption, type ServiceOption } from "@/lib/contact-services"
 
-type FieldName = 'name' | 'email' | 'company' | 'url' | 'message'
+type FieldName = 'name' | 'email' | 'company' | 'url' | 'service' | 'message'
 type FieldStatus = 'idle' | 'valid' | 'invalid'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 // URL de la tienda: basta con un dominio ("mitienda.com"), con o sin https://
 const URL_RE = /^(https?:\/\/)?[^\s/.]+(\.[^\s/.]+)+(\/\S*)?$/i
 
-export default function ContactSection() {
-  const { t } = useLanguage()
-  // Se pide la URL de la tienda (en lugar de "Empresa").
-  const waHref = whatsappHref()
+const NEXT_STEPS = {
+  es: { title: 'Qué pasa después', steps: [REPLY_STEP.es, 'Hacemos una reunión gratis para entender qué necesitas.', 'Te paso precio y fecha cerrados, por escrito.'] },
+  en: { title: 'What happens next', steps: [REPLY_STEP.en, 'We have a free meeting to understand what you need.', 'I send you a fixed price and date, in writing.'] },
+}
+
+/**
+ * Formulario de contacto. El selector "¿Qué necesitas?" se puede preseleccionar:
+ * - con la prop `defaultService` (p. ej. en la página de tienda nueva),
+ * - con `?servicio=<newStore|migration|customDev|other>` en la URL,
+ * - o desde cualquier enlace de la misma página con `data-service="..."`.
+ */
+export default function ContactSection({
+  defaultService,
+  showPhoto = false,
+  title,
+}: {
+  defaultService?: ServiceOption
+  showPhoto?: boolean
+  /** Título del bloque (por defecto "Hablemos de tu tienda."). */
+  title?: string
+} = {}) {
+  const { t, language } = useLanguage()
+  const lang = language === 'en' ? 'en' : 'es'
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<{
     type: 'success' | 'error' | null
@@ -25,15 +46,32 @@ export default function ContactSection() {
   // Campo trampa (antispam): oculto para las personas; solo lo rellenan los bots.
   const [trap, setTrap] = useState('')
   const [values, setValues] = useState<Record<FieldName, string>>({
-    name: '', email: '', company: '', url: '', message: '',
+    name: '', email: '', company: '', url: '', service: defaultService ?? '', message: '',
   })
   const [fieldStatus, setFieldStatus] = useState<Record<FieldName, { status: FieldStatus; message: string }>>({
     name: { status: 'idle', message: '' },
     email: { status: 'idle', message: '' },
     company: { status: 'idle', message: '' },
     url: { status: 'idle', message: '' },
+    service: { status: 'idle', message: '' },
     message: { status: 'idle', message: '' },
   })
+
+  // Preselección desde la URL (?servicio=...) y desde enlaces con data-service en esta página.
+  useEffect(() => {
+    const pick = (value: string | null | undefined) => {
+      if (!isServiceOption(value)) return
+      setValues((v) => ({ ...v, service: value }))
+      setFieldStatus((s) => ({ ...s, service: { status: 'idle', message: '' } }))
+    }
+    pick(new URLSearchParams(window.location.search).get('servicio'))
+    const onClick = (e: MouseEvent) => {
+      const el = (e.target as HTMLElement | null)?.closest<HTMLElement>('[data-service]')
+      if (el) pick(el.dataset.service)
+    }
+    document.addEventListener('click', onClick)
+    return () => document.removeEventListener('click', onClick)
+  }, [])
 
   const validateField = (field: FieldName, value: string, live: boolean): boolean => {
     const val = value.trim()
@@ -61,15 +99,25 @@ export default function ContactSection() {
     }
 
     if (field === 'url') {
+      // Opcional: quien quiere una tienda nueva puede no tener todavía una URL.
       if (!val) {
-        setFieldStatus((s) => ({ ...s, url: live ? { status: 'idle', message: '' } : { status: 'invalid', message: t('contact.form.url.req') } }))
-        return false
+        setFieldStatus((s) => ({ ...s, url: { status: 'idle', message: '' } }))
+        return true
       }
       if (!URL_RE.test(val)) {
         setFieldStatus((s) => ({ ...s, url: live ? { status: 'idle', message: '' } : { status: 'invalid', message: t('contact.form.url.bad') } }))
         return false
       }
       setFieldStatus((s) => ({ ...s, url: { status: 'valid', message: t('contact.form.url.ok') } }))
+      return true
+    }
+
+    if (field === 'service') {
+      if (!isServiceOption(val)) {
+        setFieldStatus((s) => ({ ...s, service: live ? { status: 'idle', message: '' } : { status: 'invalid', message: t('contact.form.service.req') } }))
+        return false
+      }
+      setFieldStatus((s) => ({ ...s, service: { status: 'idle', message: '' } }))
       return true
     }
 
@@ -95,7 +143,7 @@ export default function ContactSection() {
     return true
   }
 
-  const handleChange = (field: FieldName) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (field: FieldName) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const value = e.target.value
     setValues((v) => ({ ...v, [field]: value }))
     validateField(field, value, true)
@@ -112,8 +160,9 @@ export default function ContactSection() {
     const emailOk = validateField('email', values.email, false)
     const messageOk = validateField('message', values.message, false)
     const urlOk = validateField('url', values.url, false)
+    const serviceOk = validateField('service', values.service, false)
 
-    if (!nameOk || !emailOk || !messageOk || !urlOk) {
+    if (!nameOk || !emailOk || !messageOk || !urlOk || !serviceOk) {
       setSubmitStatus({ type: 'error', message: t('contact.form.err') })
       return
     }
@@ -127,6 +176,8 @@ export default function ContactSection() {
       company: values.company,
       message: values.message,
       storeUrl: values.url.trim(),
+      // El email llega a Mathias: se manda la etiqueta en español.
+      service: SERVICE_OPTIONS.find((o) => o.value === values.service)?.label.es,
       // El campo trampa solo viaja si alguien (un bot) lo ha rellenado
       ...(trap ? { website: trap } : {}),
     }
@@ -175,12 +226,13 @@ export default function ContactSection() {
         } catch (error) {
           // Silencioso
         }
-        setValues({ name: '', email: '', company: '', url: '', message: '' })
+        setValues({ name: '', email: '', company: '', url: '', service: defaultService ?? '', message: '' })
         setFieldStatus({
           name: { status: 'idle', message: '' },
           email: { status: 'idle', message: '' },
           company: { status: 'idle', message: '' },
           url: { status: 'idle', message: '' },
+          service: { status: 'idle', message: '' },
           message: { status: 'idle', message: '' },
         })
       } else {
@@ -220,8 +272,23 @@ export default function ContactSection() {
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20">
           {/* Left Side - Content */}
           <div>
+            {showPhoto && (
+              <div className="mb-8 flex items-center gap-4">
+                <Image
+                  src="/assets/img/mathias.jpeg"
+                  alt="Mathias Do Vale, fundador de SellifyWorks"
+                  width={160}
+                  height={160}
+                  className="h-20 w-20 rounded-full object-cover"
+                />
+                <div>
+                  <p className="font-semibold text-sw-fg-1">Mathias Do Vale</p>
+                  <p className="font-mono-label text-sw-fg-3">{lang === 'es' ? 'Te respondo yo' : 'I reply myself'}</p>
+                </div>
+              </div>
+            )}
             <h2 className="font-display text-4xl text-sw-fg-1 sm:text-5xl lg:text-6xl">
-              {t('contact.title')}
+              {title ?? t('contact.title')}
             </h2>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-sw-fg-2">
               {t('contact.description')}
@@ -249,17 +316,17 @@ export default function ContactSection() {
               </div>
             </div>
 
-            {waHref && (
-              <a
-                href={waHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-10 inline-flex items-center gap-2 rounded-sm border border-sw-success/60 px-6 py-3 font-semibold text-sw-fg-1 transition-colors hover:bg-sw-success/10"
-              >
-                <MessageCircle size={18} className="text-sw-success" aria-hidden="true" />
-                {t('contact.whatsapp')}
-              </a>
-            )}
+            <div className="mt-10 rounded-sm border border-sw-line bg-sw-bg-0 p-6">
+              <p className="font-mono-label text-sw-fg-3">{NEXT_STEPS[lang].title}</p>
+              <ol className="mt-4 space-y-3">
+                {NEXT_STEPS[lang].steps.map((step, i) => (
+                  <li key={step} className="flex gap-3 text-sw-fg-2">
+                    <span className="font-mono-label text-sw-brand">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="leading-snug">{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
           </div>
 
           {/* Right Side - Contact Form */}
@@ -294,7 +361,7 @@ export default function ContactSection() {
                     value={values.name}
                     onChange={handleChange('name')}
                     onBlur={handleBlur('name')}
-                    className={`w-full rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors focus:border-sw-secondary ${fieldBorderClass('name')}`}
+                    className={`w-full rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors placeholder:text-sw-fg-3 focus:border-sw-brand ${fieldBorderClass('name')}`}
                     placeholder={t('contact.form.name')}
                   />
                   <span className={`mt-1.5 block min-h-[14px] font-mono-label text-[12px] normal-case tracking-normal ${fieldMessageClass('name')}`}>
@@ -312,13 +379,35 @@ export default function ContactSection() {
                     value={values.email}
                     onChange={handleChange('email')}
                     onBlur={handleBlur('email')}
-                    className={`w-full rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors focus:border-sw-secondary ${fieldBorderClass('email')}`}
+                    className={`w-full rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors placeholder:text-sw-fg-3 focus:border-sw-brand ${fieldBorderClass('email')}`}
                     placeholder={t('contact.form.email')}
                   />
                   <span className={`mt-1.5 block min-h-[14px] font-mono-label text-[12px] normal-case tracking-normal ${fieldMessageClass('email')}`}>
                     {fieldStatus.email.message}
                   </span>
                 </div>
+              </div>
+
+              <div>
+                <label htmlFor="service" className="mb-2 block font-mono-label text-sw-fg-3">
+                  {t('contact.form.service.label')}
+                </label>
+                <select
+                  id="service"
+                  name="service"
+                  value={values.service}
+                  onChange={handleChange('service')}
+                  onBlur={handleBlur('service')}
+                  className={`w-full rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors placeholder:text-sw-fg-3 focus:border-sw-brand ${fieldBorderClass('service')}`}
+                >
+                  <option value="" disabled>{t('contact.form.service.placeholder')}</option>
+                  {SERVICE_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label[lang]}</option>
+                  ))}
+                </select>
+                <span className={`mt-1.5 block min-h-[14px] font-mono-label text-[12px] normal-case tracking-normal ${fieldMessageClass('service')}`}>
+                  {fieldStatus.service.message}
+                </span>
               </div>
 
               <div>
@@ -334,7 +423,7 @@ export default function ContactSection() {
                   value={values.url}
                   onChange={handleChange('url')}
                   onBlur={handleBlur('url')}
-                  className={`w-full rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors focus:border-sw-secondary ${fieldBorderClass('url')}`}
+                  className={`w-full rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors placeholder:text-sw-fg-3 focus:border-sw-brand ${fieldBorderClass('url')}`}
                   placeholder={t('contact.form.url')}
                 />
                 <span className={`mt-1.5 block min-h-[14px] font-mono-label text-[12px] normal-case tracking-normal ${fieldMessageClass('url')}`}>
@@ -353,7 +442,7 @@ export default function ContactSection() {
                   value={values.message}
                   onChange={handleChange('message')}
                   onBlur={handleBlur('message')}
-                  className={`w-full resize-none rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors focus:border-sw-secondary ${fieldBorderClass('message')}`}
+                  className={`w-full resize-none rounded-sm border bg-sw-bg-2 px-4 py-3 text-sw-fg-1 outline-none transition-colors placeholder:text-sw-fg-3 focus:border-sw-brand ${fieldBorderClass('message')}`}
                   placeholder={t('contact.form.message')}
                 ></textarea>
                 <span className={`mt-1.5 block min-h-[14px] font-mono-label text-[12px] normal-case tracking-normal ${fieldMessageClass('message')}`}>

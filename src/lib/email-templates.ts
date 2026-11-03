@@ -1,3 +1,4 @@
+import { REPLY_TIME } from './commitments';
 // Email templates for newsletter subscription confirmation
 
 export interface EmailTemplate {
@@ -312,17 +313,17 @@ export function getContactClientEmailTemplate(
   
   const templates = {
     es: {
-      subject: "Hemos recibido tu mensaje - SellifyWorks",
+      subject: "He recibido tu mensaje - SellifyWorks",
       htmlContent: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
           <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <h2 style="color: #010314; margin-bottom: 20px;">¡Gracias por contactarnos!</h2>
+            <h2 style="color: #010314; margin-bottom: 20px;">¡Gracias por escribirme!</h2>
             
             <p style="color: #333; line-height: 1.6;">Hola ${data.name},</p>
             
             <p style="color: #333; line-height: 1.6;">
-              Hemos recibido tu mensaje y queremos agradecerte por ponerte en contacto con nosotros. 
-              Nuestro equipo revisará tu solicitud y te contactaremos muy pronto.
+                            He recibido tu mensaje. Te respondo yo en ${REPLY_TIME.es || 'cuanto pueda'} para buscar un hueco
+              para una reunión gratis y entender qué necesitas.
             </p>
             
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
@@ -333,8 +334,7 @@ export function getContactClientEmailTemplate(
             </div>
             
             <p style="color: #333; line-height: 1.6;">
-              En SellifyWorks nos especializamos en ayudar a empresas como la tuya a maximizar su presencia 
-              en Shopify y aumentar sus ventas online. Estamos emocionados de poder ayudarte.
+                            Después de la reunión te paso precio y fecha cerrados, por escrito.
             </p>
             
             <p style="color: #333; line-height: 1.6;">
@@ -342,8 +342,8 @@ export function getContactClientEmailTemplate(
             </p>
             
             <p style="color: #333; line-height: 1.6; margin-top: 30px;">
-              Saludos cordiales,<br>
-              <strong>El equipo de SellifyWorks</strong>
+                            Un saludo,<br>
+              <strong>Mathias · SellifyWorks</strong>
             </p>
             
             <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
@@ -354,39 +354,39 @@ export function getContactClientEmailTemplate(
         </div>
       `,
       textContent: `
-¡Gracias por contactarnos!
+¡Gracias por escribirme!
 
 Hola ${data.name},
 
-Hemos recibido tu mensaje y queremos agradecerte por ponerte en contacto con nosotros. Nuestro equipo revisará tu solicitud y te contactaremos muy pronto.
+He recibido tu mensaje. Te respondo yo en ${REPLY_TIME.es || 'cuanto pueda'} para buscar un hueco para una reunión gratis y entender qué necesitas.
 
 Resumen de tu mensaje:
 Nombre: ${data.name}
 ${data.company ? `Empresa: ${data.company}` : ''}
 ${data.service ? `Servicio de interés: ${data.service}` : ''}
 
-En SellifyWorks nos especializamos en ayudar a empresas como la tuya a maximizar su presencia en Shopify y aumentar sus ventas online. Estamos emocionados de poder ayudarte.
+Después de la reunión te paso precio y fecha cerrados, por escrito.
 
 Si tienes alguna pregunta urgente, no dudes en responder a este email.
 
-Saludos cordiales,
-El equipo de SellifyWorks
+Un saludo,
+Mathias · SellifyWorks
 
 Este es un mensaje automático de confirmación.
       `
     },
     en: {
-      subject: "We have received your message - SellifyWorks",
+      subject: "I've received your message - SellifyWorks",
       htmlContent: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
           <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <h2 style="color: #010314; margin-bottom: 20px;">Thank you for contacting us!</h2>
+            <h2 style="color: #010314; margin-bottom: 20px;">Thanks for getting in touch!</h2>
             
             <p style="color: #333; line-height: 1.6;">Hello ${data.name},</p>
             
             <p style="color: #333; line-height: 1.6;">
-              We have received your message and want to thank you for getting in touch with us. 
-              Our team will review your request and contact you very soon.
+                            I've received your message. I'll reply myself within ${REPLY_TIME.en || 'a few days'} to find a time
+              for a free meeting and understand what you need.
             </p>
             
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
@@ -397,8 +397,7 @@ Este es un mensaje automático de confirmación.
             </div>
             
             <p style="color: #333; line-height: 1.6;">
-              At SellifyWorks we specialize in helping companies like yours maximize their presence 
-              on Shopify and increase their online sales. We are excited to be able to help you.
+                            After the meeting I send you a fixed price and date, in writing.
             </p>
             
             <p style="color: #333; line-height: 1.6;">
@@ -406,8 +405,8 @@ Este es un mensaje automático de confirmación.
             </p>
             
             <p style="color: #333; line-height: 1.6; margin-top: 30px;">
-              Best regards,<br>
-              <strong>The SellifyWorks team</strong>
+                            Best,<br>
+              <strong>Mathias · SellifyWorks</strong>
             </p>
             
             <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
@@ -418,23 +417,23 @@ Este es un mensaje automático de confirmación.
         </div>
       `,
       textContent: `
-Thank you for contacting us!
+Thanks for getting in touch!
 
 Hello ${data.name},
 
-We have received your message and want to thank you for getting in touch with us. Our team will review your request and contact you very soon.
+I've received your message. I'll reply myself within ${REPLY_TIME.en || 'a few days'} to find a time for a free meeting and understand what you need.
 
 Summary of your message:
 Name: ${data.name}
 ${data.company ? `Company: ${data.company}` : ''}
 ${data.service ? `Service of interest: ${data.service}` : ''}
 
-At SellifyWorks we specialize in helping companies like yours maximize their presence on Shopify and increase their online sales. We are excited to be able to help you.
+After the meeting I send you a fixed price and date, in writing.
 
 If you have any urgent questions, feel free to reply to this email.
 
-Best regards,
-The SellifyWorks team
+Best,
+Mathias · SellifyWorks
 
 This is an automatic confirmation message.
       `

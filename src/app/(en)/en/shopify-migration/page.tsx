@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import MigrationPage from '@/app/_components/migration-page'
+import BuildServicePage from '@/app/_components/build-service-page'
 import { migrationFAQsEn } from '@/lib/faqs'
 import { generatePageMetadata } from '@/lib/seo-utils'
 
@@ -10,5 +10,5 @@ export const metadata: Metadata = generatePageMetadata(
 )
 
 export default function ShopifyMigration() {
-  return <MigrationPage locale="en" faqs={migrationFAQsEn} />
+  return <BuildServicePage service="migration" locale="en" faqs={migrationFAQsEn} />
 }

@@ -34,8 +34,8 @@ const config: Config = {
         "sw-brand": "#FF6B00",
         "sw-brand-hover": "#FF8533",
         "sw-brand-press": "#CC5500",
-        // Color secundario: acentos, tags, números, hovers. El naranja queda
-        // reservado exclusivamente para los CTA principales (contratar/hablar).
+        // Azul: solo lo usa la calculadora. En el resto de la web el único
+        // acento es el naranja (sw-brand): botones, enlaces y texto destacado.
         "sw-secondary": "#7CB3E0",
         "sw-secondary-strong": "#2F5C84",
         "sw-success": "#00E58A",

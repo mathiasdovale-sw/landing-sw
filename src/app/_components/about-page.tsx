@@ -2,12 +2,13 @@ import fs from "node:fs"
 import path from "node:path"
 import Image from "next/image"
 import Link from "next/link"
-import { ImageIcon } from "lucide-react"
+import { ArrowRight, ImageIcon } from "lucide-react"
+import { YEARS_EXPERIENCE } from "@/lib/commitments"
 import OrganizationStructuredData from "./organization-structured-data"
 import AutoBreadcrumbStructuredData from "./auto-breadcrumb-structured-data"
 import VisualBreadcrumbs from "./visual-breadcrumbs"
 
-// Página "Sobre nosotros" compartida por /es/sobre-nosotros y /en/about.
+// Página "Sobre mí" compartida por /es/sobre-nosotros y /en/about.
 // El copy vive en src/dictionaries/{es,en}.json bajo la clave `about`.
 
 // Foto vertical 4:5. Mientras el archivo no exista se muestra el marco vacío en
@@ -35,7 +36,7 @@ interface TimelineItem {
 
 export interface AboutContent {
   metadata: { title: string; description: string }
-  hero: { titleLine1: string; titleLine2: string; subtitle: string }
+  hero: { titleLine1: string; titleLine2: string; subtitle: string; experience?: string }
   journey: {
     eyebrow: string
     photoAlt: string
@@ -48,6 +49,13 @@ export interface AboutContent {
     card: { eyebrow: string; text: string }
   }
   timeline: { eyebrow: string; range: string; items: TimelineItem[] }
+  build: {
+    title: string
+    services: { label: string; href: string }[]
+    casesText: string
+    casesLink: string
+    casesHref: string
+  }
   cta: { title: string; subtitle: string; button: string }
 }
 
@@ -60,6 +68,9 @@ export default function AboutPageContent({
 }) {
   const c = content
   const hasPhoto = photoExists()
+  // La frase de experiencia solo aparece si YEARS_EXPERIENCE tiene valor.
+  const experience =
+    YEARS_EXPERIENCE && c.hero.experience ? c.hero.experience.replace("{years}", String(YEARS_EXPERIENCE)) : ""
 
   return (
     <main>
@@ -74,10 +85,11 @@ export default function AboutPageContent({
             <div>
               <h1 className="font-display text-5xl sm:text-6xl lg:text-8xl">
                 <span className="block text-sw-fg-1">{c.hero.titleLine1}</span>
-                <span className="block text-sw-secondary">{c.hero.titleLine2}</span>
+                <span className="block text-sw-brand">{c.hero.titleLine2}</span>
               </h1>
               <p className="mt-8 max-w-xl text-lg leading-relaxed text-sw-fg-2 sm:text-xl">
                 {c.hero.subtitle}
+                {experience && ` ${experience}`}
               </p>
             </div>
 
@@ -123,23 +135,23 @@ export default function AboutPageContent({
               </div>
 
               <p className="mt-6 text-lg font-semibold text-sw-fg-1">{c.journey.name}</p>
-              <p className="mt-1 font-mono-label text-sw-secondary">{c.journey.role}</p>
+              <p className="mt-1 font-mono-label text-sw-brand">{c.journey.role}</p>
             </div>
 
             {/* Texto + tarjeta */}
             <div>
               <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl">
                 <span className="block text-sw-fg-1">{c.journey.titleLine1}</span>
-                <span className="block text-sw-secondary">{c.journey.titleLine2}</span>
+                <span className="block text-sw-brand">{c.journey.titleLine2}</span>
               </h2>
 
               <p className="mt-8 max-w-xl text-lg leading-relaxed text-sw-fg-2">
                 {c.journey.body}
               </p>
 
-              <div className="mt-10 rounded-sm bg-sw-secondary-strong p-7 sm:p-8">
+              <div className="mt-10 rounded-sm border border-sw-line border-l-4 border-l-sw-brand bg-sw-bg-2 p-7 sm:p-8">
                 <span className="font-mono-label text-white/70">{c.journey.card.eyebrow}</span>
-                <p className="mt-4 font-display text-2xl leading-tight text-white sm:text-3xl">
+                <p className="mt-4 text-2xl font-semibold leading-snug text-white sm:text-3xl">
                   {c.journey.card.text}
                 </p>
               </div>
@@ -174,7 +186,7 @@ export default function AboutPageContent({
                   key={item.year + item.title}
                   className={`flex flex-col rounded-sm border p-6 ${
                     isHighlighted
-                      ? "border-sw-secondary bg-sw-secondary-strong"
+                      ? "border-sw-brand bg-sw-bg-2"
                       : "border-sw-line bg-sw-bg-2"
                   }`}
                 >
@@ -224,7 +236,7 @@ export default function AboutPageContent({
                         className={`rounded-sm border px-2.5 py-1 font-mono-label ${
                           isHighlighted
                             ? "border-white/40 text-white"
-                            : "border-sw-line-strong text-sw-secondary"
+                            : "border-sw-line-strong text-sw-brand"
                         }`}
                       >
                         {tag}
@@ -235,6 +247,32 @@ export default function AboutPageContent({
               )
             })}
           </ol>
+        </div>
+      </section>
+
+      {/* Lo que construyo */}
+      <section className="border-t border-sw-line bg-sw-bg-0 py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-5">
+          <h2 className="font-display text-3xl text-sw-fg-1 sm:text-4xl">{c.build.title}</h2>
+          <ul className="mt-8 grid gap-4 sm:grid-cols-3">
+            {c.build.services.map((s) => (
+              <li key={s.href}>
+                <Link
+                  href={s.href}
+                  className="group flex items-center justify-between gap-3 rounded-sm border border-sw-line bg-sw-bg-2 p-5 font-semibold text-sw-fg-1 transition-colors hover:border-sw-brand"
+                >
+                  {s.label}
+                  <ArrowRight className="h-4 w-4 shrink-0 text-sw-brand transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-8 text-sw-fg-2">
+            {c.build.casesText}{" "}
+            <Link href={c.build.casesHref} className="font-semibold text-sw-brand underline-offset-4 hover:underline">
+              {c.build.casesLink}
+            </Link>
+          </p>
         </div>
       </section>
 

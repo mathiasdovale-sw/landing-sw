@@ -133,6 +133,9 @@ const nextConfig = {
       { source: '/en/audit', destination: '/en/continuous-improvement', permanent: true },
       { source: '/es/shopify-plus', destination: '/es/desarrollos-a-medida', permanent: true },
       { source: '/en/shopify-plus', destination: '/en/custom-shopify-development', permanent: true },
+      // Email marketing ya no se ofrece como servicio: su tráfico va a la mejora continua
+      { source: '/es/email-marketing-automation', destination: '/es/mejora-continua', statusCode: 301 },
+      { source: '/en/email-marketing-automation', destination: '/en/continuous-improvement', statusCode: 301 },
 
       // === REDIRECCIONES DE NEWSLETTER ===
       // Newsletter confirmado

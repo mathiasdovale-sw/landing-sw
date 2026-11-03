@@ -15,7 +15,7 @@ export default function ContactoPage() {
     <main>
       <ContactStructuredData />
       <VisualBreadcrumbs />
-      <ContactSection />
+      <ContactSection showPhoto />
     </main>
   );
 }

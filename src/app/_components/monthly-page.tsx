@@ -38,12 +38,12 @@ const COPY = {
     howTitle: "Empiezo por lo que más frena tus ventas.",
     firstMonthTitle: "El primer mes",
     firstMonthText:
-      "Veo cuánto tráfico tiene tu tienda, detecto qué frena más las ventas y lo implemento. Desde el segundo mes, al menos 4 mejoras nuevas cada mes.",
-    sourceTitle: "De dónde salen las mejoras: depende de tu tráfico",
+      "Reviso tu tienda, detecto qué frena más las ventas y lo implemento. Desde el segundo mes, al menos 4 mejoras nuevas cada mes.",
+    sourceTitle: "De dónde salen las mejoras",
     sourceText:
-      "Con poco tráfico, mejoras heurísticas (buenas prácticas de experiencia de compra) y datos cualitativos: grabaciones de sesiones reales con Microsoft Clarity, que es gratis para ti. Con mucho tráfico, priorizo los tests A/B: cada cambio se prueba contra la versión actual.",
+      "De buenas prácticas de experiencia de compra y de grabaciones de sesiones reales con Microsoft Clarity, que es gratis para ti: veo dónde dudan y dónde abandonan tus clientes.",
     typesTitle: "Qué tipo de mejoras entran",
-    types: ["Diseño", "Ficha de producto", "Confianza", "Checkout", "Emails automáticos: bienvenida, carrito abandonado, post-compra y reseñas", "Pequeños desarrollos"],
+    types: ["Diseño", "Ficha de producto", "Confianza", "Checkout", "Pequeños desarrollos"],
     apartEyebrow: "Qué va aparte",
     apartTitle: "Sin sorpresas.",
     apart: [
@@ -90,12 +90,12 @@ const COPY = {
     howTitle: "I start with what's holding your sales back the most.",
     firstMonthTitle: "The first month",
     firstMonthText:
-      "I check how much traffic your store gets, find what's holding sales back the most and implement it. From the second month, at least 4 new improvements every month.",
-    sourceTitle: "Where the improvements come from: it depends on your traffic",
+      "I review your store, find what's holding sales back the most and implement it. From the second month, at least 4 new improvements every month.",
+    sourceTitle: "Where the improvements come from",
     sourceText:
-      "With low traffic, conversion best practices and qualitative data: real session recordings with Microsoft Clarity, which is free for you. With high traffic, I prioritise A/B tests: every change is tested against the current version.",
+      "From shopping-experience best practices and real session recordings with Microsoft Clarity, which is free for you: I see where your customers hesitate and where they drop off.",
     typesTitle: "What kind of improvements are included",
-    types: ["Design", "Product page", "Trust", "Checkout", "Automated emails: welcome, abandoned cart, post-purchase and reviews", "Small developments"],
+    types: ["Design", "Product page", "Trust", "Checkout", "Small developments"],
     apartEyebrow: "What's billed separately",
     apartTitle: "No surprises.",
     apart: [
@@ -122,7 +122,7 @@ function SectionHead({ eyebrow, title, n }: { eyebrow: string; title: string; n:
     <>
       <div className="flex items-center justify-between gap-6">
         <span className="font-mono-label text-sw-fg-3">{eyebrow}</span>
-        <span className="font-mono-label text-sw-secondary">{n}</span>
+        <span className="font-mono-label text-sw-brand">{n}</span>
       </div>
       <h2 className="mt-6 max-w-3xl font-display text-3xl text-sw-fg-1 sm:text-4xl lg:text-5xl">{title}</h2>
     </>
@@ -143,7 +143,7 @@ export default function MonthlyPage({ locale, faqs }: { locale: "es" | "en"; faq
             <span className="font-mono-label text-sw-fg-3">{c.eyebrow}</span>
             <h1 className="mt-6 font-display text-5xl sm:text-6xl lg:text-7xl">
               <span className="block text-sw-fg-1">{c.h1[0]}</span>
-              <span className="block text-sw-secondary">{c.h1[1]}</span>
+              <span className="block text-sw-brand">{c.h1[1]}</span>
             </h1>
             <p className="mt-7 max-w-xl text-lg leading-relaxed text-sw-fg-2">{c.lede}</p>
             <Link
@@ -164,7 +164,7 @@ export default function MonthlyPage({ locale, faqs }: { locale: "es" | "en"; faq
             <ul className="mt-7 space-y-3">
               {c.includes.map((i) => (
                 <li key={i.title} className="flex gap-3 text-sm leading-relaxed text-sw-fg-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-sw-secondary" aria-hidden="true" />
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-sw-brand" aria-hidden="true" />
                   {i.title}
                 </li>
               ))}
@@ -182,7 +182,7 @@ export default function MonthlyPage({ locale, faqs }: { locale: "es" | "en"; faq
               const Icon = ICONS[idx]
               return (
                 <div key={title} className="rounded-sm border border-sw-line bg-sw-bg-2 p-6">
-                  <Icon className="h-6 w-6 text-sw-secondary" aria-hidden="true" />
+                  <Icon className="h-6 w-6 text-sw-brand" aria-hidden="true" />
                   <h3 className="mt-4 text-lg font-semibold text-sw-fg-1">{title}</h3>
                   <p className="mt-2 text-sw-fg-2">{text}</p>
                 </div>
@@ -198,11 +198,11 @@ export default function MonthlyPage({ locale, faqs }: { locale: "es" | "en"; faq
           <SectionHead eyebrow={c.howEyebrow} n="02" title={c.howTitle} />
           <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:gap-16">
             <div>
-              <h3 className="text-lg font-semibold text-sw-secondary">{c.firstMonthTitle}</h3>
+              <h3 className="text-lg font-semibold text-sw-brand">{c.firstMonthTitle}</h3>
               <p className="mt-3 text-lg leading-relaxed text-sw-fg-2">{c.firstMonthText}</p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-sw-secondary">{c.sourceTitle}</h3>
+              <h3 className="text-lg font-semibold text-sw-brand">{c.sourceTitle}</h3>
               <p className="mt-3 text-lg leading-relaxed text-sw-fg-2">{c.sourceText}</p>
             </div>
           </div>
@@ -226,7 +226,7 @@ export default function MonthlyPage({ locale, faqs }: { locale: "es" | "en"; faq
             <ol className="mt-10 space-y-5">
               {c.apart.map((rule, i) => (
                 <li key={rule} className="flex gap-4">
-                  <span className="font-mono-label text-sw-secondary">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="font-mono-label text-sw-brand">{String(i + 1).padStart(2, "0")}</span>
                   <span className="leading-relaxed text-sw-fg-2">{rule}</span>
                 </li>
               ))}

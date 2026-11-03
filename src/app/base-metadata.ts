@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 // cubre los campos que las páginas no redefinen (verification, robots, etc.)
 export const baseMetadata: Metadata = {
   title: "SellifyWorks | Agencia Shopify España",
-  description: "Agencia especializada en Shopify. Creamos, optimizamos y hacemos crecer tiendas online que convierten. Partner de Shopify.",
+  description: "Tiendas nuevas, migraciones a Shopify y desarrollos a medida. Precio cerrado y una sola persona responsable, desde Barcelona.",
   keywords: ["Shopify", "Ecommerce", "Tienda Online", "Agencia", "SellifyWorks", "Partner Shopify"],
   authors: [{ name: "SellifyWorks" }],
   creator: "SellifyWorks",
@@ -23,7 +23,7 @@ export const baseMetadata: Metadata = {
     locale: "es_ES",
     url: "https://www.sellifyworks.com/",
     title: "SellifyWorks | Agencia Shopify España",
-    description: "Agencia especializada en Shopify. Creamos, optimizamos y hacemos crecer tiendas online que convierten. Partner de Shopify.",
+    description: "Tiendas nuevas, migraciones a Shopify y desarrollos a medida. Precio cerrado y una sola persona responsable, desde Barcelona.",
     siteName: "SellifyWorks",
     images: [
       {
@@ -40,7 +40,7 @@ export const baseMetadata: Metadata = {
     site: "@SellifyWorks",
     creator: "@SellifyWorks",
     title: "SellifyWorks | Agencia Shopify",
-    description: "Agencia especializada en Shopify. Creamos, optimizamos y hacemos crecer tiendas online que convierten.",
+    description: "Tiendas nuevas, migraciones a Shopify y desarrollos a medida. Precio cerrado y una sola persona responsable, desde Barcelona.",
     images: {
       url: "/api/og",
       alt: "SellifyWorks - Agencia Shopify",

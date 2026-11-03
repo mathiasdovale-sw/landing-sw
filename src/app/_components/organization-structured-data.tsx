@@ -14,29 +14,29 @@ const OrganizationStructuredData = ({
   organizationName = "SellifyWorks",
   description,
   foundedYear,
-  employees = "2-10",
+  employees = "1",
   specialties = []
 }: OrganizationSchemaProps) => {
   const { language } = useLanguage();
   const baseUrl = getCanonicalBaseUrl();
   
   const defaultDescriptions = {
-    es: "Agencia especializada en desarrollo y optimización de tiendas Shopify. Ayudamos a empresas a crear experiencias de ecommerce exitosas.",
-    en: "Agency specialized in Shopify store development and optimization. We help businesses create successful ecommerce experiences."
+    es: "Tiendas nuevas, migraciones a Shopify y desarrollos a medida. Precio cerrado y una sola persona responsable, desde Barcelona.",
+    en: "New stores, migrations to Shopify and custom development. A fixed price and one person accountable, from Barcelona."
   };
 
   const defaultSpecialties = {
     es: [
+      "Tienda nueva en Shopify",
       "Migración a Shopify",
-      "Mejora continua",
-      "Email marketing automation",
-      "Desarrollos a medida"
+      "Desarrollo a medida",
+      "Mejora continua"
     ],
     en: [
+      "New Shopify store",
       "Shopify Migration",
-      "Continuous Improvement",
-      "Email Marketing Automation",
-      "Custom Development"
+      "Custom Development",
+      "Continuous Improvement"
     ]
   };
 
@@ -87,8 +87,8 @@ const OrganizationStructuredData = ({
     },
     "knowsAbout": specialties.length > 0 ? specialties : defaultSpecialties[language as keyof typeof defaultSpecialties],
     "slogan": language === 'es' ? 
-      "Tu partner de crecimiento en Shopify" : 
-      "Your Shopify growth partner",
+      "Tiendas Shopify sin límites" : 
+      "Shopify stores without limits",
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "customer service",
@@ -104,6 +104,14 @@ const OrganizationStructuredData = ({
       "@type": "OfferCatalog",
       "name": language === 'es' ? "Servicios Shopify" : "Shopify Services",
       "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": language === 'es' ? "Tienda nueva en Shopify" : "New Shopify store",
+            "url": `${baseUrl}/${language}/${language === 'es' ? 'tienda-nueva' : 'new-shopify-store'}`
+          }
+        },
         {
           "@type": "Offer",
           "itemOffered": {
@@ -124,16 +132,8 @@ const OrganizationStructuredData = ({
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": language === 'es' ? "Desarrollos a medida" : "Custom Development",
+            "name": language === 'es' ? "Desarrollo a medida" : "Custom Development",
             "url": `${baseUrl}/${language}/${language === 'es' ? 'desarrollos-a-medida' : 'custom-shopify-development'}`
-          }
-        },
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "name": language === 'es' ? "Email marketing automation" : "Email Marketing Automation",
-            "url": `${baseUrl}/${language}/${language === 'es' ? 'email-marketing-automation' : 'email-marketing-automation'}`
           }
         }
       ]

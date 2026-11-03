@@ -10,14 +10,13 @@ interface BreadcrumbItem {
 // Translation mappings for common paths
 const pathTranslations = {
   es: {
-    'sobre-nosotros': 'Sobre Nosotros',
+    'sobre-nosotros': 'Sobre mí',
     'contacto': 'Contacto',
     'servicios': 'Servicios',
+    'tienda-nueva': 'Tienda nueva',
     'migracion-shopify': 'Migración a Shopify',
-    'desarrollos-a-medida': 'Desarrollos a Medida',
-    'auditoria-conversion': 'Auditoría de Conversión',
-    'mejora-continua': 'Mejora Continua',
-    'email-marketing-automation': 'Email Marketing Automation',
+    'desarrollos-a-medida': 'Desarrollo a medida',
+    'mejora-continua': 'Mejora continua',
     'politica-de-privacidad': 'Política de Privacidad',
     'politica-de-cookies': 'Política de Cookies',
     'aviso-legal': 'Aviso Legal',
@@ -27,14 +26,13 @@ const pathTranslations = {
     'posts': 'Artículos'
   },
   en: {
-    'about': 'About',
+    'about': 'About me',
     'contact': 'Contact',
     'services': 'Services',
+    'new-shopify-store': 'New store',
     'shopify-migration': 'Shopify Migration',
     'custom-shopify-development': 'Custom Development',
-    'conversion-audit': 'Conversion Audit',
     'continuous-improvement': 'Continuous Improvement',
-    'email-marketing-automation': 'Email Marketing Automation',
     'privacy-policy': 'Privacy Policy',
     'cookie-policy': 'Cookie Policy',
     'newsletter-confirmed': 'Newsletter Confirmed',

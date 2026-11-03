@@ -1,139 +1,169 @@
 import { FAQ } from '@/interfaces/faq';
+import { AFTER_DELIVERY_ANSWER, PAYMENT_TERMS, SUPPORT_DAYS } from './commitments';
 
-export const HomeFAQsEs: FAQ[] = [
+// Preguntas que se repiten en la home y en la migración.
+// "¿Cómo se paga?" solo aparece si PAYMENT_TERMS tiene valor.
+const ownershipFAQsEs: FAQ[] = [
+  {
+    id: 'shared-orders',
+    question: '¿Pierdo mis pedidos, clientes o historial de ventas?',
+    answer: 'No. Migro tus productos, clientes y pedidos para que sigas teniendo todo tu historial en Shopify.'
+  },
+  {
+    id: 'shared-payments',
+    question: '¿Seguirán funcionando mis pagos, envíos y apps?',
+    answer: 'Configuro los métodos de pago (tarjeta, Bizum y los que uses), los envíos y las apps que necesites, y lo pruebo todo antes del cambio.'
+  },
+  {
+    id: 'shared-owner',
+    question: '¿La tienda queda a mi nombre?',
+    answer: 'Sí. La cuenta de Shopify, el dominio y todo lo que construyo son tuyos. No dependes de mí para seguir funcionando.'
+  },
+  {
+    id: 'shared-costs',
+    question: '¿Qué pagaré después, además de mi trabajo?',
+    answer: 'El plan mensual de Shopify y, si las usas, alguna app. Te lo detallo en el presupuesto para que no haya sorpresas.'
+  },
+  ...(PAYMENT_TERMS.es
+    ? [{ id: 'shared-pay', question: '¿Cómo se paga?', answer: `${PAYMENT_TERMS.es}.` }]
+    : []),
+];
+
+const ownershipFAQsEn: FAQ[] = [
+  {
+    id: 'shared-orders',
+    question: 'Will I lose my orders, customers or sales history?',
+    answer: 'No. I migrate your products, customers and orders so you keep your full history in Shopify.'
+  },
+  {
+    id: 'shared-payments',
+    question: 'Will my payments, shipping and apps keep working?',
+    answer: 'I set up the payment methods (cards, Bizum and whatever you use), shipping and the apps you need, and I test everything before the switch.'
+  },
+  {
+    id: 'shared-owner',
+    question: 'Is the store in my name?',
+    answer: 'Yes. The Shopify account, the domain and everything I build are yours. You don\'t depend on me to keep it running.'
+  },
+  {
+    id: 'shared-costs',
+    question: 'What will I pay afterwards, apart from my work?',
+    answer: 'The monthly Shopify plan and, if you use them, a few apps. I spell it out in the quote so there are no surprises.'
+  },
+  ...(PAYMENT_TERMS.en
+    ? [{ id: 'shared-pay', question: 'How do I pay?', answer: `${PAYMENT_TERMS.en}.` }]
+    : []),
+];
+
+// FAQ de la home: seis preguntas. Las de migración siguen completas en su página.
+const pick = (list: FAQ[], ids: string[]) => ids.map((id) => list.find((f) => f.id === id)).filter(Boolean) as FAQ[];
+
+const homeBaseEs: FAQ[] = [
   {
     id: 'home-1',
     question: '¿Cuánto cuesta?',
-    answer: 'La mejora continua cuesta 290 € + IVA al mes. La migración a Shopify tiene precio cerrado, que te doy antes de empezar, cuando he visto tu tienda.'
+    answer: 'Depende de lo que necesites. Después de la primera reunión te doy un precio cerrado, por escrito, antes de empezar. Sin sorpresas.'
   },
   {
     id: 'home-2',
-    question: '¿Tiene permanencia?',
-    answer: 'No. La mejora continua se paga mes a mes y la cancelas cuando quieras.'
-  },
-  {
-    id: 'home-3',
-    question: '¿Me garantizas resultados?',
-    answer: 'No, y desconfía de quien te los garantice. Lo que hago es medir cada mes cuánto factura tu tienda por visita y mirar la tendencia durante varios meses. Un mes suelto puede subir o bajar por la temporada, los anuncios o el stock.'
-  },
-  {
-    id: 'home-4',
-    question: '¿Qué necesito para empezar?',
-    answer: 'Empezamos con una reunión gratis para entender qué le pasa a tu tienda. Si encaja, necesito acceso a tu Shopify e instalo Microsoft Clarity, que es gratis para ti, para ver grabaciones de sesiones reales. El primer mes empiezo por lo que más frena tus ventas.'
+    question: '¿Cuánto tarda?',
+    answer: 'Una migración suele llevar unas 3 semanas. Una tienda nueva o un desarrollo a medida, según el alcance; la fecha queda por escrito antes de empezar.'
   },
   {
     id: 'home-5',
-    question: '¿Y si no estoy en Shopify?',
-    answer: 'Migro tu tienda a Shopify desde WooCommerce, PrestaShop, Wix, Magento u otra plataforma, con las mejoras ya hechas y sin cerrar ni un día. Tarda aproximadamente 3 semanas y el precio queda cerrado antes de empezar.'
+    question: '¿Con quién hablo durante el proyecto?',
+    answer: 'Conmigo, que soy quien lo construye. Sin comerciales ni intermediarios.'
   },
   {
     id: 'home-6',
-    question: '¿Haces trabajos puntuales?',
-    answer: 'Sí: desarrollos a medida y emails automáticos, con presupuesto cerrado antes de empezar. Escríbeme y te digo cómo encaja.'
-  }
+    question: '¿Me garantizas resultados de ventas?',
+    answer: 'No, y desconfía de quien lo haga. Lo que sí te garantizo es lo que controlo: precio cerrado, fecha de entrega y que lo que construyo funcione.'
+  },
 ];
 
-export const HomeFAQsEn: FAQ[] = [
+const homeBaseEn: FAQ[] = [
   {
     id: 'home-1',
     question: 'How much does it cost?',
-    answer: 'Continuous improvement costs €290 + VAT per month. The Shopify migration has a fixed price, which I give you before we start, once I\'ve seen your store.'
+    answer: 'It depends on what you need. After the first meeting I give you a fixed price, in writing, before we start. No surprises.'
   },
   {
     id: 'home-2',
-    question: 'Is there a lock-in?',
-    answer: 'No. Continuous improvement is paid month to month and you can cancel whenever you want.'
-  },
-  {
-    id: 'home-3',
-    question: 'Do you guarantee results?',
-    answer: 'No, and be wary of anyone who does. What I do is measure how much revenue each visit brings in every month and look at the trend over several months. A single month can go up or down because of the season, ads or stock.'
-  },
-  {
-    id: 'home-4',
-    question: 'What do I need to get started?',
-    answer: 'We start with a free meeting to understand what\'s holding your store back. If it\'s a fit, I need access to your Shopify and I install Microsoft Clarity, which is free for you, to watch real session recordings. In the first month I start with what\'s holding your sales back the most.'
+    question: 'How long does it take?',
+    answer: 'A migration usually takes about 3 weeks. A new store or custom development depends on the scope; the date is agreed in writing before we start.'
   },
   {
     id: 'home-5',
-    question: 'What if I\'m not on Shopify?',
-    answer: 'I migrate your store to Shopify from WooCommerce, PrestaShop, Wix, Magento or another platform, with the improvements already done and without closing for a single day. It takes about 3 weeks and the price is fixed before we start.'
+    question: 'Who do I talk to during the project?',
+    answer: 'Me, the person building it. No sales reps, no middlemen.'
   },
   {
     id: 'home-6',
-    question: 'Do you take on one-off projects?',
-    answer: 'Yes: custom development and automated emails, with a fixed quote before we start. Get in touch and I\'ll tell you how it fits.'
-  }
+    question: 'Do you guarantee sales results?',
+    answer: 'No, and be wary of anyone who does. What I do guarantee is what I control: a fixed price, a delivery date and that what I build works.'
+  },
 ];
 
+const HOME_ORDER = ['home-1', 'home-2', 'home-5', 'shared-owner', 'home-6', 'shared-pay'];
 
+export const HomeFAQsEs: FAQ[] = pick([...homeBaseEs, ...ownershipFAQsEs], HOME_ORDER);
+export const HomeFAQsEn: FAQ[] = pick([...homeBaseEn, ...ownershipFAQsEn], HOME_ORDER);
 
-// FAQ específicos para la página de servicios en español
-export const servicesPageFAQsEs: FAQ[] = [
+// FAQ — Tienda nueva
+export const newStoreFAQsEs: FAQ[] = [
   {
-    id: 'services-page-1',
-    question: '¿Cuál me conviene?',
-    answer: 'Si ya estás en Shopify, la mejora continua. Si estás en otra plataforma, la migración: migro tu tienda a Shopify con las mejoras ya hechas y después puedes seguir con la mejora continua.'
+    id: 'new-store-1',
+    question: '¿Necesito tener ya mi marca, fotos y textos?',
+    answer: 'Necesito tu logo, las fotos de producto y la información básica de cada producto. Si te falta algo, lo vemos en la primera reunión.'
   },
   {
-    id: 'services-page-2',
+    id: 'new-store-2',
+    question: '¿Cuánto tarda?',
+    answer: 'Depende del catálogo y de lo que necesites. La fecha queda por escrito antes de empezar.'
+  },
+  {
+    id: 'new-store-3',
     question: '¿Cuánto cuesta?',
-    answer: 'La mejora continua, 290 € + IVA al mes, sin permanencia. La migración, precio cerrado antes de empezar, tras ver tu tienda. La primera reunión, para entender qué le pasa a tu tienda, es gratis.'
+    answer: 'Depende de lo que necesites. Después de la primera reunión te doy un precio cerrado, por escrito.'
   },
   {
-    id: 'services-page-3',
-    question: '¿Cuánto tarda cada uno?',
-    answer: 'La migración, aproximadamente 3 semanas. La mejora continua es mensual: cada mes, al menos 4 mejoras nuevas.'
+    id: 'new-store-4',
+    question: '¿Qué pagaré después?',
+    answer: 'El plan mensual de Shopify y, si las usas, alguna app. Te lo detallo en el presupuesto.'
   },
   {
-    id: 'services-page-4',
-    question: '¿Hay permanencia?',
-    answer: 'No. La mejora continua se paga mes a mes y la cancelas cuando quieras.'
+    id: 'new-store-5',
+    question: '¿Y después de lanzar?',
+    answer: AFTER_DELIVERY_ANSWER.es
   },
-  {
-    id: 'services-page-5',
-    question: '¿Haces trabajos puntuales?',
-    answer: 'Sí: desarrollos a medida y emails automáticos. También pueden entrar como mejoras dentro de la mejora continua.'
-  },
-  {
-    id: 'services-page-6',
-    question: '¿Con quién hablo?',
-    answer: 'Conmigo, Mathias. Soy quien mira tu tienda y quien implementa las mejoras.'
-  }
 ];
 
-// FAQ específicos para la página de servicios en inglés
-export const servicesPageFAQsEn: FAQ[] = [
+export const newStoreFAQsEn: FAQ[] = [
   {
-    id: 'services-page-en-1',
-    question: 'Which one is right for me?',
-    answer: 'If you\'re already on Shopify, continuous improvement. If you\'re on another platform, the migration: I migrate your store to Shopify with the improvements already done, and then you can continue with continuous improvement.'
+    id: 'new-store-en-1',
+    question: 'Do I need to have my brand, photos and copy ready?',
+    answer: 'I need your logo, the product photos and the basic information for each product. If anything is missing, we go through it in the first meeting.'
   },
   {
-    id: 'services-page-en-2',
+    id: 'new-store-en-2',
+    question: 'How long does it take?',
+    answer: 'It depends on the catalogue and what you need. The date is agreed in writing before we start.'
+  },
+  {
+    id: 'new-store-en-3',
     question: 'How much does it cost?',
-    answer: 'Continuous improvement, €290 + VAT per month, no lock-in. The migration, a fixed price before we start, after seeing your store. The first meeting, to understand what\'s holding your store back, is free.'
+    answer: 'It depends on what you need. After the first meeting I give you a fixed price, in writing.'
   },
   {
-    id: 'services-page-en-3',
-    question: 'How long does each one take?',
-    answer: 'The migration, about 3 weeks. Continuous improvement is monthly: every month, at least 4 new improvements.'
+    id: 'new-store-en-4',
+    question: 'What will I pay afterwards?',
+    answer: 'The monthly Shopify plan and, if you use them, a few apps. I spell it out in the quote.'
   },
   {
-    id: 'services-page-en-4',
-    question: 'Is there a lock-in?',
-    answer: 'No. Continuous improvement is paid month to month and you can cancel whenever you want.'
+    id: 'new-store-en-5',
+    question: 'And after launch?',
+    answer: AFTER_DELIVERY_ANSWER.en
   },
-  {
-    id: 'services-page-en-5',
-    question: 'Do you take on one-off projects?',
-    answer: 'Yes: custom development and automated emails. They can also be included as improvements within continuous improvement.'
-  },
-  {
-    id: 'services-page-en-6',
-    question: 'Who will I be talking to?',
-    answer: 'Me, Mathias. I\'m the one who looks at your store and implements the improvements.'
-  }
 ];
 
 // FAQ — Migración a Shopify
@@ -166,8 +196,9 @@ export const migrationFAQsEs: FAQ[] = [
   {
     id: 'migration-6',
     question: '¿Qué pasa cuando termina la migración?',
-    answer: 'Tu tienda ya está en Shopify y con las mejoras hechas. Si quieres seguir subiendo lo que vende por cada visita, el siguiente paso es la mejora continua.'
-  }
+    answer: 'Tu tienda ya está en Shopify y con las mejoras hechas. Si quieres seguir mejorándola cada mes, el siguiente paso es la mejora continua.'
+  },
+  ...ownershipFAQsEs,
 ];
 
 export const migrationFAQsEn: FAQ[] = [
@@ -199,8 +230,9 @@ export const migrationFAQsEn: FAQ[] = [
   {
     id: 'migration-en-6',
     question: 'What happens when the migration is done?',
-    answer: 'Your store is on Shopify with the improvements done. If you want to keep raising what each visit sells, the next step is continuous improvement.'
-  }
+    answer: 'Your store is on Shopify with the improvements done. If you want to keep improving it every month, the next step is continuous improvement.'
+  },
+  ...ownershipFAQsEn,
 ];
 
 // FAQ — Mejora continua (mensual)
@@ -213,7 +245,7 @@ export const monthlyFAQsEs: FAQ[] = [
   {
     id: 'monthly-2',
     question: '¿De dónde salen las mejoras?',
-    answer: 'Depende de tu tráfico. Con poco tráfico, de mejoras heurísticas (buenas prácticas de experiencia de compra) y datos cualitativos: grabaciones de sesiones reales con Microsoft Clarity, que es gratis para ti. Con mucho tráfico, priorizo los tests A/B.'
+    answer: 'De buenas prácticas de experiencia de compra y de grabaciones de sesiones reales con Microsoft Clarity, que es gratis para ti.'
   },
   {
     id: 'monthly-3',
@@ -246,7 +278,7 @@ export const monthlyFAQsEn: FAQ[] = [
   {
     id: 'monthly-en-2',
     question: 'Where do the improvements come from?',
-    answer: 'It depends on your traffic. With low traffic, from conversion best practices and qualitative data: real session recordings with Microsoft Clarity, which is free for you. With high traffic, I prioritise A/B tests.'
+    answer: 'From shopping-experience best practices and real session recordings with Microsoft Clarity, which is free for you.'
   },
   {
     id: 'monthly-en-3',
@@ -270,76 +302,73 @@ export const monthlyFAQsEn: FAQ[] = [
   }
 ];
 
-// FAQ — Desarrollos a medida
+// FAQ — Desarrollo a medida
 export const customDevFAQsEs: FAQ[] = [
   {
     id: 'custom-dev-1',
-    question: '¿Qué tipo de proyectos entran en desarrollos a medida?',
+    question: '¿Qué tipo de proyectos entran en desarrollo a medida?',
     answer: 'Integraciones con otras herramientas, automatizaciones y funcionalidades que no existen como app o necesitan lógica propia.'
   },
   {
     id: 'custom-dev-2',
-    question: '¿Cómo se cotiza un desarrollo a medida?',
-    answer: 'Evaluamos el alcance y te damos un presupuesto cerrado antes de empezar, sin sorpresas a mitad de proyecto.'
+    question: '¿Cómo se presupuesta?',
+    answer: 'Evalúo el alcance y te doy un presupuesto cerrado antes de empezar, sin sorpresas a mitad de proyecto.'
   },
   {
     id: 'custom-dev-3',
-    question: '¿Qué pasa si durante el proyecto surgen cambios de alcance?',
-    answer: 'Lo conversamos antes de tocar nada: si el cambio es menor lo absorbemos, si es significativo ajustamos el presupuesto antes de seguir.'
-  }
+    question: '¿Qué pasa si durante el proyecto cambia lo que necesitas?',
+    answer: 'Lo hablamos antes de tocar nada: si el cambio es menor, lo asumo; si es importante, ajusto el presupuesto antes de seguir.'
+  },
+  {
+    id: 'custom-dev-4',
+    question: '¿El código es mío?',
+    answer: 'Sí. Todo lo que desarrollo para tu tienda es tuyo y queda documentado.'
+  },
+  {
+    id: 'custom-dev-5',
+    question: '¿Qué pasa si Shopify se actualiza o algo deja de funcionar?',
+    answer: SUPPORT_DAYS
+      ? `Durante ${SUPPORT_DAYS} días arreglo sin coste cualquier fallo de mi trabajo. Después, si quieres, lo mantengo con un presupuesto aparte.`
+      : 'Si algo falla por mi trabajo, lo arreglo. Si quieres que me ocupe del mantenimiento, lo presupuesto aparte.'
+  },
+  {
+    id: 'custom-dev-6',
+    question: '¿Cómo sé si lo que necesito es viable?',
+    answer: 'Cuéntamelo en una reunión gratis y te digo si se puede hacer, cuánto cuesta y cuánto tarda.'
+  },
 ];
 
 export const customDevFAQsEn: FAQ[] = [
   {
     id: 'custom-dev-en-1',
-    question: 'What kind of projects fall under custom development?',
-    answer: 'Integrations with other tools, automations, and functionality that doesn\'t exist as an app or needs custom logic.'
+    question: 'What kind of projects count as custom development?',
+    answer: 'Integrations with other tools, automations, and functionality that doesn\'t exist as an app or needs its own logic.'
   },
   {
     id: 'custom-dev-en-2',
-    question: 'How is custom development priced?',
-    answer: 'We assess the scope and give you a fixed quote before starting, no surprises halfway through.'
+    question: 'How is it priced?',
+    answer: 'I assess the scope and give you a fixed quote before starting, with no surprises halfway through.'
   },
   {
     id: 'custom-dev-en-3',
-    question: 'What happens if the scope changes during the project?',
-    answer: 'We talk it through before touching anything: minor changes are absorbed, significant ones get the quote adjusted before we continue.'
-  }
-];
-
-// FAQ — Email marketing automation
-export const emailAutomationFAQsEs: FAQ[] = [
-  {
-    id: 'email-auto-1',
-    question: '¿Qué flujos puedo pedir?',
-    answer: 'Bienvenida, post-compra, solicitud de reseña, carrito abandonado y más. Eliges los que tu tienda necesita y cotizamos según el alcance.'
+    question: 'What if what you need changes during the project?',
+    answer: 'We talk it through before touching anything: if the change is small, I absorb it; if it\'s significant, I adjust the quote before carrying on.'
   },
   {
-    id: 'email-auto-2',
-    question: '¿En qué plataforma lo implementan?',
-    answer: 'Trabajamos con las herramientas de email marketing del ecosistema Shopify, como Klaviyo y similares.'
+    id: 'custom-dev-en-4',
+    question: 'Is the code mine?',
+    answer: 'Yes. Everything I build for your store is yours, and it\'s documented.'
   },
   {
-    id: 'email-auto-3',
-    question: '¿Necesito tener ya una lista de suscriptores?',
-    answer: 'No, pero cuantos más suscriptores tengas, antes vas a ver resultados. Si no tienes lista, te recomendamos empezar por el welcome flow.'
-  }
-];
-
-export const emailAutomationFAQsEn: FAQ[] = [
-  {
-    id: 'email-auto-en-1',
-    question: 'Which flows can I request?',
-    answer: 'Welcome, post-purchase, review request, abandoned cart and more. You choose the ones your store needs and we quote based on scope.'
+    id: 'custom-dev-en-5',
+    question: 'What if Shopify updates or something stops working?',
+    answer: SUPPORT_DAYS
+      ? `For ${SUPPORT_DAYS} days I fix any fault in my work free of charge. After that, if you want, I maintain it under a separate quote.`
+      : 'If something breaks because of my work, I fix it. If you want me to take care of maintenance, I quote it separately.'
   },
   {
-    id: 'email-auto-en-2',
-    question: 'Which platform do you implement it on?',
-    answer: 'We work with email marketing tools in the Shopify ecosystem, like Klaviyo and similar.'
+    id: 'custom-dev-en-6',
+    question: 'How do I know if what I need is feasible?',
+    answer: 'Tell me about it in a free meeting and I\'ll tell you whether it can be done, what it costs and how long it takes.'
   },
-  {
-    id: 'email-auto-en-3',
-    question: 'Do I need a subscriber list already?',
-    answer: 'No, but the more subscribers you have, the sooner you\'ll see results. If you don\'t have a list yet, we recommend starting with the welcome flow.'
-  }
 ];

@@ -50,10 +50,10 @@ export async function GET(request: NextRequest) {
 
   // Service pages
   const servicePages: Array<keyof typeof seoUrls> = [
+    'newStore',
     'migration',
     'customDev',
-    'monthly',
-    'emailAutomation'
+    'monthly'
   ]
 
   servicePages.forEach(page => {

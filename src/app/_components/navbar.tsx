@@ -56,15 +56,19 @@ const Navbar = () => {
   if (CHROMELESS_ROUTES.includes(pathname)) return null
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
+  const menuLabels = currentLocale === 'en'
+    ? { open: 'Open menu', close: 'Close menu' }
+    : { open: 'Abrir menú', close: 'Cerrar menú' }
   const closeMenu = () => setIsMenuOpen(false)
 
-  // Los dos servicios principales. La calculadora solo existe en español.
+  // Los tres servicios, casos y sobre mí. Mejora continua, calculadora y blog
+  // se enlazan desde el pie de página.
   const navItems = [
-    { href: links.monthly, label: t('nav.monthly') },
+    { href: links.newStore, label: t('nav.newStore') },
     { href: links.migration, label: t('nav.migration') },
-    ...(currentLocale === 'es' ? [{ href: links.calculator, label: t('nav.calculator') }] : []),
+    { href: links.customDev, label: t('nav.customDev') },
+    { href: links.cases, label: t('nav.cases') },
     { href: links.about, label: t('nav.about') },
-    { href: links.blog, label: t('nav.blog') },
   ]
 
   return (
@@ -111,7 +115,7 @@ const Navbar = () => {
             <button
               className="z-50 text-sw-fg-1 transition-colors hover:text-sw-fg-3"
               onClick={toggleMenu}
-              aria-label="Toggle menu"
+              aria-label={isMenuOpen ? menuLabels.close : menuLabels.open}
               aria-expanded={isMenuOpen}
             >
               {isMenuOpen ? (
@@ -138,18 +142,18 @@ const Navbar = () => {
         <button
           className="absolute right-6 top-4 text-sw-fg-1 transition-colors hover:text-sw-fg-3"
           onClick={closeMenu}
-          aria-label="Cerrar menú"
+          aria-label={menuLabels.close}
         >
           <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-        <nav className="flex h-full flex-col items-center justify-center gap-8">
+        <nav className="flex h-full flex-col items-center justify-center gap-7 px-4 text-center">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="font-display text-3xl text-sw-fg-1 hover:text-sw-secondary transition-colors"
+              className="block max-w-full text-balance font-display text-2xl text-sw-fg-1 transition-colors hover:text-sw-brand sm:text-3xl"
               onClick={closeMenu}
             >
               {item.label}

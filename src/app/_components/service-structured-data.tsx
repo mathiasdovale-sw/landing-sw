@@ -10,11 +10,10 @@ interface ServiceSchemaProps {
 }
 
 const serviceCategories: Record<string, string> = {
+  newStore: 'Ecommerce Store Development',
   migration: 'Platform Migration',
   customDev: 'Custom Software Development',
-  conversionAudit: 'Conversion Optimization',
-  monthly: 'Conversion Optimization',
-  emailAutomation: 'Email Marketing',
+  monthly: 'Ecommerce Optimization',
 };
 
 const ServiceStructuredData = ({ serviceName, serviceType, description }: ServiceSchemaProps) => {

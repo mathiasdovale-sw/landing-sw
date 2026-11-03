@@ -48,7 +48,7 @@ export default function StickyContactBar({
   return (
     <div
       aria-hidden={!isVisible}
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-sw-line bg-sw-bg-1/95 backdrop-blur transition-transform duration-300 ${
+      className={`fixed inset-x-0 bottom-0 z-40 hidden border-t md:block border-sw-line bg-sw-bg-1/95 backdrop-blur transition-transform duration-300 ${
         isVisible ? "translate-y-0" : "pointer-events-none translate-y-full"
       }`}
     >

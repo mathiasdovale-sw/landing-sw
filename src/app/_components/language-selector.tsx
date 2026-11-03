@@ -62,8 +62,11 @@ const LanguageSelector = () => {
         '/en/custom-shopify-development': { es: '/es/desarrollos-a-medida', en: '/en/custom-shopify-development' },
 
 
-        '/es/email-marketing-automation': { es: '/es/email-marketing-automation', en: '/en/email-marketing-automation' },
-        '/en/email-marketing-automation': { es: '/es/email-marketing-automation', en: '/en/email-marketing-automation' },
+        '/es/tienda-nueva': { es: '/es/tienda-nueva', en: '/en/new-shopify-store' },
+        '/en/new-shopify-store': { es: '/es/tienda-nueva', en: '/en/new-shopify-store' },
+
+        '/es/mejora-continua': { es: '/es/mejora-continua', en: '/en/continuous-improvement' },
+        '/en/continuous-improvement': { es: '/es/mejora-continua', en: '/en/continuous-improvement' },
       }
 
       // Buscar la ruta correspondiente en el mapeo

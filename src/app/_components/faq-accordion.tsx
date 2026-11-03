@@ -16,7 +16,7 @@ const ChevronUpIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export default function FAQAccordion({ faqs, title = 'Preguntas Frecuentes', className = 'bg-sw-bg-0' }: FAQProps) {
+export default function FAQAccordion({ faqs, title = 'Preguntas Frecuentes', className = 'bg-sw-bg-0', id, footer }: FAQProps) {
   const [openItems, setOpenItems] = useState<Set<string>>(new Set());
 
   const toggleItem = (id: string) => {
@@ -30,7 +30,7 @@ export default function FAQAccordion({ faqs, title = 'Preguntas Frecuentes', cla
   };
 
   return (
-    <section className={`py-16 sm:py-20 lg:py-24 px-5 ${className}`}>
+    <section id={id} className={`scroll-mt-20 py-16 sm:py-20 lg:py-24 px-5 ${className}`}>
       <div className="max-w-4xl mx-auto">
         <h2 className="font-display text-3xl text-center text-sw-fg-1 mb-10 sm:text-4xl">
           {title}
@@ -55,7 +55,7 @@ export default function FAQAccordion({ faqs, title = 'Preguntas Frecuentes', cla
                     </h3>
                     <div className="flex-shrink-0">
                       {isOpen ? (
-                        <ChevronUpIcon className="h-5 w-5 text-sw-secondary" />
+                        <ChevronUpIcon className="h-5 w-5 text-sw-brand" />
                       ) : (
                         <ChevronDownIcon className="h-5 w-5 text-sw-fg-3" />
                       )}
@@ -80,6 +80,7 @@ export default function FAQAccordion({ faqs, title = 'Preguntas Frecuentes', cla
             );
           })}
         </div>
+        {footer && <div className="mt-8 text-center text-sw-fg-3">{footer}</div>}
       </div>
     </section>
   );
