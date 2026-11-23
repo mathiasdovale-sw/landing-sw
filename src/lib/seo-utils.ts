@@ -21,16 +21,16 @@ export function getCanonicalBaseUrl(): string {
 // Meta descriptions for all pages in both languages
 export const metaDescriptions: Record<string, MetaDescription> = {
   home: {
-    es: "Agencia de crecimiento digital en Barcelona: anuncios en Google y Meta, web, automatizaciones y medición trabajando juntos para que vendas más o captes más clientes.",
-    en: "Digital growth agency in Barcelona: Google and Meta ads, website, automations and measurement working together so you sell more or win more clients."
+    es: "Marketing y tecnología para pymes en Barcelona: anuncios, web, analítica y creatividad, con el foco en que tu negocio gane más, no solo facture más.",
+    en: "Marketing and technology for small businesses in Barcelona: ads, website, analytics and creative, focused on your business earning more, not just selling more."
   },
   about: {
     es: "Soy Mathias, ingeniero informático en Barcelona y fundador de SellifyWorks, una agencia de crecimiento digital que une marketing y tecnología.",
     en: "I'm Mathias, a software engineer in Barcelona and the founder of SellifyWorks, a digital growth agency that brings marketing and technology together."
   },
   contact: {
-    es: "Pide presupuesto sin compromiso: anuncios, web o tienda, automatizaciones o medición. Te respondo en 24 horas laborables con una propuesta a medida.",
-    en: "Ask for a no-obligation quote: ads, website or store, automations or measurement. I reply within 24 working hours with a tailored proposal."
+    es: "Pide presupuesto sin compromiso: anuncios, web o tienda, analítica, diseño y creatividad. Te respondo en 24 horas laborables con una propuesta a medida.",
+    en: "Ask for a no-obligation quote: ads, website or store, analytics, design and creative. I reply within 24 working hours with a tailored proposal."
   },
   blog: {
     es: "Blog de SellifyWorks: consejos, trucos y estrategias para Shopify. Aprende sobre ecommerce, SEO, conversión y marketing digital para hacer crecer tu tienda online.",
@@ -49,8 +49,8 @@ export const metaDescriptions: Record<string, MetaDescription> = {
     en: "Subscription confirmed! Thanks for joining the SellifyWorks community. You'll receive exclusive content about Shopify, ecommerce and growth strategies."
   },
   services: {
-    es: "Servicios para pymes que quieren crecer online: anuncios, tienda nueva, migración a Shopify, desarrollos a medida y acompañamiento mensual.",
-    en: "Services for small businesses that want to grow online: ads, new store, Shopify migration, custom development and monthly support."
+    es: "Servicios para pymes que quieren crecer online: anuncios, tecnología (tiendas, integraciones y automatizaciones), analítica, y marketing y creatividad.",
+    en: "Services for small businesses that want to grow online: ads, technology (stores, integrations and automations), analytics, and marketing and creative."
   },
   
   // Services meta descriptions
@@ -71,8 +71,8 @@ export const metaDescriptions: Record<string, MetaDescription> = {
     en: "Monthly support: I run your ads, improve your website and show you with data what works. No lock-in and a proposal tailored to your business."
   },
   ads: {
-    es: "Gestión de Google Ads y Meta Ads con la medición bien montada desde el primer día, para invertir donde de verdad entra dinero. Presupuesto sin compromiso.",
-    en: "Google Ads and Meta Ads management with measurement set up properly from day one, so you invest where the money really comes in. No-obligation quote."
+    es: "Gestión de anuncios en Google, Meta, TikTok y Pinterest optimizada por rentabilidad: invierto más donde tu negocio gana más, no donde más se vende.",
+    en: "Ads management on Google, Meta, TikTok and Pinterest optimised for profitability: I invest more where your business earns more, not where it sells more."
   },
   ecommerce: {
     es: "Más ventas online con anuncios, tienda y datos conectados: llevo tus anuncios, mejoro tu tienda y automatizo lo que hoy haces a mano.",

@@ -7,7 +7,7 @@ import { MAIN_CTA } from '@/lib/commitments'
 export const metadata: Metadata = generatePageMetadata(
   'ads',
   'en',
-  'Google Ads and Meta Ads management measured by results | SellifyWorks'
+  'Google Ads and Meta Ads management focused on profitability | SellifyWorks'
 )
 
 // Ads service page. Same structure as custom development; the argument is measurement.

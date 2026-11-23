@@ -7,7 +7,7 @@ import { MAIN_CTA } from '@/lib/commitments'
 export const metadata: Metadata = generatePageMetadata(
   'ads',
   'es',
-  'Gestión de Google Ads y Meta Ads medida por resultados | SellifyWorks'
+  'Gestión de Google Ads y Meta Ads orientada a rentabilidad | SellifyWorks'
 )
 
 // Página del servicio de anuncios. Misma estructura que desarrollos a medida.
