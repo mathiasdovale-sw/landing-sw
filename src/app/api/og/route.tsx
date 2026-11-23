@@ -49,7 +49,7 @@ export async function GET() {
               marginBottom: '40px',
             }}
           >
-            ESPECIALISTA EN SHOPIFY · BARCELONA
+            MARKETING Y TECNOLOGÍA · BARCELONA
           </div>
           
           <div
@@ -62,7 +62,7 @@ export async function GET() {
               textAlign: 'center',
             }}
           >
-            Tiendas Shopify sin límites: tiendas nuevas, migraciones y desarrollo a medida
+            Anuncios, web, analítica y creatividad para pymes
           </div>
           
           <div
@@ -79,7 +79,7 @@ export async function GET() {
               fontFamily: 'system-ui, sans-serif',
             }}
           >
-            Partner Shopify
+            sellifyworks.com
           </div>
         </div>
       </div>
