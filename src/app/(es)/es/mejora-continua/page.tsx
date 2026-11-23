@@ -6,7 +6,7 @@ import { generatePageMetadata } from '@/lib/seo-utils'
 export const metadata: Metadata = generatePageMetadata(
   'monthly',
   'es',
-  'Mejora continua para tu tienda Shopify · 290 € + IVA al mes | SellifyWorks'
+  'Acompañamiento mensual: anuncios y web mejorando cada mes | SellifyWorks'
 )
 
 export default function MejoraContinua() {

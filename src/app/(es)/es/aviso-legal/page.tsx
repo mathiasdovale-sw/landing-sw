@@ -67,7 +67,7 @@ export default function AvisoLegalPage() {
                 <li><strong className="text-white">Domicilio:</strong> Barcelona, España</li>
                 <li><strong className="text-white">Email:</strong> <a href="mailto:contact@sellifyworks.com" className="text-orange-400 hover:underline">contact@sellifyworks.com</a></li>
                 <li><strong className="text-white">Sitio web:</strong> https://www.sellifyworks.com</li>
-                <li><strong className="text-white">Actividad:</strong> consultoría, desarrollo y optimización de tiendas online en Shopify</li>
+                <li><strong className="text-white">Actividad:</strong> servicios de marketing digital, publicidad online, desarrollo web y tecnología</li>
               </ul>
             </Section>
 

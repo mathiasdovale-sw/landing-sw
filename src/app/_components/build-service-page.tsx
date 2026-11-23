@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Check } from "lucide-react"
+import { ArrowRight, Check } from "lucide-react"
 import ServiceStructuredData from "./service-structured-data"
 import VisualBreadcrumbs from "./visual-breadcrumbs"
 import FAQAccordion from "./faq-accordion"
@@ -9,14 +9,14 @@ import CaseStudySection from "./case-study-section"
 import AboutMe from "./about-me"
 import MobileStickyCta from "./mobile-sticky-cta"
 import { FAQ } from "@/interfaces/faq"
-import { OFFER_SAMPLE } from "@/lib/commitments"
+import { MAIN_CTA, OFFER_SAMPLE } from "@/lib/commitments"
 import type { CaseKey } from "@/lib/cases"
 import type { ServiceOption } from "@/lib/contact-services"
 
 // Páginas de "construir": migración a Shopify y tienda nueva. También son landings
 // de anuncios: un único CTA, que baja al formulario de esta misma página.
 // Orden: hero → (muestra) → plataformas → qué incluye → caso → plazo y precio →
-// quién soy → preguntas → contacto → línea de mejora continua.
+// quién soy → preguntas → contacto → bloque de acompañamiento mensual.
 
 const FORM = "#contacto"
 type Service = "migration" | "newStore"
@@ -37,12 +37,13 @@ interface Copy {
   includes: { title: string; text: string }[]
   caseKeys: CaseKey[]
   caseTitle: string
-  /** Título del bloque de contacto (por defecto, el general: "Hablemos de tu tienda."). */
+  /** Título del bloque de contacto (por defecto, el general: "Hablemos de tu negocio."). */
   contactTitle?: string
   termsEyebrow: string
   /** Dos tarjetas (plazo / precio) o un único texto. */
   terms: { label: string; value: string; note: string }[] | string
   faqTitle: string
+  /** Bloque final: anuncios y mejora mensual después del lanzamiento. */
   monthly: { text: string; link: string; href: string }
   stickyTitle: string
   stickyPrice: string
@@ -51,7 +52,7 @@ interface Copy {
 const COPY: Record<Service, Record<Locale, Copy>> = {
   migration: {
     es: {
-      cta: "Pide una reunión gratis",
+      cta: MAIN_CTA.es,
       sd: {
         name: "Migración a Shopify",
         description:
@@ -80,6 +81,7 @@ const COPY: Record<Service, Record<Locale, Copy>> = {
       ],
       caseKeys: ["canramos", "matesramos"],
       caseTitle: "Migraciones que he hecho",
+      contactTitle: "Hablemos de tu tienda.",
       termsEyebrow: "Plazo y precio",
       terms: [
         { label: "Plazo", value: "Aproximadamente 3 semanas", note: "Depende sobre todo del catálogo. Te doy la fecha antes de empezar." },
@@ -87,15 +89,15 @@ const COPY: Record<Service, Record<Locale, Copy>> = {
       ],
       faqTitle: "Preguntas sobre la migración",
       monthly: {
-        text: "Cuando tu tienda ya está en Shopify, si quieres seguir mejorándola cada mes, tengo la",
-        link: "mejora continua",
+        text: "Y después del lanzamiento, puedo llevar tus anuncios y seguir mejorándola cada mes.",
+        link: "Mira el acompañamiento mensual",
         href: "/es/mejora-continua",
       },
       stickyTitle: "Migración a Shopify",
       stickyPrice: "Precio cerrado tras ver tu tienda",
     },
     en: {
-      cta: "Book a free meeting",
+      cta: MAIN_CTA.en,
       sd: {
         name: "Shopify migration",
         description:
@@ -124,6 +126,7 @@ const COPY: Record<Service, Record<Locale, Copy>> = {
       ],
       caseKeys: ["canramos", "matesramos"],
       caseTitle: "Migrations I've done",
+      contactTitle: "Let's talk about your store.",
       termsEyebrow: "Timing and price",
       terms: [
         { label: "Timing", value: "About 3 weeks", note: "It mostly depends on the catalogue. I give you the date before we start." },
@@ -131,8 +134,8 @@ const COPY: Record<Service, Record<Locale, Copy>> = {
       ],
       faqTitle: "Migration FAQ",
       monthly: {
-        text: "Once your store is on Shopify, if you want to keep improving it every month, I offer",
-        link: "continuous improvement",
+        text: "And after launch, I can run your ads and keep improving it every month.",
+        link: "See monthly support",
         href: "/en/continuous-improvement",
       },
       stickyTitle: "Shopify migration",
@@ -141,7 +144,7 @@ const COPY: Record<Service, Record<Locale, Copy>> = {
   },
   newStore: {
     es: {
-      cta: "Pide una reunión gratis",
+      cta: MAIN_CTA.es,
       sd: {
         name: "Tienda nueva en Shopify",
         description:
@@ -168,15 +171,15 @@ const COPY: Record<Service, Record<Locale, Copy>> = {
       terms: "Según el tamaño del catálogo y lo que necesites. Te doy precio y fecha cerrados después de una reunión gratis.",
       faqTitle: "Preguntas sobre la tienda nueva",
       monthly: {
-        text: "Cuando tu tienda ya esté vendiendo, si quieres seguir mejorándola cada mes, tengo la",
-        link: "mejora continua",
+        text: "Y después del lanzamiento, puedo llevar tus anuncios y seguir mejorándola cada mes.",
+        link: "Mira el acompañamiento mensual",
         href: "/es/mejora-continua",
       },
       stickyTitle: "Tienda nueva en Shopify",
       stickyPrice: "Precio y fecha cerrados antes de empezar",
     },
     en: {
-      cta: "Book a free meeting",
+      cta: MAIN_CTA.en,
       sd: {
         name: "New Shopify store",
         description:
@@ -203,8 +206,8 @@ const COPY: Record<Service, Record<Locale, Copy>> = {
       terms: "Depending on the size of the catalogue and what you need. I give you a fixed price and date after a free meeting.",
       faqTitle: "New store FAQ",
       monthly: {
-        text: "Once your store is selling, if you want to keep improving it every month, I offer",
-        link: "continuous improvement",
+        text: "And after launch, I can run your ads and keep improving it every month.",
+        link: "See monthly support",
         href: "/en/continuous-improvement",
       },
       stickyTitle: "New Shopify store",
@@ -224,7 +227,7 @@ function SectionHead({ eyebrow, n }: { eyebrow: string; n: string }) {
 
 export default function BuildServicePage({ service, locale, faqs }: { service: Service; locale: Locale; faqs: FAQ[] }) {
   const c = COPY[service][locale]
-  const contactService: ServiceOption = service
+  const contactService: ServiceOption = "web"
   return (
     <>
       <ServiceStructuredData serviceName={c.sd.name} serviceType={service} description={c.sd.description} />
@@ -235,7 +238,7 @@ export default function BuildServicePage({ service, locale, faqs }: { service: S
         <div className="mx-auto max-w-7xl px-5">
           <span className="font-mono-label text-sw-fg-3">{c.eyebrow}</span>
           <h1 className="mt-6 max-w-5xl font-display text-[1.625rem] sm:text-5xl md:text-6xl lg:text-7xl">
-            <span className="block text-sw-fg-1">{c.h1[0]}</span>
+            <span className="block text-sw-fg-1">{c.h1[0]}</span>{" "}
             <span className="block text-sw-brand">{c.h1[1]}</span>
           </h1>
           <p className="mt-7 max-w-2xl text-lg leading-relaxed text-sw-fg-2 sm:text-xl">{c.lede}</p>
@@ -273,7 +276,7 @@ export default function BuildServicePage({ service, locale, faqs }: { service: S
               </div>
               <a
                 href={FORM}
-                data-service="migration"
+                data-service="web"
                 className="shrink-0 rounded-sm bg-sw-brand px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-sw-brand-hover"
               >
                 {c.sample.button}
@@ -347,15 +350,18 @@ export default function BuildServicePage({ service, locale, faqs }: { service: S
 
       <ContactSection defaultService={contactService} title={c.contactTitle} />
 
-      {/* Mejora continua: una línea discreta al final */}
-      <section className="border-t border-sw-line bg-sw-bg-1 py-8">
-        <p className="mx-auto max-w-7xl px-5 text-sm text-sw-fg-3">
-          {c.monthly.text}{" "}
-          <Link href={c.monthly.href} className="font-semibold text-sw-brand underline-offset-4 hover:underline">
+      {/* Después del lanzamiento: anuncios y acompañamiento mensual */}
+      <section className="border-t border-sw-line bg-sw-bg-1 py-10">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-lg text-sw-fg-1">{c.monthly.text}</p>
+          <Link
+            href={c.monthly.href}
+            className="inline-flex shrink-0 items-center gap-2 font-semibold text-sw-brand underline-offset-4 hover:underline"
+          >
             {c.monthly.link}
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
-          .
-        </p>
+        </div>
       </section>
 
       <StickyContactBar title={c.stickyTitle} price={c.stickyPrice} ctaLabel={c.cta} ctaHref={FORM} />

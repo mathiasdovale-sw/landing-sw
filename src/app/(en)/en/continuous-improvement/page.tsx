@@ -6,7 +6,7 @@ import { generatePageMetadata } from '@/lib/seo-utils'
 export const metadata: Metadata = generatePageMetadata(
   'monthly',
   'en',
-  'Continuous improvement for your Shopify store · €290 + VAT/month | SellifyWorks'
+  'Monthly support: ads and website improving every month | SellifyWorks'
 )
 
 export default function ContinuousImprovement() {

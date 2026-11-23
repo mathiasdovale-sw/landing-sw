@@ -9,7 +9,7 @@ import { HomeFAQsEs } from '@/lib/faqs'
 export const metadata: Metadata = generatePageMetadata(
   'services',
   'es',
-  'Servicios: tienda nueva, migración y desarrollo a medida | SellifyWorks'
+  'Servicios: anuncios, tecnología, analítica y marketing | SellifyWorks'
 )
 
 // Página de servicios (fuera del menú): las mismas tarjetas que la home.
@@ -23,9 +23,9 @@ export default function ServicesPage() {
       <section className="bg-sw-bg-0 py-16 sm:py-20 lg:py-24">
         <div className="mx-auto max-w-5xl px-5 text-center">
           <span className="font-mono-label text-sw-fg-3">Servicios</span>
-          <h1 className="mt-5 font-display text-4xl text-sw-fg-1 sm:text-5xl lg:text-6xl">Tu tienda Shopify, sin límites.</h1>
+          <h1 className="mt-5 font-display text-4xl text-sw-fg-1 sm:text-5xl lg:text-6xl">Servicios para pymes que quieren crecer online.</h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-sw-fg-2 sm:text-xl">
-            Desde tiendas nuevas y migraciones hasta desarrollos que una plantilla o una app no resuelven. Precio cerrado y una sola persona responsable.
+            Anuncios, web, automatizaciones y medición trabajando juntos para que vendas más o captes más clientes. Con un único responsable de principio a fin.
           </p>
         </div>
       </section>

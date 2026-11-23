@@ -2,11 +2,12 @@ import { Metadata } from 'next'
 import ServicePageTemplate from '@/app/_components/service-page-template'
 import { customDevFAQsEn } from '@/lib/faqs'
 import { generatePageMetadata } from '@/lib/seo-utils'
+import { MAIN_CTA } from '@/lib/commitments'
 
 export const metadata: Metadata = generatePageMetadata(
   'customDev',
   'en',
-  "Custom Shopify development: what an app can't do | SellifyWorks"
+  'Custom development: integrations and automations for your business | SellifyWorks'
 )
 
 export default function CustomShopifyDevelopment() {
@@ -16,10 +17,10 @@ export default function CustomShopifyDevelopment() {
         serviceKey: 'customDev',
         contactHref: '/en/contact?servicio=customDev',
         locale: 'en',
-        eyebrow: 'Custom development · Shopify',
-        title: 'What your store needs and no app can do.',
+        eyebrow: 'Custom development · Shopify, WooCommerce, CRM and more',
+        title: 'What your business needs and no tool can do.',
         lede: 'Integrations, automations and custom features, built by an engineer who stands behind them. A fixed quote before we start.',
-        ctaPrimaryLabel: 'Book a free meeting',
+        ctaPrimaryLabel: MAIN_CTA.en,
         ctaSecondaryLabel: "See what's included",
         // Possible scenarios, not past projects.
         situations: {
@@ -29,25 +30,32 @@ export default function CustomShopifyDevelopment() {
             { title: 'You sell to wholesalers and consumers', description: 'You need different prices, minimums or terms depending on the customer. I build it into your store.' },
             { title: 'Your customers want to personalise the product', description: 'Sizes, engravings, combinations… I build the configurator your product needs.' },
             { title: 'You repeat tasks every time an order comes in', description: 'Notifications, labels, orders to suppliers. I automate the repetitive work.' },
-            { title: 'No app does exactly what you need', description: "Or the one that does is expensive, slow or clashes with others. I solve it with custom development." },
+            { title: 'Leads from your website get lost between email and WhatsApp', description: 'I connect forms, WhatsApp and your CRM so none slip away.' },
+            { title: 'No tool does exactly what you need', description: "Or the one that does is expensive, slow or clashes with others. I solve it with custom development." },
           ],
         },
         includesEyebrow: "What's included",
         includesTitle: 'What I build.',
         includes: [
-          { title: 'Integrations', description: 'I connect your store to the management system, CRM or tool you already use.' },
+          { title: 'Integrations', description: 'I connect your website or store to the management system, CRM or tool you already use.' },
           { title: 'Automations', description: 'I remove repetitive manual tasks with custom logic.' },
-          { title: 'Custom functionality', description: "I build what your business needs and Shopify doesn't offer out of the box." },
+          { title: 'Custom functionality', description: "I build what your business needs and your platform doesn't offer out of the box." },
+          { title: 'AI applied to your business', description: 'I use AI to take real work off your plate: sorting enquiries, answering repetitive questions or summarising data.' },
           { title: 'Fixed quote', description: 'I assess the scope and give you a fixed price before we start.' },
         ],
+        monthlyLink: {
+          text: 'Want me to maintain it and keep improving it every month?',
+          link: 'See monthly support.',
+          href: '/en/continuous-improvement',
+        },
         closingTitle: 'Have something specific in mind?',
         closingLede: "Tell me what you need and I'll tell you whether it's feasible, what it costs and how long it takes.",
-        related: ['newStore', 'migration'],
+        related: ['ads', 'newStore', 'migration'],
         faqTitle: 'Custom development FAQ',
         faqs: customDevFAQsEn,
         structuredData: {
-          serviceName: 'Custom Shopify development',
-          description: 'Integrations, automations and custom functionality for your Shopify store, with a fixed quote.',
+          serviceName: 'Custom development',
+          description: 'Integrations, automations and custom functionality for your website or store (Shopify, WooCommerce, CRM and more), with a fixed quote.',
         },
       }}
     />

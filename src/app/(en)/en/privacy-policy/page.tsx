@@ -22,14 +22,14 @@ const treatments: Array<{ title: string; data: string; purpose: string; basis: s
   {
     title: 'Newsletter',
     data: 'Email address and date of sign-up and confirmation.',
-    purpose: 'To send you content and news about Shopify, ecommerce and our services. Sign-up requires double confirmation (double opt-in) through a link we email to you.',
+    purpose: 'Sending you content and news about digital marketing, ecommerce and my services. Sign-up requires double confirmation (double opt-in) through a link I email to you.',
     basis: 'Your consent (art. 6.1.a GDPR and art. 21 LSSI).',
-    retention: 'Until you unsubscribe, which you can do at any time through the link included in every email or by writing to us.',
+    retention: 'Until you unsubscribe, which you can do at any time through the link included in every email or by writing to me.',
   },
   {
     title: 'Browsing, analytics and advertising',
     data: 'Browsing data collected through cookies: online identifiers, IP address, pages visited, device and browser, interactions and anonymised session recordings.',
-    purpose: 'To measure and improve how the website is used and to measure the effectiveness of our advertising campaigns.',
+    purpose: 'To measure and improve how the website is used and to measure the effectiveness of my advertising campaigns.',
     basis: 'Your consent through the cookie banner (art. 6.1.a GDPR and art. 22.2 LSSI).',
     retention: 'As set out in the Cookie Policy.',
   },
@@ -78,7 +78,7 @@ export default function PrivacyPolicyPage() {
             Privacy Policy
           </h1>
           <p className="text-gray-400 text-lg">
-            Information about how we protect and use your personal data
+            Information about how I protect and use your personal data
           </p>
           <p className="text-gray-500 text-sm mt-2">Last updated: {LAST_UPDATED}</p>
         </div>
@@ -89,7 +89,7 @@ export default function PrivacyPolicyPage() {
 
             <Section title="Introduction">
               <p>
-                At SellifyWorks we take the protection of your personal data seriously. This policy explains what data we process, why, on what legal basis, for how long and what rights you have. It applies to the website sellifyworks.com and has been drafted in accordance with Regulation (EU) 2016/679, the General Data Protection Regulation (GDPR), Spanish Organic Law 3/2018 on Personal Data Protection and Digital Rights (LOPDGDD) and Spanish Law 34/2002 on Information Society Services (LSSI).
+                At SellifyWorks I take the protection of your personal data seriously. This policy explains what data I process, why, on what legal basis, for how long and what rights you have. It applies to the website sellifyworks.com and has been drafted in accordance with Regulation (EU) 2016/679, the General Data Protection Regulation (GDPR), Spanish Organic Law 3/2018 on Personal Data Protection and Digital Rights (LOPDGDD) and Spanish Law 34/2002 on Information Society Services (LSSI).
               </p>
             </Section>
 
@@ -101,14 +101,14 @@ export default function PrivacyPolicyPage() {
                 <li><strong className="text-white">Contact email:</strong> <a href="mailto:contact@sellifyworks.com" className="text-orange-400 hover:underline">contact@sellifyworks.com</a></li>
               </ul>
               <p>
-                Further identification details are available in our{' '}
+                Further identification details are available in my{' '}
                 <a href="/es/aviso-legal" className="text-orange-400 hover:underline">Legal Notice</a> (in Spanish).
               </p>
             </Section>
 
-            <Section title="2. What data we process, why and on what legal basis">
+            <Section title="2. What data I process, why and on what legal basis">
               <p>
-                We only process data you give us directly or that is collected while you browse the website, and always for specific purposes:
+                I only process data you give me directly or that is collected while you browse the website, and always for specific purposes:
               </p>
               {treatments.map((t) => (
                 <div key={t.title} className="bg-gray-800 rounded-lg p-4 not-prose">
@@ -122,19 +122,19 @@ export default function PrivacyPolicyPage() {
                 </div>
               ))}
               <p>
-                Fields marked as required in the forms are necessary to handle your request. If you leave them empty, we will not be able to process it. By sending us your data, you confirm that it is accurate and agree to let us know of any changes.
+                Fields marked as required in the forms are necessary to handle your request. If you leave them empty, I will not be able to process it. By sending me your data, you confirm that it is accurate and agree to let me know of any changes.
               </p>
               <p>
-                We do not make automated decisions or build profiles that have legal effects on you. Once the retention periods end, data is blocked for as long as legal liabilities may arise and is then deleted.
+                I do not make automated decisions or build profiles that have legal effects on you. Once the retention periods end, data is blocked for as long as legal liabilities may arise and is then deleted.
               </p>
             </Section>
 
             <Section title="3. Recipients of the data">
               <p>
-                We do not sell or share your data with third parties, except where required by law (for example, with the Tax Agency, courts or law enforcement).
+                I do not sell or share your data with third parties, except where required by law (for example, with the Tax Agency, courts or law enforcement).
               </p>
               <p>
-                To provide our services we rely on providers that access data as processors. We have a data processing agreement with each of them that guarantees the confidentiality and security of the data (art. 28 GDPR):
+                To provide my services I rely on providers that access data as processors. I have a data processing agreement with each of them that guarantees the confidentiality and security of the data (art. 28 GDPR):
               </p>
               <div className="overflow-x-auto not-prose">
                 <table className="w-full text-sm text-left">
@@ -167,21 +167,21 @@ export default function PrivacyPolicyPage() {
             <Section title="5. Your rights">
               <p>You can exercise the following rights at any time:</p>
               <ul className="list-disc list-inside space-y-2">
-                <li><strong className="text-white">Access:</strong> find out whether we process your data and get a copy.</li>
+                <li><strong className="text-white">Access:</strong> find out whether I process your data and get a copy.</li>
                 <li><strong className="text-white">Rectification:</strong> correct inaccurate or incomplete data.</li>
-                <li><strong className="text-white">Erasure:</strong> ask us to delete your data when it is no longer needed.</li>
+                <li><strong className="text-white">Erasure:</strong> ask me to delete your data when it is no longer needed.</li>
                 <li><strong className="text-white">Objection:</strong> object to processing, in particular processing based on legitimate interest.</li>
-                <li><strong className="text-white">Restriction:</strong> ask us to keep your data only to establish or defend legal claims.</li>
+                <li><strong className="text-white">Restriction:</strong> ask me to keep your data only to establish or defend legal claims.</li>
                 <li><strong className="text-white">Portability:</strong> receive your data in a structured, commonly used format.</li>
                 <li><strong className="text-white">Withdraw your consent</strong> at any time, without affecting the lawfulness of processing carried out before the withdrawal.</li>
               </ul>
               <p>
                 To exercise them, write to{' '}
                 <a href="mailto:contact@sellifyworks.com" className="text-orange-400 hover:underline">contact@sellifyworks.com</a>{' '}
-                with the subject &quot;Data protection&quot; and tell us which right you want to exercise. If we have reasonable doubts about your identity, we may ask for additional information to confirm it. We will reply within one month at the latest.
+                with the subject &quot;Data protection&quot; and tell me which right you want to exercise. If I have reasonable doubts about your identity, I may ask for additional information to confirm it. I will reply within one month at the latest.
               </p>
               <p>
-                If you believe we have not handled your rights properly, you can lodge a complaint with the{' '}
+                If you believe I have not handled your rights properly, you can lodge a complaint with the{' '}
                 <a href="https://www.aepd.es/en" target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:underline">Spanish Data Protection Agency (AEPD)</a>{' '}
                 (C/ Jorge Juan, 6, 28001 Madrid, Spain) or with the supervisory authority of your country of residence in the EU.
               </p>
@@ -189,32 +189,32 @@ export default function PrivacyPolicyPage() {
 
             <Section title="6. Marketing communications">
               <p>
-                We will only send you marketing emails if you have subscribed to our newsletter and confirmed it, or if you are already a client and the emails concern services similar to those you purchased (art. 21.2 LSSI). Either way, you can unsubscribe for free through the link included in every email.
+                I will only send you marketing emails if you have subscribed to my newsletter and confirmed it, or if you are already a client and the emails concern services similar to those you purchased (art. 21.2 LSSI). Either way, you can unsubscribe for free through the link included in every email.
               </p>
             </Section>
 
             <Section title="7. Minors">
               <p>
-                This website is aimed at professionals and businesses. We do not knowingly collect data from children under 14 (art. 7 LOPDGDD). If we find that we have, we will delete that data.
+                This website is aimed at professionals and businesses. I do not knowingly collect data from children under 14 (art. 7 LOPDGDD). If I find that I have, I will delete that data.
               </p>
             </Section>
 
             <Section title="8. Security">
               <p>
-                We apply technical and organisational measures appropriate to the risk to protect your data against loss, alteration or unauthorised access. These include encrypted communications (HTTPS), form validation, spam protection and restricted access to information.
+                I apply technical and organisational measures appropriate to the risk to protect your data against loss, alteration or unauthorised access. These include encrypted communications (HTTPS), form validation, spam protection and restricted access to information.
               </p>
             </Section>
 
             <Section title="9. Cookies">
               <p>
-                This website uses first-party and third-party cookies. You can see the details and set your preferences in our{' '}
+                This website uses first-party and third-party cookies. You can see the details and set your preferences in my{' '}
                 <a href="/en/cookie-policy" className="text-orange-400 hover:underline">Cookie Policy</a>.
               </p>
             </Section>
 
             <Section title="10. Changes to this policy">
               <p>
-                We may change this policy to reflect legal changes or new processing activities. Any changes will be published on this page and the date at the top will be updated. If this English version differs from the Spanish one, the Spanish version prevails.
+                I may change this policy to reflect legal changes or new processing activities. Any changes will be published on this page and the date at the top will be updated. If this English version differs from the Spanish one, the Spanish version prevails.
               </p>
             </Section>
 
@@ -224,7 +224,7 @@ export default function PrivacyPolicyPage() {
                 Contact
               </h2>
               <p className="leading-relaxed mb-4">
-                If you have any questions about our privacy policy or want to exercise your rights, please contact us.
+                If you have any questions about my privacy policy or want to exercise your rights, please contact me.
               </p>
               <p className="text-orange-400">
                 Email: contact@sellifyworks.com

@@ -237,7 +237,7 @@ export function getContactCompanyEmailTemplate(
         <p><strong>Nombre:</strong> ${data.name}</p>
         <p><strong>Email:</strong> ${data.email}</p>
         ${data.company ? `<p><strong>Empresa:</strong> ${data.company}</p>` : ''}
-        ${data.storeUrl ? `<p><strong>Tienda:</strong> ${data.storeUrl}</p>` : ''}
+        ${data.storeUrl ? `<p><strong>Web:</strong> ${data.storeUrl}</p>` : ''}
         ${data.onShopify ? `<p><strong>¿Está en Shopify?:</strong> ${data.onShopify === 'si' ? 'Sí' : 'No'}</p>` : ''}
         ${data.service ? `<p><strong>Servicio de interés:</strong> ${data.service}</p>` : ''}
         <p><strong>Mensaje:</strong></p>
@@ -252,7 +252,7 @@ Nuevo mensaje de contacto
 Nombre: ${data.name}
 Email: ${data.email}
 ${data.company ? `Empresa: ${data.company}` : ''}
-${data.storeUrl ? `Tienda: ${data.storeUrl}` : ''}
+${data.storeUrl ? `Web: ${data.storeUrl}` : ''}
 ${data.onShopify ? `¿Está en Shopify?: ${data.onShopify === 'si' ? 'Sí' : 'No'}` : ''}
 ${data.service ? `Servicio de interés: ${data.service}` : ''}
 
@@ -269,6 +269,7 @@ Este mensaje fue enviado desde el formulario de contacto de SellifyWorks
         <p><strong>Name:</strong> ${data.name}</p>
         <p><strong>Email:</strong> ${data.email}</p>
         ${data.company ? `<p><strong>Company:</strong> ${data.company}</p>` : ''}
+        ${data.storeUrl ? `<p><strong>Website:</strong> ${data.storeUrl}</p>` : ''}
         ${data.service ? `<p><strong>Service of interest:</strong> ${data.service}</p>` : ''}
         <p><strong>Message:</strong></p>
         <p>${data.message.replace(/\n/g, '<br>')}</p>
@@ -282,6 +283,7 @@ New contact message
 Name: ${data.name}
 Email: ${data.email}
 ${data.company ? `Company: ${data.company}` : ''}
+${data.storeUrl ? `Website: ${data.storeUrl}` : ''}
 ${data.service ? `Service of interest: ${data.service}` : ''}
 
 Message:

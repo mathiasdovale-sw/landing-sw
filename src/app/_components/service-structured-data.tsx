@@ -13,7 +13,10 @@ const serviceCategories: Record<string, string> = {
   newStore: 'Ecommerce Store Development',
   migration: 'Platform Migration',
   customDev: 'Custom Software Development',
-  monthly: 'Ecommerce Optimization',
+  monthly: 'Digital Marketing and Web Optimization',
+  ads: 'Online Advertising Management',
+  ecommerce: 'Ecommerce Growth',
+  leads: 'Lead Generation',
 };
 
 const ServiceStructuredData = ({ serviceName, serviceType, description }: ServiceSchemaProps) => {

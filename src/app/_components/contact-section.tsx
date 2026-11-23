@@ -2,27 +2,33 @@
 import { Mail, MapPin, ArrowRight } from "lucide-react"
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { motion } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { REPLY_STEP } from "@/lib/commitments"
-import { SERVICE_OPTIONS, isServiceOption, type ServiceOption } from "@/lib/contact-services"
+import {
+  SERVICE_OPTIONS,
+  isServiceOption,
+  toServiceOption,
+  type ServiceOption,
+} from "@/lib/contact-services"
 
 type FieldName = 'name' | 'email' | 'company' | 'url' | 'service' | 'message'
 type FieldStatus = 'idle' | 'valid' | 'invalid'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-// URL de la tienda: basta con un dominio ("mitienda.com"), con o sin https://
+// URL de la web: basta con un dominio ("mitienda.com"), con o sin https://
 const URL_RE = /^(https?:\/\/)?[^\s/.]+(\.[^\s/.]+)+(\/\S*)?$/i
 
 const NEXT_STEPS = {
-  es: { title: 'Qué pasa después', steps: [REPLY_STEP.es, 'Hacemos una reunión gratis para entender qué necesitas.', 'Te paso precio y fecha cerrados, por escrito.'] },
-  en: { title: 'What happens next', steps: [REPLY_STEP.en, 'We have a free meeting to understand what you need.', 'I send you a fixed price and date, in writing.'] },
+  es: { title: 'Qué pasa después', steps: [REPLY_STEP.es, 'Hacemos una reunión gratis para entender qué necesitas.', 'Te envío una propuesta a medida por escrito: alcance, precio y plazos.'] },
+  en: { title: 'What happens next', steps: [REPLY_STEP.en, 'We have a free meeting to understand what you need.', 'I send you a tailored proposal in writing: scope, price and timeline.'] },
 }
 
 /**
  * Formulario de contacto. El selector "¿Qué necesitas?" se puede preseleccionar:
  * - con la prop `defaultService` (p. ej. en la página de tienda nueva),
- * - con `?servicio=<newStore|migration|customDev|other>` en la URL,
+ * - con `?servicio=<ads|web|dev|measurement|design|unsure>` en la URL (también valen los valores antiguos),
  * - o desde cualquier enlace de la misma página con `data-service="..."`.
  */
 export default function ContactSection({
@@ -32,7 +38,7 @@ export default function ContactSection({
 }: {
   defaultService?: ServiceOption
   showPhoto?: boolean
-  /** Título del bloque (por defecto "Hablemos de tu tienda."). */
+  /** Título del bloque (por defecto "Hablemos de tu negocio."). */
   title?: string
 } = {}) {
   const { t, language } = useLanguage()
@@ -45,6 +51,9 @@ export default function ContactSection({
 
   // Campo trampa (antispam): oculto para las personas; solo lo rellenan los bots.
   const [trap, setTrap] = useState('')
+  // Aceptación de la política de privacidad: obligatoria para enviar.
+  const [privacyAccepted, setPrivacyAccepted] = useState(false)
+  const [privacyError, setPrivacyError] = useState(false)
   const [values, setValues] = useState<Record<FieldName, string>>({
     name: '', email: '', company: '', url: '', service: defaultService ?? '', message: '',
   })
@@ -59,8 +68,9 @@ export default function ContactSection({
 
   // Preselección desde la URL (?servicio=...) y desde enlaces con data-service en esta página.
   useEffect(() => {
-    const pick = (value: string | null | undefined) => {
-      if (!isServiceOption(value)) return
+    const pick = (raw: string | null | undefined) => {
+      const value = toServiceOption(raw)
+      if (!value) return
       setValues((v) => ({ ...v, service: value }))
       setFieldStatus((s) => ({ ...s, service: { status: 'idle', message: '' } }))
     }
@@ -162,7 +172,9 @@ export default function ContactSection({
     const urlOk = validateField('url', values.url, false)
     const serviceOk = validateField('service', values.service, false)
 
-    if (!nameOk || !emailOk || !messageOk || !urlOk || !serviceOk) {
+    setPrivacyError(!privacyAccepted)
+
+    if (!nameOk || !emailOk || !messageOk || !urlOk || !serviceOk || !privacyAccepted) {
       setSubmitStatus({ type: 'error', message: t('contact.form.err') })
       return
     }
@@ -227,6 +239,7 @@ export default function ContactSection({
           // Silencioso
         }
         setValues({ name: '', email: '', company: '', url: '', service: defaultService ?? '', message: '' })
+        setPrivacyAccepted(false)
         setFieldStatus({
           name: { status: 'idle', message: '' },
           email: { status: 'idle', message: '' },
@@ -388,6 +401,7 @@ export default function ContactSection({
                 </div>
               </div>
 
+
               <div>
                 <label htmlFor="service" className="mb-2 block font-mono-label text-sw-fg-3">
                   {t('contact.form.service.label')}
@@ -450,6 +464,37 @@ export default function ContactSection({
                 </span>
               </div>
 
+              <div>
+                <label htmlFor="privacy" className="flex min-h-11 cursor-pointer items-center gap-3 text-sm leading-snug text-sw-fg-2">
+                  <input
+                    type="checkbox"
+                    id="privacy"
+                    name="privacy"
+                    required
+                    checked={privacyAccepted}
+                    onChange={(e) => {
+                      setPrivacyAccepted(e.target.checked)
+                      if (e.target.checked) setPrivacyError(false)
+                    }}
+                    aria-invalid={privacyError}
+                    className="h-5 w-5 shrink-0 accent-sw-brand"
+                  />
+                  <span>
+                    {t('contact.form.privacy.before')}{' '}
+                    <Link
+                      href={lang === 'es' ? '/es/politica-de-privacidad' : '/en/privacy-policy'}
+                      target="_blank"
+                      className="font-semibold text-sw-brand underline-offset-4 hover:underline"
+                    >
+                      {t('contact.form.privacy.link')}
+                    </Link>{' '}
+                    *
+                  </span>
+                </label>
+                <span className="mt-1.5 block min-h-[14px] font-mono-label text-[12px] normal-case tracking-normal text-sw-danger">
+                  {privacyError ? t('contact.form.privacy.req') : ''}
+                </span>
+              </div>
 
               <motion.button
                 type="submit"

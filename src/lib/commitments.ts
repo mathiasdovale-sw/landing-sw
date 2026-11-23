@@ -16,48 +16,55 @@ export const REPLY_TIME: Record<Locale, string> = {
   en: "24 working hours",
 }
 
-/** Forma de pago. */
+/** Forma de pago de los proyectos. */
 export const PAYMENT_TERMS: Record<Locale, string> = {
   es: "50% al empezar y 50% en la entrega",
   en: "50% upfront and 50% on delivery",
 }
 
+/** Forma de pago de los servicios mensuales. */
+export const MONTHLY_PAYMENT_TERMS: Record<Locale, string> = {
+  es: "por adelantado al inicio de cada mes",
+  en: "in advance at the start of each month",
+}
+
+/** Llamada principal de toda la web. */
+export const MAIN_CTA: Record<Locale, string> = {
+  es: "Pide presupuesto sin compromiso",
+  en: "Ask for a no-obligation quote",
+}
+
 /** ¿Ofrezco una muestra de la tienda en Shopify antes de decidir? (no: hay dos revisiones de diseño). */
 export const OFFER_SAMPLE = false
 
-export const COMMITMENTS: Record<Locale, string[]> = {
+/** Compromisos de la home (y de las páginas de solución). */
+export const COMMITMENTS: Record<Locale, { title: string; text: string }[]> = {
   es: [
-    "Precio cerrado antes de empezar",
-    "Fecha de entrega por escrito",
-    "Sin dejar de vender durante la migración",
-    ...(SUPPORT_DAYS ? [`Si algo falla por mi trabajo, lo arreglo sin coste durante ${SUPPORT_DAYS} días`] : []),
+    { title: "Propuesta a medida.", text: "Precio y alcance por escrito antes de empezar." },
+    { title: "Sin permanencia.", text: "Los servicios mensuales se cancelan cuando quieras." },
+    { title: "Un único responsable.", text: "Hablas siempre conmigo." },
+    ...(SUPPORT_DAYS
+      ? [{ title: `${SUPPORT_DAYS} días de garantía.`, text: "Si algo que construyo falla por mi trabajo, lo arreglo gratis." }]
+      : []),
   ],
   en: [
-    "Fixed price before we start",
-    "Delivery date in writing",
-    "No lost sales during the migration",
-    ...(SUPPORT_DAYS ? [`If something breaks because of my work, I fix it free of charge for ${SUPPORT_DAYS} days`] : []),
+    { title: "Tailored proposal.", text: "Price and scope in writing before we start." },
+    { title: "No lock-in.", text: "Monthly services can be cancelled whenever you want." },
+    { title: "One person accountable.", text: "You always talk to me." },
+    ...(SUPPORT_DAYS
+      ? [{ title: `${SUPPORT_DAYS}-day guarantee.`, text: "If something I build breaks because of my work, I fix it for free." }]
+      : []),
   ],
-}
-
-/** Paso 5 de "Cómo trabajo". */
-export const AFTER_DELIVERY_STEP: Record<Locale, string> = {
-  es: SUPPORT_DAYS
-    ? `Si algo falla por mi trabajo, lo arreglo sin coste durante ${SUPPORT_DAYS} días.`
-    : "Si algo falla por mi trabajo, lo arreglo.",
-  en: SUPPORT_DAYS
-    ? `If something breaks because of my work, I fix it free of charge for ${SUPPORT_DAYS} days.`
-    : "If something breaks because of my work, I fix it.",
 }
 
 /** Respuesta a "¿Y después de entregar?" (home y tienda nueva). */
 export const AFTER_DELIVERY_ANSWER: Record<Locale, string> = {
   es: SUPPORT_DAYS
-    ? `Durante ${SUPPORT_DAYS} días arreglo sin coste cualquier fallo de mi trabajo. Si después quieres seguir mejorando la tienda cada mes, tengo la mejora continua.`
-    : "Si algo falla por mi trabajo, lo arreglo. Si después quieres seguir mejorando la tienda cada mes, tengo la mejora continua.",
+    ? `Durante ${SUPPORT_DAYS} días arreglo sin coste cualquier fallo de mi trabajo. Después, puedo llevar tus anuncios y seguir mejorando la tienda cada mes con el acompañamiento mensual.`
+    : "Si algo falla por mi trabajo, lo arreglo. Después, puedo llevar tus anuncios y seguir mejorando la tienda cada mes con el acompañamiento mensual.",
   en: SUPPORT_DAYS
-    ? `For ${SUPPORT_DAYS} days I fix any fault in my work free of charge. If you then want to keep improving the store every month, I offer continuous improvement.`
-    : "If something breaks because of my work, I fix it. If you then want to keep improving the store every month, I offer continuous improvement.",
+    ? `For ${SUPPORT_DAYS} days I fix any fault in my work free of charge. After that, I can run your ads and keep improving the store every month with monthly support.`
+    : "If something breaks because of my work, I fix it. After that, I can run your ads and keep improving the store every month with monthly support.",
 }
 
 /** Primer paso de "Qué pasa después" junto al formulario. */

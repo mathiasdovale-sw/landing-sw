@@ -1,26 +1,29 @@
 "use client"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { OFFER_SAMPLE } from "@/lib/commitments"
+import { MAIN_CTA, OFFER_SAMPLE } from "@/lib/commitments"
 import { CASES } from "@/lib/cases"
 
-// Hero de la home: posicionamiento + CTA principal (reunión gratis).
+// Hero de la home: posicionamiento + CTA principal (presupuesto sin compromiso).
+// Titulares alternativos del documento de rediseño:
+// - "Más ventas y más clientes, con marketing y tecnología en las mismas manos"
+// - "Tus anuncios, tu web y tus datos, trabajando juntos"
 const COPY = {
   es: {
-    eyebrow: "Especialista en Shopify · Barcelona",
-    line1: "Tu tienda Shopify,",
-    line2: "sin límites",
-    sub: "Desde tiendas nuevas y migraciones hasta desarrollos que una plantilla o una app no resuelven. Precio cerrado y una sola persona responsable.",
-    primary: { href: "#contacto", label: "Pide una reunión gratis" },
+    eyebrow: "Marketing y tecnología para pymes · Barcelona",
+    line1: "Agencia de crecimiento digital",
+    line2: "que une marketing y tecnología",
+    sub: "Anuncios, web, automatizaciones y medición trabajando juntos para que vendas más o captes más clientes. Con un único responsable de principio a fin.",
+    primary: { href: "#contacto", label: MAIN_CTA.es },
     secondary: { href: "#casos-reales", label: "Ver casos" },
     sample: { href: "#contacto", label: "Mira cómo quedaría tu tienda" },
   },
   en: {
-    eyebrow: "Shopify specialist · Barcelona",
-    line1: "Your Shopify store,",
-    line2: "without limits",
-    sub: "From new stores and migrations to custom builds that a theme or an app can't handle. A fixed price and one person accountable.",
-    primary: { href: "#contacto", label: "Book a free meeting" },
+    eyebrow: "Marketing and technology for small businesses · Barcelona",
+    line1: "A digital growth agency",
+    line2: "that brings marketing and technology together",
+    sub: "Ads, website, automations and measurement working together so you sell more or win more clients. With one person accountable from start to finish.",
+    primary: { href: "#contacto", label: MAIN_CTA.en },
     secondary: { href: "#casos-reales", label: "See case studies" },
     sample: { href: "#contacto", label: "See how your store would look" },
   },
@@ -71,12 +74,12 @@ export default function Hero({ locale }: { locale: "es" | "en" }) {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-7 flex items-center gap-3"
+          className="mb-7 hidden items-center gap-3 sm:flex"
         >
           <span className="font-mono-label text-sw-fg-3">{c.eyebrow}</span>
         </motion.div>
 
-        <h1 className="font-display text-5xl text-sw-fg-1 sm:text-6xl md:text-7xl lg:text-6xl xl:text-7xl">
+        <h1 className="font-display text-[clamp(1.9rem,8.5vw,2.4rem)] text-sw-fg-1 sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl">
           <span className="block overflow-hidden">
             <motion.span
               className="block"
@@ -86,7 +89,7 @@ export default function Hero({ locale }: { locale: "es" | "en" }) {
             >
               {c.line1}
             </motion.span>
-          </span>
+          </span>{" "}
           <span className="block overflow-hidden">
             <motion.span
               className="block text-sw-brand"
@@ -125,7 +128,7 @@ export default function Hero({ locale }: { locale: "es" | "en" }) {
             <div className="flex flex-col items-start gap-3">
               <a
                 href={c.sample.href}
-                data-service="migration"
+                data-service="web"
                 className="rounded-sm border border-sw-line-strong px-7 py-4 text-base font-semibold text-sw-fg-1 transition-colors hover:border-sw-fg-1"
               >
                 {c.sample.label}
@@ -142,18 +145,6 @@ export default function Hero({ locale }: { locale: "es" | "en" }) {
               {c.secondary.label}
             </a>
           )}
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.35 }}
-          className="mt-12 flex flex-wrap items-center gap-6 border-t border-sw-line pt-7"
-        >
-          <div className="flex items-center gap-2 opacity-80">
-            <Image src="/assets/img/shopifyLogo.png" alt="Shopify Partner" width={110} height={28} className="h-7 w-auto object-contain" />
-            <span className="font-mono-label text-sw-fg-3">Shopify Partner</span>
-          </div>
         </motion.div>
       </div>
 

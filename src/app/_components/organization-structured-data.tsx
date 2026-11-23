@@ -21,22 +21,30 @@ const OrganizationStructuredData = ({
   const baseUrl = getCanonicalBaseUrl();
   
   const defaultDescriptions = {
-    es: "Tiendas nuevas, migraciones a Shopify y desarrollos a medida. Precio cerrado y una sola persona responsable, desde Barcelona.",
-    en: "New stores, migrations to Shopify and custom development. A fixed price and one person accountable, from Barcelona."
+    es: "Agencia de crecimiento digital que une marketing y tecnología para pymes: anuncios, web, automatizaciones y medición, con un único responsable. Desde Barcelona.",
+    en: "Digital growth agency bringing marketing and technology together for small businesses: ads, website, automations and measurement, with one person accountable. From Barcelona."
   };
 
   const defaultSpecialties = {
     es: [
+      "Google Ads",
+      "Meta Ads",
       "Tienda nueva en Shopify",
       "Migración a Shopify",
       "Desarrollo a medida",
-      "Mejora continua"
+      "Automatizaciones",
+      "Analítica web",
+      "Generación de leads"
     ],
     en: [
+      "Google Ads",
+      "Meta Ads",
       "New Shopify store",
       "Shopify Migration",
       "Custom Development",
-      "Continuous Improvement"
+      "Automations",
+      "Web analytics",
+      "Lead generation"
     ]
   };
 
@@ -87,8 +95,8 @@ const OrganizationStructuredData = ({
     },
     "knowsAbout": specialties.length > 0 ? specialties : defaultSpecialties[language as keyof typeof defaultSpecialties],
     "slogan": language === 'es' ? 
-      "Tiendas Shopify sin límites" : 
-      "Shopify stores without limits",
+      "Marketing y tecnología para pymes" :
+      "Marketing and technology for small businesses",
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "customer service",
@@ -102,8 +110,16 @@ const OrganizationStructuredData = ({
     ],
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
-      "name": language === 'es' ? "Servicios Shopify" : "Shopify Services",
+      "name": language === 'es' ? "Servicios de SellifyWorks" : "SellifyWorks services",
       "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": language === 'es' ? "Anuncios en Google y Meta" : "Google and Meta ads",
+            "url": `${baseUrl}/${language}/${language === 'es' ? 'anuncios' : 'ads'}`
+          }
+        },
         {
           "@type": "Offer",
           "itemOffered": {
@@ -124,7 +140,7 @@ const OrganizationStructuredData = ({
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": language === 'es' ? "Mejora continua" : "Continuous Improvement",
+            "name": language === 'es' ? "Acompañamiento mensual" : "Monthly support",
             "url": `${baseUrl}/${language}/${language === 'es' ? 'mejora-continua' : 'continuous-improvement'}`
           }
         },

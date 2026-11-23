@@ -1,6 +1,6 @@
-// Fuente única de slugs de los servicios. El copy (nombre,
+// Fuente única de slugs de los servicios y soluciones. El copy (nombre,
 // descripción, FAQ) vive en LanguageContext.tsx y lib/faqs.ts, indexado por `key`.
-// Precio público: solo la mejora continua (290 € + IVA/mes). El resto, presupuesto cerrado.
+// Sin precios publicados: todo va con propuesta a medida.
 
 export interface ServiceConfig {
   key: string
@@ -9,10 +9,14 @@ export interface ServiceConfig {
 }
 
 export const SERVICES: ServiceConfig[] = [
+  { key: 'ads', slugEs: 'anuncios', slugEn: 'ads' },
   { key: 'newStore', slugEs: 'tienda-nueva', slugEn: 'new-shopify-store' },
   { key: 'migration', slugEs: 'migracion-shopify', slugEn: 'shopify-migration' },
   { key: 'customDev', slugEs: 'desarrollos-a-medida', slugEn: 'custom-shopify-development' },
   { key: 'monthly', slugEs: 'mejora-continua', slugEn: 'continuous-improvement' },
+  // Soluciones por tipo de negocio
+  { key: 'ecommerce', slugEs: 'ecommerce', slugEn: 'ecommerce' },
+  { key: 'leads', slugEs: 'generacion-de-leads', slugEn: 'lead-generation' },
 ]
 
 export function getService(key: string): ServiceConfig {

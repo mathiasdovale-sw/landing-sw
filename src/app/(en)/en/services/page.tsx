@@ -9,7 +9,7 @@ import { HomeFAQsEn } from '@/lib/faqs'
 export const metadata: Metadata = generatePageMetadata(
   'services',
   'en',
-  'Services: new store, migration and custom development | SellifyWorks'
+  'Services: ads, technology, analytics and marketing | SellifyWorks'
 )
 
 // Services page (not in the menu): the same cards as the home page.
@@ -23,9 +23,9 @@ export default function ServicesPage() {
       <section className="bg-sw-bg-0 py-16 sm:py-20 lg:py-24">
         <div className="mx-auto max-w-5xl px-5 text-center">
           <span className="font-mono-label text-sw-fg-3">Services</span>
-          <h1 className="mt-5 font-display text-4xl text-sw-fg-1 sm:text-5xl lg:text-6xl">Your Shopify store, without limits.</h1>
+          <h1 className="mt-5 font-display text-4xl text-sw-fg-1 sm:text-5xl lg:text-6xl">Services for small businesses that want to grow online.</h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-sw-fg-2 sm:text-xl">
-            From new stores and migrations to custom builds that a theme or an app can't handle. A fixed price and one person accountable.
+            Ads, website, automations and measurement working together so you sell more or win more clients. With one person accountable from start to finish.
           </p>
         </div>
       </section>

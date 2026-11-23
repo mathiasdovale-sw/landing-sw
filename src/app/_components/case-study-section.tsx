@@ -70,7 +70,7 @@ function BrandLogo({ src, alt, darken }: { src?: string; alt: string; darken?: b
   )
 }
 
-function CaseCard({ c, locale, sameClient }: { c: CaseStudy; locale: "es" | "en"; sameClient: boolean }) {
+function CaseCard({ c, locale, sameClient, homeTags = false }: { c: CaseStudy; locale: "es" | "en"; sameClient: boolean; homeTags?: boolean }) {
   const t = COPY[locale]
   const [open, setOpen] = useState(false)
   const scope = c.scope[locale]
@@ -81,7 +81,7 @@ function CaseCard({ c, locale, sameClient }: { c: CaseStudy; locale: "es" | "en"
         <PhoneShot src={c.image} alt={`${c.name} — ${t.screenshotAlt}`} />
         <div className="absolute left-4 top-4 flex flex-wrap gap-2">
           <span className="rounded-full border border-sw-line-strong bg-sw-bg-0/80 px-3 py-1 font-mono-label text-sw-fg-2 backdrop-blur">
-            {c.tag[locale]}
+            {(homeTags ? c.homeTag : c.tag)[locale]}
           </span>
           {sameClient && (
             <span className="rounded-full border border-sw-brand/60 bg-sw-bg-0/80 px-3 py-1 font-mono-label text-sw-brand backdrop-blur">
@@ -106,7 +106,7 @@ function CaseCard({ c, locale, sameClient }: { c: CaseStudy; locale: "es" | "en"
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
               aria-controls={listId}
-              className="mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-sw-fg-1 underline-offset-4 hover:underline md:hidden"
+              className="mt-2 inline-flex min-h-11 w-fit items-center gap-1.5 text-sm font-semibold text-sw-fg-1 underline-offset-4 hover:underline md:hidden"
             >
               {open ? t.hideScope : t.showScope}
               <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden="true" />
@@ -129,7 +129,7 @@ function CaseCard({ c, locale, sameClient }: { c: CaseStudy; locale: "es" | "en"
             href={c.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-auto inline-flex w-fit items-center gap-1.5 pt-6 font-semibold text-sw-brand hover:text-sw-fg-1"
+            className="mt-auto inline-flex min-h-11 w-fit items-center gap-1.5 pt-4 font-semibold text-sw-brand hover:text-sw-fg-1 md:min-h-0 md:pt-6"
           >
             {t.visit}
             <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
@@ -144,12 +144,15 @@ export default function CaseStudySection({
   locale,
   cases,
   title,
+  homeTags = false,
   className = "bg-sw-bg-1",
 }: {
   locale: "es" | "en"
   /** Qué casos mostrar y en qué orden. Por defecto, todos. */
   cases?: CaseKey[]
   title?: string
+  /** Usa las etiquetas del inicio (por sector) en lugar de las de servicio. */
+  homeTags?: boolean
   className?: string
 }) {
   const t = COPY[locale]
@@ -205,13 +208,13 @@ export default function CaseStudySection({
         >
           {list.map((c) => (
             <div key={c.key} className={carousel ? "w-[84%] shrink-0 snap-start md:w-auto" : ""}>
-              <CaseCard c={c} locale={locale} sameClient={showSameClient(c)} />
+              <CaseCard c={c} locale={locale} sameClient={showSameClient(c)} homeTags={homeTags} />
             </div>
           ))}
         </div>
 
         {carousel && (
-          <div className="mt-5 flex justify-center gap-2 md:hidden">
+          <div className="mt-2 flex justify-center md:hidden">
             {list.map((c, i) => (
               <button
                 key={c.key}
@@ -219,8 +222,10 @@ export default function CaseStudySection({
                 onClick={() => goTo(i)}
                 aria-label={`${t.goTo}: ${c.name}`}
                 aria-current={i === active}
-                className={`h-2 rounded-full transition-all ${i === active ? "w-6 bg-sw-brand" : "w-2 bg-sw-line-strong"}`}
-              />
+                className="flex h-11 items-center px-1"
+              >
+                <span className={`block h-2 rounded-full transition-all ${i === active ? "w-6 bg-sw-brand" : "w-2 bg-sw-line-strong"}`} />
+              </button>
             ))}
           </div>
         )}

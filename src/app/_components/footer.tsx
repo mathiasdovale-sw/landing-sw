@@ -14,8 +14,9 @@ import { ArrowRight } from "lucide-react"
 // Para reactivarla, poner a true.
 const SHOW_NEWSLETTER = false
 
-// Servicios del pie, en orden. Email marketing automation ya no se enlaza aquí (la página sigue existiendo).
-const FOOTER_SERVICES = ['newStore', 'migration', 'customDev', 'monthly'] as const
+// Servicios y soluciones del pie, en orden.
+const FOOTER_SERVICES = ['ads', 'newStore', 'migration', 'customDev', 'monthly'] as const
+const FOOTER_SOLUTIONS = ['ecommerce', 'leads'] as const
 
 
 export default function Footer() {
@@ -155,17 +156,33 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Services */}
-          <div className="lg:col-span-2">
+          {/* Services + Solutions */}
+          <div className="grid gap-8 sm:grid-cols-2 lg:col-span-2">
+            <div>
             <h4 className="mb-4 font-mono-label text-sw-fg-3">{t('footer.services.title')}</h4>
-            <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <ul className="grid grid-cols-1 gap-2">
               {FOOTER_SERVICES.map((key) => (
                 <li key={key}>
                   <a
                     href={links[key]}
-                    className="text-sm text-sw-fg-2 transition-colors hover:text-sw-brand"
+                    className="inline-flex min-h-11 items-center text-sm text-sw-fg-2 transition-colors hover:text-sw-brand md:min-h-0"
                   >
                     {t(`footer.services.${key}`)}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            </div>
+            <div>
+            <h4 className="mb-4 font-mono-label text-sw-fg-3">{t('footer.solutions.title')}</h4>
+            <ul className="grid grid-cols-1 gap-2">
+              {FOOTER_SOLUTIONS.map((key) => (
+                <li key={key}>
+                  <a
+                    href={links[key]}
+                    className="inline-flex min-h-11 items-center text-sm text-sw-fg-2 transition-colors hover:text-sw-brand md:min-h-0"
+                  >
+                    {t(`footer.solutions.${key}`)}
                   </a>
                 </li>
               ))}
@@ -175,12 +192,13 @@ export default function Footer() {
                 <h4 className="mb-4 mt-8 font-mono-label text-sw-fg-3">{t('footer.tools.title')}</h4>
                 <a
                   href={links.calculator}
-                  className="text-sm text-sw-fg-2 transition-colors hover:text-sw-brand"
+                  className="inline-flex min-h-11 items-center text-sm text-sw-fg-2 transition-colors hover:text-sw-brand md:min-h-0"
                 >
                   {t('footer.tools.calculator')}
                 </a>
               </>
             )}
+            </div>
           </div>
 
           {/* Logo */}
@@ -199,20 +217,20 @@ export default function Footer() {
         <div className="mt-12 border-t border-sw-line pt-8">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="font-mono-label normal-case tracking-normal text-sw-fg-3">
-              2026 {t('footer.company')}. {t('footer.rights')}
+              © 2026 {t('footer.company')}. {t('footer.rights')}
             </div>
 
-            <div className="flex flex-wrap gap-6 text-sm">
-              <a href={links.blog} className="text-sw-fg-3 transition-colors hover:text-sw-fg-1">
+            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+              <a href={links.blog} className="inline-flex min-h-11 items-center text-sw-fg-3 transition-colors hover:text-sw-fg-1 md:min-h-0">
                 {t('nav.blog')}
               </a>
-              <a href={links.privacyPolicy} className="text-sw-fg-3 transition-colors hover:text-sw-fg-1">
+              <a href={links.privacyPolicy} className="inline-flex min-h-11 items-center text-sw-fg-3 transition-colors hover:text-sw-fg-1 md:min-h-0">
                 {t('footer.privacy')}
               </a>
-              <a href={links.cookiePolicy} className="text-sw-fg-3 transition-colors hover:text-sw-fg-1">
+              <a href={links.cookiePolicy} className="inline-flex min-h-11 items-center text-sw-fg-3 transition-colors hover:text-sw-fg-1 md:min-h-0">
                 {t('footer.cookies')}
               </a>
-              <a href={links.legalNotice} className="text-sw-fg-3 transition-colors hover:text-sw-fg-1">
+              <a href={links.legalNotice} className="inline-flex min-h-11 items-center text-sw-fg-3 transition-colors hover:text-sw-fg-1 md:min-h-0">
                 {t('footer.legal')}
               </a>
             </div>

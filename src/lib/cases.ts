@@ -24,6 +24,8 @@ export interface CaseStudy {
   /** Tiendas del mismo cliente: si se muestran juntas, llevan la etiqueta "Mismo cliente". */
   clientGroup?: string
   tag: Record<Locale, string>
+  /** Etiqueta del inicio (orientada a sector). En el resto de páginas se usa `tag`. */
+  homeTag: Record<Locale, string>
   summary: Record<Locale, string>
   scope: Record<Locale, string[]>
   testimonial: Record<Locale, Testimonial> | null
@@ -39,6 +41,7 @@ export const CASES: CaseStudy[] = [
     image: "/assets/img/case-canramos-home.jpg",
     clientGroup: "ramos",
     tag: { es: "Migración", en: "Migration" },
+    homeTag: { es: "E-commerce · De Wix a Shopify", en: "E-commerce · From Wix to Shopify" },
     summary: {
       es: "De Wix a Shopify, sin dejar de vender.",
       en: "From Wix to Shopify, without stopping sales.",
@@ -68,6 +71,7 @@ export const CASES: CaseStudy[] = [
     image: "/assets/img/matesramoseuropa-home.jpg",
     clientGroup: "ramos",
     tag: { es: "Migración", en: "Migration" },
+    homeTag: { es: "E-commerce · Europa", en: "E-commerce · Europe" },
     summary: {
       es: "Migración a Shopify, vendiendo en toda Europa.",
       en: "Migration to Shopify, selling across Europe.",
@@ -95,9 +99,10 @@ export const CASES: CaseStudy[] = [
     logo: "/assets/img/termolar-logo.jpg",
     image: "/assets/img/case-termolar-home.jpg",
     tag: { es: "Tienda nueva", en: "New store" },
+    homeTag: { es: "E-commerce · Tienda nueva", en: "E-commerce · New store" },
     summary: {
-      es: "Tienda nueva desde cero, vendiendo en toda Europa excepto Reino Unido, en unas seis semanas.",
-      en: "A new store built from scratch, selling across Europe except the UK, in about six weeks.",
+      es: "Tienda nueva en unas seis semanas, para toda Europa.",
+      en: "A new store in about six weeks, for all of Europe.",
     },
     scope: {
       es: [

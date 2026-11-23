@@ -1,5 +1,5 @@
 import { FAQ } from '@/interfaces/faq';
-import { AFTER_DELIVERY_ANSWER, PAYMENT_TERMS, SUPPORT_DAYS } from './commitments';
+import { AFTER_DELIVERY_ANSWER, MONTHLY_PAYMENT_TERMS, PAYMENT_TERMS, SUPPORT_DAYS } from './commitments';
 
 // Preguntas que se repiten en la home y en la migración.
 // "¿Cómo se paga?" solo aparece si PAYMENT_TERMS tiene valor.
@@ -61,56 +61,131 @@ const pick = (list: FAQ[], ids: string[]) => ids.map((id) => list.find((f) => f.
 const homeBaseEs: FAQ[] = [
   {
     id: 'home-1',
-    question: '¿Cuánto cuesta?',
-    answer: 'Depende de lo que necesites. Después de la primera reunión te doy un precio cerrado, por escrito, antes de empezar. Sin sorpresas.'
+    question: '¿Trabajáis por proyectos o con un servicio mensual?',
+    answer: 'Trabajo de ambas formas. Podemos abordar una necesidad concreta como un proyecto puntual, con alcance y presupuesto cerrados, o trabajar de forma mensual para mejorar y desarrollar tu canal digital de manera continua. La modalidad depende de tus necesidades y objetivos.'
+  },
+  {
+    id: 'home-lockin',
+    question: '¿Hay permanencia?',
+    answer: 'No. Los servicios mensuales se pagan mes a mes y se cancelan cuando quieras.'
+  },
+  {
+    id: 'home-adspend',
+    question: '¿La inversión en anuncios está incluida?',
+    answer: 'No. La pagas directamente a Google y Meta; yo cobro solo la gestión.'
+  },
+  {
+    id: 'home-design',
+    question: '¿Haces diseño y contenido?',
+    answer: 'Sí. Puedo ayudarte con el diseño de piezas gráficas, creatividades para campañas publicitarias, imágenes y contenido para tu tienda online. El objetivo es que tanto la parte visual como los mensajes estén alineados con la estrategia comercial y la identidad de tu negocio.'
+  },
+  {
+    id: 'home-platforms',
+    question: '¿Trabajas solo con Shopify?',
+    answer: 'No. Shopify es mi especialidad en tiendas, pero también trabajo con WooCommerce, otros CMS y webs corporativas.'
+  },
+  {
+    id: 'home-offline',
+    question: '¿Trabajas con negocios que no venden online?',
+    answer: 'Sí. Si captas clientes por internet (clínicas, academias, reformas, servicios profesionales…), me encargo de los anuncios, la web y el seguimiento de cada contacto.'
+  },
+  {
+    id: 'home-owner',
+    question: '¿De quién es la cuenta y lo que construyes?',
+    answer: 'Tuyo. Las cuentas de anuncios, la tienda o la web, el dominio y todo lo que construyo quedan a tu nombre. No dependes de mí para seguir funcionando.'
+  },
+  {
+    id: 'home-pay',
+    question: '¿Cómo se paga?',
+    answer: `Proyectos: ${PAYMENT_TERMS.es}. Servicios mensuales: ${MONTHLY_PAYMENT_TERMS.es}.`
   },
   {
     id: 'home-2',
     question: '¿Cuánto tarda?',
-    answer: 'Una migración suele llevar unas 3 semanas. Una tienda nueva o un desarrollo a medida, según el alcance; la fecha queda por escrito antes de empezar.'
+    answer: 'Depende del alcance. La fecha queda por escrito antes de empezar. Por ejemplo, una migración a Shopify suele llevar unas 3 semanas.'
   },
   {
     id: 'home-5',
-    question: '¿Con quién hablo durante el proyecto?',
-    answer: 'Conmigo, que soy quien lo construye. Sin comerciales ni intermediarios.'
+    question: '¿Hablo con un comercial?',
+    answer: 'No. Hablas directamente conmigo, sin comerciales ni intermediarios.'
   },
   {
     id: 'home-6',
     question: '¿Me garantizas resultados de ventas?',
-    answer: 'No, y desconfía de quien lo haga. Lo que sí te garantizo es lo que controlo: precio cerrado, fecha de entrega y que lo que construyo funcione.'
+    answer: 'No sería honesto garantizar una cifra de ventas o contactos. El crecimiento de un negocio depende de muchos factores y no es posible predecir con certeza cómo responderá el mercado. Mi compromiso es trabajar con un método, medir los resultados y tomar decisiones basadas en datos para mejorar el rendimiento del canal digital.'
   },
 ];
 
 const homeBaseEn: FAQ[] = [
   {
     id: 'home-1',
-    question: 'How much does it cost?',
-    answer: 'It depends on what you need. After the first meeting I give you a fixed price, in writing, before we start. No surprises.'
+    question: 'Do you work on projects or as a monthly service?',
+    answer: 'Both. We can tackle a specific need as a one-off project, with a fixed scope and budget, or work monthly to improve and develop your digital channel on an ongoing basis. The format depends on your needs and goals.'
+  },
+  {
+    id: 'home-lockin',
+    question: 'Is there a lock-in?',
+    answer: 'No. Monthly services are paid month to month and can be cancelled whenever you want.'
+  },
+  {
+    id: 'home-adspend',
+    question: 'Is the ad spend included?',
+    answer: 'No. You pay it directly to Google and Meta; I only charge for the management.'
+  },
+  {
+    id: 'home-design',
+    question: 'Do you do design and content?',
+    answer: 'Yes. I can help you with graphic design, ad creatives for your campaigns, and images and content for your online store. The goal is for both the visuals and the messaging to be aligned with your sales strategy and your brand identity.'
+  },
+  {
+    id: 'home-platforms',
+    question: 'Do you only work with Shopify?',
+    answer: 'No. Shopify is my speciality for online stores, but I also work with WooCommerce, other CMSs and corporate websites.'
+  },
+  {
+    id: 'home-offline',
+    question: "Do you work with businesses that don't sell online?",
+    answer: 'Yes. If you win clients online (clinics, academies, home renovation, professional services…), I take care of the ads, the website and the follow-up of every lead.'
+  },
+  {
+    id: 'home-owner',
+    question: 'Who owns the accounts and what you build?',
+    answer: "You do. The ad accounts, the store or website, the domain and everything I build are in your name. You don't depend on me to keep it running."
+  },
+  {
+    id: 'home-pay',
+    question: 'How do I pay?',
+    answer: `Projects: ${PAYMENT_TERMS.en}. Monthly services: ${MONTHLY_PAYMENT_TERMS.en}.`
   },
   {
     id: 'home-2',
     question: 'How long does it take?',
-    answer: 'A migration usually takes about 3 weeks. A new store or custom development depends on the scope; the date is agreed in writing before we start.'
+    answer: 'It depends on the scope. The date is agreed in writing before we start. For example, a migration to Shopify usually takes about 3 weeks.'
   },
   {
     id: 'home-5',
-    question: 'Who do I talk to during the project?',
-    answer: 'Me, the person building it. No sales reps, no middlemen.'
+    question: 'Will I be talking to a sales rep?',
+    answer: "No. You talk directly to me, with no sales reps or middlemen."
   },
   {
     id: 'home-6',
     question: 'Do you guarantee sales results?',
-    answer: 'No, and be wary of anyone who does. What I do guarantee is what I control: a fixed price, a delivery date and that what I build works.'
+    answer: "It wouldn't be honest to guarantee a figure for sales or leads. A business's growth depends on many factors, and there's no way to predict with certainty how the market will respond. My commitment is to work with a method, measure the results and make data-driven decisions to improve the performance of the digital channel."
   },
 ];
 
-const HOME_ORDER = ['home-1', 'home-2', 'home-5', 'shared-owner', 'home-6', 'shared-pay'];
+const HOME_ORDER = ['home-1', 'home-lockin', 'home-adspend', 'home-design', 'home-platforms', 'home-offline', 'home-2', 'home-5', 'home-owner', 'home-6', 'home-pay'];
 
 export const HomeFAQsEs: FAQ[] = pick([...homeBaseEs, ...ownershipFAQsEs], HOME_ORDER);
 export const HomeFAQsEn: FAQ[] = pick([...homeBaseEn, ...ownershipFAQsEn], HOME_ORDER);
 
 // FAQ — Tienda nueva
 export const newStoreFAQsEs: FAQ[] = [
+  {
+    id: 'new-store-platforms',
+    question: '¿Trabajas solo con Shopify?',
+    answer: 'No. Shopify es mi especialidad en tiendas, pero también trabajo con WooCommerce y otros CMS. Te recomiendo la plataforma que mejor encaje con tu negocio.'
+  },
   {
     id: 'new-store-1',
     question: '¿Necesito tener ya mi marca, fotos y textos?',
@@ -139,6 +214,11 @@ export const newStoreFAQsEs: FAQ[] = [
 ];
 
 export const newStoreFAQsEn: FAQ[] = [
+  {
+    id: 'new-store-en-platforms',
+    question: 'Do you only work with Shopify?',
+    answer: 'No. Shopify is my speciality for online stores, but I also work with WooCommerce and other CMSs. I recommend the platform that best fits your business.'
+  },
   {
     id: 'new-store-en-1',
     question: 'Do I need to have my brand, photos and copy ready?',
@@ -196,7 +276,7 @@ export const migrationFAQsEs: FAQ[] = [
   {
     id: 'migration-6',
     question: '¿Qué pasa cuando termina la migración?',
-    answer: 'Tu tienda ya está en Shopify y con las mejoras hechas. Si quieres seguir mejorándola cada mes, el siguiente paso es la mejora continua.'
+    answer: 'Tu tienda ya está en Shopify y con las mejoras hechas. Después, puedo llevar tus anuncios y seguir mejorándola cada mes con el acompañamiento mensual.'
   },
   ...ownershipFAQsEs,
 ];
@@ -230,76 +310,133 @@ export const migrationFAQsEn: FAQ[] = [
   {
     id: 'migration-en-6',
     question: 'What happens when the migration is done?',
-    answer: 'Your store is on Shopify with the improvements done. If you want to keep improving it every month, the next step is continuous improvement.'
+    answer: 'Your store is on Shopify with the improvements done. After that, I can run your ads and keep improving it every month with monthly support.'
   },
   ...ownershipFAQsEn,
 ];
 
-// FAQ — Mejora continua (mensual)
+// FAQ — Acompañamiento mensual (/mejora-continua). Sin precio publicado.
 export const monthlyFAQsEs: FAQ[] = [
   {
     id: 'monthly-1',
     question: '¿Tiene permanencia?',
-    answer: 'No. Pagas mes a mes y cancelas cuando quieras.'
+    answer: 'No. Pagas mes a mes, por adelantado al inicio de cada mes, y cancelas cuando quieras.'
+  },
+  {
+    id: 'monthly-price',
+    question: '¿Cuánto cuesta?',
+    answer: 'Depende de lo que incluya: anuncios, mejoras técnicas o ambas cosas. Tras la primera reunión te envío una propuesta a medida con el precio por escrito.'
   },
   {
     id: 'monthly-2',
     question: '¿De dónde salen las mejoras?',
-    answer: 'De buenas prácticas de experiencia de compra y de grabaciones de sesiones reales con Microsoft Clarity, que es gratis para ti.'
+    answer: 'De los datos: los resultados de tus anuncios, grabaciones de sesiones reales en tu web, tus datos de negocio como ventas, leads o márgenes, y buenas prácticas. Con eso veo qué funciona, dónde se pierden oportunidades y qué conviene priorizar.'
   },
   {
     id: 'monthly-3',
     question: '¿Me garantizas resultados?',
-    answer: 'No. Lo que te garantizo es el trabajo: al menos 4 mejoras implementadas al mes y un informe de cómo evoluciona tu facturación por visita. El resultado se mira en tendencia, durante varios meses.'
+    answer: 'No sería honesto garantizar una cifra de ventas o contactos. El crecimiento de un negocio depende de muchos factores y no es posible predecir con certeza cómo responderá el mercado. Mi compromiso es trabajar con un método, medir los resultados y tomar decisiones basadas en datos para mejorar el rendimiento del canal digital.'
   },
   {
-    id: 'monthly-4',
-    question: '¿Qué necesito para empezar?',
-    answer: 'Empezamos con una reunión gratis para entender qué le pasa a tu tienda. Si encaja, necesito acceso a tu Shopify y el primer mes empiezo por lo que más frena tus ventas.'
+    id: 'monthly-extra',
+    question: '¿Trabajáis por proyectos o con un servicio mensual?',
+    answer: 'Trabajo de ambas formas. Podemos abordar una necesidad concreta como un proyecto puntual, con alcance y presupuesto cerrados, o trabajar de forma mensual para mejorar y desarrollar tu canal digital de manera continua. La modalidad depende de tus necesidades y objetivos.'
   },
   {
-    id: 'monthly-5',
-    question: '¿Quién implementa las mejoras?',
-    answer: 'Yo. Las mejoras del mes, al menos 4, están incluidas en la mensualidad.'
+    id: 'monthly-adspend',
+    question: '¿La inversión en anuncios está incluida?',
+    answer: 'No. La pagas tú directamente a cada plataforma; yo cobro solo la gestión.'
   },
-  {
-    id: 'monthly-6',
-    question: '¿Y si no estoy en Shopify?',
-    answer: 'Primero migro tu tienda a Shopify, con las mejoras ya hechas. Después seguimos con la mejora continua.'
-  }
 ];
 
 export const monthlyFAQsEn: FAQ[] = [
   {
     id: 'monthly-en-1',
     question: 'Is there a lock-in?',
-    answer: 'No. You pay month to month and cancel whenever you want.'
+    answer: 'No. You pay month to month, in advance at the start of each month, and cancel whenever you want.'
+  },
+  {
+    id: 'monthly-en-price',
+    question: 'How much does it cost?',
+    answer: 'It depends on what it includes: ads, technical improvements or both. After the first meeting I send you a tailored proposal with the price in writing.'
   },
   {
     id: 'monthly-en-2',
     question: 'Where do the improvements come from?',
-    answer: 'From shopping-experience best practices and real session recordings with Microsoft Clarity, which is free for you.'
+    answer: 'From data: your ad results, real session recordings on your website, your business data such as sales, leads or margins, and best practices. That shows me what works, where opportunities are lost and what to prioritise.'
   },
   {
     id: 'monthly-en-3',
     question: 'Do you guarantee results?',
-    answer: 'No. What I guarantee is the work: at least 4 improvements implemented every month and a report on how your revenue per visit is evolving. The result is read as a trend, over several months.'
+    answer: "It wouldn't be honest to guarantee a figure for sales or leads. A business's growth depends on many factors, and there's no way to predict with certainty how the market will respond. My commitment is to work with a method, measure the results and make data-driven decisions to improve the performance of the digital channel."
   },
   {
-    id: 'monthly-en-4',
-    question: 'What do I need to get started?',
-    answer: 'We start with a free meeting to understand what\'s holding your store back. If it\'s a fit, I need access to your Shopify, and in the first month I start with what\'s holding your sales back the most.'
+    id: 'monthly-en-extra',
+    question: 'Do you work on projects or as a monthly service?',
+    answer: 'Both. We can tackle a specific need as a one-off project, with a fixed scope and budget, or work monthly to improve and develop your digital channel on an ongoing basis. The format depends on your needs and goals.'
   },
   {
-    id: 'monthly-en-5',
-    question: 'Who implements the improvements?',
-    answer: 'I do. The month\'s improvements, at least 4, are included in the monthly fee.'
+    id: 'monthly-en-adspend',
+    question: 'Is the ad spend included?',
+    answer: 'No. You pay it directly to each platform; I only charge for the management.'
+  },
+];
+
+// FAQ — Anuncios
+export const adsFAQsEs: FAQ[] = [
+  {
+    id: 'ads-1',
+    question: '¿Cuánto cuesta?',
+    answer: 'Depende del número de campañas y plataformas. Te envío una propuesta a medida tras la primera reunión. La inversión la pagas tú directamente a cada plataforma.'
   },
   {
-    id: 'monthly-en-6',
-    question: 'What if I\'m not on Shopify?',
-    answer: 'First I migrate your store to Shopify, with the improvements already done. Then we continue with continuous improvement.'
-  }
+    id: 'ads-2',
+    question: '¿De quién son las cuentas?',
+    answer: 'Tuyas. Trabajo con acceso a tus cuentas de Google y Meta.'
+  },
+  {
+    id: 'ads-3',
+    question: '¿Haces las creatividades?',
+    answer: 'Sí, puedo hacer las creatividades para tus campañas, alineadas con tu estrategia comercial y la identidad de tu negocio. No están incluidas en la gestión de anuncios: se presupuestan aparte.'
+  },
+  {
+    id: 'ads-4',
+    question: '¿Garantizas resultados?',
+    answer: 'No sería honesto garantizar una cifra de ventas o contactos. El crecimiento de un negocio depende de muchos factores y no es posible predecir con certeza cómo responderá el mercado. Mi compromiso es trabajar con un método, medir los resultados y tomar decisiones basadas en datos para mejorar el rendimiento del canal digital.'
+  },
+  {
+    id: 'ads-5',
+    question: '¿Hay permanencia?',
+    answer: 'No. Pagas mes a mes.'
+  },
+];
+
+export const adsFAQsEn: FAQ[] = [
+  {
+    id: 'ads-en-1',
+    question: 'How much does it cost?',
+    answer: 'It depends on the number of campaigns and platforms. I send you a tailored proposal after the first meeting. You pay the ad spend directly to each platform.'
+  },
+  {
+    id: 'ads-en-2',
+    question: 'Who owns the accounts?',
+    answer: 'You do. I work with access to your Google and Meta accounts.'
+  },
+  {
+    id: 'ads-en-3',
+    question: 'Do you make the creatives?',
+    answer: "Yes, I can make the creatives for your campaigns, aligned with your sales strategy and your brand identity. They aren't included in ads management: they're quoted separately."
+  },
+  {
+    id: 'ads-en-4',
+    question: 'Do you guarantee results?',
+    answer: "It wouldn't be honest to guarantee a figure for sales or leads. A business's growth depends on many factors, and there's no way to predict with certainty how the market will respond. My commitment is to work with a method, measure the results and make data-driven decisions to improve the performance of the digital channel."
+  },
+  {
+    id: 'ads-en-5',
+    question: 'Is there a lock-in?',
+    answer: 'No. You pay month to month.'
+  },
 ];
 
 // FAQ — Desarrollo a medida
@@ -322,14 +459,14 @@ export const customDevFAQsEs: FAQ[] = [
   {
     id: 'custom-dev-4',
     question: '¿El código es mío?',
-    answer: 'Sí. Todo lo que desarrollo para tu tienda es tuyo y queda documentado.'
+    answer: 'Sí. Todo lo que desarrollo para tu negocio es tuyo y queda documentado.'
   },
   {
     id: 'custom-dev-5',
-    question: '¿Qué pasa si Shopify se actualiza o algo deja de funcionar?',
+    question: '¿Qué pasa si una plataforma se actualiza o algo deja de funcionar?',
     answer: SUPPORT_DAYS
-      ? `Durante ${SUPPORT_DAYS} días arreglo sin coste cualquier fallo de mi trabajo. Después, si quieres, lo mantengo con un presupuesto aparte.`
-      : 'Si algo falla por mi trabajo, lo arreglo. Si quieres que me ocupe del mantenimiento, lo presupuesto aparte.'
+      ? `Durante ${SUPPORT_DAYS} días arreglo sin coste cualquier fallo de mi trabajo. Después, el mantenimiento puede entrar en el acompañamiento mensual.`
+      : 'Si algo falla por mi trabajo, lo arreglo. Después, el mantenimiento puede entrar en el acompañamiento mensual.'
   },
   {
     id: 'custom-dev-6',
@@ -357,14 +494,14 @@ export const customDevFAQsEn: FAQ[] = [
   {
     id: 'custom-dev-en-4',
     question: 'Is the code mine?',
-    answer: 'Yes. Everything I build for your store is yours, and it\'s documented.'
+    answer: 'Yes. Everything I build for your business is yours, and it\'s documented.'
   },
   {
     id: 'custom-dev-en-5',
-    question: 'What if Shopify updates or something stops working?',
+    question: 'What if a platform updates or something stops working?',
     answer: SUPPORT_DAYS
-      ? `For ${SUPPORT_DAYS} days I fix any fault in my work free of charge. After that, if you want, I maintain it under a separate quote.`
-      : 'If something breaks because of my work, I fix it. If you want me to take care of maintenance, I quote it separately.'
+      ? `For ${SUPPORT_DAYS} days I fix any fault in my work free of charge. After that, maintenance can be part of monthly support.`
+      : 'If something breaks because of my work, I fix it. After that, maintenance can be part of monthly support.'
   },
   {
     id: 'custom-dev-en-6',

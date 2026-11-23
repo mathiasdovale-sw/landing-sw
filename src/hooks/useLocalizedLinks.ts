@@ -29,6 +29,10 @@ export const useLocalizedLinks = () => {
     migration: currentLocale === 'es' ? '/es/migracion-shopify' : '/en/shopify-migration',
     customDev: currentLocale === 'es' ? '/es/desarrollos-a-medida' : '/en/custom-shopify-development',
     monthly: currentLocale === 'es' ? '/es/mejora-continua' : '/en/continuous-improvement',
+    ads: currentLocale === 'es' ? '/es/anuncios' : '/en/ads',
+    // Soluciones por tipo de negocio
+    ecommerce: currentLocale === 'es' ? '/es/ecommerce' : '/en/ecommerce',
+    leads: currentLocale === 'es' ? '/es/generacion-de-leads' : '/en/lead-generation',
   }
   
   // Función para generar enlaces de posts de blog

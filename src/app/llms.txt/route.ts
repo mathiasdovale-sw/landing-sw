@@ -5,8 +5,11 @@ import { getCanonicalBaseUrl, getAllServicePages, metaDescriptions, seoUrls } fr
 const serviceNames: Record<string, { es: string; en: string }> = {
   newStore: { es: 'Tienda nueva en Shopify', en: 'New Shopify store' },
   migration: { es: 'Migración a Shopify', en: 'Shopify migration' },
-  customDev: { es: 'Desarrollo a medida en Shopify', en: 'Custom Shopify development' },
-  monthly: { es: 'Mejora continua (mensual)', en: 'Continuous improvement (monthly)' },
+  customDev: { es: 'Desarrollos a medida', en: 'Custom development' },
+  monthly: { es: 'Acompañamiento mensual', en: 'Monthly support' },
+  ads: { es: 'Anuncios en Google y Meta', en: 'Google and Meta ads' },
+  ecommerce: { es: 'Solución para e-commerce', en: 'E-commerce solution' },
+  leads: { es: 'Solución para generación de leads', en: 'Lead generation solution' },
 }
 
 // llms.txt (https://llmstxt.org): a plain-text map of the site for AI agents and LLM search
@@ -27,7 +30,7 @@ export async function GET() {
 
   const body = `# SellifyWorks
 
-> SellifyWorks is a one-person Shopify agency based in Barcelona, Spain: Mathias, a software engineer who builds every project and answers for it. Main services: new Shopify stores built from scratch, migrations to Shopify (about 3 weeks, without closing the store, keeping Google rankings with redirects) and custom development (integrations, automations and features that a theme or app can't handle). Fixed price and delivery date in writing before starting, after a free first meeting. For stores already on Shopify there is also a monthly continuous-improvement plan (€290 + VAT per month). The site is available in Spanish (/es) and English (/en).
+> SellifyWorks is a digital growth agency based in Barcelona, Spain, that brings marketing and technology together for small businesses. Mathias, a software engineer, is the single point of contact from start to finish. Services: Google and Meta ads management with proper conversion tracking, new Shopify stores, migrations to Shopify (about 3 weeks, without closing the store, keeping Google rankings), custom development and automations, and monthly support (ads plus ongoing website improvements, no lock-in). Solutions for businesses that sell online (e-commerce) and businesses that win clients online (lead generation). No published prices: every proposal is tailored and sent in writing after a free first meeting. The site is available in Spanish (/es) and English (/en).
 
 ## Services
 

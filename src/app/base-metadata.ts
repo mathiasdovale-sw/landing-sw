@@ -4,9 +4,9 @@ import type { Metadata } from "next";
 // Cada página real la sobreescribe con generatePageMetadata(); esto solo
 // cubre los campos que las páginas no redefinen (verification, robots, etc.)
 export const baseMetadata: Metadata = {
-  title: "SellifyWorks | Agencia Shopify España",
-  description: "Tiendas nuevas, migraciones a Shopify y desarrollos a medida. Precio cerrado y una sola persona responsable, desde Barcelona.",
-  keywords: ["Shopify", "Ecommerce", "Tienda Online", "Agencia", "SellifyWorks", "Partner Shopify"],
+  title: "SellifyWorks | Marketing y tecnología para pymes",
+  description: "Servicios de marketing digital, publicidad online, desarrollo web y tecnología para pymes, desde Barcelona.",
+  keywords: ["Marketing digital", "Publicidad online", "Google Ads", "Meta Ads", "Desarrollo web", "Tecnología", "Ecommerce", "Generación de leads", "Agencia", "SellifyWorks"],
   authors: [{ name: "SellifyWorks" }],
   creator: "SellifyWorks",
   publisher: "SellifyWorks",
@@ -22,15 +22,15 @@ export const baseMetadata: Metadata = {
     type: "website",
     locale: "es_ES",
     url: "https://www.sellifyworks.com/",
-    title: "SellifyWorks | Agencia Shopify España",
-    description: "Tiendas nuevas, migraciones a Shopify y desarrollos a medida. Precio cerrado y una sola persona responsable, desde Barcelona.",
+    title: "SellifyWorks | Marketing y tecnología para pymes",
+    description: "Servicios de marketing digital, publicidad online, desarrollo web y tecnología para pymes, desde Barcelona.",
     siteName: "SellifyWorks",
     images: [
       {
         url: "/api/og",
         width: 1200,
         height: 630,
-        alt: "SellifyWorks - Agencia Shopify España",
+        alt: "SellifyWorks - Marketing y tecnología para pymes",
         type: "image/png",
       },
     ],
@@ -39,11 +39,11 @@ export const baseMetadata: Metadata = {
     card: "summary_large_image",
     site: "@SellifyWorks",
     creator: "@SellifyWorks",
-    title: "SellifyWorks | Agencia Shopify",
-    description: "Tiendas nuevas, migraciones a Shopify y desarrollos a medida. Precio cerrado y una sola persona responsable, desde Barcelona.",
+    title: "SellifyWorks | Marketing y tecnología para pymes",
+    description: "Servicios de marketing digital, publicidad online, desarrollo web y tecnología para pymes, desde Barcelona.",
     images: {
       url: "/api/og",
-      alt: "SellifyWorks - Agencia Shopify",
+      alt: "SellifyWorks - Marketing y tecnología para pymes",
     },
   },
   robots: {

@@ -67,6 +67,15 @@ const LanguageSelector = () => {
 
         '/es/mejora-continua': { es: '/es/mejora-continua', en: '/en/continuous-improvement' },
         '/en/continuous-improvement': { es: '/es/mejora-continua', en: '/en/continuous-improvement' },
+
+        '/es/anuncios': { es: '/es/anuncios', en: '/en/ads' },
+        '/en/ads': { es: '/es/anuncios', en: '/en/ads' },
+
+        // Soluciones
+        '/es/ecommerce': { es: '/es/ecommerce', en: '/en/ecommerce' },
+        '/en/ecommerce': { es: '/es/ecommerce', en: '/en/ecommerce' },
+        '/es/generacion-de-leads': { es: '/es/generacion-de-leads', en: '/en/lead-generation' },
+        '/en/lead-generation': { es: '/es/generacion-de-leads', en: '/en/lead-generation' },
       }
 
       // Buscar la ruta correspondiente en el mapeo
@@ -84,28 +93,29 @@ const LanguageSelector = () => {
   }
 
   return (
-    <div className="flex items-center space-x-1 bg-white rounded-lg p-1">
-      <button
-        onClick={() => changeLanguage('es')}
-        className={`w-8 h-6 rounded-md overflow-hidden transition-all duration-200 hover:scale-110 flex items-center justify-center text-lg ${
-          currentLocale === 'es' ? 'ring-2 ring-orange-500 shadow-lg' : 'opacity-70 hover:opacity-100'
-        }`}
-        aria-label="Español"
-        title="Español"
-      >
-        🇪🇸
-      </button>
-      
-      <button
-        onClick={() => changeLanguage('en')}
-        className={`w-8 h-6 rounded-md overflow-hidden transition-all duration-200 hover:scale-110 flex items-center justify-center text-lg ${
-          currentLocale === 'en' ? 'ring-2 ring-orange-500 shadow-lg' : 'opacity-70 hover:opacity-100'
-        }`}
-        aria-label="English"
-        title="English"
-      >
-        🇬🇧
-      </button>
+    // Pastilla blanca de 32 px dibujada detrás; los botones miden 44 px de alto para el toque.
+    <div className="relative -my-1.5 flex items-center gap-1 px-1">
+      <span aria-hidden="true" className="absolute inset-x-0 top-1/2 h-8 -translate-y-1/2 rounded-lg bg-white" />
+      {([
+        { code: 'es', flag: '🇪🇸', label: 'Español' },
+        { code: 'en', flag: '🇬🇧', label: 'English' },
+      ] as const).map((l) => (
+        <button
+          key={l.code}
+          onClick={() => changeLanguage(l.code)}
+          className="group relative flex h-11 w-8 items-center justify-center"
+          aria-label={l.label}
+          title={l.label}
+        >
+          <span
+            className={`flex h-6 w-8 items-center justify-center overflow-hidden rounded-md text-lg transition-all duration-200 group-hover:scale-110 ${
+              currentLocale === l.code ? 'ring-2 ring-orange-500 shadow-lg' : 'opacity-70 group-hover:opacity-100'
+            }`}
+          >
+            {l.flag}
+          </span>
+        </button>
+      ))}
     </div>
   )
 }

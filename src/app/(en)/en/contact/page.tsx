@@ -7,7 +7,7 @@ import { generatePageMetadata } from "@/lib/seo-utils";
 export const metadata: Metadata = generatePageMetadata(
   'contact',
   'en',
-  'Contact | SellifyWorks - Shopify Agency Barcelona'
+  'Contact: ask for a no-obligation quote | SellifyWorks'
 );
 
 export default function ContactPage() {

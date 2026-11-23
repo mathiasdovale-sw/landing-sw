@@ -19,12 +19,16 @@ export interface ServicePageContent {
   lede: string
   ctaPrimaryLabel: string
   ctaSecondaryLabel: string
+  /** Destino del botón secundario (por defecto, "#incluye"). */
+  ctaSecondaryHref?: string
   /** Escenarios posibles (no casos realizados). */
   situations?: { title: string; items: { title: string; description: string }[] }
   includesEyebrow: string
   includesTitle: string
   includes: { title: string; description: string }[]
   includesNote?: string
+  /** Enlace al acompañamiento mensual bajo "Qué incluye" (opcional). */
+  monthlyLink?: { text: string; link: string; href: string }
   closingTitle: string
   closingLede: string
   /** Claves de SERVICES que se muestran en "Servicios relacionados". */
@@ -69,7 +73,7 @@ export default function ServicePageTemplate({ content }: { content: ServicePageC
               {c.ctaPrimaryLabel}
             </Link>
             <a
-              href="#incluye"
+              href={c.ctaSecondaryHref ?? "#incluye"}
               className="rounded-sm border border-sw-line-strong px-7 py-4 text-base font-semibold text-sw-fg-1 transition-colors hover:border-sw-fg-1"
             >
               {c.ctaSecondaryLabel}
@@ -118,8 +122,17 @@ export default function ServicePageTemplate({ content }: { content: ServicePageC
           {c.includesNote && (
             <p className="mt-8 text-sm text-sw-fg-4">{c.includesNote}</p>
           )}
+          {c.monthlyLink && (
+            <p className="mt-8 text-sw-fg-2">
+              {c.monthlyLink.text}{" "}
+              <Link href={c.monthlyLink.href} className="font-semibold text-sw-brand underline-offset-4 hover:underline">
+                {c.monthlyLink.link}
+              </Link>
+            </p>
+          )}
         </div>
       </section>
+
 
       <AboutMe locale={c.locale} />
 

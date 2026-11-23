@@ -22,14 +22,14 @@ const treatments: Array<{ title: string; data: string; purpose: string; basis: s
   {
     title: 'Newsletter',
     data: 'Email y fecha de alta y confirmación.',
-    purpose: 'Enviarte contenidos y novedades sobre Shopify, ecommerce y nuestros servicios. El alta requiere doble confirmación (double opt-in) mediante un enlace que te enviamos por email.',
+    purpose: 'Enviarte contenidos y novedades sobre marketing digital, ecommerce y mis servicios. El alta requiere doble confirmación (double opt-in) mediante un enlace que te envío por email.',
     basis: 'Tu consentimiento (art. 6.1.a RGPD y art. 21 LSSI).',
     retention: 'Hasta que te des de baja, cosa que puedes hacer en cualquier momento desde el enlace incluido en cada email o escribiéndonos.',
   },
   {
     title: 'Navegación, analítica y publicidad',
     data: 'Datos de navegación obtenidos mediante cookies: identificadores online, dirección IP, páginas visitadas, dispositivo y navegador, interacciones y grabaciones anonimizadas de sesión.',
-    purpose: 'Medir y mejorar el uso de la web y medir la eficacia de nuestras campañas publicitarias.',
+    purpose: 'Medir y mejorar el uso de la web y medir la eficacia de mis campañas publicitarias.',
     basis: 'Tu consentimiento a través del banner de cookies (art. 6.1.a RGPD y art. 22.2 LSSI).',
     retention: 'Según los plazos indicados en la Política de Cookies.',
   },
@@ -78,7 +78,7 @@ export default function PoliticaDePrivacidadPage() {
             Política de Privacidad
           </h1>
           <p className="text-gray-400 text-lg">
-            Información sobre cómo protegemos y utilizamos tus datos personales
+            Información sobre cómo protejo y utilizo tus datos personales
           </p>
           <p className="text-gray-500 text-sm mt-2">Última actualización: {LAST_UPDATED}</p>
         </div>
@@ -89,7 +89,7 @@ export default function PoliticaDePrivacidadPage() {
 
             <Section title="Introducción">
               <p>
-                En SellifyWorks nos tomamos en serio la protección de tus datos personales. Esta política explica qué datos tratamos, para qué, con qué base legal, durante cuánto tiempo y qué derechos tienes. Se aplica al sitio web sellifyworks.com y se ha redactado conforme al Reglamento (UE) 2016/679 General de Protección de Datos (RGPD), la Ley Orgánica 3/2018 de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD) y la Ley 34/2002 de Servicios de la Sociedad de la Información (LSSI).
+                En SellifyWorks me tomo en serio la protección de tus datos personales. Esta política explica qué datos trato, para qué, con qué base legal, durante cuánto tiempo y qué derechos tienes. Se aplica al sitio web sellifyworks.com y se ha redactado conforme al Reglamento (UE) 2016/679 General de Protección de Datos (RGPD), la Ley Orgánica 3/2018 de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD) y la Ley 34/2002 de Servicios de la Sociedad de la Información (LSSI).
               </p>
             </Section>
 
@@ -106,9 +106,9 @@ export default function PoliticaDePrivacidadPage() {
               </p>
             </Section>
 
-            <Section title="2. Qué datos tratamos, para qué y con qué base legal">
+            <Section title="2. Qué datos trato, para qué y con qué base legal">
               <p>
-                Solo tratamos los datos que nos facilitas directamente o que se obtienen al navegar por la web, y siempre para finalidades concretas:
+                Solo trato los datos que me facilitas directamente o que se obtienen al navegar por la web, y siempre para finalidades concretas:
               </p>
               {treatments.map((t) => (
                 <div key={t.title} className="bg-gray-800 rounded-lg p-4 not-prose">
@@ -122,19 +122,19 @@ export default function PoliticaDePrivacidadPage() {
                 </div>
               ))}
               <p>
-                Los campos marcados como obligatorios en los formularios son necesarios para atender tu solicitud. Si no los rellenas, no podremos gestionarla. Al enviarnos tus datos, garantizas que son verdaderos y que nos avisarás de cualquier cambio.
+                Los campos marcados como obligatorios en los formularios son necesarios para atender tu solicitud. Si no los rellenas, no podré gestionarla. Al enviarme tus datos, garantizas que son verdaderos y que me avisarás de cualquier cambio.
               </p>
               <p>
-                No tomamos decisiones automatizadas ni elaboramos perfiles con efectos jurídicos sobre ti. Una vez terminados los plazos de conservación, los datos se bloquean durante el tiempo en que puedan surgir responsabilidades legales y después se eliminan.
+                No tomo decisiones automatizadas ni elaboro perfiles con efectos jurídicos sobre ti. Una vez terminados los plazos de conservación, los datos se bloquean durante el tiempo en que puedan surgir responsabilidades legales y después se eliminan.
               </p>
             </Section>
 
             <Section title="3. Destinatarios de los datos">
               <p>
-                No vendemos ni cedemos tus datos a terceros, salvo por obligación legal (por ejemplo, a la Administración Tributaria, a Juzgados o a las Fuerzas y Cuerpos de Seguridad).
+                No vendo ni cedo tus datos a terceros, salvo por obligación legal (por ejemplo, a la Administración Tributaria, a Juzgados o a las Fuerzas y Cuerpos de Seguridad).
               </p>
               <p>
-                Para prestar nuestros servicios contamos con proveedores que acceden a datos como encargados del tratamiento. Con todos ellos existe un acuerdo de encargo del tratamiento que garantiza la confidencialidad y la seguridad de los datos (art. 28 RGPD):
+                Para prestar mis servicios cuento con proveedores que acceden a datos como encargados del tratamiento. Con todos ellos existe un acuerdo de encargo del tratamiento que garantiza la confidencialidad y la seguridad de los datos (art. 28 RGPD):
               </p>
               <div className="overflow-x-auto not-prose">
                 <table className="w-full text-sm text-left">
@@ -167,21 +167,21 @@ export default function PoliticaDePrivacidadPage() {
             <Section title="5. Tus derechos">
               <p>Puedes ejercer en cualquier momento los siguientes derechos:</p>
               <ul className="list-disc list-inside space-y-2">
-                <li><strong className="text-white">Acceso:</strong> saber si tratamos tus datos y obtener una copia.</li>
+                <li><strong className="text-white">Acceso:</strong> saber si trato tus datos y obtener una copia.</li>
                 <li><strong className="text-white">Rectificación:</strong> corregir datos inexactos o incompletos.</li>
-                <li><strong className="text-white">Supresión:</strong> pedir que eliminemos tus datos cuando ya no sean necesarios.</li>
+                <li><strong className="text-white">Supresión:</strong> pedir que elimine tus datos cuando ya no sean necesarios.</li>
                 <li><strong className="text-white">Oposición:</strong> oponerte a un tratamiento, en particular al basado en interés legítimo.</li>
-                <li><strong className="text-white">Limitación:</strong> pedir que conservemos tus datos solo para formular o defender reclamaciones.</li>
+                <li><strong className="text-white">Limitación:</strong> pedir que conserve tus datos solo para formular o defender reclamaciones.</li>
                 <li><strong className="text-white">Portabilidad:</strong> recibir tus datos en un formato estructurado y de uso común.</li>
                 <li><strong className="text-white">Retirar tu consentimiento</strong> en cualquier momento, sin que afecte a la licitud del tratamiento anterior a la retirada.</li>
               </ul>
               <p>
                 Para ejercerlos, escríbenos a{' '}
                 <a href="mailto:contact@sellifyworks.com" className="text-orange-400 hover:underline">contact@sellifyworks.com</a>{' '}
-                con el asunto &quot;Protección de datos&quot; e indica el derecho que quieres ejercer. Si tenemos dudas razonables sobre tu identidad, podremos pedirte información adicional para confirmarla. Te responderemos en el plazo máximo de un mes.
+                con el asunto &quot;Protección de datos&quot; e indica el derecho que quieres ejercer. Si tengo dudas razonables sobre tu identidad, podré pedirte información adicional para confirmarla. Te responderé en el plazo máximo de un mes.
               </p>
               <p>
-                Si consideras que no hemos atendido correctamente tus derechos, puedes presentar una reclamación ante la{' '}
+                Si consideras que no he atendido correctamente tus derechos, puedes presentar una reclamación ante la{' '}
                 <a href="https://www.aepd.es" target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:underline">Agencia Española de Protección de Datos</a>{' '}
                 (C/ Jorge Juan, 6, 28001 Madrid).
               </p>
@@ -189,32 +189,32 @@ export default function PoliticaDePrivacidadPage() {
 
             <Section title="6. Comunicaciones comerciales">
               <p>
-                Solo te enviaremos comunicaciones comerciales por email si te has suscrito a nuestra newsletter y lo has confirmado, o si ya eres cliente y se trata de servicios similares a los que contrataste (art. 21.2 LSSI). En cualquier caso, puedes darte de baja gratis desde el enlace incluido en cada email.
+                Solo te enviaré comunicaciones comerciales por email si te has suscrito a mi newsletter y lo has confirmado, o si ya eres cliente y se trata de servicios similares a los que contrataste (art. 21.2 LSSI). En cualquier caso, puedes darte de baja gratis desde el enlace incluido en cada email.
               </p>
             </Section>
 
             <Section title="7. Menores de edad">
               <p>
-                Esta web está dirigida a profesionales y empresas. No recogemos de forma consciente datos de menores de 14 años (art. 7 LOPDGDD). Si detectamos que lo hemos hecho, eliminaremos esos datos.
+                Esta web está dirigida a profesionales y empresas. No recojo de forma consciente datos de menores de 14 años (art. 7 LOPDGDD). Si detecto que lo he hecho, eliminaré esos datos.
               </p>
             </Section>
 
             <Section title="8. Seguridad">
               <p>
-                Aplicamos medidas técnicas y organizativas adecuadas al riesgo para proteger tus datos frente a pérdida, alteración o acceso no autorizado. Entre ellas: cifrado de las comunicaciones (HTTPS), validación de formularios, protección antispam y acceso restringido a la información.
+                Aplico medidas técnicas y organizativas adecuadas al riesgo para proteger tus datos frente a pérdida, alteración o acceso no autorizado. Entre ellas: cifrado de las comunicaciones (HTTPS), validación de formularios, protección antispam y acceso restringido a la información.
               </p>
             </Section>
 
             <Section title="9. Cookies">
               <p>
-                Esta web utiliza cookies propias y de terceros. Puedes consultar el detalle y configurar tus preferencias en nuestra{' '}
+                Esta web utiliza cookies propias y de terceros. Puedes consultar el detalle y configurar tus preferencias en mi{' '}
                 <a href="/es/politica-de-cookies" className="text-orange-400 hover:underline">Política de Cookies</a>.
               </p>
             </Section>
 
             <Section title="10. Cambios en esta política">
               <p>
-                Podemos modificar esta política para adaptarla a cambios legales o a nuevos tratamientos. Publicaremos cualquier cambio en esta página y actualizaremos la fecha que aparece al principio.
+                Puedo modificar esta política para adaptarla a cambios legales o a nuevos tratamientos. Publicaré cualquier cambio en esta página y actualizaré la fecha que aparece al principio.
               </p>
             </Section>
 
@@ -224,7 +224,7 @@ export default function PoliticaDePrivacidadPage() {
                 Contacto
               </h2>
               <p className="leading-relaxed mb-4">
-                Si tienes alguna pregunta sobre nuestra política de privacidad o quieres ejercer tus derechos, contacta con nosotros.
+                Si tienes alguna pregunta sobre mi política de privacidad o quieres ejercer tus derechos, contacta conmigo.
               </p>
               <p className="text-orange-400">
                 Email: contact@sellifyworks.com

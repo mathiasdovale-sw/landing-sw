@@ -14,7 +14,7 @@ const COPY = {
     experience: YEARS_EXPERIENCE
       ? `Llevo ${YEARS_EXPERIENCE} años desarrollando software para fintech, clientes en Estados Unidos y el sector público.`
       : "",
-    rest: "Desde 2024 construyo tiendas Shopify. Hablas conmigo y lo construyo yo.",
+    rest: "Desde 2024 construyo tiendas online para pymes, y hoy uno marketing y tecnología para que crezcan. Hablas siempre conmigo.",
     link: "Conóceme",
     href: "/es/sobre-nosotros",
     alt: "Mathias Do Vale, fundador de SellifyWorks",
@@ -27,7 +27,7 @@ const COPY = {
     experience: YEARS_EXPERIENCE
       ? `I've spent ${YEARS_EXPERIENCE} years building software for fintech, clients in the United States and the public sector.`
       : "",
-    rest: "Since 2024 I've been building Shopify stores. You talk to me, and I'm the one who builds it.",
+    rest: "Since 2024 I've been building online stores for small businesses, and today I bring marketing and technology together to help them grow. You always talk to me.",
     link: "Get to know me",
     href: "/en/about",
     alt: "Mathias Do Vale, founder of SellifyWorks",

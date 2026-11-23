@@ -84,7 +84,7 @@ export default function AboutPageContent({
           <div className="grid items-center gap-12 lg:grid-cols-[1.25fr_0.75fr] lg:gap-16">
             <div>
               <h1 className="font-display text-5xl sm:text-6xl lg:text-8xl">
-                <span className="block text-sw-fg-1">{c.hero.titleLine1}</span>
+                <span className="block text-sw-fg-1">{c.hero.titleLine1}</span>{" "}
                 <span className="block text-sw-brand">{c.hero.titleLine2}</span>
               </h1>
               <p className="mt-8 max-w-xl text-lg leading-relaxed text-sw-fg-2 sm:text-xl">
@@ -141,7 +141,7 @@ export default function AboutPageContent({
             {/* Texto + tarjeta */}
             <div>
               <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl">
-                <span className="block text-sw-fg-1">{c.journey.titleLine1}</span>
+                <span className="block text-sw-fg-1">{c.journey.titleLine1}</span>{" "}
                 <span className="block text-sw-brand">{c.journey.titleLine2}</span>
               </h2>
 

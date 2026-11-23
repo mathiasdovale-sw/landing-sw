@@ -2,12 +2,12 @@
   "about": {
     "metadata": {
       "title": "About me — Mathias, founder of SellifyWorks",
-      "description": "I'm Mathias, a software engineer. I founded SellifyWorks in late 2024 to work with growing Shopify stores. You talk to me, not to a sales rep."
+      "description": "I'm Mathias, a software engineer. In late 2024 I founded SellifyWorks, a digital growth agency that brings marketing and technology together. You talk to me, not to a sales rep."
     },
     "hero": {
       "titleLine1": "Hi, I'm",
       "titleLine2": "Mathias.",
-      "subtitle": "Software engineer, Argentinian living in Barcelona. I founded SellifyWorks in late 2024.",
+      "subtitle": "Software engineer, Argentinian living in Barcelona. In late 2024 I founded SellifyWorks, a digital growth agency that brings marketing and technology together.",
       "experience": "I've spent {years} years building software."
     },
     "journey": {
@@ -18,7 +18,7 @@
       "role": "Founder · Barcelona",
       "titleLine1": "Technology makes sense",
       "titleLine2": "when it serves people.",
-      "body": "I chose computing because of that idea. Behind SellifyWorks there is no sales rep handing your store to a team you have never met: you talk to the person who designs and builds your project, end to end.",
+      "body": "I chose computing because of that idea. Behind SellifyWorks there is no sales rep handing your project to a team you have never met: you talk to the person who designs and builds it, end to end.",
       "card": {
         "eyebrow": "What I learned in all those teams",
         "text": "The best work comes out of a team. With you, too."
@@ -32,44 +32,84 @@
           "year": "2019",
           "title": "I started with data",
           "description": "Reports, models and dashboards so other people could make better decisions.",
-          "tags": ["Reports", "Models", "Dashboards"]
+          "tags": [
+            "Reports",
+            "Models",
+            "Dashboards"
+          ]
         },
         {
           "year": "2020",
           "title": "Computer Engineer",
           "description": "I graduated from UADE, in Argentina.",
-          "tags": ["UADE", "Argentina"]
+          "tags": [
+            "UADE",
+            "Argentina"
+          ]
         },
         {
           "year": "Later",
           "title": "I moved into development",
           "description": "A digital wallet, clients in the United States and a public-sector project built for citizens.",
-          "tags": ["Fintech", "USA", "Public sector"]
+          "tags": [
+            "Fintech",
+            "USA",
+            "Public sector"
+          ]
         },
         {
           "year": "2024",
           "title": "I founded SellifyWorks",
-          "description": "From Barcelona, to bring all of that to growing Shopify stores.",
-          "tags": ["Barcelona", "Shopify"],
+          "description": "From Barcelona, first building online stores and now bringing marketing and technology together to help small businesses grow.",
+          "tags": [
+            "Barcelona",
+            "Marketing",
+            "Technology"
+          ],
           "highlight": true
         }
       ]
     },
     "build": {
-      "title": "What I build",
+      "title": "How I help",
       "services": [
-        { "label": "New store", "href": "/en/new-shopify-store" },
-        { "label": "Migration to Shopify", "href": "/en/shopify-migration" },
-        { "label": "Custom development", "href": "/en/custom-shopify-development" }
+        {
+          "label": "Ads",
+          "href": "/en/ads"
+        },
+        {
+          "label": "New store",
+          "href": "/en/new-shopify-store"
+        },
+        {
+          "label": "Migration to Shopify",
+          "href": "/en/shopify-migration"
+        },
+        {
+          "label": "Custom development",
+          "href": "/en/custom-shopify-development"
+        },
+        {
+          "label": "Measurement and analytics",
+          "href": "/en/contact?servicio=measurement"
+        },
+        {
+          "label": "Monthly support",
+          "href": "/en/continuous-improvement"
+        },
+        {
+          "label": "Design and content",
+          "href": "/en/contact?servicio=design"
+        }
       ],
       "casesText": "Some of the stores I've built: Can Ramos, Mates Ramos Europa and Termolar.",
       "casesLink": "See the case studies",
       "casesHref": "/en/#casos-reales"
     },
     "cta": {
-      "title": "Shall we talk about your store?",
-      "subtitle": "I build Shopify stores without limits. Tell me what you need.",
-      "button": "Let's talk about your store"
+      "title": "Shall we talk about your business?",
+      "subtitle": "I help small businesses that sell or win clients online to grow, with marketing and technology in the same hands. Tell me what you need.",
+      "button": "Let's talk about your business"
     }
   }
 }

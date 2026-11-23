@@ -53,7 +53,10 @@ export async function GET(request: NextRequest) {
     'newStore',
     'migration',
     'customDev',
-    'monthly'
+    'monthly',
+    'ads',
+    'ecommerce',
+    'leads'
   ]
 
   servicePages.forEach(page => {
