@@ -25,7 +25,7 @@ const ContactStructuredData = ({
       `Contacto - ${organizationName}` : 
       `Contact - ${organizationName}`,
     "description": language === 'es' ? 
-      "Escríbeme para hablar de tu tienda Shopify: tienda nueva, migración o desarrollo a medida." :
+      "Escríbenos para hablar de tu tienda Shopify: tienda nueva, migración o desarrollo a medida." :
       "Get in touch to talk about your Shopify store: a new store, a migration or custom development.",
     "url": `${baseUrl}/${language}/${language === 'es' ? 'contacto' : 'contact'}`,
     "mainEntity": {
@@ -95,31 +95,31 @@ const ContactStructuredData = ({
       {
         "@type": "Question",
         "name": language === 'es' ? 
-          "¿Cuánto tardas en responder?" : 
+          "¿Cuánto tardáis en responder?" : 
           "How long does it take to respond?",
         "acceptedAnswer": {
           "@type": "Answer",
           "text": language === 'es' ? 
-            "Te respondo yo en 24 horas laborables." :
-            "I reply myself within 24 working hours."
+            "Te respondemos en 24 horas laborables." :
+            "We reply within 24 working hours."
         }
       },
       {
         "@type": "Question", 
         "name": language === 'es' ? 
-          "¿Qué pasa después de escribirte?" :
+          "¿Qué pasa después de escribiros?" :
           "What happens after I get in touch?",
         "acceptedAnswer": {
           "@type": "Answer",
           "text": language === 'es' ? 
-            "Te respondo yo, hacemos una reunión gratis para entender qué necesitas y te paso precio y fecha cerrados, por escrito." :
-            "I reply myself, we have a free meeting to understand what you need, and I send you a fixed price and date in writing."
+            "Te respondemos, hacemos una reunión gratis para entender qué necesitas y te pasamos precio y fecha cerrados, por escrito." :
+            "We reply, we have a free meeting to understand what you need, and we send you a fixed price and date in writing."
         }
       },
       {
         "@type": "Question",
         "name": language === 'es' ? 
-          "¿En qué idiomas atiendes?" :
+          "¿En qué idiomas atendéis?" :
           "What languages do you support?",
         "acceptedAnswer": {
           "@type": "Answer", 

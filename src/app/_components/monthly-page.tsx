@@ -21,7 +21,7 @@ const COPY = {
     },
     eyebrow: "Acompañamiento mensual · Anuncios y web",
     h1: ["Marketing y tecnología,", "mejorando cada mes."],
-    lede: "Gestiono tus anuncios, mejoro tu web y te enseño con datos qué funciona. Sin permanencia y con una propuesta adaptada a tu negocio.",
+    lede: "Gestionamos tus anuncios, mejoramos tu web y te enseñamos con datos qué funciona. Sin permanencia y con una propuesta adaptada a tu negocio.",
     cardLabel: "Cómo funciona",
     card: [
       "Sin permanencia: pagas mes a mes",
@@ -51,7 +51,7 @@ const COPY = {
     },
     eyebrow: "Monthly support · Ads and website",
     h1: ["Marketing and technology,", "improving every month."],
-    lede: "I run your ads, improve your website and show you with data what works. No lock-in and a proposal tailored to your business.",
+    lede: "We run your ads, improve your website and show you with data what works. No lock-in and a proposal tailored to your business.",
     cardLabel: "How it works",
     card: [
       "No lock-in: pay month to month",

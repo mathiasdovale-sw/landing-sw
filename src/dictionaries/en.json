@@ -1,8 +1,8 @@
 {
   "about": {
     "metadata": {
-      "title": "About me — Mathias, founder of SellifyWorks",
-      "description": "I'm Mathias, a software engineer. In late 2024 I founded SellifyWorks, a digital growth agency that brings marketing and technology together. You talk to me, not to a sales rep."
+      "title": "About us — Mathias, founder of SellifyWorks",
+      "description": "I'm Mathias, a software engineer. In late 2024 I founded SellifyWorks, a digital growth agency that brings marketing and technology together. You talk to the person running your project, not to a sales rep."
     },
     "hero": {
       "titleLine1": "Hi, I'm",
@@ -71,7 +71,7 @@
       ]
     },
     "build": {
-      "title": "How I help",
+      "title": "How we help",
       "services": [
         {
           "label": "Ads",
@@ -102,13 +102,13 @@
           "href": "/en/contact?servicio=design"
         }
       ],
-      "casesText": "Some of the stores I've built: Can Ramos, Mates Ramos Europa and Termolar.",
+      "casesText": "Some of the stores we've built: Can Ramos, Mates Ramos Europa and Termolar.",
       "casesLink": "See the case studies",
       "casesHref": "/en/#casos-reales"
     },
     "cta": {
       "title": "Shall we talk about your business?",
-      "subtitle": "I help small businesses that sell or win clients online to grow, with marketing and technology in the same hands. Tell me what you need.",
+      "subtitle": "We help small businesses that sell or win clients online to grow, with marketing and technology in the same hands. Tell us what you need.",
       "button": "Let's talk about your business"
     }
   }

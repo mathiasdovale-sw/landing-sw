@@ -10,7 +10,7 @@ interface BreadcrumbItem {
 // Translation mappings for common paths
 const pathTranslations = {
   es: {
-    'sobre-nosotros': 'Sobre mí',
+    'sobre-nosotros': 'Sobre nosotros',
     'contacto': 'Contacto',
     'servicios': 'Servicios',
     'tienda-nueva': 'Tienda nueva',
@@ -29,7 +29,7 @@ const pathTranslations = {
     'posts': 'Artículos'
   },
   en: {
-    'about': 'About me',
+    'about': 'About us',
     'contact': 'Contact',
     'services': 'Services',
     'new-shopify-store': 'New store',

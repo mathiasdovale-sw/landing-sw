@@ -1,8 +1,8 @@
 {
   "about": {
     "metadata": {
-      "title": "Sobre mí — Mathias, fundador de SellifyWorks",
-      "description": "Soy Mathias, ingeniero informático. A finales de 2024 fundé SellifyWorks, una agencia de crecimiento digital que une marketing y tecnología. Hablas conmigo, no con un comercial."
+      "title": "Sobre nosotros — Mathias, fundador de SellifyWorks",
+      "description": "Soy Mathias, ingeniero informático. A finales de 2024 fundé SellifyWorks, una agencia de crecimiento digital que une marketing y tecnología. Hablas con quien lleva tu proyecto, no con un comercial."
     },
     "hero": {
       "titleLine1": "Hola, soy",
@@ -71,7 +71,7 @@
       ]
     },
     "build": {
-      "title": "Cómo te ayudo",
+      "title": "Cómo te ayudamos",
       "services": [
         {
           "label": "Anuncios",
@@ -102,13 +102,13 @@
           "href": "/es/contacto?servicio=design"
         }
       ],
-      "casesText": "Algunas tiendas que he construido: Can Ramos, Mates Ramos Europa y Termolar.",
+      "casesText": "Algunas tiendas que hemos construido: Can Ramos, Mates Ramos Europa y Termolar.",
       "casesLink": "Ver los casos",
       "casesHref": "/es/#casos-reales"
     },
     "cta": {
       "title": "¿Hablamos de tu negocio?",
-      "subtitle": "Ayudo a pymes que venden o captan clientes por internet a crecer, con marketing y tecnología en las mismas manos. Cuéntame qué necesitas.",
+      "subtitle": "Ayudamos a pymes que venden o captan clientes por internet a crecer, con marketing y tecnología en las mismas manos. Cuéntanos qué necesitas.",
       "button": "Hablemos de tu negocio"
     }
   }

@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
 import { CHROMELESS_ROUTES } from "@/lib/chromeless-routes"
+import { SERVICES_MENU } from "@/lib/services-menu"
 
 import { ArrowRight } from "lucide-react"
 
@@ -14,8 +15,7 @@ import { ArrowRight } from "lucide-react"
 // Para reactivarla, poner a true.
 const SHOW_NEWSLETTER = false
 
-// Servicios y soluciones del pie, en orden.
-const FOOTER_SERVICES = ['ads', 'newStore', 'migration', 'customDev', 'monthly'] as const
+// Soluciones del pie, en orden. Los servicios salen de SERVICES_MENU (las cuatro verticales).
 const FOOTER_SOLUTIONS = ['ecommerce', 'leads'] as const
 
 
@@ -23,6 +23,7 @@ export default function Footer() {
   const { t } = useLanguage()
   const { links, currentLocale } = useLocalizedLinks()
   const pathname = usePathname()
+  const servicesMenu = SERVICES_MENU[currentLocale === 'en' ? 'en' : 'es']
   const [email, setEmail] = useState("")
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -156,21 +157,52 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Services + Solutions */}
-          <div className="grid gap-8 sm:grid-cols-2 lg:col-span-2">
+          {/* Services + How we work + Solutions */}
+          <div className="grid gap-8 sm:grid-cols-3 lg:col-span-2">
             <div>
             <h4 className="mb-4 font-mono-label text-sw-fg-3">{t('footer.services.title')}</h4>
             <ul className="grid grid-cols-1 gap-2">
-              {FOOTER_SERVICES.map((key) => (
-                <li key={key}>
-                  <a
-                    href={links[key]}
-                    className="inline-flex min-h-11 items-center text-sm text-sw-fg-2 transition-colors hover:text-sw-brand md:min-h-0"
-                  >
-                    {t(`footer.services.${key}`)}
-                  </a>
+              {servicesMenu.verticals.map((v) => (
+                <li key={v.id}>
+                  {v.href ? (
+                    <a
+                      href={v.href}
+                      className="inline-flex min-h-11 items-center text-sm text-sw-fg-2 transition-colors hover:text-sw-brand md:min-h-0"
+                    >
+                      {v.title}
+                    </a>
+                  ) : (
+                    <>
+                      <span className="inline-flex min-h-11 items-center text-sm text-sw-fg-2 md:min-h-0">{v.title}</span>
+                      <ul className="mt-2 grid grid-cols-1 gap-2 border-l border-sw-line pl-3">
+                        {(v.footerItems ?? v.items).map((item) => (
+                          <li key={item.href}>
+                            <a
+                              href={item.href}
+                              className="inline-flex min-h-11 items-center text-sm text-sw-fg-3 transition-colors hover:text-sw-brand md:min-h-0"
+                            >
+                              {item.label}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
                 </li>
               ))}
+            </ul>
+            </div>
+            <div>
+            <h4 className="mb-4 font-mono-label text-sw-fg-3">{servicesMenu.howWeWork.title}</h4>
+            <ul className="grid grid-cols-1 gap-2">
+              <li>
+                <a
+                  href={servicesMenu.howWeWork.monthly.href}
+                  className="inline-flex min-h-11 items-center text-sm text-sw-fg-2 transition-colors hover:text-sw-brand md:min-h-0"
+                >
+                  {servicesMenu.howWeWork.monthly.label}
+                </a>
+              </li>
             </ul>
             </div>
             <div>

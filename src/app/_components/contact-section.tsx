@@ -21,8 +21,8 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const URL_RE = /^(https?:\/\/)?[^\s/.]+(\.[^\s/.]+)+(\/\S*)?$/i
 
 const NEXT_STEPS = {
-  es: { title: 'Qué pasa después', steps: [REPLY_STEP.es, 'Hacemos una reunión gratis para entender qué necesitas.', 'Te envío una propuesta a medida por escrito: alcance, precio y plazos.'] },
-  en: { title: 'What happens next', steps: [REPLY_STEP.en, 'We have a free meeting to understand what you need.', 'I send you a tailored proposal in writing: scope, price and timeline.'] },
+  es: { title: 'Qué pasa después', steps: [REPLY_STEP.es, 'Hacemos una reunión gratis para entender qué necesitas.', 'Te enviamos una propuesta a medida por escrito: alcance, precio y plazos.'] },
+  en: { title: 'What happens next', steps: [REPLY_STEP.en, 'We have a free meeting to understand what you need.', 'We send you a tailored proposal in writing: scope, price and timeline.'] },
 }
 
 /**
@@ -296,7 +296,7 @@ export default function ContactSection({
                 />
                 <div>
                   <p className="font-semibold text-sw-fg-1">Mathias Do Vale</p>
-                  <p className="font-mono-label text-sw-fg-3">{lang === 'es' ? 'Te respondo yo' : 'I reply myself'}</p>
+                  <p className="font-mono-label text-sw-fg-3">{lang === 'es' ? 'Te responde el fundador' : 'The founder replies'}</p>
                 </div>
               </div>
             )}

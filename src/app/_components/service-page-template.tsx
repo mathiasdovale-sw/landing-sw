@@ -9,7 +9,7 @@ import MobileStickyCta from "./mobile-sticky-cta"
 import { FAQ } from "@/interfaces/faq"
 
 // Plantilla de página de servicio (hoy: desarrollo a medida).
-// Orden: hero → situaciones → qué incluye → quién soy → cierre → servicios relacionados → preguntas.
+// Orden: hero → situaciones → qué incluye → quién está detrás → cierre → servicios relacionados → preguntas.
 
 export interface ServicePageContent {
   serviceKey: string

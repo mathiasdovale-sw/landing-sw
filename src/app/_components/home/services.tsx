@@ -23,7 +23,7 @@ interface Copy {
 const COPY: Record<"es" | "en", Copy> = {
   es: {
     title: "Servicios para pymes que quieren crecer online",
-    intro: "No aplico soluciones sueltas. Cada acción se decide según lo que necesita tu negocio, y la estrategia va incluida.",
+    intro: "No aplicamos soluciones sueltas. Cada acción se decide según lo que necesita tu negocio, y la estrategia va incluida.",
     verticals: [
       {
         name: "Anuncios",
@@ -64,14 +64,14 @@ const COPY: Record<"es" | "en", Copy> = {
       },
     ],
     monthly: {
-      before: "¿Prefieres que lleve tus anuncios y mejore tu web cada mes?",
+      before: "¿Prefieres que llevemos tus anuncios y mejoremos tu web cada mes?",
       link: "Mira el acompañamiento mensual.",
       href: "/es/mejora-continua",
     },
   },
   en: {
     title: "Services for small businesses that want to grow online",
-    intro: "I don't apply one-off fixes. Every action is decided based on what your business needs, and the strategy is included.",
+    intro: "We don't apply one-off fixes. Every action is decided based on what your business needs, and the strategy is included.",
     verticals: [
       {
         name: "Ads",
@@ -112,7 +112,7 @@ const COPY: Record<"es" | "en", Copy> = {
       },
     ],
     monthly: {
-      before: "Would you rather I run your ads and improve your website every month?",
+      before: "Would you rather we run your ads and improve your website every month?",
       link: "See monthly support.",
       href: "/en/continuous-improvement",
     },

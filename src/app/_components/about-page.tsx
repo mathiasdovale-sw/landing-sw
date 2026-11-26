@@ -8,7 +8,7 @@ import OrganizationStructuredData from "./organization-structured-data"
 import AutoBreadcrumbStructuredData from "./auto-breadcrumb-structured-data"
 import VisualBreadcrumbs from "./visual-breadcrumbs"
 
-// Página "Sobre mí" compartida por /es/sobre-nosotros y /en/about.
+// Página "Sobre nosotros" compartida por /es/sobre-nosotros y /en/about.
 // El copy vive en src/dictionaries/{es,en}.json bajo la clave `about`.
 
 // Foto vertical 4:5. Mientras el archivo no exista se muestra el marco vacío en
@@ -250,7 +250,7 @@ export default function AboutPageContent({
         </div>
       </section>
 
-      {/* Lo que construyo */}
+      {/* Lo que construimos */}
       <section className="border-t border-sw-line bg-sw-bg-0 py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-5">
           <h2 className="font-display text-3xl text-sw-fg-1 sm:text-4xl">{c.build.title}</h2>

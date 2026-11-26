@@ -11,9 +11,9 @@ import { getCases, type CaseKey, type CaseStudy } from "@/lib/cases"
 
 const COPY = {
   es: {
-    title: "Tiendas que he construido",
+    title: "Tiendas que hemos construido",
     visit: "Ver la tienda",
-    showScope: "Ver qué construí",
+    showScope: "Ver qué construimos",
     hideScope: "Ocultar",
     sameClient: "Mismo cliente",
     sameClientNote: "Mates Ramos Europa y Can Ramos son dos tiendas del mismo cliente.",
@@ -22,9 +22,9 @@ const COPY = {
     goTo: "Ir al caso",
   },
   en: {
-    title: "Stores I've built",
+    title: "Stores we've built",
     visit: "Visit the store",
-    showScope: "See what I built",
+    showScope: "See what we built",
     hideScope: "Hide",
     sameClient: "Same client",
     sameClientNote: "Mates Ramos Europa and Can Ramos are two stores for the same client.",

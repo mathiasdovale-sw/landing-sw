@@ -29,8 +29,8 @@ export const metaDescriptions: Record<string, MetaDescription> = {
     en: "I'm Mathias, a software engineer in Barcelona and the founder of SellifyWorks, a digital growth agency that brings marketing and technology together."
   },
   contact: {
-    es: "Pide presupuesto sin compromiso: anuncios, web o tienda, analítica, diseño y creatividad. Te respondo en 24 horas laborables con una propuesta a medida.",
-    en: "Ask for a no-obligation quote: ads, website or store, analytics, design and creative. I reply within 24 working hours with a tailored proposal."
+    es: "Pide presupuesto sin compromiso: anuncios, web o tienda, analítica, diseño y creatividad. Te respondemos en 24 horas laborables con una propuesta a medida.",
+    en: "Ask for a no-obligation quote: ads, website or store, analytics, design and creative. We reply within 24 working hours with a tailored proposal."
   },
   blog: {
     es: "Blog de SellifyWorks: consejos, trucos y estrategias para Shopify. Aprende sobre ecommerce, SEO, conversión y marketing digital para hacer crecer tu tienda online.",
@@ -55,28 +55,28 @@ export const metaDescriptions: Record<string, MetaDescription> = {
   
   // Services meta descriptions
   newStore: {
-    es: "Creo tu tienda Shopify desde cero: diseño, catálogo, pagos y envíos configurados. Precio y fecha cerrados antes de empezar.",
-    en: "I build your Shopify store from scratch: design, catalogue, payments and shipping set up. Price and date agreed before we start."
+    es: "Creamos tu tienda Shopify desde cero: diseño, catálogo, pagos y envíos configurados. Precio y fecha cerrados antes de empezar.",
+    en: "We build your Shopify store from scratch: design, catalogue, payments and shipping set up. Price and date agreed before we start."
   },
   migration: {
-    es: "Migro tu tienda a Shopify desde WooCommerce, PrestaShop, Wix o Magento con las mejoras ya hechas, sin cerrar ni un día. En unas 3 semanas, con precio cerrado antes de empezar.",
-    en: "I migrate your store to Shopify from WooCommerce, PrestaShop, Wix or Magento with the improvements already done, without closing for a day. In about 3 weeks, with a fixed price."
+    es: "Migramos tu tienda a Shopify desde WooCommerce, PrestaShop, Wix o Magento con las mejoras ya hechas, sin cerrar ni un día. En unas 3 semanas, con precio cerrado antes de empezar.",
+    en: "We migrate your store to Shopify from WooCommerce, PrestaShop, Wix or Magento with the improvements already done, without closing for a day. In about 3 weeks, with a fixed price."
   },
   customDev: {
     es: "Integraciones, automatizaciones y funcionalidades a medida para tu web o tu tienda: Shopify, WooCommerce, CRM y más. Un ingeniero que lo construye y responde por ello, con precio cerrado.",
     en: "Integrations, automations and custom features for your website or store: Shopify, WooCommerce, CRM and more. An engineer who builds it and stands behind it, with a fixed price."
   },
   monthly: {
-    es: "Acompañamiento mensual: gestiono tus anuncios, mejoro tu web y te enseño con datos qué funciona. Sin permanencia y con una propuesta adaptada a tu negocio.",
-    en: "Monthly support: I run your ads, improve your website and show you with data what works. No lock-in and a proposal tailored to your business."
+    es: "Acompañamiento mensual: gestionamos tus anuncios, mejoramos tu web y te enseñamos con datos qué funciona. Sin permanencia y con una propuesta adaptada a tu negocio.",
+    en: "Monthly support: we run your ads, improve your website and show you with data what works. No lock-in and a proposal tailored to your business."
   },
   ads: {
-    es: "Gestión de anuncios en Google, Meta, TikTok y Pinterest optimizada por rentabilidad: invierto más donde tu negocio gana más, no donde más se vende.",
-    en: "Ads management on Google, Meta, TikTok and Pinterest optimised for profitability: I invest more where your business earns more, not where it sells more."
+    es: "Gestión de anuncios en Google, Meta, TikTok y Pinterest optimizada por rentabilidad: invertimos más donde tu negocio gana más, no donde más se vende.",
+    en: "Ads management on Google, Meta, TikTok and Pinterest optimised for profitability: we invest more where your business earns more, not where it sells more."
   },
   ecommerce: {
-    es: "Más ventas online con anuncios, tienda y datos conectados: llevo tus anuncios, mejoro tu tienda y automatizo lo que hoy haces a mano.",
-    en: "More online sales with ads, store and data connected: I run your ads, improve your store and automate what you do by hand today."
+    es: "Más ventas online con anuncios, tienda y datos conectados: llevamos tus anuncios, mejoramos tu tienda y automatizamos lo que hoy haces a mano.",
+    en: "More online sales with ads, store and data connected: we run your ads, improve your store and automate what you do by hand today."
   },
   leads: {
     es: "Más clientes desde internet: anuncios que traen contactos, páginas que los convierten y un seguimiento automático para que no se escape ninguno.",

@@ -8,6 +8,7 @@ import LanguageSelector from "./language-selector"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useLocalizedLinks } from "@/hooks/useLocalizedLinks"
 import { CHROMELESS_ROUTES } from "@/lib/chromeless-routes"
+import { SERVICES_MENU } from "@/lib/services-menu"
 
 const MotionLink = motion.create(Link)
 
@@ -31,6 +32,8 @@ interface NavMenu {
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  // Móvil: vertical de servicios desplegada (acordeón)
+  const [openVertical, setOpenVertical] = useState<string | null>(null)
   const { t } = useLanguage()
   const { links, currentLocale } = useLocalizedLinks()
   const pathname = usePathname()
@@ -97,24 +100,12 @@ const Navbar = () => {
     : { open: 'Abrir menú', close: 'Cerrar menú' }
   const closeMenu = () => setIsMenuOpen(false)
 
-  // Servicios y Soluciones van en desplegables; Casos, Sobre mí y Blog, sueltos.
+  // Servicios va en un mega menú de cuatro verticales; Soluciones, en un desplegable;
+  // Casos, Sobre nosotros y Blog, sueltos.
+  const servicesMenu = SERVICES_MENU[currentLocale === 'en' ? 'en' : 'es']
+  const servicesOpen = openDropdown === 'services'
+
   const menus: NavMenu[] = [
-    {
-      id: 'services',
-      label: t('nav.services'),
-      groups: [
-        { items: [{ href: links.ads, label: t('nav.ads') }] },
-        {
-          label: t('nav.tech'),
-          items: [
-            { href: links.newStore, label: t('nav.newStore') },
-            { href: links.migration, label: t('nav.migration') },
-            { href: links.customDev, label: t('nav.customDev') },
-          ],
-        },
-        { items: [{ href: links.monthly, label: t('nav.monthly') }] },
-      ],
-    },
     {
       id: 'solutions',
       label: t('nav.solutions'),
@@ -151,6 +142,60 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-5 xl:gap-7">
+            {/* Servicios: mega menú. El panel se posiciona respecto al <header> (sticky)
+                para ocupar su ancho; el -my-8/py-8 extiende la zona de hover hasta su borde inferior. */}
+            <div
+              className="-my-8 py-8"
+              onMouseEnter={() => setOpenDropdown('services')}
+              onMouseLeave={() => setOpenDropdown(null)}
+            >
+              <button
+                type="button"
+                aria-expanded={servicesOpen}
+                aria-controls="nav-services"
+                onClick={() => setOpenDropdown(servicesOpen ? null : 'services')}
+                className="flex items-center gap-1 whitespace-nowrap font-mono-label text-sw-fg-3 transition-colors hover:text-sw-fg-1"
+              >
+                {t('nav.services')}
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${servicesOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+              </button>
+              {servicesOpen && (
+                <div id="nav-services" className="absolute inset-x-0 top-full px-6 md:px-12 lg:px-8 xl:px-12">
+                  <div className="mx-auto max-w-6xl rounded-sm border border-sw-line bg-sw-bg-1 shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
+                    <div className="grid grid-cols-4 gap-2 p-4">
+                      {servicesMenu.verticals.map((v) => (
+                        <div key={v.id}>
+                          <p className="px-3 pb-1 pt-2 font-mono-label text-[11px] text-sw-fg-4">{v.title}</p>
+                          {v.items.map((item) => (
+                            <Link
+                              key={item.label}
+                              href={item.href}
+                              onClick={() => setOpenDropdown(null)}
+                              className="block rounded-sm px-3 py-2 text-sm text-sw-fg-2 transition-colors hover:bg-sw-bg-2 hover:text-sw-fg-1"
+                            >
+                              {item.label}
+                            </Link>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-sw-line px-7 py-4 text-sm">
+                      <span className="font-mono-label text-[11px] text-sw-fg-4">{servicesMenu.howWeWork.title}:</span>
+                      <span className="text-sw-fg-2">{servicesMenu.howWeWork.fixedPrice}</span>
+                      <span aria-hidden="true" className="text-sw-fg-4">·</span>
+                      <Link
+                        href={servicesMenu.howWeWork.monthly.href}
+                        onClick={() => setOpenDropdown(null)}
+                        className="text-sw-fg-2 transition-colors hover:text-sw-fg-1"
+                      >
+                        {servicesMenu.howWeWork.monthly.label} →
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {menus.map((menu) => {
               const open = openDropdown === menu.id
               return (
@@ -260,6 +305,55 @@ const Navbar = () => {
           </svg>
         </button>
         <nav className="flex min-h-full flex-col gap-8 px-6 pb-12 pt-20">
+          {/* Servicios: cada vertical es un acordeón; "Cómo trabajamos" al final. */}
+          <div>
+            <p className="font-mono-label text-sw-fg-4">{t('nav.services')}</p>
+            <ul className="mt-2 space-y-1">
+              {servicesMenu.verticals.map((v) => {
+                const open = openVertical === v.id
+                return (
+                  <li key={v.id}>
+                    <button
+                      type="button"
+                      aria-expanded={open}
+                      aria-controls={`nav-m-${v.id}`}
+                      onClick={() => setOpenVertical(open ? null : v.id)}
+                      className="flex min-h-11 w-full items-center justify-between text-left font-display text-xl text-sw-fg-1 transition-colors hover:text-sw-brand sm:text-2xl"
+                    >
+                      {v.title}
+                      <ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
+                    </button>
+                    {open && (
+                      <ul id={`nav-m-${v.id}`} className="mb-2 border-l border-sw-line pl-4">
+                        {v.items.map((item) => (
+                          <li key={item.label}>
+                            <Link
+                              href={item.href}
+                              className="flex min-h-11 items-center text-base text-sw-fg-2 transition-colors hover:text-sw-brand"
+                              onClick={closeMenu}
+                            >
+                              {item.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+            <div className="mt-4 border-t border-sw-line pt-4">
+              <p className="font-mono-label text-[11px] text-sw-fg-4">{servicesMenu.howWeWork.title}</p>
+              <p className="mt-2 text-base text-sw-fg-2">{servicesMenu.howWeWork.fixedPrice}</p>
+              <Link
+                href={servicesMenu.howWeWork.monthly.href}
+                className="flex min-h-11 items-center text-base text-sw-fg-2 transition-colors hover:text-sw-brand"
+                onClick={closeMenu}
+              >
+                {servicesMenu.howWeWork.monthly.label} →
+              </Link>
+            </div>
+          </div>
           {menus.map((menu) => (
             <div key={menu.id}>
               <p className="font-mono-label text-sw-fg-4">{menu.label}</p>

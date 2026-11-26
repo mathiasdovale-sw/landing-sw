@@ -3,31 +3,31 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { YEARS_EXPERIENCE } from "@/lib/commitments"
 
-// Bloque "Quién soy" reutilizable: foto, nombre, texto corto y enlace a Sobre mí.
+// Bloque "Quién está detrás" reutilizable: foto, nombre, texto corto y enlace a Sobre nosotros.
 
 const COPY = {
   es: {
-    eyebrow: "Quién soy",
+    eyebrow: "Quién está detrás",
     name: "Mathias Do Vale",
     role: "Ingeniero informático · Barcelona",
     intro: "Soy Mathias, ingeniero informático en Barcelona.",
     experience: YEARS_EXPERIENCE
       ? `Llevo ${YEARS_EXPERIENCE} años desarrollando software para fintech, clientes en Estados Unidos y el sector público.`
       : "",
-    rest: "Desde 2024 construyo tiendas online para pymes, y hoy uno marketing y tecnología para que crezcan. Hablas siempre conmigo.",
+    rest: "Desde 2024 construyo tiendas online para pymes, y hoy uno marketing y tecnología para que crezcan.",
     link: "Conóceme",
     href: "/es/sobre-nosotros",
     alt: "Mathias Do Vale, fundador de SellifyWorks",
   },
   en: {
-    eyebrow: "Who I am",
+    eyebrow: "Who's behind it",
     name: "Mathias Do Vale",
     role: "Software engineer · Barcelona",
     intro: "I'm Mathias, a software engineer in Barcelona.",
     experience: YEARS_EXPERIENCE
       ? `I've spent ${YEARS_EXPERIENCE} years building software for fintech, clients in the United States and the public sector.`
       : "",
-    rest: "Since 2024 I've been building online stores for small businesses, and today I bring marketing and technology together to help them grow. You always talk to me.",
+    rest: "Since 2024 I've been building online stores for small businesses, and today I bring marketing and technology together to help them grow.",
     link: "Get to know me",
     href: "/en/about",
     alt: "Mathias Do Vale, founder of SellifyWorks",
