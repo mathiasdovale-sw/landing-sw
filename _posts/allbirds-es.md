@@ -11,7 +11,7 @@ ogImage:
 ---
 ###### Disclaimer: este post no tiene ningun tipo de vinculo comercial con la marca. Todo lo que se ve a continuación proviene de su sitio web publico y el análisis es meramente informativo.
 
-# Análisis del eCommerce de Allbirds: Una PDP optimizada en Shopify
+## Análisis del eCommerce de Allbirds: Una PDP optimizada en Shopify
 
 ¿Sabías que una de las marcas de zapatillas más reconocidas del mundo confía en **Shopify** para vender en más de 30 países? Hablamos de **Allbirds**, una marca que ha revolucionado el mercado de calzado sostenible.
 

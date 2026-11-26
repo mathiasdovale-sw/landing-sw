@@ -10,7 +10,7 @@ ogImage:
   url: "/assets/blog/usecase-allbirds/header.webp"
 ---
 ###### Disclaimer: This post has no commercial affiliation with the brand. Everything shown below is from its public website, and the analysis is for informational purposes only.
-# Allbirds eCommerce Analysis: A Shopify-Optimized PDP
+## Allbirds eCommerce Analysis: A Shopify-Optimized PDP
 Did you know that one of the world's most recognized sneaker brands relies on Shopify to sell in more than 30 countries? We're talking about Allbirds, a brand that has revolutionized the sustainable footwear market.
 
 Allbirds' success lies not only in its sustainable offering, but also in how they've optimized the design and technology behind their online store. From a clean and scalable architecture to custom integrations and an intuitive shopping experience, their eCommerce is a perfect example of how strategic design boosts conversions.

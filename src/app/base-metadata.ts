@@ -11,13 +11,6 @@ export const baseMetadata: Metadata = {
   creator: "SellifyWorks",
   publisher: "SellifyWorks",
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
-  alternates: {
-    canonical: "https://www.sellifyworks.com/",
-    languages: {
-      'es-ES': 'https://www.sellifyworks.com/es',
-      'en': 'https://www.sellifyworks.com/en',
-    },
-  },
   openGraph: {
     type: "website",
     locale: "es_ES",

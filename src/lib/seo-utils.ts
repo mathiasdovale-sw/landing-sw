@@ -86,7 +86,8 @@ export const metaDescriptions: Record<string, MetaDescription> = {
 
 // SEO-friendly URL mappings for all pages
 export const seoUrls: Record<string, SeoUrl> = {
-  home: { es: '/', en: '/' },
+  // Sin barra final: /es y /en son las URLs que responden 200 (/es/ redirige a /es).
+  home: { es: '', en: '' },
   about: { es: '/sobre-nosotros', en: '/about' },
   contact: { es: '/contacto', en: '/contact' },
   services: { es: '/servicios', en: '/services' },
@@ -129,7 +130,7 @@ export function generateHreflangs(pageKey: keyof typeof seoUrls, baseUrl?: strin
 export function getCanonicalUrl(pageKey: keyof typeof seoUrls, locale: string, baseUrl?: string) {
   const canonicalBaseUrl = baseUrl || getCanonicalBaseUrl()
   const urls = seoUrls[pageKey]
-  if (!urls) return `${canonicalBaseUrl}/es/` // fallback to home
+  if (!urls) return `${canonicalBaseUrl}/es` // fallback to home
 
   const localeUrl = urls[locale as keyof SeoUrl] || urls.es
   return `${canonicalBaseUrl}/${locale}${localeUrl}`
@@ -176,6 +177,8 @@ export function generatePageMetadata(
         'x-default': hreflangs.find(h => h.hreflang === 'x-default')?.href,
       }
     },
+    // Las imágenes se repiten aquí porque el openGraph de la página sustituye
+    // entero al del layout (si no, las páginas se quedan sin og:image).
     openGraph: {
       title: customTitle,
       description,
@@ -183,11 +186,13 @@ export function generatePageMetadata(
       siteName: 'SellifyWorks',
       locale: locale === 'es' ? 'es_ES' : 'en_US',
       type: 'website',
+      images: [{ url: `${baseUrl}/api/og`, width: 1200, height: 630, alt: 'SellifyWorks', type: 'image/png' }],
     },
     twitter: {
       card: 'summary_large_image',
       title: customTitle,
       description,
+      images: [`${baseUrl}/api/og`],
     }
   }
 }

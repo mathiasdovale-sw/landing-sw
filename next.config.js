@@ -28,10 +28,10 @@ const nextConfig = {
       },
 
       // === REDIRECCIÓN PÁGINA PRINCIPAL ===
-      // Redirección de / a /es/ (español por defecto)
+      // Redirección de / a /es (español por defecto). Sin barra final: /es/ redirige a /es.
       {
         source: '/',
-        destination: '/es/',
+        destination: '/es',
         permanent: true,
       },
 

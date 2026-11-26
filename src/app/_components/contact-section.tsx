@@ -35,11 +35,14 @@ export default function ContactSection({
   defaultService,
   showPhoto = false,
   title,
+  asPageTitle = false,
 }: {
   defaultService?: ServiceOption
   showPhoto?: boolean
   /** Título del bloque (por defecto "Hablemos de tu negocio."). */
   title?: string
+  /** En la página de Contacto el título del bloque es el H1 de la página. */
+  asPageTitle?: boolean
 } = {}) {
   const { t, language } = useLanguage()
   const lang = language === 'en' ? 'en' : 'es'
@@ -300,9 +303,14 @@ export default function ContactSection({
                 </div>
               </div>
             )}
-            <h2 className="font-display text-4xl text-sw-fg-1 sm:text-5xl lg:text-6xl">
-              {title ?? t('contact.title')}
-            </h2>
+            {(() => {
+              const Heading = asPageTitle ? 'h1' : 'h2'
+              return (
+                <Heading className="font-display text-4xl text-sw-fg-1 sm:text-5xl lg:text-6xl">
+                  {title ?? t('contact.title')}
+                </Heading>
+              )
+            })()}
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-sw-fg-2">
               {t('contact.description')}
             </p>

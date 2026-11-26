@@ -83,8 +83,7 @@ export async function GET(request: NextRequest) {
     priority: pagePriorities.services
   })
 
-  // Newsletter confirmation
-  addBilingualPage('newsletterConfirmed', pagePriorities.newsletter, changeFrequencies.newsletter)
+  // Las confirmaciones del newsletter no van al sitemap: son noindex.
 
   // Blog posts - Get all posts and add them for both languages
   try {

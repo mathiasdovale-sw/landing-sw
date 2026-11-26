@@ -15,7 +15,7 @@ export default function ContactPage() {
     <main>
       <ContactStructuredData />
       <VisualBreadcrumbs />
-      <ContactSection showPhoto />
+      <ContactSection showPhoto asPageTitle />
     </main>
   );
 }

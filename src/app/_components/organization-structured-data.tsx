@@ -22,7 +22,7 @@ const OrganizationStructuredData = ({
   
   const defaultDescriptions = {
     es: "Agencia de crecimiento digital que une marketing y tecnología para pymes: anuncios, web, automatizaciones y medición, con un único responsable. Desde Barcelona.",
-    en: "Digital growth agency bringing marketing and technology together for small businesses: ads, website, automations and measurement, with one person accountable. From Barcelona."
+    en: "Digital growth agency bringing marketing and technology together for small businesses: ads, website, automations and measurement, with one accountable partner. From Barcelona."
   };
 
   const defaultSpecialties = {
@@ -80,7 +80,7 @@ const OrganizationStructuredData = ({
         "name": "Spain"
       },
       {
-        "@type": "Country", 
+        "@type": "Place",
         "name": "Europe"
       }
     ],
@@ -101,7 +101,7 @@ const OrganizationStructuredData = ({
       "@type": "ContactPoint",
       "contactType": "customer service",
       "availableLanguage": ["es", "en"],
-      "url": `${baseUrl}/${language}/contacto`
+      "url": `${baseUrl}/${language}/${language === 'es' ? 'contacto' : 'contact'}`
     },
     "sameAs": [
       // Add social media URLs when available

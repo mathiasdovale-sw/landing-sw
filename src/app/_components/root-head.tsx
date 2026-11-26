@@ -187,7 +187,6 @@ export default function RootHead() {
       />
       <meta name="theme-color" content="#f97316" />
 
-      <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
 
       {/* CookieYes handles GCM consent updates natively (Support GCM is ON).
           These listeners ONLY handle deferred Meta Pixel / Clarity loading — no gtag calls. */}

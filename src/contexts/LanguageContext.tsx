@@ -186,7 +186,7 @@ const translations = {
     'relatedServices.services.monthly.description': 'Gestionamos tus anuncios y mejoramos tu web cada mes, con datos y sin permanencia.',
 
     // Blog
-    'blog.title': 'SellifyWorks Blog',
+    'blog.title': 'Blog de Shopify y ecommerce',
     'blog.subtitle': 'Artículos y consejos sobre Shopify, ecommerce y crecimiento online',
     'blog.moreStories': 'Más Artículos',
     'blog.publishedOn': 'Publicado el',
@@ -368,7 +368,7 @@ const translations = {
     'relatedServices.services.monthly.description': 'We run your ads and improve your website every month, with data and no lock-in.',
 
     // Blog
-    'blog.title': 'SellifyWorks Blog',
+    'blog.title': 'Shopify & ecommerce blog',
     'blog.subtitle': 'Articles and tips about Shopify, ecommerce and online growth',
     'blog.moreStories': 'More Stories',
     'blog.publishedOn': 'Published on',

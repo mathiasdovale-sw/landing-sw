@@ -11,6 +11,7 @@ import type { Metadata } from 'next'
 import { HomeFAQsEs } from "@/lib/faqs";
 import FAQAccordion from "@/app/_components/faq-accordion";
 import { generatePageMetadata } from "@/lib/seo-utils";
+import OrganizationStructuredData from "@/app/_components/organization-structured-data";
 
 export const metadata: Metadata = generatePageMetadata(
   'home',
@@ -22,6 +23,7 @@ export const metadata: Metadata = generatePageMetadata(
 export default function HomePage() {
   return (
     <main>
+      <OrganizationStructuredData />
       <Hero locale="es" />
       <Commitments locale="es" />
       <Reveal><Solutions locale="es" /></Reveal>
